@@ -1134,34 +1134,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18}/></button>
                                     <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18}/></button>
                                 </div>
-                                                                 {/* Mockup Redesign: Floating 'TOOLS' Trigger (Responsive) */}
+                                 {/* Mockup Redesign: Floating 'TOOLS' Trigger (Responsive) */}
                                  {designMode === 'self' && (!activeObject || isMobileUiMinimized) && (
                                     <div className="xl:hidden absolute bottom-24 right-6 z-[200] animate-in fade-in slide-in-from-bottom-4">
-                                        <button onClick={() => { setActiveTab('uploads'); setIsMobileUiMinimized(false); }} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
-                                            <FiShoppingCart/> {activeObject ? 'Edit Object' : 'Tools'}
+                                        <button onClick={() => { setIsMobileUiMinimized(false); }} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
+                                            <FiShoppingCart/> {activeObject ? 'Edit Object' : 'Open Tools'}
                                         </button>
                                     </div>
                                  )}
-                                
-                                {/* Floating Navigation Dock (Responsive: Right sidebar on Desktop, Bottom bar on Mobile) */}
-                                {designMode === 'self' && (
-                                <div className="absolute xl:top-1/2 xl:-mt-10 xl:right-6 xl:-translate-y-1/2 fixed bottom-28 left-1/2 -translate-x-1/2 xl:translate-x-0 xl:left-auto z-[200] pointer-events-none w-[90%] xl:w-auto">
-                                    <div className="flex xl:flex-col items-center justify-between xl:justify-center gap-2 xl:gap-3 p-2 xl:p-3 bg-white/95 backdrop-blur-2xl xl:rounded-[40px] rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white pointer-events-auto">
-                                        {[
-                                            { id: 'uploads', icon: <FiImage/>, label: 'Uploads' },
-                                            { id: 'text', icon: <FiType/>, label: 'Text' },
-                                            { id: 'stickers', icon: <FiSmile/>, label: 'Stickers' },
-                                            { id: 'draw', icon: <FiEdit3/>, label: 'Draw' },
-                                            { id: 'layers', icon: <FiLayers/>, label: 'Layers' }
-                                        ].map(tab => (
-                                            <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} title={tab.label} className={`group relative w-12 h-12 xl:w-16 xl:h-16 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-300 ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl xl:scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'} ${tab.id === 'draw' && isDrawing ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-200' : ''}`}>
-                                                <span className="text-xl xl:text-2xl">{tab.icon}</span>
-                                                <span className="text-[7px] font-black uppercase tracking-widest hidden xl:block opacity-70 group-hover:opacity-100">{isDrawing && tab.id === 'draw' ? 'Active' : tab.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                )}
                     </div>
 
                     {/* Right Panel: Transaction Suite */}
