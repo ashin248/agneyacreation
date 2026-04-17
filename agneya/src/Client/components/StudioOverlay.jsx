@@ -196,7 +196,6 @@ const Model3D = ({
         <group>
             <group ref={modelGroupRef} 
                 rotation={[0, (previewRotation * Math.PI) / 180, 0]} 
-                position={[0, window.innerWidth < 1280 ? 0.4 : 0, 0]}
             >
                 {scene && (
                     <primitive
@@ -1099,8 +1098,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                 </div>
                                             </div>
                                         ) : (
-                                            /* 3D DESIGN MODE: Interactive Three.js Studio */
-                                            <div id="studio-3d-canvas" className="w-full h-full relative cursor-grab active:cursor-grabbing">
+                                            /* 3D DESIGN MODE: Interactive Three.js Studio with Dynamic Mobile Viewport */
+                                            <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-full'}`}>
                                                 {/* Invisible source for 3D textures */}
                                                 <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
                                                     <div style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
@@ -1113,7 +1112,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             shadows={false} 
                                                             gl={{ alpha: true, powerPreference: 'high-performance' }}
                                                             camera={{ 
-                                                                position: [0, window.innerWidth < 1280 ? -0.2 : 0, 2.5], 
+                                                                position: [0, 0, 2.5], 
                                                                 fov: 45 
                                                             }}
                                                             onCreated={({ gl }) => {
