@@ -1109,7 +1109,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         <Canvas 
                                                             shadows={false} 
                                                             gl={{ alpha: true, powerPreference: 'high-performance' }}
-                                                            camera={{ position: [0, 0, 2.5], fov: 45 }}
+                                                            camera={{ 
+                                                                position: [0, window.innerWidth < 1280 ? -0.2 : 0, 2.5], 
+                                                                fov: 45 
+                                                            }}
                                                             onCreated={({ gl }) => {
                                                                 gl.domElement.addEventListener('webglcontextlost', (e) => {
                                                                     console.error("WebGL Context Lost. Attempting recovery...");
@@ -1369,7 +1372,17 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <textarea rows="2" value={activeObject.text} onChange={(e) => {
                                                 const val = e.target.value;
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('text', val); fabricRef.current.renderAll(); updateTexture(); setActiveObject(prev => ({...prev, text: val}));
+                                                active.set('text', val); 
+                                                fabricRef.current.renderAll(); 
+                                                // Immediate projection sync (fast), but debounced texture sync (slow)
+                                                fastSync(); 
+                                                setActiveObject(prev => ({...prev, text: val}));
+                                                
+                                                // Clear existing timer
+                                                if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
+                                                window.textSyncTimer = setTimeout(() => {
+                                                    updateTexture(true);
+                                                }, 300);
                                             }} className="w-full p-6 bg-white/50 backdrop-blur-sm border-2 border-[#0c0c2a]/10 rounded-3xl text-[14px] font-bold focus:border-[#0c0c2a] transition-all outline-none" placeholder="Enter your text..."></textarea>
                                         </div>
                                     )}
