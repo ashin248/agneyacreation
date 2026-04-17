@@ -510,7 +510,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 uid: active.uid, type: active.type, text: active.text || '',
                 fill: active.fill || '#000000', scaleX: active.scaleX || 1, scaleY: active.scaleY || 1,
                 angle: active.angle || 0, opacity: active.opacity || 1, fontFamily: active.fontFamily || 'Inter',
-                left: active.left, top: active.top
+                left: active.left, top: active.top, text: active.text || ''
             });
             setIsMobileUiMinimized(false);
         };
@@ -1134,11 +1134,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18}/></button>
                                     <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18}/></button>
                                 </div>
-                                 {/* Mockup Redesign: Floating 'TOOLS' Trigger (Responsive) */}
-                                 {designMode === 'self' && (!activeObject || isMobileUiMinimized) && (
-                                    <div className="xl:hidden absolute bottom-24 right-6 z-[200] animate-in fade-in slide-in-from-bottom-4">
-                                        <button onClick={() => { setIsMobileUiMinimized(false); }} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
-                                            <FiShoppingCart/> {activeObject ? 'Edit Object' : 'Open Tools'}
+                                 {/* Mockup Redesign: Floating Commerce Pill (Responsive) */}
+                                 {designMode === 'self' && (
+                                    <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
+                                        <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
+                                            <FiArrowRight/> Buy Now
+                                        </button>
+                                        <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 px-6 bg-[#0c0c2a] text-white rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
+                                            <FiShoppingCart/> {isSubmitting ? '...' : 'Add to Cart'}
                                         </button>
                                     </div>
                                  )}
@@ -1286,118 +1289,133 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             </main>
 
 
-            {/* NEW: MOBILE DASHBOARD (MATCHING USER MOCKUP) */}
+            {/* NEW: PREMIUM MOBILE DASHBOARD (MATCHING USER REQUEST) */}
             {designMode === 'self' && (
-                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-10 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[45%]'}`}>
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-100 rounded-full xl:hidden" />
+                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-3xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-white/50 ${isMobileUiMinimized ? 'translate-y-[82%]' : 'translate-y-0 h-[50%]'}`}>
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-slate-200/50 rounded-full" />
                     
-                    <div className="flex justify-between items-center shrink-0">
+                    <div className="flex justify-between items-center shrink-0 pt-2">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
-                            <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 cursor-pointer">
-                                Design Tools {isMobileUiMinimized ? <FiCornerUpLeft size={12}/> : <FiArrowDown size={12}/>}
+                            <h3 className="text-[11px] font-black text-[#0c0c2a] uppercase tracking-widest flex items-center gap-2 cursor-pointer">
+                                Design Tools {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14}/>}
                             </h3>
-                            <span className="text-[8px] font-bold text-slate-300 uppercase">{activeObject ? activeObject.type : 'Live Canvas'}</span>
+                            <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Studio Canvas'}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                              {activeObject && (
-                                <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-4 py-1.5 bg-slate-100 text-[#0c0c2a] rounded-full text-[8px] font-black uppercase tracking-tight">Deselect</button>
+                                <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-5 py-2 bg-[#0c0c2a]/10 text-[#0c0c2a] rounded-full text-[9px] font-black uppercase tracking-tight active:scale-95 transition-all">Deselect</button>
                             )}
-                            <button onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
-                                {isMobileUiMinimized ? <FiArrowUp size={14}/> : <FiArrowDown size={14}/>}
+                            <button onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)} className="w-10 h-10 rounded-full bg-white/50 backdrop-blur-sm border border-white flex items-center justify-center text-[#0c0c2a] shadow-sm">
+                                {isMobileUiMinimized ? <FiMaximize2 size={16}/> : <FiMinimize2 size={16}/>}
                             </button>
                         </div>
                     </div>
 
                     <div className="flex-1 flex gap-6 overflow-hidden">
-                        {/* Middle Section: Sliders (2 Columns as per mockup) */}
-                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-6 pt-2">
-                            {/* Color Palette (Always visible or contextual) */}
-                            <div className="grid grid-cols-5 gap-2 pb-2">
-                                {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
-                                    <button key={i} onClick={() => { 
-                                        const active = fabricRef.current?.getActiveObject(); 
-                                        if(active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fill: color}); } 
-                                        setBrushColor(color);
-                                    }} className={`aspect-square rounded-full border ${brushColor === color ? 'ring-2 ring-[#0c0c2a] ring-offset-2' : 'border-slate-100'}`} style={{ backgroundColor: color }}></button>
-                                ))}
-                            </div>
-
+                        {/* Middle Section: Tool Hierarchy (Sliders -> Input -> Colors) */}
+                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-8 pb-10">
+                            
                             {activeObject ? (
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                                <div className="space-y-8 pt-2">
+                                    {/* 1. SLIDERS (Size, Rotate, Pos X, Pos Y, Opacity) */}
+                                    <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Size</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
+                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Size</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
                                             <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
                                                 const val = parseFloat(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
                                                 active.set({scaleX: val, scaleY: val}).setCoords();
                                                 fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, scaleX: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Rotate</span><span>{Math.round(activeObject.angle)}°</span></div>
+                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Rotate</span><span>{Math.round(activeObject.angle)}°</span></div>
                                             <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
                                                 active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, angle: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Position X</span><span>{Math.round(activeObject.left)}</span></div>
+                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Position X</span><span>{Math.round(activeObject.left)}</span></div>
                                             <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
                                                 active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, left: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
-                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Position Y</span><span>{Math.round(activeObject.top)}</span></div>
+                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Position Y</span><span>{Math.round(activeObject.top)}</span></div>
                                             <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
                                                 active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, top: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
+                                        </div>
+                                        <div className="space-y-3 col-span-2">
+                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Transparency</span><span>{Math.round(activeObject.opacity * 100)}%</span></div>
+                                            <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, opacity: val}));
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                     </div>
 
-                                    {/* Action Shortcuts */}
-                                    <div className="flex gap-2">
-                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-10 bg-slate-50 text-[8px] font-black uppercase rounded-xl flex items-center justify-center gap-2 border border-slate-100"><FiMove/> Center</button>
-                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-10 bg-rose-50 text-rose-500 text-[8px] font-black uppercase rounded-xl flex items-center justify-center gap-2 border border-rose-100"><FiTrash2/> Delete</button>
+                                    {/* 2. TEXT INPUT (Middle) - Visible only for text layers */}
+                                    {(activeObject.type === 'i-text' || activeObject.type === 'text') && (
+                                        <div className="space-y-4 px-1">
+                                            <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Edit Text Content</div>
+                                            <textarea rows="2" value={activeObject.text} onChange={(e) => {
+                                                const val = e.target.value;
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set('text', val); fabricRef.current.renderAll(); updateTexture(); setActiveObject(prev => ({...prev, text: val}));
+                                            }} className="w-full p-6 bg-white/50 backdrop-blur-sm border-2 border-[#0c0c2a]/10 rounded-3xl text-[14px] font-bold focus:border-[#0c0c2a] transition-all outline-none" placeholder="Enter your text..."></textarea>
+                                        </div>
+                                    )}
+
+                                    {/* 3. COLORS (Bottom) */}
+                                    <div className="space-y-4 px-1">
+                                        <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Theme Palette</div>
+                                        <div className="grid grid-cols-5 gap-3">
+                                            {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
+                                                <button key={i} onClick={() => { 
+                                                    const active = fabricRef.current?.getActiveObject(); 
+                                                    if(active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fill: color}); } 
+                                                    setBrushColor(color);
+                                                }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-white/50'}`} style={{ backgroundColor: color }}></button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Actions */}
+                                    <div className="flex gap-3 pt-4">
+                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-14 bg-white/80 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm"><FiMove size={14}/> Center Object</button>
+                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-14 bg-rose-50/80 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm"><FiTrash2 size={14}/> Remove Layer</button>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-center py-6">
-                                    <FiBox size={32} className="text-slate-100 mb-4"/>
-                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">Select a layer or<br/>upload assets</p>
+                                <div className="h-full flex flex-col items-center justify-center text-center py-10 opacity-30">
+                                    <FiBox size={48} className="text-[#0c0c2a] mb-6 animate-pulse"/>
+                                    <p className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-[0.3em] leading-relaxed">No Selection<br/>Active</p>
                                 </div>
                             )}
                         </div>
 
-                        {/* Right Section: Integrated Navigation Dock (Match Mockup) */}
-                        <div className="w-16 h-full bg-slate-50/50 rounded-3xl p-2 flex flex-col gap-2 border border-slate-100 shrink-0">
+                        {/* Right Section: Integrated Navigation Dock */}
+                        <div className="w-16 h-full bg-white/30 backdrop-blur-md rounded-[32px] p-2 flex flex-col gap-2 border border-white/50 shrink-0 shadow-sm">
                             {[
-                                { id: 'uploads', icon: <FiImage size={18}/> },
-                                { id: 'text', icon: <FiType size={18}/> },
-                                { id: 'stickers', icon: <FiSmile size={18}/> },
-                                { id: 'draw', icon: <FiEdit3 size={18}/> },
-                                { id: 'layers', icon: <FiLayers size={18}/> }
+                                { id: 'uploads', icon: <FiImage size={20}/> },
+                                { id: 'text', icon: <FiType size={20}/> },
+                                { id: 'stickers', icon: <FiSmile size={20}/> },
+                                { id: 'draw', icon: <FiEdit3 size={20}/> },
+                                { id: 'layers', icon: <FiLayers size={20}/> }
                             ].map(tab => (
-                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-2xl flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-lg scale-105' : 'text-slate-300 hover:text-slate-900'}`}>
+                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-[24px] flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-105' : 'text-[#0c0c2a]/40 hover:text-[#0c0c2a]'}`}>
                                     {tab.icon}
                                 </button>
                             ))}
                         </div>
-                    </div>
-
-                    {/* Dashboard Footer: Checkout Buttons (Match Mockup) */}
-                    <div className="grid grid-cols-2 gap-3 pt-2">
-                        <button onClick={() => handleFinalSubmit(true)} className="h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
-                            <FiArrowRight/> Buy Now
-                        </button>
-                        <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 bg-[#0c0c2a] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
-                            <FiShoppingCart/> Add To Cart
-                        </button>
                     </div>
                 </div>
             )}
