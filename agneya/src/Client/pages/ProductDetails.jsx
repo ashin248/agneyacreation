@@ -97,7 +97,7 @@ const ProductDetails = () => {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
                 <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">Syncing Operational Matrix...</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">Loading Product...</p>
             </div>
         );
     }
@@ -105,7 +105,7 @@ const ProductDetails = () => {
     if (!product) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
-                <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Asset Not Found</h2>
+                <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Product Not Found</h2>
                 <button onClick={() => navigate('/shop')} className="px-8 py-3 bg-gray-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs">Return to Catalog</button>
             </div>
         );
@@ -291,14 +291,14 @@ const ProductDetails = () => {
                         <div className="space-y-3 md:space-y-4">
                             <div className="flex items-center gap-3">
                                 <span className="px-3 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-md">
-                                    {product.category || 'Premium Asset'}
+                                    {product.category || 'Premium Product'}
                                 </span>
                             </div>
                             <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none">
                                 {product.name}
                             </h1>
                             <p className="hidden md:block text-gray-500 font-medium leading-relaxed max-w-xl">
-                                {product.description || 'Professional-grade asset engineered for high-fidelity production and superior aesthetic dominance.'}
+                                {product.description || 'High-quality product designed for lasting durability and style.'}
                             </p>
                         </div>
 
@@ -365,7 +365,7 @@ const ProductDetails = () => {
                                 {/* Size Selection */}
                                 {[...new Set(product.variations.filter(v => !selectedColor || v.color === selectedColor).map(v => v.size))].filter(Boolean).length > 0 && (
                                     <div className="space-y-3">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Select Dimension</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Select Size</label>
                                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                             {[...new Set(product.variations.filter(v => !selectedColor || v.color === selectedColor).map(v => v.size))].map((size, i) => (
                                                 <button 
@@ -444,7 +444,7 @@ const ProductDetails = () => {
                                         }}
                                         className="flex-1 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-3 px-4"
                                     >
-                                        <ShoppingCart size={18} /> Add to Transaction
+                                        <ShoppingCart size={18} /> Add to Cart
                                     </button>
                             </div>
 
@@ -459,7 +459,7 @@ const ProductDetails = () => {
                                                     })} 
                                                     className="flex-1 h-14 w-full bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-black hover:-translate-y-1 transition-all active:scale-95"
                                                 >
-                                                    <Palette size={18} /> Access Interactive Studio
+                                                    <Palette size={18} /> Design Your Own
                                                 </button>
                                             )}
                                             
@@ -475,7 +475,7 @@ const ProductDetails = () => {
                                                     : 'bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50'
                                                 }`}
                                             >
-                                                <Upload size={16} /> {product.customizationType === 'None' ? 'Proceed to Design Assistance' : 'Custom Request Hub'}
+                                                <Upload size={16} /> {product.customizationType === 'None' ? 'Request Custom Quote' : 'Request Custom Quote'}
                                             </button>
                                         </div>
                                     )}
@@ -503,11 +503,11 @@ const ProductDetails = () => {
                                         }}
                                         className="w-full bg-slate-50 border-2 border-slate-200 text-slate-900 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:border-indigo-600 transition-all active:scale-95 flex items-center justify-center gap-3"
                                     >
-                                        <Building2 size={18} /> Order Wholesale Batch
+                                        <Building2 size={18} /> Bulk Order
                                     </button>
                                     {product.isCustomizable && (
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
-                                            💡 For <span className="text-indigo-600">Customized Bulk Orders</span>, use the Initialize Custom Studio path above.
+                                            💡 For <span className="text-indigo-600">Customized Bulk Orders</span>, use the Design Your Own button above.
                                         </p>
                                     )}
                                 </div>
@@ -517,10 +517,10 @@ const ProductDetails = () => {
                         {/* Trust Badges */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-10 border-t border-gray-100">
                             {[
-                                { icon: <Truck size={20}/>, label: 'Express Sync' },
-                                { icon: <ShieldCheck size={20}/>, label: 'Quality Vault' },
-                                { icon: <RotateCcw size={20}/>, label: 'Secure Logic' },
-                                { icon: <Share2 size={20}/>, label: 'Share Asset' }
+                                { icon: <Truck size={20}/>, label: 'Fast Delivery' },
+                                { icon: <ShieldCheck size={20}/>, label: 'Quality Check' },
+                                { icon: <RotateCcw size={20}/>, label: 'Easy Returns' },
+                                { icon: <Share2 size={20}/>, label: 'Share Link' }
                             ].map((badge, idx) => (
                                 <div key={idx} className="flex flex-col items-center gap-3 text-center group cursor-pointer">
                                     <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all">
@@ -538,8 +538,8 @@ const ProductDetails = () => {
                     <div className="mt-32 pt-16 border-t border-gray-100">
                         <div className="flex items-center justify-between mb-12">
                             <div className="space-y-2">
-                                <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Related Architecture</h3>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Curated assets for your production</p>
+                                <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Recommended</h3>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Other products you might like</p>
                             </div>
                             <button onClick={() => navigate('/shop')} className="px-6 py-3 bg-gray-50 text-gray-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-50 hover:text-indigo-600 transition-all border border-transparent hover:border-indigo-100">
                                 View Full Catalog
