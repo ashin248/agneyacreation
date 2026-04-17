@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { X, Phone, MessageSquare, ArrowRight, Loader2 } from "lucide-react";
+import { X, Phone, MessageSquare, ArrowRight, Loader2, CheckCircle } from "lucide-react";
 import OnboardingModal from "./OnboardingModal";
 
 const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
@@ -57,18 +57,25 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     }
   };
 
+  const [isSuccess, setIsSuccess] = useState(false);
+
   useEffect(() => {
-    if (userData && !loading && step === 2) {
-        // Successful login detected
+    if (userData && !loading && step === 2 && !isSuccess) {
+        setIsSuccess(true);
         const isIncomplete = !userData.name || !userData.email || !userData.addresses || userData.addresses.length === 0;
-        if (isIncomplete) {
-            setShowOnboarding(true);
-        } else {
-            if (onLoginSuccess) onLoginSuccess();
-            else if (onClose) onClose();
-        }
+        
+        const timer = setTimeout(() => {
+            if (isIncomplete) {
+                setShowOnboarding(true);
+            } else {
+                if (onLoginSuccess) onLoginSuccess();
+                else if (onClose) onClose();
+            }
+        }, 3000);
+        
+        return () => clearTimeout(timer);
     }
-  }, [userData, loading, step]);
+  }, [userData, loading, step, isSuccess]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
@@ -130,11 +137,16 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
               <button
                 type="submit"
-                disabled={loading || phoneNumber.length < 10}
-                className="w-full bg-indigo-600 hover:bg-slate-900 disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-indigo-200 flex items-center justify-center gap-2 group"
+                disabled={loading || phoneNumber.length < 10 || isSuccess}
+                className={`w-full ${isSuccess ? 'bg-emerald-500' : 'bg-indigo-600 hover:bg-slate-900'} disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 group`}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
+                ) : isSuccess ? (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    Success!
+                  </>
                 ) : (
                   <>
                     Send OTP
@@ -156,11 +168,16 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
               <button
                 type="submit"
-                disabled={loading || otp.length < 6}
-                className="w-full bg-indigo-600 hover:bg-slate-900 disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg hover:shadow-indigo-200 flex items-center justify-center gap-2"
+                disabled={loading || otp.length < 6 || isSuccess}
+                className={`w-full ${isSuccess ? 'bg-emerald-500' : 'bg-indigo-600 hover:bg-slate-900'} disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2`}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
+                ) : isSuccess ? (
+                   <>
+                    <CheckCircle className="w-5 h-5" />
+                    Verified Successfully!
+                  </>
                 ) : (
                   "Verify & Login"
                 )}

@@ -178,7 +178,7 @@ const OrderCard = ({ order, onTrack }) => {
   const firstItem = order.items?.[0];
   const orderDate = order.createdAt 
     ? new Date(order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
-    : 'PROCESSING LOG';
+    : 'FETCHING DATE';
 
   // Digital Asset Path Resolver: Ensures relative asset paths are correctly mapped to their source origins
   const resolveImagePath = (path) => {
@@ -217,7 +217,7 @@ const OrderCard = ({ order, onTrack }) => {
             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-500 shadow-sm ${badge.bg} ${badge.text} ${badge.border}`}>
               {(order.status === 'Pending' || order.orderStatus === 'Pending') 
                 ? 'Delivery within 3 days' 
-                : (order.status === 'Approved' ? 'PRODUCTION STARTED' : (order.displayStatus || order.status || order.orderStatus || 'SYNC PENDING'))}
+                : (order.displayStatus || order.status || order.orderStatus || 'PENDING'))}
             </span>
             <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
               <div className="w-1 h-1 rounded-full bg-slate-400"></div>
@@ -304,7 +304,7 @@ const TrackOrder = () => {
                     ];
                 }
             } catch (e) {
-                console.error("Failed to sync user lifetime orders matrix");
+                console.error("Failed to sync customer orders");
             }
         }
 
@@ -378,13 +378,13 @@ const TrackOrder = () => {
             <h1 className="text-4xl md:text-5xl font-black text-gray-900 uppercase tracking-tighter italic">Track Your Order</h1>
             <p className="text-indigo-500 font-black text-[10px] uppercase mt-2 tracking-[0.3em] flex items-center gap-2">
                <span className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-pulse"></span>
-               Order Status & Logistics History
+               Order Details
             </p>
           </div>
           {dashboardOrders.length > 0 && (
             <button 
               onClick={() => {
-                if(window.confirm('Wipe all browser-bound tracking history? Metadata will remain on servers.')) {
+                if(window.confirm('Remove saved orders from this browser?')) {
                   localStorage.removeItem('myGuestOrders');
                   localStorage.removeItem('myCustomDesigns');
                   setDashboardOrders([]);
@@ -392,7 +392,7 @@ const TrackOrder = () => {
               }}
               className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-50 px-4 py-2 rounded-xl hover:bg-red-500 hover:text-white transition-all border border-red-100"
             >
-              Clear Local Cache
+              Clear History
             </button>
           )}
         </div>
@@ -402,7 +402,7 @@ const TrackOrder = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/30 rounded-bl-full -mr-8 -mt-8"></div>
             <div className="relative z-10">
                 <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <Package className="w-5 h-5 text-indigo-600" /> Search Your Order
+                    <Package className="w-5 h-5 text-indigo-600" /> Track With Order ID
                 </h2>
                 <form onSubmit={handleManualSearch} className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <input 
@@ -424,12 +424,12 @@ const TrackOrder = () => {
                         disabled={hydrating}
                         className="bg-indigo-600 text-white rounded-2xl px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-900 transition-all shadow-lg shadow-indigo-200 active:scale-95 disabled:opacity-50"
                     >
-                        Initialize Search
+                        Track Order
                     </button>
                 </form>
                 {searchError && (
                     <p className="mt-4 text-[10px] font-black text-rose-500 uppercase tracking-tight flex items-center gap-2">
-                        <X className="w-3" /> {searchError}
+                        <X className="w-3" /> No order found with these details.
                     </p>
                 )}
             </div>
@@ -450,7 +450,7 @@ const TrackOrder = () => {
         {hydrating ? (
           <div className="text-center py-20 flex flex-col items-center gap-6">
             <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Synchronizing Asset Matrix...</p>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Loading Orders...</p>
           </div>
         ) : filteredOrders.length > 0 ? (
           <div className="space-y-4">
