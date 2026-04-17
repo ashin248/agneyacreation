@@ -1,10 +1,26 @@
 const admin = require('firebase-admin');
+const path = require('path');
 
-// Initialize Firebase Admin (Stateless, only requires Project ID for token verification)
+// Initialize Firebase Admin with maximum security and cross-environment compatibility
 if (!admin.apps.length) {
-    admin.initializeApp({
-        projectId: "agneya"
-    });
+    try {
+        const serviceAccountPath = path.join(__dirname, '../agneya-firebase-adminsdk-fbsvc-5c4cdbd2f1.json');
+        
+        // Use service account if available, otherwise fallback to project ID (Google Default)
+        if (require('fs').existsSync(serviceAccountPath)) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccountPath)
+            });
+            console.log('✅ Firebase Admin initialized with Service Account Cert.');
+        } else {
+            admin.initializeApp({
+                projectId: "agneya"
+            });
+            console.log('⚠️  Firebase Admin initialized with Project ID only (Fallback).');
+        }
+    } catch (err) {
+        console.error('❌ Firebase Admin Init Error:', err.message);
+    }
 }
 
 exports.protectUser = async (req, res, next) => {
