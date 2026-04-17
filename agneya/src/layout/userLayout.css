@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #6366f1;
+  --text-dark: #111827;
+  --text-light: #6b7280;
+  --bg-white: #ffffff;
+  --bg-gray: #f9fafb;
+  --banner-blue: #0f172a;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.userNavBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 5%;
+  background: var(--bg-white);
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+}
+
+.AgneyaLogo {
+  height: 40px;
+  cursor: pointer;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+.navLinks a {
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.navLinks a:hover {
+  color: var(--primary-color);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.cartIcon {
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  position: relative;
+}
+
+.adminLoginBtn {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.adminLoginBtn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Shipping Banner */
+.shippingBanner {
+  background: var(--banner-blue);
+  color: white;
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.shippingProgressBar {
+  width: 100px;
+  height: 6px;
+  background: #334155;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-left: 0.5rem;
+}
+
+.shippingProgressFill {
+  height: 100%;
+  background: #22c55e;
+  width: 60%;
+}
+
+.freeShippingText span {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.mainContent {
+  min-height: 100vh;
+}
