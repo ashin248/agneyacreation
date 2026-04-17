@@ -254,7 +254,7 @@ export const MODELS = {
     defaultScale: 1.5,
     defaultRotation: [0, 0, 0],
     projectionType: 'planar',
-    printableMeshes: ['Base_Base_Texture_0', 'Cup_Cup_Texture_0', 'Base', 'Cup', 'trophy_base', 'trophy_cup', 'Wood_Base', 'Gold_Cup']
+    printableMeshes: ['Base_Base Texture_0', 'Cup_Cup Texture_0', 'Handle_Handles Texture_0', 'Base', 'Cup']
   }
 };
 
