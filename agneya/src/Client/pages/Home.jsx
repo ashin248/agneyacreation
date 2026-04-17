@@ -69,7 +69,7 @@ const Home = () => {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-white gap-6">
         <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">Synchronizing Global Collections...</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">Loading Collections...</p>
       </div>
     );
   }
@@ -162,7 +162,7 @@ const Home = () => {
                                   }}
                                   className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
                               >
-                                  Personalize Asset
+                                  Personalize Design
                               </button>
                           )}
                       </div>
@@ -176,7 +176,7 @@ const Home = () => {
         {heroBanner ? (
            <img 
              src={heroBanner.imageUrl || ''} 
-             alt="Luxury Print Matrix" 
+             alt="Agneya Printing" 
              className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105"
            />
         ) : (
@@ -190,7 +190,7 @@ const Home = () => {
         <div className="relative z-10 text-center max-w-5xl mx-auto space-y-10">
           <div className="flex items-center justify-center gap-4 mb-4">
              <div className="h-px w-8 bg-indigo-500"></div>
-             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Next-Gen Printing Solutions</span>
+             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Premium Printing Solutions</span>
              <div className="h-px w-8 bg-indigo-500"></div>
           </div>
           
@@ -207,7 +207,7 @@ const Home = () => {
                   Design Studio <FiEdit3 className="transition-transform group-hover:rotate-12" />
               </button>
               <a href="#three-pillars" className="group px-12 py-5 bg-white/5 backdrop-blur-xl text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-full border border-white/10 hover:bg-white/10 transition-all flex items-center gap-4 active:scale-95">
-                  Explore Hub <FiArrowRight className="transition-transform group-hover:translate-x-1" />
+                  Explore Collections <FiArrowRight className="transition-transform group-hover:translate-x-1" />
               </a>
           </div>
         </div>
@@ -216,8 +216,8 @@ const Home = () => {
       {/* 2. THE THREE PILLARS (STRATEGY ENTRY) */}
       <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-16 md:mt-32">
         <div className="text-center mb-10 md:mb-16 space-y-2">
-            <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">Production Routes</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select your protocol</p>
+            <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">Our Services</h2>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Choose Your Way</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -240,7 +240,7 @@ const Home = () => {
                         <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> Neural Background Removal</li>
                     </ul>
                     <Link to="/custom-design" className="inline-flex items-center gap-3 text-indigo-600 font-black text-xs uppercase tracking-widest group/btn">
-                        Enter Design Matrix <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
+                        Start Designing <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
                     </Link>
                 </div>
             </div>
@@ -254,8 +254,8 @@ const Home = () => {
                     <div className="w-16 h-16 bg-white rounded-[28px] flex items-center justify-center text-gray-900 shadow-xl mb-8">
                         <FiShoppingBag size={24} />
                     </div>
-                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-4">Curated Assets</h3>
-                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Explore our strictly selected pre-designed templates tailored for modern aesthetic dominance.</p>
+                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-4">Ready-made Collections</h3>
+                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Explore our curated pre-designed templates tailored for a modern look.</p>
                 </div>
                 <div className="relative z-10">
                     <ul className="text-[10px] font-black uppercase text-gray-500 tracking-widest space-y-3 mb-10">
@@ -306,14 +306,14 @@ const Home = () => {
             <h2 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Trending Assets</h2>
           </div>
           <Link to="/shop" className="px-10 py-4 bg-gray-50 text-gray-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-gray-900 hover:text-white transition-all shadow-sm">
-            Synchronize Full Catalog
+            View Full Catalog
           </Link>
         </div>
 
         {products.length === 0 ? (
           <div className="text-center py-20 bg-gray-50 rounded-[40px] border border-gray-100 flex flex-col items-center">
              <FiZap className="w-10 h-10 text-gray-200 mb-4 animate-pulse" />
-             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Inventory Archiving in Progress...</p>
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Updating Inventory...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -339,15 +339,15 @@ const Home = () => {
               
               <div className="text-center space-y-2 relative z-10">
                   <h4 className="text-6xl font-black text-white tracking-tighter">48H</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Fast-Sync Dispatch</p>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Fast Shipping</p>
               </div>
               <div className="text-center space-y-2 relative z-10">
                   <h4 className="text-6xl font-black text-white tracking-tighter">10K+</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Matrix Commits</p>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Successful Designs</p>
               </div>
               <div className="text-center space-y-2 relative z-10">
                   <h4 className="text-6xl font-black text-white tracking-tighter">99.9%</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Precision Fidelity</p>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Print Quality</p>
               </div>
           </div>
       </section>

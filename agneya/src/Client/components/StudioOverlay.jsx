@@ -1041,12 +1041,12 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                         }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-bold text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100"><FiRepeat size={14}/> Clone</button>
                                     </div>
 
-                                    <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center gap-3 font-bold text-[10px] uppercase tracking-widest border border-rose-100 hover:bg-rose-100"><FiTrash2 size={16}/> Wipe Node</button>
+                                    <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center gap-3 font-bold text-[10px] uppercase tracking-widest border border-rose-100 hover:bg-rose-100"><FiTrash2 size={16}/> Delete Object</button>
                                 </div>
                             ) : (
                                 <div className="flex-1 flex flex-col items-center justify-center text-center p-6 bg-slate-50/50 rounded-[32px] border border-dashed border-slate-200">
                                     <FiBox size={32} className="text-slate-200 mb-6"/>
-                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] leading-relaxed">Select Interface Object<br/>to Configure</span>
+                                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] leading-relaxed">Select Object<br/>to Configure</span>
                                 </div>
                             )}
                         </div>
@@ -1136,11 +1136,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                 <div className="absolute xl:top-1/2 xl:-mt-10 xl:right-6 xl:-translate-y-1/2 fixed bottom-28 left-1/2 -translate-x-1/2 xl:translate-x-0 xl:left-auto z-[200] pointer-events-none w-[90%] xl:w-auto">
                                     <div className="flex xl:flex-col items-center justify-between xl:justify-center gap-2 xl:gap-3 p-2 xl:p-3 bg-white/95 backdrop-blur-2xl xl:rounded-[40px] rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white pointer-events-auto">
                                         {[
-                                            { id: 'uploads', icon: <FiImage/>, label: 'Media' },
-                                            { id: 'text', icon: <FiType/>, label: 'Type' },
-                                            { id: 'stickers', icon: <FiSmile/>, label: 'Assets' },
-                                            { id: 'draw', icon: <FiEdit3/>, label: 'Ink' },
-                                            { id: 'layers', icon: <FiLayers/>, label: 'Matrix' }
+                                            { id: 'uploads', icon: <FiImage/>, label: 'Uploads' },
+                                            { id: 'text', icon: <FiType/>, label: 'Text' },
+                                            { id: 'stickers', icon: <FiSmile/>, label: 'Stickers' },
+                                            { id: 'draw', icon: <FiEdit3/>, label: 'Draw' },
+                                            { id: 'layers', icon: <FiLayers/>, label: 'Layers' }
                                         ].map(tab => (
                                             <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} title={tab.label} className={`group relative w-12 h-12 xl:w-16 xl:h-16 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-300 ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl xl:scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'} ${tab.id === 'draw' && isDrawing ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-200' : ''}`}>
                                                 <span className="text-xl xl:text-2xl">{tab.icon}</span>
@@ -1156,7 +1156,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     <div className="hidden xl:flex w-[320px] flex-col gap-6">
                         <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Transaction Suite</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Order Summary</h4>
                             </div>
                             
                             <div className="p-6 bg-slate-50/80 rounded-[32px] space-y-4">
@@ -1203,7 +1203,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     <FiArrowRight size={18}/> Buy Now
                                 </button>
                                 <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] flex items-center justify-center gap-4 font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50">
-                                    {isSubmitting ? <span className="animate-pulse">Locking Matrix...</span> : <><FiShoppingCart size={18}/> Cart Hub</>}
+                                    {isSubmitting ? <span className="animate-pulse">Syncing...</span> : <><FiShoppingCart size={18}/> Add to Cart</>}
                                 </button>
                                 
                                 <button onClick={handleDiscardDraft} className="w-full text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-rose-500 transition-colors">Abort Custom Design</button>
@@ -1278,7 +1278,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     disabled={isSubmitting} 
                                     className="h-12 px-8 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all disabled:opacity-50 flex items-center gap-3 border border-slate-200"
                                 >
-                                    {isSubmitting ? 'Syncing...' : <>Add to Cart Hub <FiShoppingCart size={14}/></>}
+                                    {isSubmitting ? 'Syncing...' : <>Add to Cart <FiShoppingCart size={14}/></>}
                                 </button>
                                 <button 
                                     onClick={() => handleFinalSubmit(true)} 
@@ -1296,9 +1296,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
             {/* Sub-panels (Contextual Modals) */}
             {activeTab === 'uploads' && (
-                <div className="fixed bottom-[160px] left-1/2 -translate-x-1/2 w-[90%] max-w-[500px] h-[350px] bg-white rounded-[48px] shadow-2xl p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-8">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Media_Registry</h4>
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Assets</h4>
                         <div className="flex items-center gap-4">
                             {uploadedAssets.length > 0 && <button onClick={handlePurgeGallery} className="text-[9px] font-bold text-rose-500 uppercase tracking-widest hover:underline">Purge All</button>}
                             <button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100"><FiX size={18} /></button>
@@ -1312,7 +1312,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         </div>
                         <button onClick={handleRemoveBg} disabled={isRemovingBg} className="h-32 bg-slate-50 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:bg-[#0c0c2a] hover:text-white transition-all group">
                             {isRemovingBg ? <div className="w-6 h-6 border-2 border-[#0c0c2a] border-t-transparent rounded-full animate-spin"></div> : <FiZap size={24} className="group-hover:animate-pulse" />}
-                            <span className="text-[9px] font-black uppercase tracking-widest">AI BG Remove</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest">Remove Background</span>
                         </button>
                     </div>
                     {uploadedAssets.length > 0 && (
@@ -1354,8 +1354,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             )}
 
             {activeTab === 'draw' && (
-                <div className="fixed bottom-[160px] left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-white rounded-[48px] shadow-2xl p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-8">
-                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Ink_Processor</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX/></button></div>
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX/></button></div>
                     <div className="space-y-10">
                         <div className="space-y-6">
                             <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>Brush Diameter</span><span>{brushSize}px</span></div>
@@ -1372,18 +1372,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             )}
 
             {activeTab === 'text' && (
-                <div className="fixed bottom-[160px] left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] bg-white rounded-[48px] shadow-2xl p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-8">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Type_Presets</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Text</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="flex flex-col gap-4">
-                        <button onClick={() => { addText('heading'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline Node <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
-                        <button onClick={() => { addText('body'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Content Node <FiPlus size={18} /></button>
+                        <button onClick={() => { addText('heading'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
+                        <button onClick={() => { addText('body'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Sub-headline <FiPlus size={18} /></button>
                     </div>
                 </div>
             )}
 
             {activeTab === 'stickers' && (
-                <div className="fixed bottom-[160px] left-1/2 -translate-x-1/2 w-[90%] max-w-[500px] h-[350px] bg-white rounded-[48px] shadow-2xl p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-8">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Asset_Registry</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="grid grid-cols-4 gap-5">
                         {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{__html: s.svg}} />)}
                     </div>
@@ -1391,8 +1391,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             )}
 
             {activeTab === 'layers' && (
-                <div className="fixed bottom-[160px] left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-[400px] bg-white rounded-[48px] shadow-2xl p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-8 flex flex-col">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Object_Matrix</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[450px] xl:h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
+                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Layers</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
                     <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-2">
                         {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24}/><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> : 
                         canvasObjects.map((obj, i) => (
@@ -1414,9 +1414,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 </div>
             )}
 
-            <footer className="h-10 bg-white/50 backdrop-blur-sm border-t border-slate-100 flex items-center px-10 justify-between shrink-0 font-mono text-[8px] uppercase tracking-widest text-slate-400">
-                <div className="flex gap-6"><span>Agneya_Studio_v4.2</span><span>Ready_State</span></div>
-                <div className="flex gap-6"><span>Latency: 0.12ms</span><span>©2026_AGNEYA_CORE</span></div>
+            <footer className="h-8 bg-white/50 backdrop-blur-sm border-t border-slate-100 flex items-center px-10 justify-center shrink-0 font-sans text-[8px] uppercase tracking-widest text-slate-300">
+                <div className="flex gap-6"><span>©2026 Agneya Design Studio</span></div>
             </footer>
         </div>
     );

@@ -43,7 +43,7 @@ const Shop = () => {
     const [wishlist, setWishlist] = useState([]);
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [sortBy, setSortBy] = useState('New_Deployments');
+    const [sortBy, setSortBy] = useState('Newest');
 
     const fetchData = async (isSilent = false) => {
         try {
@@ -149,7 +149,7 @@ const Shop = () => {
     }).sort((a, b) => {
         if (sortBy === 'Price: Low to High') return (a.discountPrice || a.basePrice) - (b.discountPrice || b.basePrice);
         if (sortBy === 'Price: High to Low') return (b.discountPrice || b.basePrice) - (a.discountPrice || a.basePrice);
-        if (sortBy === 'New_Deployments') return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sortBy === 'Newest') return new Date(b.createdAt) - new Date(a.createdAt);
         return 0;
     });
 
@@ -157,7 +157,7 @@ const Shop = () => {
         return (
             <div className="h-[100dvh] flex flex-col items-center justify-center bg-[#F8FAFC] gap-6">
                 <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 animate-pulse">Loading Storefront...</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 animate-pulse">Checking Storefront...</p>
             </div>
         );
     }
@@ -246,7 +246,7 @@ const Shop = () => {
                             className="w-full md:w-auto flex-shrink-0 flex items-center justify-center gap-3 px-8 h-12 md:h-14 bg-slate-950 text-white rounded-[1.25rem] md:rounded-[1.5rem] shadow-lg hover:bg-indigo-600 transition-all hover:-translate-y-0.5 active:scale-95 border border-slate-800"
                         >
                             <FiSliders size={18}/>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] ml-1">Advanced Query</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] ml-1">Filters</span>
                         </button>
                     </div>
 
@@ -284,14 +284,14 @@ const Shop = () => {
                             <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 shadow-inner">
                                 <FiGrid size={20}/>
                             </div>
-                            <h3 className="text-2xl md:text-3xl font-black text-slate-950 uppercase tracking-tighter italic">Resource Catalog</h3>
+                            <h3 className="text-2xl md:text-3xl font-black text-slate-950 uppercase tracking-tighter italic">Product Catalog</h3>
                         </div>
-                        <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-14">Optimized Deployment: {filteredProducts.length} Neural Nodes identified</p>
+                        <p className="text-[10px] md:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-14">{filteredProducts.length} Items available</p>
                     </div>
                     
                     <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                         <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-4">Active Protocol:</span>
-                         <span className="text-[9px] font-black text-indigo-600 uppercase bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">Live_Production</span>
+                         <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-4">Daily Update:</span>
+                         <span className="text-[9px] font-black text-indigo-600 uppercase bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">Live Inventory</span>
                     </div>
                 </div>
 
@@ -302,8 +302,8 @@ const Shop = () => {
                             <FiShoppingBag size={32} />
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.4em]">Grid Empty</h3>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">System parameters returned zero matches.<br/>Adjust filters to bypass null output.</p>
+                            <h3 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.4em]">Empty</h3>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">No matches found for your search.<br/>Try adjusting your filters.</p>
                         </div>
                     </div>
                 ) : (
@@ -330,9 +330,9 @@ const Shop = () => {
                         <div className="space-y-1 text-left">
                             <div className="flex items-center gap-2 text-indigo-600">
                                 <FiSliders className="w-4 h-4" />
-                                <h3 className="text-xl font-black text-slate-950 uppercase tracking-tighter italic">Refinement</h3>
+                                <h3 className="text-xl font-black text-slate-950 uppercase tracking-tighter italic">Filters</h3>
                             </div>
-                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Query Logic Control</p>
+                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Refine your view</p>
                         </div>
                         <button onClick={() => setIsFilterOpen(false)} className="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full hover:bg-rose-500 hover:border-rose-500 border border-slate-200 hover:text-white transition-all text-slate-500 active:scale-95 shadow-sm">
                             <FiX size={18} />
@@ -355,11 +355,10 @@ const Shop = () => {
                             </div>
                         </div>
 
-                        {/* Sorting */}
                         <div className="space-y-4">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-950 ml-2">Sorting Protocol</p>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-950 ml-2">Sort By</p>
                             <div className="grid gap-3">
-                                {['Popularity', 'New_Deployments', 'Price: Low to High', 'Price: High to Low'].map((option) => {
+                                {['Popularity', 'Newest', 'Price: Low to High', 'Price: High to Low'].map((option) => {
                                     const isActive = sortBy === option;
                                     return (
                                         <button 
@@ -377,11 +376,11 @@ const Shop = () => {
                     </div>
 
                     <div className="mt-8 flex flex-col gap-3 pt-6">
-                        <button onClick={() => setIsFilterOpen(false)} className="w-full py-5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.25rem] hover:bg-slate-950 transition-all shadow-xl hover:shadow-none active:scale-95">
-                            Execute Query
+                        <button onClick={() => setIsFilterOpen(false)} className="w-full py-5 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.25rem] hover:bg-slate-900 transition-all shadow-xl hover:shadow-none active:scale-95">
+                            Show Results
                         </button>
                         <button onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, 10000]); setIsFilterOpen(false); }} className="w-full py-4 flex items-center justify-center gap-2 bg-slate-50 text-rose-500 border border-slate-200 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.25rem] hover:bg-rose-50 hover:border-rose-200 transition-all active:scale-95">
-                            <FiRotateCcw size={14} /> Clear Parameters
+                            <FiRotateCcw size={14} /> Clear Filters
                         </button>
                     </div>
                 </div>
