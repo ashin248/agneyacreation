@@ -301,6 +301,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
     const [activeStudioView, setActiveStudioView] = useState('3D'); // '2D' or '3D'
+    const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
 
 
 
@@ -511,6 +512,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 angle: active.angle || 0, opacity: active.opacity || 1, fontFamily: active.fontFamily || 'Inter',
                 left: active.left, top: active.top
             });
+            setIsMobileUiMinimized(false);
         };
 
         canvas.on('selection:created', handleSelection);
@@ -1133,10 +1135,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18}/></button>
                                 </div>
                                                                  {/* Mockup Redesign: Floating 'TOOLS' Trigger (Responsive) */}
-                                 {designMode === 'self' && !activeObject && (
-                                    <div className="xl:hidden absolute bottom-24 right-6 z-[200]">
-                                        <button onClick={() => setActiveTab('uploads')} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
-                                            <FiShoppingCart/> Tools
+                                 {designMode === 'self' && (!activeObject || isMobileUiMinimized) && (
+                                    <div className="xl:hidden absolute bottom-24 right-6 z-[200] animate-in fade-in slide-in-from-bottom-4">
+                                        <button onClick={() => { setActiveTab('uploads'); setIsMobileUiMinimized(false); }} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
+                                            <FiShoppingCart/> {activeObject ? 'Edit Object' : 'Tools'}
                                         </button>
                                     </div>
                                  )}
@@ -1306,15 +1308,24 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
             {/* NEW: MOBILE DASHBOARD (MATCHING USER MOCKUP) */}
             {designMode === 'self' && (
-                <div className="xl:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-10 flex flex-col gap-6 z-[600] animate-in slide-in-from-bottom-full duration-700 h-[45%]">
+                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-10 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[45%]'}`}>
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-100 rounded-full xl:hidden" />
+                    
                     <div className="flex justify-between items-center shrink-0">
-                        <div className="flex flex-col">
-                            <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-widest">Design Tools</h3>
+                        <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
+                            <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2 cursor-pointer">
+                                Design Tools {isMobileUiMinimized ? <FiCornerUpLeft size={12}/> : <FiArrowDown size={12}/>}
+                            </h3>
                             <span className="text-[8px] font-bold text-slate-300 uppercase">{activeObject ? activeObject.type : 'Live Canvas'}</span>
                         </div>
-                        {activeObject && (
-                            <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-4 py-1.5 bg-slate-100 text-[#0c0c2a] rounded-full text-[8px] font-black uppercase tracking-tight">Deselect Layer</button>
-                        )}
+                        <div className="flex items-center gap-2">
+                             {activeObject && (
+                                <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-4 py-1.5 bg-slate-100 text-[#0c0c2a] rounded-full text-[8px] font-black uppercase tracking-tight">Deselect</button>
+                            )}
+                            <button onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
+                                {isMobileUiMinimized ? <FiArrowUp size={14}/> : <FiArrowDown size={14}/>}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex-1 flex gap-6 overflow-hidden">
