@@ -919,9 +919,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 </div>
             </header>
 
-            <main className="flex-1 relative flex flex-col xl:flex-row px-4 sm:px-10 pb-4 sm:pb-10 gap-4 sm:gap-8 min-h-0 min-w-0">
+            <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0">
                 {designMode === 'self' ? (
                     <>
+                    {/* Variation Selector - Floating at top */}
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
                         {variations.map((v, i) => (
                             <div key={v.id} className="flex items-center">
@@ -938,7 +939,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             <FiPlus size={14} />
                         </button>
                     </div>
-                    {/* Left Panel: Contextual Properties */}
+
+                    {/* Left Panel: Desktop Sidebar (Contextual Properties) */}
                     <div className="hidden xl:flex w-[320px] flex-col gap-6">
                         <div className="floating-card flex-1 p-8 flex flex-col gap-8 overflow-y-auto no-scrollbar">
                             <div className="flex justify-between items-center">
@@ -1130,6 +1132,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18}/></button>
                                     <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18}/></button>
                                 </div>
+                                                                 {/* Mockup Redesign: Floating 'TOOLS' Trigger (Responsive) */}
+                                 {designMode === 'self' && !activeObject && (
+                                    <div className="xl:hidden absolute bottom-24 right-6 z-[200]">
+                                        <button onClick={() => setActiveTab('uploads')} className="h-12 px-6 bg-[#0c0c2a] text-white rounded-full shadow-2xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest">
+                                            <FiShoppingCart/> Tools
+                                        </button>
+                                    </div>
+                                 )}
                                 
                                 {/* Floating Navigation Dock (Responsive: Right sidebar on Desktop, Bottom bar on Mobile) */}
                                 {designMode === 'self' && (
@@ -1294,127 +1304,114 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             </main>
 
 
-            {/* Sub-panels (Contextual Modals) */}
-            {activeTab === 'uploads' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Assets</h4>
-                        <div className="flex items-center gap-4">
-                            {uploadedAssets.length > 0 && <button onClick={handlePurgeGallery} className="text-[9px] font-bold text-rose-500 uppercase tracking-widest hover:underline">Purge All</button>}
-                            <button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100"><FiX size={18} /></button>
+            {/* NEW: MOBILE DASHBOARD (MATCHING USER MOCKUP) */}
+            {designMode === 'self' && (
+                <div className="xl:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-10 flex flex-col gap-6 z-[600] animate-in slide-in-from-bottom-full duration-700 h-[45%]">
+                    <div className="flex justify-between items-center shrink-0">
+                        <div className="flex flex-col">
+                            <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-widest">Design Tools</h3>
+                            <span className="text-[8px] font-bold text-slate-300 uppercase">{activeObject ? activeObject.type : 'Live Canvas'}</span>
+                        </div>
+                        {activeObject && (
+                            <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-4 py-1.5 bg-slate-100 text-[#0c0c2a] rounded-full text-[8px] font-black uppercase tracking-tight">Deselect Layer</button>
+                        )}
+                    </div>
+
+                    <div className="flex-1 flex gap-6 overflow-hidden">
+                        {/* Middle Section: Sliders (2 Columns as per mockup) */}
+                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-6 pt-2">
+                            {/* Color Palette (Always visible or contextual) */}
+                            <div className="grid grid-cols-5 gap-2 pb-2">
+                                {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
+                                    <button key={i} onClick={() => { 
+                                        const active = fabricRef.current?.getActiveObject(); 
+                                        if(active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fill: color}); } 
+                                        setBrushColor(color);
+                                    }} className={`aspect-square rounded-full border ${brushColor === color ? 'ring-2 ring-[#0c0c2a] ring-offset-2' : 'border-slate-100'}`} style={{ backgroundColor: color }}></button>
+                                ))}
+                            </div>
+
+                            {activeObject ? (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Size</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
+                                            <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
+                                                const val = parseFloat(e.target.value);
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set({scaleX: val, scaleY: val}).setCoords();
+                                                fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, scaleX: val}));
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Rotate</span><span>{Math.round(activeObject.angle)}°</span></div>
+                                            <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
+                                                const val = parseInt(e.target.value);
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, angle: val}));
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Position X</span><span>{Math.round(activeObject.left)}</span></div>
+                                            <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
+                                                const val = parseInt(e.target.value);
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, left: val}));
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tighter"><span>Position Y</span><span>{Math.round(activeObject.top)}</span></div>
+                                            <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
+                                                const val = parseInt(e.target.value);
+                                                const active = fabricRef.current.getActiveObject();
+                                                active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, top: val}));
+                                            }} onMouseUp={() => updateTexture(true)} className="w-full" />
+                                        </div>
+                                    </div>
+
+                                    {/* Action Shortcuts */}
+                                    <div className="flex gap-2">
+                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-10 bg-slate-50 text-[8px] font-black uppercase rounded-xl flex items-center justify-center gap-2 border border-slate-100"><FiMove/> Center</button>
+                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-10 bg-rose-50 text-rose-500 text-[8px] font-black uppercase rounded-xl flex items-center justify-center gap-2 border border-rose-100"><FiTrash2/> Delete</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="h-full flex flex-col items-center justify-center text-center py-6">
+                                    <FiBox size={32} className="text-slate-100 mb-4"/>
+                                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-relaxed">Select a layer or<br/>upload assets</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Section: Integrated Navigation Dock (Match Mockup) */}
+                        <div className="w-16 h-full bg-slate-50/50 rounded-3xl p-2 flex flex-col gap-2 border border-slate-100 shrink-0">
+                            {[
+                                { id: 'uploads', icon: <FiImage size={18}/> },
+                                { id: 'text', icon: <FiType size={18}/> },
+                                { id: 'stickers', icon: <FiSmile size={18}/> },
+                                { id: 'draw', icon: <FiEdit3 size={18}/> },
+                                { id: 'layers', icon: <FiLayers size={18}/> }
+                            ].map(tab => (
+                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-2xl flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-lg scale-105' : 'text-slate-300 hover:text-slate-900'}`}>
+                                    {tab.icon}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-5 mb-8">
-                        <div className="relative h-32 border-2 border-dashed border-slate-100 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
-                            <input type="file" ref={fileRef} onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
-                            <FiArrowUp size={24} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Import File</span>
-                        </div>
-                        <button onClick={handleRemoveBg} disabled={isRemovingBg} className="h-32 bg-slate-50 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:bg-[#0c0c2a] hover:text-white transition-all group">
-                            {isRemovingBg ? <div className="w-6 h-6 border-2 border-[#0c0c2a] border-t-transparent rounded-full animate-spin"></div> : <FiZap size={24} className="group-hover:animate-pulse" />}
-                            <span className="text-[9px] font-black uppercase tracking-widest">Remove Background</span>
+
+                    {/* Dashboard Footer: Checkout Buttons (Match Mockup) */}
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                        <button onClick={() => handleFinalSubmit(true)} className="h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                            <FiArrowRight/> Buy Now
+                        </button>
+                        <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 bg-[#0c0c2a] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                            <FiShoppingCart/> Add To Cart
                         </button>
                     </div>
-                    {uploadedAssets.length > 0 && (
-                        <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4">
-                            {uploadedAssets.map(a => (
-                                <div key={a.id} className="group relative aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                                     <img src={a.url} onClick={() => { 
-                                        const imgElement = new Image();
-                                        imgElement.crossOrigin = 'anonymous';
-                                        imgElement.onload = () => {
-                                            try {
-                                                const ImgClass = fabric.FabricImage || fabric.Image;
-                                                const img = new ImgClass(imgElement, {
-                                                    width: imgElement.naturalWidth || imgElement.width || 100,
-                                                    height: imgElement.naturalHeight || imgElement.height || 100
-                                                });
-                                                img.scaleToWidth(180);
-                                                img.set({left:250, top:300, originX:'center', originY:'center', uid:`up_${Date.now()}`});
-                                                if (fabricRef.current) {
-                                                    fabricRef.current.add(img);
-                                                    fabricRef.current.setActiveObject(img);
-                                                    fabricRef.current.renderAll();
-                                                    updateTexture(true);
-                                                }
-                                            } catch (err) {
-                                                console.error("Fabric Gallery Error:", err);
-                                            }
-                                        };
-                                        imgElement.src = a.url;
-                                    }} className="w-full h-full object-contain p-2 cursor-pointer group-hover:scale-110 transition-transform" />
-                                    <button onClick={(e) => { e.stopPropagation(); removeAsset(a.id); }} className="absolute top-2 right-2 w-7 h-7 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-rose-600">
-                                        <FiX size={14} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             )}
 
-            {activeTab === 'draw' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX/></button></div>
-                    <div className="space-y-10">
-                        <div className="space-y-6">
-                            <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>Brush Diameter</span><span>{brushSize}px</span></div>
-                            <input type="range" min="1" max="50" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full" />
-                        </div>
-                        <div className="grid grid-cols-5 gap-3">
-                            {['#000000', '#ffffff', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b', '#2dd4bf'].map(c => (
-                                <button key={c} onClick={() => setBrushColor(c)} className={`aspect-square rounded-full border-2 ${brushColor === c ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-transparent'}`} style={{ backgroundColor: c }} />
-                            ))}
-                        </div>
-                        <button onClick={() => { setIsDrawing(true); setActiveTab(null); }} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] font-black uppercase tracking-widest text-[10px]">Initialize Drawing</button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'text' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Text</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
-                    <div className="flex flex-col gap-4">
-                        <button onClick={() => { addText('heading'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
-                        <button onClick={() => { addText('body'); setActiveTab(null); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Sub-headline <FiPlus size={18} /></button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'stickers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
-                    <div className="grid grid-cols-4 gap-5">
-                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{__html: s.svg}} />)}
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'layers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[450px] xl:h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Layers</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
-                    <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-2">
-                        {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24}/><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> : 
-                        canvasObjects.map((obj, i) => (
-                            <div key={i} onClick={() => {
-                                const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid);
-                                if(real) { fabricRef.current.setActiveObject(real); fabricRef.current.renderAll(); setActiveObject({...real, uid: real.uid, type: real.type}); }
-                            }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'bg-[#0c0c2a] text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`}>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[10px] font-black">{i+1}</div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if(real) { fabricRef.current.bringToFront(real); fabricRef.current.renderAll(); updateTexture(); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"><FiArrowUp size={14}/></button>
-                                    <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if(real) { fabricRef.current.remove(real); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-rose-500"><FiTrash2 size={14}/></button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            <footer className="h-8 bg-white/50 backdrop-blur-sm border-t border-slate-100 flex items-center px-10 justify-center shrink-0 font-sans text-[8px] uppercase tracking-widest text-slate-300">
+            <footer className="hidden xl:flex h-8 bg-white/50 backdrop-blur-sm border-t border-slate-100 items-center px-10 justify-center shrink-0 font-sans text-[8px] uppercase tracking-widest text-slate-300">
                 <div className="flex gap-6"><span>©2026 Agneya Design Studio</span></div>
             </footer>
         </div>
