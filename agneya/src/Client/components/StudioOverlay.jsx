@@ -1400,6 +1400,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         </button>
                     </div>
                 </div>
+            )}
+
             {/* Tool Modals (Sub-panels) - Restored for functionality */}
             {activeTab === 'uploads' && (
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
