@@ -12,7 +12,7 @@ import {
     FiPlus, FiTrash2, FiCornerUpLeft, FiCornerUpRight,
     FiArrowUp, FiArrowDown, FiZap, FiX, FiBox, FiActivity,
     FiSmile, FiGrid, FiInfo, FiShoppingBag, FiMaximize, FiMinimize, FiRepeat, FiMove,
-    FiShoppingCart, FiArrowRight, FiCreditCard
+    FiShoppingCart, FiArrowRight, FiCreditCard, FiMaximize2, FiMinimize2
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { calculateWholesalePriceTotal, calculateSavings } from '../utils/pricingUtils';
