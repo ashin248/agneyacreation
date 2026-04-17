@@ -124,3 +124,84 @@ body {
 .mainContent {
   min-height: 100vh;
 }
+
+/* --- MOBILE RESPONSIVENESS OVERHAUL --- */
+
+@media (max-width: 768px) {
+  .userNavBar {
+    padding: 0.75rem 5%;
+  }
+
+  .AgneyaLogo {
+    height: 32px;
+  }
+
+  .navLinks {
+    display: none; /* Handled by mobile menu */
+  }
+
+  .navActions {
+    gap: 1rem;
+  }
+
+  .adminLoginBtn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  /* Compact Shipping Banner for Mobile */
+  .shippingBanner {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .freeShippingText span:not(.shippingIcon) {
+    display: none; /* Hide '₹1,500 more for FREE shipping' text on mobile */
+  }
+
+  .freeShippingText::after {
+    content: "Free Shipping Track";
+    font-weight: 700;
+  }
+
+  .shippingProgressBar {
+    width: 60px;
+  }
+
+  /* Mobile Menu Overlay Styles */
+  .mobileMenuOverlay {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+
+  .mobileLinks {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .mobileLinks a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .userNavBar {
+    padding: 0.75rem 4%;
+  }
+
+  .cartIcon {
+    font-size: 1.1rem;
+  }
+}

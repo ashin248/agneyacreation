@@ -88,7 +88,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
           <X className="w-5 h-5 text-gray-400" />
         </button>
 
-        <div className="p-8">
+        <div className="p-6 md:p-8">
           <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 mx-auto">
             {step === 1 ? (
               <Phone className="w-8 h-8 text-indigo-600" />
@@ -97,8 +97,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             )}
           </div>
 
-          <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
-            {step === 1 ? "Welcome Back" : "Verify OTP"}
+          <h2 className="text-xl md:text-2xl font-bold text-center text-gray-900 mb-2">
+            {step === 1 ? "Login / Sign Up" : "Verification"}
           </h2>
           <p className="text-gray-500 text-center mb-8">
             {step === 1

@@ -161,8 +161,8 @@ const ProductCard = ({ product, onCustomize, wishlist, toggleWishlist, addToCart
             )}
           </div>
           
-          {/* B2B Intelligence Layer */}
-          <div className="flex flex-col gap-1.5 mt-2 pt-3 border-t border-slate-100">
+          {/* B2B Intelligence Layer - Minimalist Mobile Tweak */}
+          <div className="hidden md:flex flex-col gap-1.5 mt-2 pt-3 border-t border-slate-100">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                     <div className="w-1 h-1 bg-slate-300 rounded-full"></div>

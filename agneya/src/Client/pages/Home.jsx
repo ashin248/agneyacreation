@@ -194,11 +194,11 @@ const Home = () => {
              <div className="h-px w-8 bg-indigo-500"></div>
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter uppercase leading-[0.9] drop-shadow-2xl">
-            {heroBanner?.title || 'Precision Engineering for Your Vision'}
+          <h1 className="text-3xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter uppercase leading-[0.9] drop-shadow-2xl">
+            {heroBanner?.title || 'Precision Printing for Your Vision'}
           </h1>
           
-          <p className="text-lg md:text-xl text-indigo-100/70 max-w-2xl mx-auto font-bold tracking-tight leading-relaxed">
+          <p className="hidden md:block text-lg md:text-xl text-indigo-100/70 max-w-2xl mx-auto font-bold tracking-tight leading-relaxed">
             From high-fidelity 3D modeling to bespoke bulk production, we synchronize logic and creativity for elite commercial printing.
           </p>
           
@@ -214,10 +214,10 @@ const Home = () => {
       </section>
 
       {/* 2. THE THREE PILLARS (STRATEGY ENTRY) */}
-      <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-32">
-        <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">Initialize Your Journey</h2>
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Select your production protocol below</p>
+      <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-16 md:mt-32">
+        <div className="text-center mb-10 md:mb-16 space-y-2">
+            <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">Production Routes</h2>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select your protocol</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -230,8 +230,8 @@ const Home = () => {
                     <div className="w-16 h-16 bg-indigo-600 rounded-[28px] flex items-center justify-center text-white shadow-xl shadow-indigo-200 mb-8">
                         <FiEdit3 size={24} />
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">Design Your Own</h3>
-                    <p className="text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Upload your bespoke artwork and place it on our premium blank canvases using our 3D design studio.</p>
+                    <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">Design Studio</h3>
+                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Upload your bespoke artwork and place it on our premium blank canvases using our 3D design studio.</p>
                 </div>
                 <div className="relative z-10">
                     <ul className="text-[10px] font-black uppercase text-gray-400 tracking-widest space-y-3 mb-10">
@@ -254,8 +254,8 @@ const Home = () => {
                     <div className="w-16 h-16 bg-white rounded-[28px] flex items-center justify-center text-gray-900 shadow-xl mb-8">
                         <FiShoppingBag size={24} />
                     </div>
-                    <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none mb-4">Curated Matrix</h3>
-                    <p className="text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Explore our strictly selected pre-designed templates tailored for modern aesthetic dominance.</p>
+                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-4">Curated Assets</h3>
+                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Explore our strictly selected pre-designed templates tailored for modern aesthetic dominance.</p>
                 </div>
                 <div className="relative z-10">
                     <ul className="text-[10px] font-black uppercase text-gray-500 tracking-widest space-y-3 mb-10">
@@ -278,8 +278,8 @@ const Home = () => {
                     <div className="w-16 h-16 bg-orange-500 rounded-[28px] flex items-center justify-center text-white shadow-xl shadow-orange-200 mb-8">
                         <i className="bi bi-box-seam text-2xl"></i>
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">Commercial Hub</h3>
-                    <p className="text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Strategic volume printing for businesses and teams requiring professional fulfillment.</p>
+                    <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">B2B Portal</h3>
+                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Strategic volume printing for businesses and teams requiring professional fulfillment.</p>
                 </div>
                 <div className="relative z-10">
                     <ul className="text-[10px] font-black uppercase text-gray-400 tracking-widest space-y-3 mb-10">
@@ -296,8 +296,8 @@ const Home = () => {
       </section>
 
       {/* 3. TRENDING OVERLAY */}
-      <section className="max-w-7xl mx-auto px-6 mt-40">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+      <section className="max-w-7xl mx-auto px-6 mt-20 md:mt-40">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
                 <FiStar className="text-indigo-600" />

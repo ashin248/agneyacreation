@@ -212,11 +212,11 @@ const ProductDetails = () => {
                     
                     {/* Left: Image Gallery */}
                     <div className="flex flex-col md:flex-row gap-6">
-                        {/* Vertical Variation Sidebar */}
+                        {/* Variation Sidebar (Scroll on mobile, column on desktop) */}
                         {variationImages.length > 0 && (
-                            <div className="hidden md:flex flex-col gap-4 w-20 flex-shrink-0 animate-in slide-in-from-left duration-500">
-                                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-1 text-center">Color Refs</p>
-                                <div className="space-y-4 overflow-y-auto no-scrollbar max-h-[400px]">
+                            <div className="flex md:flex-col gap-4 w-full md:w-20 overflow-x-auto md:overflow-y-auto no-scrollbar flex-shrink-0 animate-in slide-in-from-left duration-500">
+                                <p className="hidden md:block text-[8px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-1 text-center">Color Refs</p>
+                                <div className="flex md:flex-col gap-4 min-w-max md:min-w-0">
                                     {variationImages.map((img, idx) => (
                                         <button 
                                             key={`var-${idx}`}
@@ -229,7 +229,7 @@ const ProductDetails = () => {
                                                     setIsImageTransitioning(false);
                                                 }, 300);
                                             }}
-                                            className={`relative w-20 h-20 bg-white rounded-2xl overflow-hidden border-2 transition-all ${selectedColor === img.color ? 'border-indigo-600 shadow-lg' : 'border-slate-100 hover:border-indigo-400'}`}
+                                            className={`relative w-16 h-16 md:w-20 md:h-20 bg-white rounded-2xl overflow-hidden border-2 transition-all ${selectedColor === img.color ? 'border-indigo-600 shadow-lg' : 'border-slate-100 hover:border-indigo-400'}`}
                                         >
                                             <img src={img.imageUrl} className="w-full h-full object-cover" alt="Variation" />
                                         </button>
@@ -288,20 +288,16 @@ const ProductDetails = () => {
 
                     {/* Right: Product Info */}
                     <div className="space-y-10">
-                        <div className="space-y-4">
+                        <div className="space-y-3 md:space-y-4">
                             <div className="flex items-center gap-3">
                                 <span className="px-3 py-1 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-md">
                                     {product.category || 'Premium Asset'}
                                 </span>
-                                <div className="flex items-center gap-1.5">
-                                    <StarRating rating={4.8} />
-                                    <span className="text-[10px] font-bold text-gray-400">(42 Reviews)</span>
-                                </div>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none">
+                            <h1 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none">
                                 {product.name}
                             </h1>
-                            <p className="text-gray-500 font-medium leading-relaxed max-w-xl">
+                            <p className="hidden md:block text-gray-500 font-medium leading-relaxed max-w-xl">
                                 {product.description || 'Professional-grade asset engineered for high-fidelity production and superior aesthetic dominance.'}
                             </p>
                         </div>

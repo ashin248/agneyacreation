@@ -8,6 +8,7 @@ function UserLayout({ children, userName = "User" }) {
     storeName: 'Agneya',
     logoUrl: '/logo.png'
   });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchBranding = async () => {
@@ -44,9 +45,9 @@ function UserLayout({ children, userName = "User" }) {
           </NavLink>
         </div>
 
-        <div className="navLinks">
+        {/* Desktop Links */}
+        <div className="navLinks hidden md:flex">
           <NavLink to="/">Shop</NavLink>
-          {/* <NavLink to="/custom-design">Custom Studio</NavLink> */}
           <NavLink to="/track-order">Track Order</NavLink>
         </div>
 
@@ -55,10 +56,29 @@ function UserLayout({ children, userName = "User" }) {
             <i className="bi bi-cart3"></i>
             <span className="cartBadge">0</span>
           </div>
-          <NavLink to="/admin/login">
+          <NavLink to="/admin/login" className="hidden sm:block">
             <button className="adminLoginBtn">Admin Login</button>
           </NavLink>
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden p-2 text-slate-900"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className={`bi ${isMenuOpen ? 'bi-x' : 'bi-list'} text-2xl`}></i>
+          </button>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMenuOpen && (
+          <div className="mobileMenuOverlay animate-in fade-in slide-in-from-top duration-300">
+            <div className="mobileLinks">
+              <NavLink to="/" onClick={() => setIsMenuOpen(false)}>Shop</NavLink>
+              <NavLink to="/track-order" onClick={() => setIsMenuOpen(false)}>Track Order</NavLink>
+              <NavLink to="/admin/login" onClick={() => setIsMenuOpen(false)}>Admin Access</NavLink>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="mainContent">
