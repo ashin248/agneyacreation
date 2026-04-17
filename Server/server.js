@@ -11,7 +11,7 @@ const bootstrapAdmin = require('./services/adminBootstrap');
 require('./services/whatsappService'); // Initialize WhatsApp Bot
 
 const app = express();
-const PORT = process.env.Local_Host_port || process.env.Server_port;
+const PORT = process.env.PORT || process.env.Server_port || 5000;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
