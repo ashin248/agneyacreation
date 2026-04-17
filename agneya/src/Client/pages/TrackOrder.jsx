@@ -217,7 +217,7 @@ const OrderCard = ({ order, onTrack }) => {
             <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all duration-500 shadow-sm ${badge.bg} ${badge.text} ${badge.border}`}>
               {(order.status === 'Pending' || order.orderStatus === 'Pending') 
                 ? 'Delivery within 3 days' 
-                : (order.displayStatus || order.status || order.orderStatus || 'PENDING'))}
+                : (order.displayStatus || order.status || order.orderStatus || 'PENDING')}
             </span>
             <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
               <div className="w-1 h-1 rounded-full bg-slate-400"></div>
