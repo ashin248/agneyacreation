@@ -281,7 +281,7 @@ const Model3D = ({
                                     dataUrl={obj.dataUrl}
                                     position={finalPos}
                                     rotation={finalRotation}
-                                    scale={[decalWidth, decalHeight, decalDepth]}
+                                    scale={[isPlanar ? -decalWidth : decalWidth, decalHeight, decalDepth]}
                                     active={active}
                                     zIndex={index * 2}
                                 />
