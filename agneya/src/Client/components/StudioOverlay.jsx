@@ -1294,8 +1294,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
             {/* NEW: PREMIUM MOBILE DASHBOARD (ULTRA-TRANSPARENT FOR VISIBILITY) */}
             {designMode === 'self' && (
-                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/5 backdrop-blur-3xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.05)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-white/10 ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[42%]'}`}>
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-400/10 rounded-full" />
+                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/[0.04] backdrop-blur-3xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.03)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-white/[0.04] ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[42%]'}`}>
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-400/5 rounded-full" />
                     
                     <div className="flex justify-between items-center shrink-0 pt-2">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
