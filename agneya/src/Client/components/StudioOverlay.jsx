@@ -921,7 +921,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 </div>
             </header>
 
-            <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0">
+            <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {designMode === 'self' ? (
                     <>
                     {/* Variation Selector - Floating at top */}
@@ -1289,10 +1289,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             </main>
 
 
-            {/* NEW: PREMIUM MOBILE DASHBOARD (MATCHING USER REQUEST) */}
+            {/* NEW: PREMIUM MOBILE DASHBOARD (ULTRA-TRANSPARENT FOR VISIBILITY) */}
             {designMode === 'self' && (
-                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-3xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-white/50 ${isMobileUiMinimized ? 'translate-y-[82%]' : 'translate-y-0 h-[50%]'}`}>
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-slate-200/50 rounded-full" />
+                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/20 backdrop-blur-3xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-white/30 ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[42%]'}`}>
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-400/20 rounded-full" />
                     
                     <div className="flex justify-between items-center shrink-0 pt-2">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
