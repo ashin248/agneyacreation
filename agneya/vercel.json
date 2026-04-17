@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://agneya-server.onrender.com/api/:path*"
+      "destination": "https://agneyacreation.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

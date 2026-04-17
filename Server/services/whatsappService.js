@@ -8,7 +8,16 @@ const INVITE_CODE = "G4XPZGakOYH8zHhlsp5WiC";
 const client = new Client({
     authStrategy: new LocalAuth({ clientId: "agneya-bot" }),
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
+        ],
+        headless: true
     }
 });
 

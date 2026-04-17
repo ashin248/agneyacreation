@@ -46,19 +46,18 @@ app.use("/api/admin/auth", authRoutes);
 // Public Storefront API Routes
 app.use("/api/public", require('./routes/public/storefrontRoutes'));
 
-// Serve static files from the React app's build directory correctly
-app.use(express.static(path.join(__dirname, '../agneya/dist')));
+// Serve static files from the React app's build directory correctly (Disabled for Vercel deployment)
+// app.use(express.static(path.join(__dirname, '../agneya/dist')));
 
+// Healthy check route for Render
+app.get("/health", (req, res) => {
+  res.status(200).send("Server is running smoothly");
+});
 
+// Wildcard route (Disabled for Vercel deployment)
 // app.get(/.*/, (req, res) => {
 //   res.sendFile(path.join(__dirname, '../agneya/dist/index.html'));
 // });
-
-
-// Correct wildcard routing to properly hand off all remaining routes to React Router natively
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../agneya/dist/index.html'));
-});
 
 app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 API Server running on port http://localhost:${PORT}`);
