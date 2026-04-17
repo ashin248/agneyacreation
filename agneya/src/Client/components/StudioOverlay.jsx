@@ -140,7 +140,7 @@ const Model3D = ({
         
         // Strict Model Selection Guard: Prevent selecting non-printable parts (like handles)
         if (modelConfig?.printableMeshes && modelConfig.printableMeshes.length > 0) {
-            if (!modelConfig.printableMeshes.includes(clickedMesh.name)) {
+            if (!modelConfig.printableMeshes.some(p => clickedMesh.name.includes(p) || p.includes(clickedMesh.name))) {
                 return; // Ignore clicks on non-printable areas
             }
         } else {
