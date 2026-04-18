@@ -193,7 +193,6 @@ const Model3D = ({
     };
 
     return (
-    return (
         <group>
             <group ref={modelGroupRef} 
                 rotation={[0, (previewRotation * Math.PI) / 180, 0]} 
