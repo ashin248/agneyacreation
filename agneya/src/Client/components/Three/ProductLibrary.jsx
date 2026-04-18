@@ -108,8 +108,8 @@ export const MODELS = {
     name: 'Master Business Card',
     path: '/models/BusinessCard/Business_Card.glb',
     thumbnail: cardThumb,
-    defaultScale: 2.5,
-    defaultRotation: [0, 0, 0], // Ithu model-ne completely straight aakkum
+    defaultScale: 4.5,
+    defaultRotation: [0.1, -0.5, 0], // Subtle 3D tilt for a professional, grounded look
     projectionType: 'planar',
     printableMeshes: ['Object_4']
   },
