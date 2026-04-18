@@ -810,21 +810,31 @@ const CustomDesign = ({ initialMode, initial3D }) => {
                     ) : (
                         <div className="relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" style={{ transform: `scale(${canvasScale})` }}>
                             {designMode === 'PREVIEW' ? (
-                                <div className="relative group bg-white/40 backdrop-blur-3xl rounded-[60px] shadow-2xl p-10 border border-white/60 flex items-center justify-center min-w-[600px] min-h-[600px]">
-                                    <div className="w-[500px] h-[600px] bg-gradient-to-br from-gray-50 to-white rounded-[40px] overflow-hidden shadow-2xl relative">
-                                        <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
-                                            <ambientLight intensity={1.5} />
-                                            <spotLight position={[10, 10, 10]} intensity={2} />
-                                            <React.Suspense fallback={null}>
-                                                {product?.base3DModelUrl ? (
-                                                    <Model3D url={product.base3DModelUrl} textureUrl={canvasTexture} />
-                                                ) : null}
-                                            </React.Suspense>
-                                            <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
-                                        </Canvas>
-                                        <div className="absolute top-8 right-8 flex gap-2 backdrop-blur-md bg-white/60 px-4 py-2 rounded-full border border-white/60 shadow-lg">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-0.5"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900 leading-none mt-1">Immersive 3D</span>
+                                <div className="flex flex-col lg:flex-row gap-8 items-center justify-center w-full max-w-[1400px] animate-in fade-in zoom-in-95 duration-700">
+                                    {/* Edit Pane (Canvas) */}
+                                    <div className="flex flex-col items-center gap-6">
+                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Design Interface</div>
+                                        <div className="bg-white/40 backdrop-blur-3xl rounded-[40px] shadow-2xl p-6 border-2 border-indigo-600">
+                                            <div className="bg-white rounded-[24px] overflow-hidden relative w-[400px] h-[500px]">
+                                                <canvas ref={canvasRef} />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Direct 3D Projection Pane */}
+                                    <div className="flex flex-col items-center gap-6">
+                                        <div className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em]">Live Projection</div>
+                                        <div className="relative group bg-slate-900 rounded-[40px] shadow-2xl p-6 border border-white/10 flex items-center justify-center w-[450px] h-[550px]">
+                                            <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
+                                                <ambientLight intensity={1.5} />
+                                                <spotLight position={[10, 10, 10]} intensity={2} />
+                                                <React.Suspense fallback={null}>
+                                                    {product?.base3DModelUrl ? (
+                                                        <Model3D url={product.base3DModelUrl} textureUrl={canvasTexture} />
+                                                    ) : null}
+                                                </React.Suspense>
+                                                <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
+                                            </Canvas>
                                         </div>
                                     </div>
                                 </div>
