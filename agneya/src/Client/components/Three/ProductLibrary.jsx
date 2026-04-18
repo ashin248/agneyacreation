@@ -108,9 +108,9 @@ export const MODELS = {
     name: 'Master Business Card',
     path: '/models/BusinessCard/Business_Card.glb',
     thumbnail: cardThumb,
-    defaultScale: 6.5,
-    defaultRotation: [0.1, -0.5, 0], 
-    defaultPosition: [0, -1.8, 0],
+    defaultScale: 3.5,
+    defaultRotation: [0, 0, 0], 
+    defaultPosition: [0, 0, 0],
     projectionType: 'planar',
     printableMeshes: ['Object_4']
   },
