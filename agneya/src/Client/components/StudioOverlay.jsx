@@ -235,7 +235,7 @@ const Model3D = ({
                 const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
                 // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
                 let decalDepth = isPlanar ? 
-                    (modelConfig?.category === 'Tshirt' ? 0.5 : 
+                    (modelConfig?.category === 'Tshirt' ? 1.0 : 
                      modelConfig?.category === 'Plate' ? 0.015 : 0.02) 
                     : 1;
 
