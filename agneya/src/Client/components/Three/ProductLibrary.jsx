@@ -156,7 +156,7 @@ export const MODELS = {
     defaultScale: 1.5,
     defaultRotation: [0, 0, 0],
     projectionType: 'planar',
-    printableMeshes: ['Object_4', 'Object_5']
+    printableMeshes: [] // Empty array triggers the intelligent fallback (allows all faces)
   },
   MASTER_CEREAL_BOX: {
     id: 'MASTER_CEREAL_BOX',
