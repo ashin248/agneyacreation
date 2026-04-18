@@ -210,7 +210,7 @@ export const MODELS = {
     thumbnail: frameThumb,
     defaultScale: 3.0,
     defaultRotation: [0, 0, 0],
-    projectionType: 'planar',
+    projectionType: 'decal',
     printableMeshes: [] // Empty array enables intelligent fallback (allows selection of all 12+ frames)
   },
   MASTER_Y_FRAME: {
@@ -221,7 +221,7 @@ export const MODELS = {
     thumbnail: frameThumb,
     defaultScale: 4.0,
     defaultRotation: [0, 0, 0],
-    projectionType: 'planar',
+    projectionType: 'decal',
     printableMeshes: ['polySurface37_lambert4_0', 'polySurface31_phong1_0', 'polySurface32_phong1_0', 'polySurface33_phong1_0', 'polySurface34_phong1_0', 'polySurface39_phong1_0']
   },
   MASTER_PICTURE_FRAME: {
@@ -232,7 +232,7 @@ export const MODELS = {
     thumbnail: frameThumb,
     defaultScale: 0.02, // Large unit scale adjustments
     defaultRotation: [0, 0, 0],
-    projectionType: 'planar',
+    projectionType: 'decal',
     printableMeshes: ['Object_4']
   },
   MASTER_CIRCLE_FRAME: {
@@ -243,7 +243,7 @@ export const MODELS = {
     thumbnail: frameThumb,
     defaultScale: 10.0,
     defaultRotation: [0, 0, 0],
-    projectionType: 'planar',
+    projectionType: 'decal',
     printableMeshes: ['pCylinder1_standardSurface1_0']
   },
   MASTER_TROPHY: {

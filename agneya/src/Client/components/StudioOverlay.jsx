@@ -40,13 +40,13 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
-                alphaTest={0.5} 
+                alphaTest={0.01} 
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
                 polygonOffsetFactor={-15} // Stronger priority to stay on top of frame glass/textures
                 polygonOffsetUnits={-15}
-                side={THREE.FrontSide}
+                side={THREE.DoubleSide}
                 color={texture ? '#ffffff' : '#000000'}
                 opacity={texture ? 1 : 0}
                 emissive={active ? '#4f46e5' : '#000000'}
