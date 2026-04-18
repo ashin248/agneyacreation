@@ -106,12 +106,23 @@ function Model3D({
                 if (isPhotoArea) {
                     if (node.material) {
                         node.material = node.material.clone();
+                        // Strip ALL maps to ensure a completely blank canvas
                         node.material.map = null;
-                        node.material.color.set('#f3f4f6');
+                        node.material.lightMap = null;
+                        node.material.aoMap = null;
+                        node.material.emissiveMap = null;
+                        node.material.metalnessMap = null;
+                        node.material.roughnessMap = null;
+                        
+                        node.material.color.set('#ffffff'); // Pure blank white
+                        node.material.roughness = 0.9;      // Matte finish for better photo appearance
+                        node.material.metalness = 0.0;      // Non-metallic
                         node.material.needsUpdate = true;
                     }
+                } else if (node.material && node.material.roughness !== undefined) {
+                     // For non-photo areas (the frame border), ensure it looks premium
+                     node.material.roughness = 0.6;
                 }
-                if (node.material && node.material.roughness !== undefined) node.material.roughness = 0.8;
             }
         });
     }, [scene, modelConfig]);
