@@ -114,7 +114,7 @@ function Model3D({
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
                     
-                    node.material.color.set('#ffffff'); 
+                    node.material.color.set('#111111'); 
                     node.material.roughness = 1.0;
                     node.material.metalness = 0.0;
                     
