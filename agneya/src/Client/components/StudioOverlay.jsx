@@ -193,7 +193,7 @@ const Model3D = ({
     };
 
     return (
-        <group>
+        <group position={[0, window.innerWidth < 1280 ? 0 : -0.6, 0]}>
             <group ref={modelGroupRef} 
                 rotation={[0, (previewRotation * Math.PI) / 180, 0]} 
             >
@@ -1149,7 +1149,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             shadows={false} 
                                                             gl={{ alpha: true, powerPreference: 'high-performance' }}
                                                             camera={{ 
-                                                                position: [0, window.innerWidth < 1280 ? 0 : -0.3, 2.5], 
+                                                                position: [0, 0, 2.5], 
                                                                 fov: 45 
                                                             }}
                                                             onCreated={({ gl }) => {
