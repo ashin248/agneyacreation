@@ -117,6 +117,7 @@ function Model3D({
         ];
 
         scene.traverse((child) => {
+            if (child.isMesh) {
                 const name = child.name || '';
                 const lowerName = name.toLowerCase();
                 const isPhotoframe = modelConfig?.category === 'Photoframe';
