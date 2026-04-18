@@ -32,11 +32,8 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
 
     return (
         <Decal
+            mesh={mesh} // CRITICAL FIX: Ensure decal knows which mesh to project onto
             position={position}
-            rotation={rotation}
-            scale={scale}
-            debug={false} 
-        >
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
@@ -368,11 +365,11 @@ function Model3D({
                     zIndex: index * 2
                 };
 
-                // CRITICAL FIX: For Photoframes, project onto the WHOLE GROUP to cover both border and center
+                // CRITICAL FIX: For Photoframes, project onto the WHOLE GROUP if possible, or targetMesh clearly
                 if (isPlanar && modelConfig?.category === 'Photoframe') {
                     return (
                         <group key={`group-decal-${obj.uid}`} renderOrder={100 + index}>
-                             <ProjectedDecalWrapper {...decalProps} />
+                             <ProjectedDecalWrapper mesh={targetMesh} {...decalProps} />
                         </group>
                     );
                 }
