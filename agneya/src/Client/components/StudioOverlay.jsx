@@ -1149,7 +1149,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             shadows={false} 
                                                             gl={{ alpha: true, powerPreference: 'high-performance' }}
                                                             camera={{ 
-                                                                position: [0, window.innerWidth < 1280 ? 0 : 0.7, 2.5], 
+                                                                position: [0, window.innerWidth < 1280 ? 0 : 0.8, 2.5], 
                                                                 fov: 45 
                                                             }}
                                                             onCreated={({ gl }) => {
@@ -1162,7 +1162,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         >
                                                             <ambientLight intensity={1.8} />
                                                             <spotLight position={[10, 20, 10]} intensity={3} />
-                                                            <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
+                                                            <Stage intensity={0.6} environment={null} adjustCamera={false}>
                                                                 <Model3D baseModelId={product?.baseModelId} url={product?.model3d || product?.base3DModelUrl} canvasObjects={canvasObjects} objectAnchors={objectAnchors} onAnchorUpdate={handleAnchorUpdate} activeObjectId={activeObject?.uid} />
                                                             </Stage>
                                                             <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
