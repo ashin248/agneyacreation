@@ -231,6 +231,7 @@ function Model3D({
                 (box.max.z - box.min.z)
             ]
         };
+
         if (onAnchorUpdate) onAnchorUpdate(newAnchor);
         if (onPartSelect) onPartSelect(clickedMesh.name);
     };
@@ -262,7 +263,10 @@ function Model3D({
                 }
                 if (!targetMesh) return null;
 
-                const isPlanar = modelConfig?.projectionType === 'planar' || !modelConfig?.projectionType;
+                const isPlanar = modelConfig?.projectionType === 'planar' || 
+                                 modelConfig?.projectionType === 'decal' || 
+                                 modelConfig?.category === 'Photoframe' ||
+                                 !modelConfig?.projectionType;
                 
                 let finalPos = [...anchor.pos];
                 let finalRotation = [anchor.rot[0], anchor.rot[1], anchor.rot[2]];
@@ -275,7 +279,8 @@ function Model3D({
                 // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
                 let decalDepth = isPlanar ? 
                     (modelConfig?.category === 'Tshirt' ? 0.15 : 
-                     modelConfig?.category === 'Plate' ? 0.015 : 0.02) 
+                     modelConfig?.category === 'Plate' ? 0.015 : 
+                     modelConfig?.category === 'Photoframe' ? 0.02 : 0.02) 
                     : 1;
 
                 if (isPlanar) {
@@ -374,6 +379,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     const [canvasObjects, setCanvasObjects] = useState([]);
     const [objectAnchors, setObjectAnchors] = useState({});
+    const [pendingAnchor, setPendingAnchor] = useState(null); // Stores click target if no asset is selected
     const [activeObject, setActiveObject] = useState(null);
     const [uploadedAssets, setUploadedAssets] = useState([]);
 
@@ -427,7 +433,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     const handleAnchorUpdate = useCallback((anchorData) => {
         const activeItem = fabricRef.current?.getActiveObject();
-        if (activeItem) setObjectAnchors(prev => ({ ...prev, [activeItem.uid]: anchorData }));
+        if (activeItem) {
+            setObjectAnchors(prev => ({ ...prev, [activeItem.uid]: anchorData }));
+            setPendingAnchor(null); // Clear pending if we have active
+        } else {
+            setPendingAnchor(anchorData); // Store for next upload
+            toast.success("Frame Target Selected", { icon: '🎯', style: { borderRadius: '15px', background: '#0c0c2a', color: '#fff', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' } });
+        }
     }, []);
 
     const syncPositionalOffsets = useCallback(() => {
@@ -613,6 +625,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             setCanvasObjects([]);
             setUploadedAssets([]);
             setObjectAnchors({});
+            setPendingAnchor(null);
             historyRef.current = [];
             setHistoryStep(-1);
             setActiveObject(null);
@@ -783,7 +796,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     
                     const targetWidth = canvas.width ? canvas.width * 0.4 : 200;
                     img.scaleToWidth(targetWidth);
-                    img.set({ originX: 'center', originY: 'center', left: canvas.width ? canvas.width / 2 : 250, top: canvas.height ? canvas.height / 2 : 300, uid: `upload_${Date.now()}` });
+                    const uid = `upload_${Date.now()}`;
+                    img.set({ originX: 'center', originY: 'center', left: canvas.width ? canvas.width / 2 : 250, top: canvas.height ? canvas.height / 2 : 300, uid });
+                    
+                    if (pendingAnchor) {
+                        setObjectAnchors(prev => ({ ...prev, [uid]: pendingAnchor }));
+                        setPendingAnchor(null);
+                    }
+
                     canvas.add(img);
                     canvas.setActiveObject(img);
                     canvas.renderAll();
@@ -799,11 +819,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     };
 
     const addText = (preset = 'body') => {
+        const uid = `text_${Date.now()}`;
         const itext = new fabric.IText(preset === 'heading' ? 'BRAND_ID' : 'Double click', {
             left: 250, top: 300, originX: 'center', originY: 'center',
             fontSize: preset === 'heading' ? 40 : 16, fontWeight: preset === 'heading' ? '900' : '500',
-            fill: brushColor, fontFamily: 'Inter', uid: `text_${Date.now()}`
+            fill: brushColor, fontFamily: 'Inter', uid
         });
+
+        if (pendingAnchor) {
+            setObjectAnchors(prev => ({ ...prev, [uid]: pendingAnchor }));
+            setPendingAnchor(null);
+        }
+
         fabricRef.current.add(itext);
         fabricRef.current.setActiveObject(itext);
         fabricRef.current.renderAll();
@@ -813,8 +840,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const addSticker = async (svgString) => {
         const { objects, options } = await fabric.loadSVGFromString(svgString);
         const obj = fabric.util.groupSVGElements(objects, options);
-        obj.set({ left: 250, top: 300, originX: 'center', originY: 'center', fill: brushColor, uid: `sticker_${Date.now()}` });
+        const uid = `sticker_${Date.now()}`;
+        obj.set({ left: 250, top: 300, originX: 'center', originY: 'center', fill: brushColor, uid });
         obj.scaleToWidth(150);
+
+        if (pendingAnchor) {
+            setObjectAnchors(prev => ({ ...prev, [uid]: pendingAnchor }));
+            setPendingAnchor(null);
+        }
+
         fabricRef.current.add(obj);
         fabricRef.current.setActiveObject(obj);
         fabricRef.current.renderAll();

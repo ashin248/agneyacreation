@@ -66,7 +66,7 @@ function ModelInspector({ productType, canvasObjects, objectAnchors }) {
         const h = box.max.y - box.min.y;
         const d = box.max.z - box.min.z;
         
-        const isPlanar = modelConfig.projectionType === 'planar';
+        const isPlanar = modelConfig.projectionType === 'planar' || modelConfig.projectionType === 'decal' || modelConfig.category === 'Photoframe';
         const pos = isPlanar ? [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];
         const rot = isPlanar ? [-Math.PI / 2, 0, 0] : [0, 0, 0];
 
@@ -92,7 +92,9 @@ function ModelInspector({ productType, canvasObjects, objectAnchors }) {
                 }
                 if (!targetMesh) return null;
 
-                const isPlanar = modelConfig.projectionType === 'planar' || modelConfig.projectionType === 'decal';
+                const isPlanar = modelConfig.projectionType === 'planar' || 
+                                 modelConfig.projectionType === 'decal' ||
+                                 modelConfig.category === 'Photoframe';
                 let finalPos = [...anchor.pos];
                 let finalRotation = [...anchor.rot];
                 const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
@@ -104,7 +106,7 @@ function ModelInspector({ productType, canvasObjects, objectAnchors }) {
                 const pixelsPerUnitUniform = sourceCanvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
                 const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
                 const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
-                let decalDepth = isPlanar ? 0.05 : 1; // Slight depth for planar to prevent z-fighting
+                let decalDepth = isPlanar ? (modelConfig.category === 'Photoframe' ? 0.02 : 0.05) : 1; // Slight depth for planar to prevent z-fighting
 
                 if (isPlanar) {
                     const dummy = new THREE.Object3D();
