@@ -78,7 +78,7 @@ function Model3D({ url, textureUrl }) {
 }
 
 
-const CustomDesign = () => {
+const CustomDesign = ({ initialMode, initial3D }) => {
     const navigate = useNavigate();
     const { productId } = useParams();
     const { currentUser, userData } = useAuth();
@@ -109,8 +109,9 @@ const CustomDesign = () => {
         { id: 1, name: 'Item 1', frontCanvasData: null, backCanvasData: null }
     ]);
     const [activeVariationId, setActiveVariationId] = useState(1);
-    const [designMode, setDesignMode] = useState('EDITOR'); // 'PREVIEW', 'EDITOR', 'ASSISTANCE'
+    const [designMode, setDesignMode] = useState(initialMode || 'EDITOR'); // 'PREVIEW', 'EDITOR', 'ASSISTANCE'
     const [activeCanvasSide, setActiveCanvasSide] = useState('front'); // 'front' or 'back'
+    const [is3DMode, setIs3DMode] = useState(initial3D === true);
     const [pricing, setPricing] = useState({ unitPrice: 0, totalPrice: 0, bulkApplied: false });
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [orderForm, setOrderForm] = useState({ name: '', phone: '', email: '', address: '', quantity: 1, note: '' });
@@ -518,7 +519,7 @@ const CustomDesign = () => {
     return (
         <div className="h-screen flex flex-col bg-[#f8fafc] overflow-hidden select-none font-sans relative">
 
-            {/* 0. PREMIUM TOP NAVIGATION SYSTEM (3 TABS) */}
+            {/* PREMIUM TOP NAVIGATION SYSTEM (3 TABS) */}
             <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-4">
                 <div className="bg-white/40 backdrop-blur-3xl p-1.5 rounded-[32px] border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.05)] flex items-center gap-1 transition-all duration-700">
                     <button 
@@ -528,16 +529,16 @@ const CustomDesign = () => {
                         Customer Designs
                     </button>
                     <button 
-                        onClick={() => { setDesignMode('EDITOR'); setIs3DMode(false); }}
-                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'EDITOR' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
-                    >
-                        2D Designs
-                    </button>
-                    <button 
                         onClick={() => { setDesignMode('ASSISTANCE'); setIs3DMode(false); }}
                         className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'ASSISTANCE' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
                     >
                         Design Assistance
+                    </button>
+                    <button 
+                        onClick={() => { setDesignMode('EDITOR'); setIs3DMode(false); }}
+                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'EDITOR' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
+                    >
+                        2D Designs
                     </button>
                 </div>
             </div>
@@ -861,7 +862,6 @@ const CustomDesign = () => {
                               </button>
                          </div>
                     </div>
-                )}
                 </div>
             </main>
 

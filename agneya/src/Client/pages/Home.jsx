@@ -158,7 +158,8 @@ const Home = () => {
                               <button 
                                   onClick={() => {
                                       setQuickViewProduct(null);
-                                      navigate(`/customize/${quickViewProduct._id}`);
+                                      const target = quickViewProduct.customizationType === '3D' ? '3d' : '2d';
+                                      navigate(`/studio/${target}/${quickViewProduct._id}`);
                                   }}
                                   className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
                               >

@@ -47,7 +47,9 @@ function App() {
         <Route path="/" element={<ClientLayout />}>
           <Route index element={<Shop />} />
           <Route path="product/:productId" element={<ProductDetails />} />
-          <Route path="customize/:productId" element={<CustomDesign />} />
+          <Route path="studio/2d/:productId" element={<CustomDesign initialMode="EDITOR" initial3D={false} />} />
+          <Route path="studio/3d/:productId" element={<CustomDesign initialMode="PREVIEW" initial3D={true} />} />
+          <Route path="studio/assistance/:productId" element={<CustomDesign initialMode="ASSISTANCE" initial3D={false} />} />
           <Route path="cart" element={<BulkOrderMaster />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="dashboard" element={<UserDashboard />} />

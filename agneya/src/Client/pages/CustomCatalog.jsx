@@ -148,7 +148,7 @@ const CustomCatalog = () => {
                                                 <h4 className="text-3xl font-black text-white tracking-tighter uppercase leading-none px-4 drop-shadow-xl">{model.name}</h4>
                                             </div>
                                             <button 
-                                                onClick={() => navigate(`/customize/${model._id}`)}
+                                                onClick={() => navigate(`/studio/3d/${model._id}`)}
                                                 className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl hover:bg-indigo-600 hover:text-white transition-all scale-90 group-hover:scale-100"
                                             >
                                                 Initialize Capture
@@ -169,7 +169,7 @@ const CustomCatalog = () => {
                                         </div>
                                         
                                         <button 
-                                            onClick={() => navigate(`/customize/${model._id}`)}
+                                            onClick={() => navigate(`/studio/3d/${model._id}`)}
                                             className="group/btn w-full py-6 bg-slate-50 text-slate-900 rounded-[28px] font-black text-[10px] uppercase tracking-[0.3em] hover:bg-slate-900 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-4 border border-slate-100 hover:border-slate-900 shadow-sm"
                                         >
                                             Start Design Session <FiArrowRight className="transition-transform group-hover/btn:translate-x-1" />

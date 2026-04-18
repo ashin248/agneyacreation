@@ -22,7 +22,6 @@ import StarRating from '../components/StarRating';
 import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
-import StudioOverlay from '../components/StudioOverlay';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -38,8 +37,6 @@ const ProductDetails = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [isImageTransitioning, setIsImageTransitioning] = useState(false);
     const [overrideImage, setOverrideImage] = useState(null);
-    const [customizingProduct, setCustomizingProduct] = useState(null);
-    const [initialStudioMode, setInitialStudioMode] = useState('self');
 
     const { currentUser } = useAuth();
     
@@ -449,33 +446,28 @@ const ProductDetails = () => {
                             </div>
 
                                     {product.isCustomizable && (
-                                        <div className="space-y-3">
-                                            {/* Mode 1: Self Design (Only if 2D or 3D is configured in Admin) */}
-                                            {['2D', '3D'].includes(product.customizationType) && (
+                                        <div className="space-y-4 pt-6">
+                                            {/* Specialized Studio Entry: 2D or 3D */}
+                                            {product.customizationType !== 'None' && (
                                                 <button 
                                                     onClick={() => requireLogin(() => {
-                                                        setInitialStudioMode('self');
-                                                        setCustomizingProduct(product);
+                                                        const target = product.customizationType === '3D' ? '3d' : '2d';
+                                                        navigate(`/studio/${target}/${product._id}`);
                                                     })} 
-                                                    className="flex-1 h-14 w-full bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-black hover:-translate-y-1 transition-all active:scale-95"
+                                                    className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-600 hover:-translate-y-1 transition-all active:scale-95"
                                                 >
-                                                    <Palette size={18} /> Design Your Own
+                                                    <Palette size={20} /> Design Your Own {product.customizationType}
                                                 </button>
                                             )}
                                             
-                                            {/* Mode 2: Design Assistance (Manual Request - Always available for customizable products) */}
+                                            {/* Specialized Studio Entry: Assistance */}
                                             <button 
                                                 onClick={() => requireLogin(() => {
-                                                    setInitialStudioMode('company');
-                                                    setCustomizingProduct(product);
+                                                    navigate(`/studio/assistance/${product._id}`);
                                                 })}
-                                                className={`flex-1 h-14 w-full rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[10px] transition-all active:scale-95 ${
-                                                    product.customizationType === 'None' 
-                                                    ? 'bg-indigo-600 text-white shadow-xl hover:bg-slate-900' 
-                                                    : 'bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50'
-                                                }`}
+                                                className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-slate-50 hover:-translate-y-1 transition-all active:scale-95 shadow-sm"
                                             >
-                                                <Upload size={16} /> {product.customizationType === 'None' ? 'Request Custom Quote' : 'Request Custom Quote'}
+                                                <Upload size={18} /> Request Expert Assistance
                                             </button>
                                         </div>
                                     )}
@@ -574,13 +566,6 @@ const ProductDetails = () => {
                 )}
             </div>
 
-            <StudioOverlay 
-                isOpen={!!customizingProduct} 
-                onClose={() => setCustomizingProduct(null)} 
-                product={customizingProduct} 
-                requireLogin={requireLogin}
-                initialMode={initialStudioMode}
-            />
         </div>
     );
 };
