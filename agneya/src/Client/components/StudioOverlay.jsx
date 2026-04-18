@@ -82,10 +82,11 @@ function Model3D({
     useLayoutEffect(() => {
         if (!scene || !modelConfig) return;
         
+        console.log("3D Model Loaded. Mesh Inventory:", scene.name); // DEBUG
         scene.traverse((node) => {
             if (node.isMesh) {
+                console.log(" - Mesh found:", node.name); // EXHAUSTIVE DEBUG
                 // If it's a Photoframe, we want to clear out the default NYC/Stock photos
-                // to make room for user uploads. We target meshes that are clickable.
                 const lowerName = node.name.toLowerCase();
                 const isPhotoArea = modelConfig.category === 'Photoframe' && 
                                   (!modelConfig.printableMeshes || 
@@ -94,18 +95,13 @@ function Model3D({
 
                 if (isPhotoArea) {
                     if (node.material) {
-                        // Create a clone to avoid affecting other instances if any
                         node.material = node.material.clone();
                         node.material.map = null;
-                        node.material.color.set('#f3f4f6'); // Clean neutral white
+                        node.material.color.set('#f3f4f6');
                         node.material.needsUpdate = true;
                     }
                 }
-                
-                // Ensure photo frames don't have aggressive highlights that wash out decals
-                if (node.material && node.material.roughness !== undefined) {
-                    node.material.roughness = 0.8;
-                }
+                if (node.material && node.material.roughness !== undefined) node.material.roughness = 0.8;
             }
         });
     }, [scene, modelConfig]);
@@ -121,18 +117,22 @@ function Model3D({
         ];
 
         scene.traverse((child) => {
-            if (child.isMesh) {
                 const name = child.name || '';
                 const lowerName = name.toLowerCase();
+                const isPhotoframe = modelConfig?.category === 'Photoframe';
+
                 if (priorityNamesFromLibrary?.includes(name)) {
                     bestTarget = child;
                     return;
                 }
                 const isGenericPriority = genericPriorityNames.some(p => lowerName.includes(p));
-                const isAuxiliary = lowerName.includes('handle') || lowerName.includes('inside') ||
+                let isAuxiliary = lowerName.includes('handle') || 
                     lowerName.includes('bottom') || lowerName.includes('sole') ||
                     lowerName.includes('lace') || lowerName.includes('decal') ||
                     lowerName.includes('shadow');
+                
+                // Exception for photoframes: 'inside' meshes ARE printable areas
+                if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
 
                 if (isGenericPriority && !isAuxiliary && !bestTarget) {
                     bestTarget = child;
@@ -260,7 +260,7 @@ function Model3D({
                         scale={modelConfig?.defaultScale || 1.5}
                         rotation={modelConfig?.defaultRotation || [0, 0, 0]}
                         position={modelConfig?.defaultPosition || [0, 0, 0]}
-                        onClick={handleMeshClick}
+                        onPointerDown={handleMeshClick}
                     />
                 )}
             </group>
@@ -1238,21 +1238,20 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                 <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
                                                         <Canvas 
-                                                            shadows={false} 
-                                                            gl={{ alpha: true, powerPreference: 'high-performance' }}
-                                                            camera={{ 
-                                                                position: [0, 0, 2.5], 
-                                                                fov: 45 
-                                                            }}
+                                                            shadows 
+                                                            camera={{ position: [0, 0, 5], fov: 45 }}
+                                                            gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
+                                                            dpr={[1, 2]}
                                                             onCreated={({ gl }) => {
                                                                 gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                                                    console.error("WebGL Context Lost. Attempting recovery...");
+                                                                    console.warn("3D Canvas WebGL Context Lost. Recovering...");
                                                                     e.preventDefault();
                                                                     // Force remount of 3D Canvas
                                                                     setTimeout(() => setContextKey(prev => prev + 1), 500);
                                                                     setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
                                                                 }, false);
                                                             }}
+                                                            onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
                                                             key={contextKey}
                                                         >
                                                             <ambientLight intensity={1.8} />

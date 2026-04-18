@@ -211,7 +211,7 @@ export const MODELS = {
     defaultScale: 3.0,
     defaultRotation: [0, 0, 0],
     projectionType: 'decal',
-    printableMeshes: ['photo', 'frame', 'mesh', 'baseColor'] // Helpful hints for fallback logic
+    printableMeshes: ['photo', 'frame', 'mesh', 'basecolor', 'inside', 'surface'] // Exhaustive hints for selection
   },
   MASTER_Y_FRAME: {
     id: 'MASTER_Y_FRAME',
