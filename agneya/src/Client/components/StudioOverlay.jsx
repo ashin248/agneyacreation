@@ -20,7 +20,7 @@ import { MODELS } from './Three/ProductLibrary';
 
 const dummyDecal = new THREE.Object3D();
 
-function ProjectedDecalWrapper({ dataUrl, position, rotation, scale, active, zIndex }) {
+function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, active, zIndex }) {
     const texture = useTexture(dataUrl);
 
     // Safety: Do not render the decal until the texture is fully loaded
@@ -32,6 +32,7 @@ function ProjectedDecalWrapper({ dataUrl, position, rotation, scale, active, zIn
 
     return (
         <Decal
+            mesh={mesh}
             position={position}
             rotation={rotation}
             scale={scale}
@@ -114,7 +115,7 @@ function Model3D({
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
 
-                    node.material.color.set('#111111'); 
+                    node.material.color.set('#1111110c');
                     node.material.transparent = true;
                     node.material.opacity = 0;
                     node.material.roughness = 1.0;
@@ -381,6 +382,7 @@ function Model3D({
                         {createPortal(
                             <React.Suspense fallback={null}>
                                 <ProjectedDecalWrapper
+                                    mesh={targetMesh}
                                     {...decalProps}
                                 />
                             </React.Suspense>,
