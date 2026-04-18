@@ -109,7 +109,8 @@ export const MODELS = {
     path: '/models/BusinessCard/Business_Card.glb',
     thumbnail: cardThumb,
     defaultScale: 4.5,
-    defaultRotation: [0.1, -0.5, 0], // Subtle 3D tilt for a professional, grounded look
+    defaultRotation: [0.1, -0.5, 0], 
+    defaultPosition: [0, -4.5, 0],
     projectionType: 'planar',
     printableMeshes: ['Object_4']
   },
