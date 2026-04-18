@@ -46,6 +46,11 @@ const customDesignSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         required: false 
     },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: false
+    },
     productType: {
         type: String,
         required: true

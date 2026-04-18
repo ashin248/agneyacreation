@@ -38,20 +38,19 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale }) {
 }
 
 // Internal 3D Model Component
-function ModelInspector({ productType, canvasObjects, objectAnchors }) {
+function ModelInspector({ productType, canvasObjects, objectAnchors, customModelUrl }) {
     const modelGroupRef = useRef();
     
-    // Find model config by searching MODELS for the productType (which might be a full name like "[Custom] Mug")
-    const modelConfig = useMemo(() => {
-        const nameKey = String(productType).toUpperCase();
-        return Object.values(MODELS).find(m => nameKey.includes(m.category.toUpperCase())) || MODELS.MASTER_CUP;
-    }, [productType]);
-
-    const { scene } = useGLTF(modelConfig.path);
+    // 3D Model Resolution Logic: Custom Geometry > Preset Library
+    const { scene } = useGLTF(customModelUrl || MODELS[Object.values(MODELS).find(m => String(productType).toUpperCase().includes(m.category.toUpperCase()))?.id || 'MASTER_CUP'].path);
     
     // Default Anchor Logic
     const defaultAnchor = useMemo(() => {
         if (!scene) return null;
+        
+        // Find configuration metadata from library if possible
+        const modelConfig = Object.values(MODELS).find(m => String(productType).toUpperCase().includes(m.category.toUpperCase())) || MODELS.MASTER_CUP;
+
         let bestTarget = null;
         scene.traverse((child) => {
             if (child.isMesh && (modelConfig.printableMeshes?.includes(child.name) || !bestTarget)) {
@@ -518,6 +517,7 @@ const DesignReviewPanel = () => {
                                                     productType={selectedDesign.productType}
                                                     canvasObjects={reconstructedObjects}
                                                     objectAnchors={reconstructedAnchors}
+                                                    customModelUrl={selectedDesign.productId?.base3DModelUrl}
                                                 />
                                             </Stage>
                                             <OrbitControls makeDefault enablePan={false} />

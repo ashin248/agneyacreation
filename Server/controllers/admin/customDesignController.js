@@ -12,7 +12,7 @@ exports.getAllPendingDesigns = async (req, res) => {
 
 exports.getAllCustomDesigns = async (req, res) => {
     try {
-        const designs = await CustomDesign.find({}).sort({ createdAt: -1 });
+        const designs = await CustomDesign.find({}).populate('productId').sort({ createdAt: -1 });
         res.status(200).json({ success: true, data: designs });
     } catch (error) {
         console.error('Error fetching all designs:', error);
