@@ -202,6 +202,7 @@ const Model3D = ({
                         object={scene}
                         scale={modelConfig?.defaultScale || 1.5}
                         rotation={modelConfig?.defaultRotation || [0, 0, 0]}
+                        position={modelConfig?.defaultPosition || [0, 0, 0]}
                         onClick={handleMeshClick}
                     />
                 )}
