@@ -862,6 +862,7 @@ const CustomDesign = ({ initialMode, initial3D }) => {
                               </button>
                          </div>
                     </div>
+                    )}
                 </div>
             </main>
 
