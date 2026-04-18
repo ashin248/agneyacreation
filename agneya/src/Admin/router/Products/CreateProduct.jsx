@@ -86,10 +86,6 @@ const CreateProduct = () => {
       if (!basicInfo.customizationType || basicInfo.customizationType === 'None') return "Design framework type is required.";
       if (basicInfo.customizationType === '2D' && !blankFrontImage && !blankBackImage) return "Blueprint images are required for 2D assets.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
-      if (basicInfo.customizationType === 'Both') {
-        if (!blankFrontImage && !blankBackImage) return "Blueprint images are required for 2D component.";
-        if (!base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
-      }
     }
 
     // Variations validation

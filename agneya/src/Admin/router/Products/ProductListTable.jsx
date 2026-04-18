@@ -181,9 +181,6 @@ const ProductListTable = () => {
                                     </td>
                                     <td className="py-3 px-6 text-right">
                                         <div className="flex justify-end gap-1.5">
-                                            <button onClick={() => window.open(`/customize/${p._id}`, '_blank')} className="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-600 hover:text-white transition-all duration-300 border border-blue-100 flex items-center justify-center" title="Observe in Studio">
-                                                <FiEye size={14} />
-                                            </button>
                                             <button onClick={() => handleEdit(p._id)} className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-slate-900 hover:text-white transition-all duration-300 border border-gray-100 flex items-center justify-center" title="Edit Asset">
                                                 <FiEdit3 size={14} />
                                             </button>

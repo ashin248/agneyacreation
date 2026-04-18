@@ -52,8 +52,6 @@ const BasicProductInfoForm = ({
         setBackMaskImagePreview && setBackMaskImagePreview('');
         setBackOverlayImage && setBackOverlayImage(null);
         setBackOverlayImagePreview && setBackOverlayImagePreview('');
-      } else if (value === 'Both') {
-        // Don't clear anything - we want both sets of features
       } else if (value === 'None') {
         // Clear everything if customization is disabled
         setBlankFrontImage && setBlankFrontImage(null);
@@ -389,7 +387,7 @@ const BasicProductInfoForm = ({
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">Customization Type</label>
               <div className="flex bg-white rounded-lg border border-blue-200 overflow-hidden w-fit">
-                {['2D', '3D', 'Both'].map((type) => (
+                {['2D', '3D'].map((type) => (
                   <label key={type} className={`cursor-pointer px-6 py-2 border-r last:border-r-0 border-blue-200 transition-colors ${formData.customizationType === type ? 'bg-blue-600 text-white font-bold' : 'text-gray-600 hover:bg-blue-50'}`}>
                     <input
                       type="radio"
@@ -406,7 +404,7 @@ const BasicProductInfoForm = ({
             </div>
 
             {/* 2D SECTION: Remount on type change to ensure clean transition */}
-            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
+            {formData.customizationType === '2D' && (
               <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div>
                   <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-1">
@@ -493,7 +491,7 @@ const BasicProductInfoForm = ({
             )}
 
             {/* 3D SECTION: Remount on type change to ensure clean transition */}
-            {(formData.customizationType === '3D' || formData.customizationType === 'Both') && (
+            {formData.customizationType === '3D' && (
               <div key="custom-3d-block" className="space-y-8 animate-in fade-in zoom-in duration-500">
                 
                 {/* 1. SYSTEM PRESETS GRID */}

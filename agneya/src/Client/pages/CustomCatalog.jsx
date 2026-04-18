@@ -128,7 +128,7 @@ const CustomCatalog = () => {
                                         
                                         {/* Status Tags Overlay */}
                                         <div className="absolute top-8 left-8 flex flex-col gap-2 z-20">
-                                            {(model.customizationType === '3D' || model.customizationType === 'Both') && (
+                                            {model.customizationType === '3D' && (
                                                 <div className="px-4 py-2 bg-slate-900 text-white text-[8px] font-black uppercase tracking-[0.2em] rounded-full shadow-2xl flex items-center gap-2 border border-white/10">
                                                     <FiHexagon className="text-indigo-400" /> DUAL-MESH 3D
                                                 </div>

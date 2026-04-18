@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MODELS } from '../components/Three/ProductLibrary';
 import { useLocation, useNavigate, Link, useParams } from 'react-router-dom';
 import * as fabric from 'fabric'; 
 import axios from 'axios';
@@ -16,7 +15,6 @@ import {
 } from 'react-icons/fi';
 
 function Model3D({ url, textureUrl }) {
-    if (!url) return null;
     const { scene } = useGLTF(url);
     const textureRef = useRef(null);
 
@@ -111,7 +109,6 @@ const CustomDesign = () => {
         { id: 1, name: 'Item 1', frontCanvasData: null, backCanvasData: null }
     ]);
     const [activeVariationId, setActiveVariationId] = useState(1);
-    const [designMode, setDesignMode] = useState('STUDIO'); // 'STUDIO' or 'ASSISTANCE'
     const [pricing, setPricing] = useState({ unitPrice: 0, totalPrice: 0, bulkApplied: false });
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [orderForm, setOrderForm] = useState({ name: '', phone: '', email: '', address: '', quantity: 1, note: '' });
@@ -435,7 +432,7 @@ const CustomDesign = () => {
             let backDesignOnly = null;
             let backCanvasState = null;
             
-            if ((customizationType === '2D' || customizationType === 'Both') && modelImages.back) {
+            if (customizationType === '2D' && modelImages.back) {
                 const currentVar = variations.find(v => v.id === activeVariationId);
                 const currentFrontState = fabricRef.current?.toJSON(['uid', 'excludeFromExport']);
                 if (currentVar.backCanvasData) {
@@ -530,33 +527,7 @@ const CustomDesign = () => {
 
     return (
         <div className="h-screen flex flex-col bg-[#f8fafc] overflow-hidden select-none font-sans relative">
-            
-            {/* 0. PREMIUM TOP NAVIGATION SYSTEM */}
-            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-4">
-                <div className="bg-white/40 backdrop-blur-3xl p-1.5 rounded-[32px] border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.05)] flex items-center gap-1 transition-all duration-700">
-                    <button 
-                        onClick={() => setDesignMode('STUDIO')}
-                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'STUDIO' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
-                    >
-                        Customer Designs
-                    </button>
-                    <button 
-                        onClick={() => setDesignMode('ASSISTANCE')}
-                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'ASSISTANCE' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
-                    >
-                        Design Assistance
-                    </button>
-                </div>
-                
-                {/* Visual indicator for 'Admin Model' (Template) mapping */}
-                <div className="flex items-center gap-2">
-                    <div className="h-[1px] w-6 bg-slate-200"></div>
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-[0.4em]">{product?.name || 'Matrix Asset'}</span>
-                    <div className="h-[1px] w-6 bg-slate-200"></div>
-                </div>
-            </div>
-
-            {(customizationType === '3D' || customizationType === 'Both') && (
+            {customizationType === '3D' && (
                 <button 
                     onClick={() => setIs3DMode(!is3DMode)}
                     className="fixed bottom-32 right-8 z-[60] bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 hover:scale-105 transition-all text-gray-900 font-bold"
@@ -611,7 +582,6 @@ const CustomDesign = () => {
 
             <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative z-10">
                 
-                {designMode === 'STUDIO' ? (
                 <aside className="hidden md:flex w-20 bg-white border-r border-gray-100 flex-col items-center py-6 gap-6 overflow-y-auto no-scrollbar">
                     {[
                         { id: 'text', icon: <FiType size={18}/>, label: 'Type' },
@@ -633,57 +603,19 @@ const CustomDesign = () => {
                         </button>
                     ))}
                 </aside>
-                ) : (
-                    <aside className="hidden md:flex w-20 bg-slate-900 border-r border-slate-800 flex-col items-center py-8 gap-6 z-30 animate-in slide-in-from-left duration-500">
-                         <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-                             <FiSmile size={20} />
-                         </div>
-                         <div className="h-px w-8 bg-slate-800"></div>
-                         <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest writing-vertical-rl">Mode: Support</span>
-                    </aside>
-                )}
 
-                <div className={`${(activeTab || designMode === 'ASSISTANCE') ? 'flex' : 'hidden md:flex'} fixed inset-0 md:relative md:inset-auto md:w-80 bg-white h-screen md:h-full border-r border-gray-50 shadow-2xl md:shadow-none z-[60] flex-col p-6 animate-in slide-in-from-left duration-300`}>
+                <div className={`${activeTab ? 'flex' : 'hidden md:flex'} fixed inset-0 md:relative md:inset-auto md:w-80 bg-white h-screen md:h-full border-r border-gray-50 shadow-2xl md:shadow-none z-[60] flex-col p-6 animate-in slide-in-from-left duration-300`}>
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                             <h2 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">{designMode === 'STUDIO' ? 'Workspace tools' : 'Expert Support'}</h2>
-                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{designMode === 'STUDIO' ? `${activeTab} node synced` : 'Production Ready Assist'}</p>
+                             <h2 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Workspace tools</h2>
+                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{activeTab} node synced</p>
                         </div>
-                        {activeTab && (
-                            <button onClick={() => setActiveTab(null)} className="md:hidden p-3 bg-gray-50 rounded-xl text-gray-400">
-                                 <FiChevronLeft size={18} />
-                            </button>
-                        )}
+                        <button onClick={() => setActiveTab(null)} className="md:hidden p-3 bg-gray-50 rounded-xl text-gray-400">
+                             <FiChevronLeft size={18} />
+                        </button>
                     </div>
 
-                    {designMode === 'ASSISTANCE' ? (
-                        <div className="flex-1 flex flex-col justify-center gap-8 py-10">
-                            <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden">
-                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-600 rounded-full blur-3xl opacity-50"></div>
-                                <h4 className="text-lg font-black uppercase tracking-tight relative z-10 leading-tight">Can't get it right?</h4>
-                                <p className="text-[10px] font-bold text-slate-400 mt-4 leading-relaxed uppercase tracking-widest relative z-10">Our studio experts will refine your design, fix alignment, and optimize for print.</p>
-                            </div>
-                            
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
-                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm"><FiZap size={18}/></div>
-                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">3D Mapping Fixes</span>
-                                </div>
-                                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
-                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-600 shadow-sm"><FiCheckCircle size={18}/></div>
-                                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Resolution Check</span>
-                                </div>
-                            </div>
-
-                            <button 
-                                onClick={() => navigate(`/request-design?productId=${productId}`)}
-                                className="w-full h-20 bg-indigo-600 text-white rounded-[32px] font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl hover:bg-slate-900 transition-all flex items-center justify-center gap-4 active:scale-95"
-                            >
-                                Get Help <FiSmile size={18} />
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="flex-1 overflow-y-auto no-scrollbar pb-12">
+                    <div className="flex-1 overflow-y-auto no-scrollbar pb-12">
                         {activeTab === 'text' && (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-4">
@@ -807,15 +739,14 @@ const CustomDesign = () => {
                                  </div>
                             </div>
                         )}
-                        </div>
-                    )}
+                    </div>
                 </div>
 
                 <div className="flex-1 flex flex-col items-center justify-center relative bg-[#F4F6F9] px-4 md:px-12">
                     
                     {/* Floating Island for View Controls */}
                     <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 bg-white/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-1.5 rounded-full border border-white/50 flex gap-1">
-                        {(customizationType === '2D' || customizationType === 'Both') && (
+                        {customizationType === '2D' && (
                             <>
                                 <button 
                                     onClick={() => handleSwitchSide('front')} 
@@ -837,7 +768,7 @@ const CustomDesign = () => {
                                 </button>
                             </>
                         )}
-                        {(customizationType === '3D' || customizationType === 'Both') && (
+                        {customizationType === '3D' && (
                             <div className="px-8 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 flex items-center gap-2">
                                 <FiMaximize size={12} className="animate-pulse" /> Neural Space
                             </div>
@@ -880,7 +811,7 @@ const CustomDesign = () => {
                                         <ambientLight intensity={1.2} />
                                         <spotLight position={[10, 10, 10]} intensity={1.5} />
                                          <React.Suspense fallback={null}>
-                                            <Model3D url={product?.base3DModelUrl || (product?.baseModelId ? MODELS[product.baseModelId]?.path : null)} textureUrl={canvasTexture} />
+                                            <Model3D url={product?.base3DModelUrl} textureUrl={canvasTexture} />
                                         </React.Suspense>
                                         <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
                                     </Canvas>
@@ -899,7 +830,7 @@ const CustomDesign = () => {
                             {/* Floating manipulation badge */}
                             <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-slate-900 text-white shadow-2xl rounded-full scale-90 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
                                 <FiMove size={14} className="animate-bounce" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{(customizationType === '3D' || customizationType === 'Both') ? 'Rotate Matrix' : 'Manipulation Active'}</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{customizationType === '3D' ? 'Rotate Matrix' : 'Manipulation Active'}</span>
                             </div>
                         </div>
                     </div>
