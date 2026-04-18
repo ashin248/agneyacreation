@@ -115,17 +115,16 @@ function Model3D({
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
 
-                    node.material.color.set('#1111110c');
-                    node.material.transparent = true;
-                    node.material.opacity = 0;
+                    node.material.color.set('#111111'); // Rich Matte Black
                     node.material.roughness = 1.0;
                     node.material.metalness = 0.0;
-
-                    // PUSH BACK: Force the model geometry to be "behind" the decals
-                    node.material.polygonOffset = true;
-                    node.material.polygonOffsetFactor = 10;
-                    node.material.polygonOffsetUnits = 10;
-
+                    
+                    // CRITICAL: Disable depthWrite. This ensures that Decals projected 
+                    // on this surface always win the depth test even if they are very close.
+                    node.material.depthWrite = false; 
+                    node.material.transparent = false;
+                    node.material.opacity = 1.0;
+                    
                     node.material.needsUpdate = true;
                 } else if (node.material && node.material.roughness !== undefined) {
                     node.material.roughness = 0.6;
