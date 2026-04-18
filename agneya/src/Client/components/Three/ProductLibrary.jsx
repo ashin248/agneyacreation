@@ -109,7 +109,7 @@ export const MODELS = {
     path: '/models/BusinessCard/Business_Card.glb',
     thumbnail: cardThumb,
     defaultScale: 3.5,
-    defaultRotation: [0, 0, 0.18], // Counter-rotation to level the corners perfectly
+    defaultRotation: [0, 0, 0.20], // Fine-tuned to 0.20 for perfect corner leveling
     defaultPosition: [0, 0, 0],
     projectionType: 'planar',
     printableMeshes: ['Object_4']
