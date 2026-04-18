@@ -330,7 +330,7 @@ function Model3D({
                     const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
                     
                     // Map canvas offsets to the surface geometry
-                    const xShift = obj.offsetX * (maxDim * (sourceCanvasWidth / sourceCanvasHeight));
+                    const xShift = obj.offsetX * (maxDim * (obj.canvasWidth / obj.canvasHeight));
                     const yShift = -obj.offsetY * (maxDim);
                     
                     finalPos[0] += localX.x * xShift + localY.x * yShift;
