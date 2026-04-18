@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fi';
 
 function Model3D({ url, textureUrl }) {
+    if (!url) return null;
     const { scene } = useGLTF(url);
     const textureRef = useRef(null);
 
@@ -815,7 +816,9 @@ const CustomDesign = ({ initialMode, initial3D }) => {
                                             <ambientLight intensity={1.5} />
                                             <spotLight position={[10, 10, 10]} intensity={2} />
                                             <React.Suspense fallback={null}>
-                                                <Model3D url={product?.base3DModelUrl} textureUrl={canvasTexture} />
+                                                {product?.base3DModelUrl ? (
+                                                    <Model3D url={product.base3DModelUrl} textureUrl={canvasTexture} />
+                                                ) : null}
                                             </React.Suspense>
                                             <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
                                         </Canvas>
