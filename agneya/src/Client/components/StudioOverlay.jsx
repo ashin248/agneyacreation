@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import * as fabric from 'fabric';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
