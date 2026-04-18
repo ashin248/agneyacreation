@@ -20,7 +20,7 @@ import { MODELS } from './Three/ProductLibrary';
 
 const dummyDecal = new THREE.Object3D();
 
-function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, active, zIndex }) {
+function ProjectedDecalWrapper({ dataUrl, position, rotation, scale, active, zIndex }) {
     const texture = useTexture(dataUrl);
     
     // Safety: Do not render the decal until the texture is fully loaded
@@ -32,10 +32,10 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
 
     return (
         <Decal
-            mesh={mesh} 
             position={position}
             rotation={rotation}
             scale={scale}
+            debug={false} 
         >
             <meshStandardMaterial
                 map={texture}
@@ -114,9 +114,15 @@ function Model3D({
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
                     
-                    node.material.color.set('#ffffff'); // Pure blank white
-                    node.material.roughness = 0.9;
+                    node.material.color.set('#ffffff'); 
+                    node.material.roughness = 1.0;
                     node.material.metalness = 0.0;
+                    
+                    // PUSH BACK: Force the model geometry to be "behind" the decals
+                    node.material.polygonOffset = true;
+                    node.material.polygonOffsetFactor = 10;
+                    node.material.polygonOffsetUnits = 10;
+                    
                     node.material.needsUpdate = true;
                 } else if (node.material && node.material.roughness !== undefined) {
                      node.material.roughness = 0.6;
@@ -368,21 +374,11 @@ function Model3D({
                     zIndex: index * 2
                 };
 
-                // CRITICAL FIX: For Photoframes, project onto the WHOLE GROUP if possible, or targetMesh clearly
-                if (isPlanar && modelConfig?.category === 'Photoframe') {
-                    return (
-                        <group key={`group-decal-${obj.uid}`} renderOrder={100 + index}>
-                             <ProjectedDecalWrapper mesh={targetMesh} {...decalProps} />
-                        </group>
-                    );
-                }
-
                 return (
-                    <group key={`portal-${obj.uid}`}>
+                    <group key={`portal-${obj.uid}`} renderOrder={10 + index}>
                         {createPortal(
                             <React.Suspense fallback={null}>
                                 <ProjectedDecalWrapper
-                                    mesh={targetMesh}
                                     {...decalProps}
                                 />
                             </React.Suspense>,
