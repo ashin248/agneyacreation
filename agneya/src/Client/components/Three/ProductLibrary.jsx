@@ -211,7 +211,7 @@ export const MODELS = {
     defaultScale: 3.0,
     defaultRotation: [0, 0, 0],
     projectionType: 'decal',
-    printableMeshes: ['photo', 'inside', 'mesh', 'surface', 'frame'] // Prioritized internal meshes
+    printableMeshes: ['photo', 'inside', 'mesh', 'surface', 'frame', 'object_5', 'object_7'] // Prioritized internal meshes
   },
   MASTER_Y_FRAME: {
     id: 'MASTER_Y_FRAME',

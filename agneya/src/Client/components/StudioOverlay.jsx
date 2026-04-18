@@ -43,13 +43,13 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
                 transparent={true}
                 alphaTest={0.01}
                 depthTest={true}
-                depthWrite={false}
+                depthWrite={true} // Decals SHOULD write depth to prevent multiple decals from flickering against each other
                 polygonOffset={true}
-                polygonOffsetFactor={-100}
-                polygonOffsetUnits={-100}
+                polygonOffsetFactor={-10} // Reduced from -100 to be less aggressive now that background depthWrite is false
+                polygonOffsetUnits={-10}
                 side={THREE.DoubleSide}
-                color={texture ? '#ffffff' : '#000000'}
-                opacity={texture ? 1 : 0}
+                color={'#ffffff'}
+                opacity={1}
                 emissive={active ? '#4f46e5' : '#000000'}
                 emissiveIntensity={active ? 0.3 : 0}
             />
@@ -103,7 +103,9 @@ function Model3D({
                 // Photoframes: Proactive "Blank Canvas" logic
                 // Strip ALL maps from photo areas or anything that isn't clearly the wall
                 const isWallOrBase = lowerName.includes('wall') || lowerName.includes('base') || lowerName.includes('ground');
-                const shouldStrip = isPhotoframe && !isWallOrBase && node.material?.map;
+                
+                // For photoframes, we want to clear the canvas completely to allow decals to dominate
+                const shouldStrip = isPhotoframe && !isWallOrBase;
 
                 if (shouldStrip) {
                     node.material = node.material.clone();
@@ -115,15 +117,17 @@ function Model3D({
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
 
-                    node.material.color.set('#111111'); // Rich Matte Black
+                    // User requested: rgba(17, 17, 17, 0) - Rich Matte Black with transparency
+                    node.material.color.set('#111111');
+                    node.material.transparent = true;
+                    node.material.opacity = 0.1; // Nearly invisible but still has subtle presence
+                    
                     node.material.roughness = 1.0;
                     node.material.metalness = 0.0;
                     
                     // CRITICAL: Disable depthWrite. This ensures that Decals projected 
                     // on this surface always win the depth test even if they are very close.
                     node.material.depthWrite = false; 
-                    node.material.transparent = false;
-                    node.material.opacity = 1.0;
                     
                     node.material.needsUpdate = true;
                 } else if (node.material && node.material.roughness !== undefined) {
