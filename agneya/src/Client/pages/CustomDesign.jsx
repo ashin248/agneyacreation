@@ -103,14 +103,13 @@ const CustomDesign = ({ initialMode, initial3D }) => {
     const [modelImages, setModelImages] = useState({ front: '', back: '' });
     const [uploaded3DTexture, setUploaded3DTexture] = useState(null);
     const [canvasTexture, setCanvasTexture] = useState(null);
-    const [is3DMode, setIs3DMode] = useState(false);
     const [contextKey, setContextKey] = useState(0); 
     const [variations, setVariations] = useState([
         { id: 1, name: 'Item 1', frontCanvasData: null, backCanvasData: null }
     ]);
     const [activeVariationId, setActiveVariationId] = useState(1);
-    const [designMode, setDesignMode] = useState(initialMode || 'EDITOR'); // 'PREVIEW', 'EDITOR', 'ASSISTANCE'
-    const [activeCanvasSide, setActiveCanvasSide] = useState('front'); // 'front' or 'back'
+    const [designMode, setDesignMode] = useState(initialMode || 'EDITOR');
+    const [activeCanvasSide, setActiveCanvasSide] = useState('front');
     const [is3DMode, setIs3DMode] = useState(initial3D === true);
     const [pricing, setPricing] = useState({ unitPrice: 0, totalPrice: 0, bulkApplied: false });
     const [showOrderModal, setShowOrderModal] = useState(false);
