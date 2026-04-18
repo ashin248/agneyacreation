@@ -1169,6 +1169,26 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
                                                         </Canvas>
                                                 </React.Suspense>
+
+                                                {/* Vertical Floating Designer Rail (Desktop & Large Screens) */}
+                                                <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
+                                                    {[
+                                                        { id: 'uploads', icon: <FiImage size={20}/>, label: 'Images' },
+                                                        { id: 'text', icon: <FiType size={20}/>, label: 'Text' },
+                                                        { id: 'stickers', icon: <FiSmile size={20}/>, label: 'Emotes' },
+                                                        { id: 'draw', icon: <FiEdit3 size={20}/>, label: 'Ink' },
+                                                        { id: 'layers', icon: <FiLayers size={21}/>, label: 'Nodes' }
+                                                    ].map(item => (
+                                                        <button 
+                                                            key={item.id} 
+                                                            onClick={() => { setActiveTab(item.id); if(item.id !== 'draw') setIsDrawing(false); }} 
+                                                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all group relative ${activeTab === item.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-[#0c0c2a]'}`}
+                                                        >
+                                                            {item.icon}
+                                                            <span className="absolute right-full mr-4 px-3 py-1 bg-[#0c0c2a] text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">{item.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
