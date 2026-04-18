@@ -109,6 +109,8 @@ const CustomDesign = () => {
         { id: 1, name: 'Item 1', frontCanvasData: null, backCanvasData: null }
     ]);
     const [activeVariationId, setActiveVariationId] = useState(1);
+    const [designMode, setDesignMode] = useState('EDITOR'); // 'PREVIEW', 'EDITOR', 'ASSISTANCE'
+    const [activeCanvasSide, setActiveCanvasSide] = useState('front'); // 'front' or 'back'
     const [pricing, setPricing] = useState({ unitPrice: 0, totalPrice: 0, bulkApplied: false });
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [orderForm, setOrderForm] = useState({ name: '', phone: '', email: '', address: '', quantity: 1, note: '' });
@@ -117,6 +119,11 @@ const CustomDesign = () => {
     // Refs
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
+    
+    // Additional Refs for 2D Split View
+    const backCanvasRef = useRef(null);
+    const backFabricRef = useRef(null);
+    
     const fileRef = useRef(null);
 
     // Initialization
@@ -176,7 +183,7 @@ const CustomDesign = () => {
         });
     }, [product, orderForm.quantity]);
 
-    // Fabric Initialization
+    // Fabric Initialization (Main Canvas - Used for 3D & Front 2D)
     useEffect(() => {
         if (!canvasRef.current) return;
 
@@ -210,80 +217,72 @@ const CustomDesign = () => {
         canvas.on('object:removed', updateTexture);
         canvas.on('path:created', updateTexture);
 
-        // Grid system
         const currentVar = variations.find(v => v.id === activeVariationId);
-        const data = currentVar ? currentVar[`${viewSide}CanvasData`] : null;
-        if (data) {
-            canvas.loadFromJSON(data).then(() => canvas.renderAll());
-        }
+        const data = currentVar ? currentVar.frontCanvasData : null;
+        if (data) canvas.loadFromJSON(data).then(() => canvas.renderAll());
 
         return () => {
             if (fabricRef.current) {
                 const c = fabricRef.current;
-                fabricRef.current = null; // Immediate nullification to prevent effect race conditions
-                try {
-                    c.off('object:modified', updateTexture);
-                    c.off('object:added', updateTexture);
-                    c.off('object:removed', updateTexture);
-                    c.off('path:created', updateTexture);
-                    c.dispose();
-                } catch (e) {
-                    console.error("Canvas Cleanup Error:", e);
-                }
+                fabricRef.current = null;
+                c.dispose();
             }
         };
-    }, [customizationType, productId, activeVariationId]);
+    }, [productId, activeVariationId]);
+
+    // Secondary Canvas Initialization (Used for Back 2D Split View)
+    useEffect(() => {
+        if (!backCanvasRef.current || designMode !== 'EDITOR') return;
+
+        const canvas = new fabric.Canvas(backCanvasRef.current, {
+            width: 500,
+            height: 600,
+            backgroundColor: 'transparent',
+            preserveObjectStacking: true
+        });
+
+        backFabricRef.current = canvas;
+
+        const currentVar = variations.find(v => v.id === activeVariationId);
+        const data = currentVar ? currentVar.backCanvasData : null;
+        if (data) canvas.loadFromJSON(data).then(() => canvas.renderAll());
+
+        return () => {
+            if (backFabricRef.current) {
+                const c = backFabricRef.current;
+                backFabricRef.current = null;
+                c.dispose();
+            }
+        };
+    }, [productId, activeVariationId, designMode]);
 
     // Background Transitions
     useEffect(() => {
         const applyBg = async () => {
-            const bgUrl = modelImages[viewSide];
-            if (fabricRef.current && bgUrl && customizationType !== '3D') {
-                try {
-                    const img = await fabric.FabricImage.fromURL(bgUrl, { crossOrigin: 'anonymous' });
-                    const scale = Math.min(500 / img.width, 600 / img.height);
-                    img.scale(scale);
-                    img.set({
-                        originX: 'center',
-                        originY: 'center',
-                        left: 250,
-                        top: 300,
-                        selectable: false,
-                        evented: false,
-                        excludeFromExport: true 
-                    });
-                    fabricRef.current.backgroundImage = img;
-                    fabricRef.current.renderAll();
-                } catch (e) {
-                    console.error("BG load failure:", e);
-                }
-            }
+             // Front / Main Canvas BG
+             if (fabricRef.current && modelImages.front) {
+                const img = await fabric.FabricImage.fromURL(modelImages.front, { crossOrigin: 'anonymous' });
+                img.scale(Math.min(500 / img.width, 600 / img.height)).set({ originX: 'center', originY: 'center', left: 250, top: 300, selectable: false, evented: false, excludeFromExport: true });
+                fabricRef.current.backgroundImage = img;
+                fabricRef.current.renderAll();
+             }
+             // Back Canvas BG (Split View Only)
+             if (backFabricRef.current && modelImages.back && designMode === 'EDITOR') {
+                const img = await fabric.FabricImage.fromURL(modelImages.back, { crossOrigin: 'anonymous' });
+                img.scale(Math.min(500 / img.width, 600 / img.height)).set({ originX: 'center', originY: 'center', left: 250, top: 300, selectable: false, evented: false, excludeFromExport: true });
+                backFabricRef.current.backgroundImage = img;
+                backFabricRef.current.renderAll();
+             }
         };
         applyBg();
-    }, [viewSide, modelImages, customizationType, loading]);
+    }, [modelImages, designMode, loading]);
 
     // Canvas Operations
-    const handleSwitchSide = async (side) => {
-        if (side === viewSide || !fabricRef.current) return;
-        
-        const json = fabricRef.current.toJSON();
-        setVariations(prev => prev.map(v => 
-            v.id === activeVariationId ? { ...v, [`${viewSide}CanvasData`]: json } : v
-        ));
-        
-        fabricRef.current.clear();
-        setViewSide(side);
-        
-        const targetVar = variations.find(v => v.id === activeVariationId);
-        const targetData = targetVar ? targetVar[`${side}CanvasData`] : null;
-        if (targetData) {
-            await fabricRef.current.loadFromJSON(targetData);
-            fabricRef.current.renderAll();
-        }
-    };
+    const getActiveFabric = () => activeCanvasSide === 'front' ? fabricRef.current : backFabricRef.current;
 
     const addText = (preset = 'body') => {
-        if (!fabricRef.current) return;
+        const canvas = getActiveFabric();
+        if (!canvas) return;
         const conf = {
             heading: { text: 'HELLO WORLD', size: 60, weight: '900' },
             subhead: { text: 'Subheading Text', size: 30, weight: '700' },
@@ -304,20 +303,21 @@ const CustomDesign = () => {
     };
 
     const addImageFromURL = (url) => {
-        if (!fabricRef.current) return;
+        const canvas = getActiveFabric();
+        if (!canvas) return;
         const imgElement = new Image();
         imgElement.crossOrigin = "anonymous";
         imgElement.onload = () => {
             try {
-                if (!fabricRef.current) return;
+                if (!canvas) return;
                 const ImgClass = fabric.FabricImage || fabric.Image;
                 const img = new ImgClass(imgElement, {
                     width: imgElement.naturalWidth || imgElement.width || 100,
                     height: imgElement.naturalHeight || imgElement.height || 100
                 });
                 img.scaleToWidth(200);
-                img.set({ originX: 'center', originY: 'center', left: 250, top: 300 });
-                fabricRef.current.add(img).centerObject(img).setActiveObject(img).renderAll();
+                img.set({ originX: 'center', originY: 'center', left: 250, top: 250 });
+                canvas.add(img).centerObject(img).setActiveObject(img).renderAll();
             } catch (err) {
                 console.error("CustomDesign Add Image Error:", err);
             }
@@ -330,7 +330,7 @@ const CustomDesign = () => {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = (f) => {
-            if (fabricRef.current) {
+            if (getActiveFabric()) {
                 addImageFromURL(f.target.result);
             }
         };
@@ -338,7 +338,8 @@ const CustomDesign = () => {
     };
 
     const handleRemoveBg = async () => {
-        const activeObj = fabricRef.current?.getActiveObject();
+        const canvas = getActiveFabric();
+        const activeObj = canvas?.getActiveObject();
         if (!activeObj) {
             alert("No target identified. Select a canvas element to initiate AI removal.");
             return;
@@ -380,10 +381,10 @@ const CustomDesign = () => {
                     flipX: activeObj.flipX,
                     flipY: activeObj.flipY
                 });
-                fabricRef.current.add(img);
-                fabricRef.current.remove(activeObj);
-                fabricRef.current.setActiveObject(img);
-                fabricRef.current.renderAll();
+                canvas.add(img);
+                canvas.remove(activeObj);
+                canvas.setActiveObject(img);
+                canvas.renderAll();
             };
             imgElement.src = processedUrl;
         } catch (e) {
@@ -395,14 +396,15 @@ const CustomDesign = () => {
     };
 
     const toggleDrawing = () => {
-        if (!fabricRef.current) return;
+        const canvas = getActiveFabric();
+        if (!canvas) return;
         const next = !isDrawingMode;
         setIsDrawingMode(next);
-        fabricRef.current.isDrawingMode = next;
+        canvas.isDrawingMode = next;
         if (next) {
-            fabricRef.current.freeDrawingBrush = new fabric.PencilBrush(fabricRef.current);
-            fabricRef.current.freeDrawingBrush.width = parseInt(brushSize);
-            fabricRef.current.freeDrawingBrush.color = brushColor;
+            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+            canvas.freeDrawingBrush.width = parseInt(brushSize);
+            canvas.freeDrawingBrush.color = brushColor;
         }
     };
 
@@ -425,23 +427,11 @@ const CustomDesign = () => {
         
         setIsSubmitting(true);
         try {
-            // ... (rest of the logic remains same, just ensure we use 'mode' at the end)
             const frontDesignOnly = fabricRef.current?.toDataURL({ format: 'png', quality: 1.0, multiplier: 2 });
+            const backDesignOnly = backFabricRef.current?.toDataURL({ format: 'png', quality: 1.0, multiplier: 2 });
+            
             const frontCanvasData = fabricRef.current?.toJSON(['uid', 'excludeFromExport']);
-            
-            let backDesignOnly = null;
-            let backCanvasState = null;
-            
-            if (customizationType === '2D' && modelImages.back) {
-                const currentVar = variations.find(v => v.id === activeVariationId);
-                const currentFrontState = fabricRef.current?.toJSON(['uid', 'excludeFromExport']);
-                if (currentVar.backCanvasData) {
-                    await fabricRef.current.loadFromJSON(currentVar.backCanvasData);
-                    backDesignOnly = fabricRef.current.toDataURL({ format: 'png', quality: 1.0, multiplier: 2 });
-                    backCanvasState = currentVar.backCanvasData;
-                    await fabricRef.current.loadFromJSON(currentFrontState); 
-                }
-            }
+            const backCanvasData = backFabricRef.current?.toJSON(['uid', 'excludeFromExport']);
 
             const generateComposite = async (designDataUrl, bgUrl) => {
                 return new Promise((resolve) => {
@@ -527,15 +517,30 @@ const CustomDesign = () => {
 
     return (
         <div className="h-screen flex flex-col bg-[#f8fafc] overflow-hidden select-none font-sans relative">
-            {customizationType === '3D' && (
-                <button 
-                    onClick={() => setIs3DMode(!is3DMode)}
-                    className="fixed bottom-32 right-8 z-[60] bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3 hover:scale-105 transition-all text-gray-900 font-bold"
-                >
-                    <FiLayers className={is3DMode ? 'text-indigo-600' : 'text-gray-400'} />
-                    <span className="text-[10px] uppercase tracking-widest">{is3DMode ? 'Close 3D View' : 'Live 3D Preview'}</span>
-                </button>
-            )}
+
+            {/* 0. PREMIUM TOP NAVIGATION SYSTEM (3 TABS) */}
+            <div className="absolute top-8 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-4">
+                <div className="bg-white/40 backdrop-blur-3xl p-1.5 rounded-[32px] border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.05)] flex items-center gap-1 transition-all duration-700">
+                    <button 
+                        onClick={() => { setDesignMode('PREVIEW'); setIs3DMode(true); }}
+                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'PREVIEW' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
+                    >
+                        Customer Designs
+                    </button>
+                    <button 
+                        onClick={() => { setDesignMode('EDITOR'); setIs3DMode(false); }}
+                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'EDITOR' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
+                    >
+                        2D Designs
+                    </button>
+                    <button 
+                        onClick={() => { setDesignMode('ASSISTANCE'); setIs3DMode(false); }}
+                        className={`px-8 py-3 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${designMode === 'ASSISTANCE' ? 'bg-slate-950 text-white shadow-2xl scale-100' : 'text-slate-400 hover:text-slate-900 hover:bg-white/50'}`}
+                    >
+                        Design Assistance
+                    </button>
+                </div>
+            </div>
 
             <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-200/20 blur-[120px] rounded-full pointer-events-none"></div>
             <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-emerald-200/20 blur-[100px] rounded-full pointer-events-none"></div>
@@ -582,6 +587,7 @@ const CustomDesign = () => {
 
             <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative z-10">
                 
+                {designMode === 'EDITOR' ? (
                 <aside className="hidden md:flex w-20 bg-white border-r border-gray-100 flex-col items-center py-6 gap-6 overflow-y-auto no-scrollbar">
                     {[
                         { id: 'text', icon: <FiType size={18}/>, label: 'Type' },
@@ -603,19 +609,42 @@ const CustomDesign = () => {
                         </button>
                     ))}
                 </aside>
+                ) : (
+                    <aside className="hidden md:flex w-20 bg-slate-900 border-r border-slate-800 flex-col items-center py-8 gap-6 z-30 animate-in slide-in-from-left duration-500">
+                         <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                             <FiSmile size={20} />
+                         </div>
+                    </aside>
+                )}
 
-                <div className={`${activeTab ? 'flex' : 'hidden md:flex'} fixed inset-0 md:relative md:inset-auto md:w-80 bg-white h-screen md:h-full border-r border-gray-50 shadow-2xl md:shadow-none z-[60] flex-col p-6 animate-in slide-in-from-left duration-300`}>
+                <div className={`${(activeTab || designMode === 'ASSISTANCE') ? 'flex' : 'hidden md:flex'} fixed inset-0 md:relative md:inset-auto md:w-80 bg-white h-screen md:h-full border-r border-gray-50 shadow-2xl md:shadow-none z-[60] flex-col p-6 animate-in slide-in-from-left duration-300`}>
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                             <h2 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Workspace tools</h2>
-                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{activeTab} node synced</p>
+                             <h2 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">{designMode === 'EDITOR' ? 'Workspace tools' : 'Expert Support'}</h2>
+                             <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">{designMode === 'EDITOR' ? `${activeTab} node synced` : 'Production Ready Assist'}</p>
                         </div>
-                        <button onClick={() => setActiveTab(null)} className="md:hidden p-3 bg-gray-50 rounded-xl text-gray-400">
-                             <FiChevronLeft size={18} />
-                        </button>
+                        {activeTab && (
+                            <button onClick={() => setActiveTab(null)} className="md:hidden p-3 bg-gray-50 rounded-xl text-gray-400">
+                                 <FiChevronLeft size={18} />
+                            </button>
+                        )}
                     </div>
 
-                    <div className="flex-1 overflow-y-auto no-scrollbar pb-12">
+                    {designMode === 'ASSISTANCE' ? (
+                        <div className="flex-1 flex flex-col justify-center gap-8 py-10">
+                            <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden">
+                                <h4 className="text-lg font-black uppercase tracking-tight relative z-10 leading-tight">Expert Help</h4>
+                                <p className="text-[10px] font-bold text-slate-400 mt-4 relative z-10">Our studio experts will refine your design for production.</p>
+                            </div>
+                            <button 
+                                onClick={() => navigate(`/request-design?productId=${productId}`)}
+                                className="w-full h-20 bg-indigo-600 text-white rounded-[32px] font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl hover:bg-slate-900 transition-all active:scale-95 flex items-center justify-center gap-4"
+                            >
+                                Get Help <FiSmile size={18} />
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex-1 overflow-y-auto no-scrollbar pb-12">
                         {activeTab === 'text' && (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 gap-4">
@@ -711,7 +740,7 @@ const CustomDesign = () => {
                                 
                                 <div className="space-y-6">
                                      <div className="flex items-center justify-between">
-                                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tip Diameter</span>
+                                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ">Tip Diameter</span>
                                           <span className="text-xs font-black text-gray-900">{brushSize}px</span>
                                      </div>
                                      <input type="range" min="1" max="50" value={brushSize} onChange={e => setBrushSize(e.target.value)} className="w-full h-2 bg-gray-100 rounded-full appearance-none cursor-pointer accent-indigo-600" />
@@ -739,103 +768,83 @@ const CustomDesign = () => {
                                  </div>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
-                <div className="flex-1 flex flex-col items-center justify-center relative bg-[#F4F6F9] px-4 md:px-12">
+                <div className="flex-1 flex flex-col items-center justify-center relative bg-[#F4F6F9] px-4 md:px-12 overflow-y-auto pt-32 pb-20">
                     
-                    {/* Floating Island for View Controls */}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 bg-white/90 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-1.5 rounded-full border border-white/50 flex gap-1">
-                        {customizationType === '2D' && (
-                            <>
-                                <button 
-                                    onClick={() => handleSwitchSide('front')} 
-                                    className={`relative px-8 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 overflow-hidden ${viewSide === 'front' ? 'text-white shadow-md' : 'text-gray-500 hover:text-gray-900 bg-transparent'}`}
-                                >
-                                    {viewSide === 'front' && <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)]"></div>}
-                                    <span className="relative z-10 flex items-center justify-center gap-2">
-                                        Front View
-                                    </span>
-                                </button>
-                                <button 
-                                    onClick={() => handleSwitchSide('back')} 
-                                    className={`relative px-8 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 overflow-hidden ${viewSide === 'back' ? 'text-white shadow-md' : 'text-gray-500 hover:text-gray-900 bg-transparent'}`}
-                                >
-                                    {viewSide === 'back' && <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-full shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)]"></div>}
-                                    <span className="relative z-10 flex items-center justify-center gap-2">
-                                        Back View
-                                    </span>
-                                </button>
-                            </>
-                        )}
-                        {customizationType === '3D' && (
-                            <div className="px-8 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 flex items-center gap-2">
-                                <FiMaximize size={12} className="animate-pulse" /> Neural Space
-                            </div>
-                        )}
-                    </div>
+                    {designMode === 'EDITOR' ? (
+                        <div className="flex flex-col lg:flex-row gap-12 items-start justify-center w-full animate-in fade-in zoom-in-95 duration-700">
+                             {/* Front Side Section */}
+                             <div className="flex flex-col items-center gap-6">
+                                 <button 
+                                    onClick={() => setActiveCanvasSide('front')}
+                                    className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] transition-all ${activeCanvasSide === 'front' ? 'bg-slate-900 text-white shadow-xl scale-110' : 'bg-slate-200 text-slate-400'}`}
+                                 >
+                                    Front Perspective
+                                 </button>
+                                 <div className={`relative group bg-white/40 backdrop-blur-3xl rounded-[40px] shadow-2xl p-6 border-2 transition-all ${activeCanvasSide === 'front' ? 'border-indigo-600 scale-105' : 'border-white/60'}`}>
+                                     <div className="bg-white rounded-[24px] overflow-hidden relative w-[400px] h-[500px]">
+                                         <canvas ref={canvasRef} />
+                                     </div>
+                                 </div>
+                             </div>
 
-                    <div 
-                        className="relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] mt-12"
-                        style={{ transform: `scale(${canvasScale})` }}
-                    >
-                        {/* Premium Glassmorphic Editing Box */}
-                        <div className="relative group bg-white/40 backdrop-blur-3xl rounded-[60px] shadow-[0_40px_100px_rgba(8,14,33,0.06),_inset_0_2px_4px_rgba(255,255,255,0.9)] p-8 md:p-10 border border-white/60 flex items-center justify-center gap-12 before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-br before:from-indigo-100/50 before:to-purple-50/50 before:rounded-[60px] before:blur-2xl before:opacity-60">
-                            
-                            {/* Inner Canvas Container */}
-                            <div className="bg-white rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05),_inset_0_0_0_1px_rgba(0,0,0,0.03)] overflow-hidden relative">
-                                <div className={`${is3DMode ? 'w-[400px]' : 'w-[500px]'} h-[600px] relative transition-all duration-700`}>
-                                    <canvas ref={canvasRef} />
-                                </div>
-                                {/* Corner Accents */}
-                                <div className="absolute top-4 left-4 w-2 h-2 border-t-2 border-l-2 border-indigo-200"></div>
-                                <div className="absolute top-4 right-4 w-2 h-2 border-t-2 border-r-2 border-indigo-200"></div>
-                                <div className="absolute bottom-4 left-4 w-2 h-2 border-b-2 border-l-2 border-indigo-200"></div>
-                                <div className="absolute bottom-4 right-4 w-2 h-2 border-b-2 border-r-2 border-indigo-200"></div>
-                            </div>
-
-                            {is3DMode && (
-                                <div className="w-[400px] h-[600px] bg-gradient-to-br from-gray-50 to-white rounded-[40px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05),_inset_0_0_0_1px_rgba(0,0,0,0.03)] animate-in slide-in-from-right duration-700 relative">
-                                     <Canvas 
-                                        camera={{ position: [0, 0, 5], fov: 50 }} 
-                                        gl={{ precision: 'highp', powerPreference: 'high-performance' }}
-                                        onCreated={({ gl }) => {
-                                            gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                                console.warn("WebGL Context Lost. Recovering...");
-                                                e.preventDefault();
-                                                setTimeout(() => setContextKey(prev => prev + 1), 500);
-                                            }, false);
-                                        }}
-                                        key={contextKey}
-                                    >
-                                        <ambientLight intensity={1.2} />
-                                        <spotLight position={[10, 10, 10]} intensity={1.5} />
-                                         <React.Suspense fallback={null}>
-                                            <Model3D url={product?.base3DModelUrl} textureUrl={canvasTexture} />
-                                        </React.Suspense>
-                                        <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
-                                    </Canvas>
-                                    
-                                    {/* 3D indicator */}
-                                    <div className="absolute top-6 right-6 flex gap-1.5 backdrop-blur-md bg-white/50 px-3 py-1.5 rounded-full border border-white/60 shadow-sm">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse mt-0.5"></div>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-indigo-900 leading-none mt-0.5">Live 3D</span>
+                             {/* Back Side Section */}
+                             <div className="flex flex-col items-center gap-6">
+                                 <button 
+                                    onClick={() => setActiveCanvasSide('back')}
+                                    className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-[0.3em] transition-all ${activeCanvasSide === 'back' ? 'bg-slate-900 text-white shadow-xl scale-110' : 'bg-slate-200 text-slate-400'}`}
+                                 >
+                                    Back Perspective
+                                 </button>
+                                 <div className={`relative group bg-white/40 backdrop-blur-3xl rounded-[40px] shadow-2xl p-6 border-2 transition-all ${activeCanvasSide === 'back' ? 'border-indigo-600 scale-105' : 'border-white/60'}`}>
+                                     <div className="bg-white rounded-[24px] overflow-hidden relative w-[400px] h-[500px]">
+                                         <canvas ref={backCanvasRef} />
+                                     </div>
+                                 </div>
+                             </div>
+                        </div>
+                    ) : (
+                        <div className="relative z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]" style={{ transform: `scale(${canvasScale})` }}>
+                            {designMode === 'PREVIEW' ? (
+                                <div className="relative group bg-white/40 backdrop-blur-3xl rounded-[60px] shadow-2xl p-10 border border-white/60 flex items-center justify-center min-w-[600px] min-h-[600px]">
+                                    <div className="w-[500px] h-[600px] bg-gradient-to-br from-gray-50 to-white rounded-[40px] overflow-hidden shadow-2xl relative">
+                                        <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
+                                            <ambientLight intensity={1.5} />
+                                            <spotLight position={[10, 10, 10]} intensity={2} />
+                                            <React.Suspense fallback={null}>
+                                                <Model3D url={product?.base3DModelUrl} textureUrl={canvasTexture} />
+                                            </React.Suspense>
+                                            <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
+                                        </Canvas>
+                                        <div className="absolute top-8 right-8 flex gap-2 backdrop-blur-md bg-white/60 px-4 py-2 rounded-full border border-white/60 shadow-lg">
+                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-0.5"></div>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-900 leading-none mt-1">Immersive 3D</span>
+                                        </div>
                                     </div>
                                 </div>
+                            ) : (
+                                <div className="max-w-2xl bg-white rounded-[48px] p-20 shadow-2xl border border-gray-100 flex flex-col items-center text-center animate-in slide-in-from-bottom-12 duration-1000">
+                                    <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 mb-8 animate-bounce">
+                                        <FiZap size={40} />
+                                    </div>
+                                    <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-6">Expert Brief Protocol</h2>
+                                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-relaxed mb-12">Submit your requirements and our neural-team will engineer a master-design for you.</p>
+                                    <button 
+                                        onClick={() => navigate(`/request-design?productId=${productId}`)}
+                                        className="h-24 px-16 bg-slate-900 text-white rounded-[32px] font-black text-xs uppercase tracking-[0.4em] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] hover:bg-indigo-600 transition-all hover:-translate-y-2 active:scale-95 flex items-center gap-4"
+                                    >
+                                        Initialize Support <FiArrowUp className="rotate-45" />
+                                    </button>
+                                </div>
                             )}
-
-                            {/* Outer dashed indicator ring */}
-                            <div className="absolute inset-4 border-[2px] border-dashed border-indigo-200/40 rounded-[48px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            
-                            {/* Floating manipulation badge */}
-                            <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-slate-900 text-white shadow-2xl rounded-full scale-90 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-                                <FiMove size={14} className="animate-bounce" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{customizationType === '3D' ? 'Rotate Matrix' : 'Manipulation Active'}</span>
-                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Matrix Variations Selector */}
+                    {/* Matrix Variations Selector (Only for Preview/Editor) */}
+                    {designMode !== 'ASSISTANCE' && (
                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-white/80 backdrop-blur-md p-2 rounded-2xl border border-gray-100 shadow-xl">
                          <div className="flex gap-2.5 items-center px-2">
                               {variations.map(v => (

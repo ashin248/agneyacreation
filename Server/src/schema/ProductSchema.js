@@ -110,7 +110,7 @@ const productSchema = new mongoose.Schema(
     },
     customizationType: { 
       type: String, 
-      enum: ['None', '2D', '3D'], 
+      enum: ['None', '2D', '3D', 'Both'], 
       default: 'None' 
     },
     baseModelId: {
