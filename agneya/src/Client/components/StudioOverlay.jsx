@@ -159,7 +159,11 @@ function Model3D({
             
             // Smarter default anchor: Look for the 'Front' face by inspecting normals if possible
             // or default to a safe standard for the given model category
-            const isPlanar = modelConfig?.projectionType === 'planar' || !modelConfig?.projectionType;
+            const isPlanar = modelConfig?.projectionType === 'planar' || 
+                             modelConfig?.projectionType === 'decal' ||
+                             modelConfig?.category === 'Photoframe' ||
+                             !modelConfig?.projectionType;
+                             
             const defaultPos = isPlanar ? 
                 [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : // Center Top for flat items
                 [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  // Center Front for mugs
@@ -181,17 +185,26 @@ function Model3D({
         const clickedMesh = e.object;
         if (!clickedMesh.isMesh) return;
         
+        const lowerName = clickedMesh.name.toLowerCase();
+        console.log("3D Selection Clicked:", lowerName, clickedMesh.uuid); // CRITICAL DEBUG LOG
+
         // Strict Model Selection Guard: Prevent selecting non-printable parts (like handles)
+        // For Photoframes, we want to be much more permissive as almost every part is a frame
+        const isPhotoframe = modelConfig?.category === 'Photoframe';
+
         if (modelConfig?.printableMeshes && modelConfig.printableMeshes.length > 0) {
-            if (!modelConfig.printableMeshes.some(p => clickedMesh.name.includes(p) || p.includes(clickedMesh.name))) {
-                return; // Ignore clicks on non-printable areas
+            if (!modelConfig.printableMeshes.some(p => lowerName.includes(p.toLowerCase()) || p.toLowerCase().includes(lowerName))) {
+                if (!isPhotoframe) return; // Ignore clicks on non-printable areas ONLY if not a photoframe
             }
         } else {
             // Fallback generic guard
-            const lowerName = clickedMesh.name.toLowerCase();
-            const isAuxiliary = lowerName.includes('handle') || lowerName.includes('inside') ||
+            let isAuxiliary = lowerName.includes('handle') || 
                 lowerName.includes('bottom') || lowerName.includes('sole') ||
                 lowerName.includes('shadow') || lowerName.includes('decal');
+            
+            // Note: 'inside' is usually auxiliary for mugs/boxes, but for photo frames it is the photo area!
+            if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
+
             if (isAuxiliary) return;
         }
         

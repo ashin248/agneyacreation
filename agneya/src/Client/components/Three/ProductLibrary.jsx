@@ -211,7 +211,7 @@ export const MODELS = {
     defaultScale: 3.0,
     defaultRotation: [0, 0, 0],
     projectionType: 'decal',
-    printableMeshes: [] // Empty array enables intelligent fallback (allows selection of all 12+ frames)
+    printableMeshes: ['photo', 'frame', 'mesh', 'baseColor'] // Helpful hints for fallback logic
   },
   MASTER_Y_FRAME: {
     id: 'MASTER_Y_FRAME',
