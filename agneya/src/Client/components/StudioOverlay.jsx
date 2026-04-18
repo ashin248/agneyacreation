@@ -22,10 +22,13 @@ const dummyDecal = new THREE.Object3D();
 
 const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, active, zIndex }) => {
     const texture = useTexture(dataUrl);
-    if (texture) {
-        texture.anisotropy = 16;
-        texture.needsUpdate = true;
-    }
+    
+    // Safety: Do not render the decal until the texture is fully loaded
+    // This prevents the "white patches" (default material color) from appearing
+    if (!texture) return null;
+
+    texture.anisotropy = 16;
+    texture.needsUpdate = true;
 
     return (
         <Decal
@@ -37,6 +40,7 @@ const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, activ
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
+                alphaTest={0.05} // Cleanly clip transparent edges
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
