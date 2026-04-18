@@ -32,8 +32,11 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
 
     return (
         <Decal
-            mesh={mesh} // CRITICAL FIX: Ensure decal knows which mesh to project onto
+            mesh={mesh} 
             position={position}
+            rotation={rotation}
+            scale={scale}
+        >
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
@@ -41,7 +44,7 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-100} // Absolute top priority
+                polygonOffsetFactor={-100} 
                 polygonOffsetUnits={-100}
                 side={THREE.DoubleSide}
                 color={texture ? '#ffffff' : '#000000'}
