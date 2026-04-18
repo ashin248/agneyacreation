@@ -20,7 +20,7 @@ import { MODELS } from './Three/ProductLibrary';
 
 const dummyDecal = new THREE.Object3D();
 
-const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, active, zIndex }) => {
+function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, active, zIndex }) {
     const texture = useTexture(dataUrl);
     
     // Safety: Do not render the decal until the texture is fully loaded
@@ -54,17 +54,30 @@ const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, activ
             />
         </Decal>
     );
-};
+}
 
-const Model3D = ({
+// 2. Main 3D Model Component (Hoisted helper)
+function Model3D({
     baseModelId, url, canvasObjects, objectAnchors, onAnchorUpdate, onPartSelect,
     activeObjectId, previewRotation = 0
-}) => {
+}) {
     const modelGroupRef = useRef();
     const modelKey = baseModelId?.toString().toUpperCase();
     const modelConfig = modelKey ? MODELS[modelKey] : null;
     const modelUrl = modelConfig ? modelConfig.path : url;
 
+    // 1. Initial Logic & Asset Discovery
+    let rawUrl = (modelUrl && typeof modelUrl === 'string' && modelUrl.length > 5) ? modelUrl : '/models/mug/mug.glb';
+    if (rawUrl.includes('t-shirt.glb') && !rawUrl.includes('oversized')) {
+        rawUrl = '/models/Tshirt/oversized_t-shirt.glb'; // legacy interceptor
+    }
+    const safeModelUrl = rawUrl;
+
+    // 2. Resource Initialization (Hook must come before effects that use its output)
+    const { scene } = useGLTF(safeModelUrl);
+    const [defaultAnchor, setDefaultAnchor] = useState(null);
+
+    // 3. Effects & Post-Processing
     // CLEANUP LOGIC: Remove default textures from Photoframe models to provide a clean canvas
     useLayoutEffect(() => {
         if (!scene || !modelConfig) return;
@@ -96,15 +109,7 @@ const Model3D = ({
             }
         });
     }, [scene, modelConfig]);
-    
-    // Guard: Prevent useGLTF from fetching '' or invalid paths
-    let rawUrl = (modelUrl && typeof modelUrl === 'string' && modelUrl.length > 5) ? modelUrl : '/models/mug/mug.glb';
-    if (rawUrl.includes('t-shirt.glb') && !rawUrl.includes('oversized')) {
-        rawUrl = '/models/Tshirt/oversized_t-shirt.glb'; // legacy interceptor
-    }
-    const safeModelUrl = rawUrl;
-    const { scene } = useGLTF(safeModelUrl);
-    const [defaultAnchor, setDefaultAnchor] = useState(null);
+
 
     useEffect(() => {
         let bestTarget = null;
@@ -343,6 +348,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [companyReferences, setCompanyReferences] = useState([]);
     const [activeStudioView, setActiveStudioView] = useState('3D'); // '2D' or '3D'
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
+    const [contextKey, setContextKey] = useState(0); 
 
 
 
@@ -1195,9 +1201,12 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                 gl.domElement.addEventListener('webglcontextlost', (e) => {
                                                                     console.error("WebGL Context Lost. Attempting recovery...");
                                                                     e.preventDefault();
+                                                                    // Force remount of 3D Canvas
+                                                                    setTimeout(() => setContextKey(prev => prev + 1), 500);
                                                                     setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
                                                                 }, false);
                                                             }}
+                                                            key={contextKey}
                                                         >
                                                             <ambientLight intensity={1.8} />
                                                             <spotLight position={[10, 20, 10]} intensity={3} />

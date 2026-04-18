@@ -10,7 +10,8 @@ import { saveAs } from 'file-saver';
 import { LibraryProduct, MODELS } from '../../../Client/components/Three/ProductLibrary';
 
 // Helper for Decal Projection (Ported from Studio)
-const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale }) => {
+// Helper for Decal Projection (Ported from Studio)
+function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale }) {
     const texture = useTexture(dataUrl);
     if (texture) {
         texture.anisotropy = 16;
@@ -34,10 +35,10 @@ const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale }) => 
             />
         </Decal>
     );
-};
+}
 
 // Internal 3D Model Component
-const ModelInspector = ({ productType, canvasObjects, objectAnchors }) => {
+function ModelInspector({ productType, canvasObjects, objectAnchors }) {
     const modelGroupRef = useRef();
     
     // Find model config by searching MODELS for the productType (which might be a full name like "[Custom] Mug")
@@ -50,6 +51,7 @@ const ModelInspector = ({ productType, canvasObjects, objectAnchors }) => {
     
     // Default Anchor Logic
     const defaultAnchor = useMemo(() => {
+        if (!scene) return null;
         let bestTarget = null;
         scene.traverse((child) => {
             if (child.isMesh && (modelConfig.printableMeshes?.includes(child.name) || !bestTarget)) {
@@ -151,12 +153,13 @@ const ModelInspector = ({ productType, canvasObjects, objectAnchors }) => {
             })}
         </group>
     );
-};
+}
 
 const DesignReviewPanel = () => {
     const [allDesigns, setAllDesigns] = useState([]);
     const [selectedDesign, setSelectedDesign] = useState(null);
     const [contextKey, setContextKey] = useState(0); 
+    const [isSharing, setIsSharing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [adminNotes, setAdminNotes] = useState('');
@@ -499,15 +502,14 @@ const DesignReviewPanel = () => {
                                             shadows 
                                             camera={{ position: [0, 0, 5], fov: 45 }}
                                             gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance' }}
-                                        onCreated={({ gl }) => {
-                                            gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                                console.warn("Admin Hub: WebGL Context Lost. Re-initializing...");
-                                                e.preventDefault();
-                                                setTimeout(() => setContextKey(prev => prev + 1), 100);
-                                            }, false);
-                                        }}
-                                        key={contextKey}
-                                            data-three-canvas
+                                            key={contextKey}
+                                            onCreated={({ gl }) => {
+                                                gl.domElement.addEventListener('webglcontextlost', (e) => {
+                                                    console.warn("Admin Canvas WebGL Context Lost. Recovering...");
+                                                    e.preventDefault();
+                                                    setTimeout(() => setContextKey(prev => prev + 1), 500);
+                                                }, false);
+                                            }}
                                         >
                                             <Stage environment="city" intensity={0.5} contactShadow={{ opacity: 0.2 }}>
                                                 <ModelInspector 

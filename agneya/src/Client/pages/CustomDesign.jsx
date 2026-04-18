@@ -14,7 +14,7 @@ import {
     FiArrowUp, FiRotateCcw, FiSave, FiMove, FiActivity, FiZap, FiMaximize, FiCheckCircle
 } from 'react-icons/fi';
 
-const Model3D = ({ url, textureUrl }) => {
+function Model3D({ url, textureUrl }) {
     const { scene } = useGLTF(url);
     const textureRef = useRef(null);
 
@@ -75,7 +75,7 @@ const Model3D = ({ url, textureUrl }) => {
     }, [textureUrl, scene]);
 
     return <primitive object={scene} scale={1.5} />;
-};
+}
 
 
 const CustomDesign = () => {
@@ -803,7 +803,7 @@ const CustomDesign = () => {
                                             gl.domElement.addEventListener('webglcontextlost', (e) => {
                                                 console.warn("WebGL Context Lost. Recovering...");
                                                 e.preventDefault();
-                                                setTimeout(() => setContextKey(prev => prev + 1), 100);
+                                                setTimeout(() => setContextKey(prev => prev + 1), 500);
                                             }, false);
                                         }}
                                         key={contextKey}
