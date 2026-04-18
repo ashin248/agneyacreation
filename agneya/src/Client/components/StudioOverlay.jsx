@@ -44,8 +44,8 @@ const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, activ
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-10}
-                polygonOffsetUnits={-10}
+                polygonOffsetFactor={-15} // Stronger priority to stay on top of frame glass/textures
+                polygonOffsetUnits={-15}
                 side={THREE.FrontSide}
                 color={texture ? '#ffffff' : '#000000'}
                 opacity={texture ? 1 : 0}
@@ -64,6 +64,38 @@ const Model3D = ({
     const modelKey = baseModelId?.toString().toUpperCase();
     const modelConfig = modelKey ? MODELS[modelKey] : null;
     const modelUrl = modelConfig ? modelConfig.path : url;
+
+    // CLEANUP LOGIC: Remove default textures from Photoframe models to provide a clean canvas
+    useLayoutEffect(() => {
+        if (!scene || !modelConfig) return;
+        
+        scene.traverse((node) => {
+            if (node.isMesh) {
+                // If it's a Photoframe, we want to clear out the default NYC/Stock photos
+                // to make room for user uploads. We target meshes that are clickable.
+                const lowerName = node.name.toLowerCase();
+                const isPhotoArea = modelConfig.category === 'Photoframe' && 
+                                  (!modelConfig.printableMeshes || 
+                                   modelConfig.printableMeshes.length === 0 || 
+                                   modelConfig.printableMeshes.some(m => lowerName.includes(m.toLowerCase())));
+
+                if (isPhotoArea) {
+                    if (node.material) {
+                        // Create a clone to avoid affecting other instances if any
+                        node.material = node.material.clone();
+                        node.material.map = null;
+                        node.material.color.set('#f3f4f6'); // Clean neutral white
+                        node.material.needsUpdate = true;
+                    }
+                }
+                
+                // Ensure photo frames don't have aggressive highlights that wash out decals
+                if (node.material && node.material.roughness !== undefined) {
+                    node.material.roughness = 0.8;
+                }
+            }
+        });
+    }, [scene, modelConfig]);
     
     // Guard: Prevent useGLTF from fetching '' or invalid paths
     let rawUrl = (modelUrl && typeof modelUrl === 'string' && modelUrl.length > 5) ? modelUrl : '/models/mug/mug.glb';
