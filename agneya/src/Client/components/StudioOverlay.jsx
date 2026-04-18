@@ -44,8 +44,8 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-15} // Stronger priority to stay on top of frame glass/textures
-                polygonOffsetUnits={-15}
+                polygonOffsetFactor={-50} // Forced priority to stay on top of frame glass/default textures
+                polygonOffsetUnits={-50}
                 side={THREE.DoubleSide}
                 color={texture ? '#ffffff' : '#000000'}
                 opacity={texture ? 1 : 0}
@@ -82,6 +82,8 @@ function Model3D({
     useLayoutEffect(() => {
         if (!scene || !modelConfig) return;
         
+        const isPhotoframe = modelConfig.category === 'Photoframe';
+
         scene.traverse((node) => {
             if (node.isMesh) {
                 const lowerName = node.name.toLowerCase();
@@ -97,30 +99,26 @@ function Model3D({
                     }
                 }
 
-                // If it's a Photoframe, we want to clear out the default NYC/Stock photos
-                const isPhotoArea = modelConfig.category === 'Photoframe' && 
-                                  (!modelConfig.printableMeshes || 
-                                   modelConfig.printableMeshes.length === 0 || 
-                                   modelConfig.printableMeshes.some(m => lowerName.includes(m.toLowerCase())));
+                // Photoframes: Proactive "Blank Canvas" logic
+                // Strip ALL maps from photo areas or anything that isn't clearly the wall
+                const isWallOrBase = lowerName.includes('wall') || lowerName.includes('base') || lowerName.includes('ground');
+                const shouldStrip = isPhotoframe && !isWallOrBase && node.material?.map;
 
-                if (isPhotoArea) {
-                    if (node.material) {
-                        node.material = node.material.clone();
-                        // Strip ALL maps to ensure a completely blank canvas
-                        node.material.map = null;
-                        node.material.lightMap = null;
-                        node.material.aoMap = null;
-                        node.material.emissiveMap = null;
-                        node.material.metalnessMap = null;
-                        node.material.roughnessMap = null;
-                        
-                        node.material.color.set('#ffffff'); // Pure blank white
-                        node.material.roughness = 0.9;      // Matte finish for better photo appearance
-                        node.material.metalness = 0.0;      // Non-metallic
-                        node.material.needsUpdate = true;
-                    }
+                if (shouldStrip) {
+                    node.material = node.material.clone();
+                    // Strip ALL maps to ensure a completely blank canvas
+                    node.material.map = null;
+                    node.material.lightMap = null;
+                    node.material.aoMap = null;
+                    node.material.emissiveMap = null;
+                    node.material.metalnessMap = null;
+                    node.material.roughnessMap = null;
+                    
+                    node.material.color.set('#ffffff'); // Pure blank white
+                    node.material.roughness = 0.9;
+                    node.material.metalness = 0.0;
+                    node.material.needsUpdate = true;
                 } else if (node.material && node.material.roughness !== undefined) {
-                     // For non-photo areas (the frame border), ensure it looks premium
                      node.material.roughness = 0.6;
                 }
             }
@@ -315,7 +313,7 @@ function Model3D({
                 let decalDepth = isPlanar ? 
                     (modelConfig?.category === 'Tshirt' ? 0.15 : 
                      modelConfig?.category === 'Plate' ? 0.015 : 
-                     modelConfig?.category === 'Photoframe' ? 0.02 : 0.02) 
+                     modelConfig?.category === 'Photoframe' ? 0.05 : 0.02) 
                     : 1;
 
                 if (isPlanar) {
