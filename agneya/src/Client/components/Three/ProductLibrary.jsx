@@ -211,7 +211,7 @@ export const MODELS = {
     defaultScale: 3.0,
     defaultRotation: [0, 0, 0],
     projectionType: 'planar',
-    printableMeshes: ['Object_11']
+    printableMeshes: [] // Empty array enables intelligent fallback (allows selection of all 12+ frames)
   },
   MASTER_Y_FRAME: {
     id: 'MASTER_Y_FRAME',
