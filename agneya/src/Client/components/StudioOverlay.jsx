@@ -950,14 +950,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             <div className="space-y-2 mb-2">
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <button onClick={handleAddText} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                    <button onClick={() => addText()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
                                         <FiType size={20} className="text-slate-400 group-hover:text-white transition-colors" />
                                         <span className="text-[9px] font-black uppercase tracking-widest">Add Text</span>
                                     </button>
-                                    <button onClick={handleImageUpload} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                    <button onClick={() => document.getElementById('desktop-image-upload')?.click()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
                                         <FiImage size={20} className="text-slate-400 group-hover:text-white transition-colors" />
                                         <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
                                     </button>
+                                    <input id="desktop-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                                     <button onClick={() => setIsDrawing(!isDrawing)} className={`h-14 col-span-2 rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
                                         <FiZap size={14}/> {isDrawing ? 'Stop Drawing' : 'Ink Mode'}
                                     </button>
