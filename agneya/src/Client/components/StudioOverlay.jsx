@@ -40,13 +40,15 @@ const ProjectedDecalWrapper = ({ mesh, dataUrl, position, rotation, scale, activ
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
-                alphaTest={0.05} // Cleanly clip transparent edges
+                alphaTest={0.5} 
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-4}
-                polygonOffsetUnits={-4}
+                polygonOffsetFactor={-10}
+                polygonOffsetUnits={-10}
                 side={THREE.FrontSide}
+                color={texture ? '#ffffff' : '#000000'}
+                opacity={texture ? 1 : 0}
                 emissive={active ? '#4f46e5' : '#000000'}
                 emissiveIntensity={active ? 0.3 : 0}
             />
@@ -235,7 +237,7 @@ const Model3D = ({
                 const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
                 // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
                 let decalDepth = isPlanar ? 
-                    (modelConfig?.category === 'Tshirt' ? 1.0 : 
+                    (modelConfig?.category === 'Tshirt' ? 0.15 : 
                      modelConfig?.category === 'Plate' ? 0.015 : 0.02) 
                     : 1;
 
