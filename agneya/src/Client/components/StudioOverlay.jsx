@@ -22,7 +22,7 @@ const dummyDecal = new THREE.Object3D();
 
 function ProjectedDecalWrapper({ dataUrl, position, rotation, scale, active, zIndex }) {
     const texture = useTexture(dataUrl);
-    
+
     // Safety: Do not render the decal until the texture is fully loaded
     // This prevents the "white patches" (default material color) from appearing
     if (!texture) return null;
@@ -35,16 +35,16 @@ function ProjectedDecalWrapper({ dataUrl, position, rotation, scale, active, zIn
             position={position}
             rotation={rotation}
             scale={scale}
-            debug={false} 
+            debug={false}
         >
             <meshStandardMaterial
                 map={texture}
                 transparent={true}
-                alphaTest={0.01} 
+                alphaTest={0.01}
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-100} 
+                polygonOffsetFactor={-100}
                 polygonOffsetUnits={-100}
                 side={THREE.DoubleSide}
                 color={texture ? '#ffffff' : '#000000'}
@@ -81,13 +81,13 @@ function Model3D({
     // CLEANUP LOGIC: Remove default textures from Photoframe models to provide a clean canvas
     useLayoutEffect(() => {
         if (!scene || !modelConfig) return;
-        
+
         const isPhotoframe = modelConfig.category === 'Photoframe';
 
         scene.traverse((node) => {
             if (node.isMesh) {
                 const lowerName = node.name.toLowerCase();
-                
+
                 // GLASS PASS-THROUGH: Prevent glass from intercepting clicks meant for photos
                 if (lowerName.includes('glass')) {
                     node.raycast = () => null; // Make invisible to Raycaster
@@ -113,19 +113,21 @@ function Model3D({
                     node.material.emissiveMap = null;
                     node.material.metalnessMap = null;
                     node.material.roughnessMap = null;
-                    
+
                     node.material.color.set('#111111'); 
+                    node.material.transparent = true;
+                    node.material.opacity = 0;
                     node.material.roughness = 1.0;
                     node.material.metalness = 0.0;
-                    
+
                     // PUSH BACK: Force the model geometry to be "behind" the decals
                     node.material.polygonOffset = true;
                     node.material.polygonOffsetFactor = 10;
                     node.material.polygonOffsetUnits = 10;
-                    
+
                     node.material.needsUpdate = true;
                 } else if (node.material && node.material.roughness !== undefined) {
-                     node.material.roughness = 0.6;
+                    node.material.roughness = 0.6;
                 }
             }
         });
@@ -152,11 +154,11 @@ function Model3D({
                     return;
                 }
                 const isGenericPriority = genericPriorityNames.some(p => lowerName.includes(p));
-                let isAuxiliary = lowerName.includes('handle') || 
+                let isAuxiliary = lowerName.includes('handle') ||
                     lowerName.includes('bottom') || lowerName.includes('sole') ||
                     lowerName.includes('lace') || lowerName.includes('decal') ||
                     lowerName.includes('shadow');
-                
+
                 // Exception for photoframes: 'inside' meshes ARE printable areas
                 if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
 
@@ -178,22 +180,22 @@ function Model3D({
         if (bestTarget) {
             bestTarget.geometry.computeBoundingBox();
             const box = bestTarget.geometry.boundingBox;
-            
+
             const w = (box.max.x - box.min.x);
             const h = (box.max.y - box.min.y);
             const d = (box.max.z - box.min.z);
-            
+
             // Smarter default anchor: Look for the 'Front' face by inspecting normals if possible
             // or default to a safe standard for the given model category
-            const isPlanar = modelConfig?.projectionType === 'planar' || 
-                             modelConfig?.projectionType === 'decal' ||
-                             modelConfig?.category === 'Photoframe' ||
-                             !modelConfig?.projectionType;
-                             
-            const defaultPos = isPlanar ? 
+            const isPlanar = modelConfig?.projectionType === 'planar' ||
+                modelConfig?.projectionType === 'decal' ||
+                modelConfig?.category === 'Photoframe' ||
+                !modelConfig?.projectionType;
+
+            const defaultPos = isPlanar ?
                 [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : // Center Top for flat items
                 [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  // Center Front for mugs
-                
+
             const defaultRot = isPlanar ? [-Math.PI / 2, 0, 0] : [0, 0, 0];
 
             setDefaultAnchor({
@@ -210,7 +212,7 @@ function Model3D({
         e.stopPropagation();
         const clickedMesh = e.object;
         if (!clickedMesh.isMesh) return;
-        
+
         const lowerName = clickedMesh.name.toLowerCase();
         console.log("3D Selection Clicked:", lowerName, clickedMesh.uuid); // CRITICAL DEBUG LOG
 
@@ -224,36 +226,36 @@ function Model3D({
             }
         } else {
             // Fallback generic guard
-            let isAuxiliary = lowerName.includes('handle') || 
+            let isAuxiliary = lowerName.includes('handle') ||
                 lowerName.includes('bottom') || lowerName.includes('sole') ||
                 lowerName.includes('shadow') || lowerName.includes('decal');
-            
+
             // Note: 'inside' is usually auxiliary for mugs/boxes, but for photo frames it is the photo area!
             if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
 
             if (isAuxiliary) return;
         }
-        
+
         const localPos = clickedMesh.worldToLocal(e.point.clone());
         const localNormal = e.face ? e.face.normal.clone() : new THREE.Vector3(0, 0, 1);
-        
+
         // Robust orientation logic: Handles vertical normals (horizontal surfaces)
         const dummyNode = new THREE.Object3D();
         dummyNode.position.copy(localPos);
-        
+
         // Use a different 'Up' vector if the normal is nearly vertical to avoid Gimbal lock
         const upVector = Math.abs(localNormal.y) > 0.99 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
-        
+
         const targetPoint = localPos.clone().sub(localNormal); // MIRROR FIX: Look IN to the mesh
         const m4 = new THREE.Matrix4();
         m4.lookAt(localPos, targetPoint, upVector);
         dummyNode.quaternion.setFromRotationMatrix(m4);
-        
+
         const rot = [dummyNode.rotation.x, dummyNode.rotation.y, dummyNode.rotation.z];
-        
+
         const scale = new THREE.Vector3();
         clickedMesh.getWorldScale(scale);
-        
+
         // Push the position minimally outward along the normal to prevent Z-fighting without missing the surface
         const pushedPos = localPos.clone().add(localNormal.clone().multiplyScalar(0.001));
 
@@ -280,8 +282,8 @@ function Model3D({
 
     return (
         <group>
-            <group ref={modelGroupRef} 
-                rotation={[0, (previewRotation * Math.PI) / 180, 0]} 
+            <group ref={modelGroupRef}
+                rotation={[0, (previewRotation * Math.PI) / 180, 0]}
             >
                 {scene && (
                     <primitive
@@ -305,24 +307,24 @@ function Model3D({
                 }
                 if (!targetMesh) return null;
 
-                const isPlanar = modelConfig?.projectionType === 'planar' || 
-                                 modelConfig?.projectionType === 'decal' || 
-                                 modelConfig?.category === 'Photoframe' ||
-                                 !modelConfig?.projectionType;
-                
+                const isPlanar = modelConfig?.projectionType === 'planar' ||
+                    modelConfig?.projectionType === 'decal' ||
+                    modelConfig?.category === 'Photoframe' ||
+                    !modelConfig?.projectionType;
+
                 let finalPos = [...anchor.pos];
                 let finalRotation = [anchor.rot[0], anchor.rot[1], anchor.rot[2]];
-                
+
                 // Use the largest mesh dimension for stable unit scaling on flat surfaces
                 const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
                 const pixelsPerUnitUniform = obj.canvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
                 const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
                 const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
                 // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
-                let decalDepth = isPlanar ? 
-                    (modelConfig?.category === 'Tshirt' ? 0.15 : 
-                     modelConfig?.category === 'Plate' ? 0.015 : 
-                     modelConfig?.category === 'Photoframe' ? 0.5 : 0.02) 
+                let decalDepth = isPlanar ?
+                    (modelConfig?.category === 'Tshirt' ? 0.15 :
+                        modelConfig?.category === 'Plate' ? 0.015 :
+                            modelConfig?.category === 'Photoframe' ? 0.5 : 0.02)
                     : 1;
 
                 if (isPlanar) {
@@ -331,14 +333,14 @@ function Model3D({
                     dummyDecal.position.set(0, 0, 0);
                     dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
                     dummyDecal.updateMatrixWorld();
-                    
+
                     const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummyDecal.quaternion);
                     const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
-                    
+
                     // Map canvas offsets to the surface geometry
                     const xShift = obj.offsetX * (maxDim * (obj.canvasWidth / obj.canvasHeight));
                     const yShift = -obj.offsetY * (maxDim);
-                    
+
                     finalPos[0] += localX.x * xShift + localY.x * yShift;
                     finalPos[1] += localX.y * xShift + localY.y * yShift;
                     finalPos[2] += localX.z * xShift + localY.z * yShift;
@@ -346,13 +348,13 @@ function Model3D({
                     dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
                     finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
                 }
- else {
+                else {
                     // CYLINDRICAL WRAPPING (For Mugs)
                     const trueDiameter = Math.min(anchor.dim[0], anchor.dim[2]);
                     const radius = trueDiameter * 0.5;
                     const wrapAngle = -obj.offsetX * (Math.PI / 1.5);
                     const yOffset = -obj.offsetY * (anchor.dim[1] * 0.5);
-                    
+
                     finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
                     finalPos[1] = anchor.pos[1] + yOffset;
                     finalPos[2] = anchor.pos[2] - radius * (1 - Math.cos(wrapAngle));
@@ -400,7 +402,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [companyReferences, setCompanyReferences] = useState([]);
     const [activeStudioView, setActiveStudioView] = useState('3D'); // '2D' or '3D'
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
-    const [contextKey, setContextKey] = useState(0); 
+    const [contextKey, setContextKey] = useState(0);
 
 
 
@@ -413,10 +415,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRemovingBg, setIsRemovingBg] = useState(false);
 
-    const [variations, setVariations] = useState([{ 
-        id: Date.now(), name: 'Item 1', 
+    const [variations, setVariations] = useState([{
+        id: Date.now(), name: 'Item 1',
         frontCanvasData: null, frontCanvasObjects: [], frontAnchors: {},
-        backCanvasData: null, backCanvasObjects: [], backAnchors: {} 
+        backCanvasData: null, backCanvasObjects: [], backAnchors: {}
     }]);
     const [activeVariationId, setActiveVariationId] = useState(variations[0].id);
 
@@ -529,7 +531,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const updateTexture = useCallback((isFullUpdate = true) => {
         const canvas = fabricRef.current;
         if (!canvas || !canvas.contextContainer) return;
-        
+
         try {
             // Full update generates DataURLs, Fast sync only updates matrices
             const snapshots = canvas.getObjects().filter(o => !o.excludeFromExport).map(obj => {
@@ -560,15 +562,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
-        
+
         const baseWidth = 500;
         const baseHeight = 600;
-        
-        const canvas = new fabric.Canvas(canvasRef.current, { 
-            width: baseWidth, 
-            height: baseHeight, 
-            backgroundColor: 'transparent', 
-            preserveObjectStacking: true 
+
+        const canvas = new fabric.Canvas(canvasRef.current, {
+            width: baseWidth,
+            height: baseHeight,
+            backgroundColor: 'transparent',
+            preserveObjectStacking: true
         });
         fabricRef.current = canvas;
 
@@ -576,20 +578,20 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         const resizeObserver = new ResizeObserver(entries => {
             if (!entries[0] || !fabricRef.current) return;
             const { width, height } = entries[0].contentRect;
-            
+
             // Calculate scale to fit within container while maintaining aspect
             const scaleX = width / baseWidth;
             const scaleY = height / baseHeight;
             const newScale = Math.min(scaleX, scaleY, 1.2) * 0.95; // 0.95 for safe padding
-            
+
             setCanvasScale(newScale);
-            
+
             // Adjust canvas display size without changing internal coordinate space
             canvas.setDimensions({
                 width: baseWidth * newScale,
                 height: baseHeight * newScale
             }, { cssOnly: true });
-            
+
             canvas.setZoom(newScale);
         });
 
@@ -718,18 +720,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         if (!fabricRef.current) return;
         const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
         setVariations(prev => prev.map(v => v.id === activeVariationId ? {
-            ...v, 
+            ...v,
             [`${viewSide}CanvasData`]: currentData,
             [`${viewSide}CanvasObjects`]: [...canvasObjects],
-            [`${viewSide}Anchors`]: {...objectAnchors}
+            [`${viewSide}Anchors`]: { ...objectAnchors }
         } : v));
     }, [activeVariationId, canvasObjects, objectAnchors, viewSide]);
 
     const addVariation = () => {
         saveCurrentToVariation();
         const newId = Date.now();
-        const newItem = { 
-            id: newId, name: `Item ${variations.length + 1}`, 
+        const newItem = {
+            id: newId, name: `Item ${variations.length + 1}`,
             frontCanvasData: null, frontCanvasObjects: [], frontAnchors: {},
             backCanvasData: null, backCanvasObjects: [], backAnchors: {}
         };
@@ -774,24 +776,24 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     const handleSwitchSide = (side) => {
         if (side === viewSide) return;
-        
+
         // 1. Capture current side
         if (fabricRef.current) {
             const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
-            
+
             setVariations(prev => {
                 // Update current variation with what we just captured
                 const updatedVars = prev.map(v => v.id === activeVariationId ? {
                     ...v,
                     [`${viewSide}CanvasData`]: currentData,
                     [`${viewSide}CanvasObjects`]: [...canvasObjects],
-                    [`${viewSide}Anchors`]: {...objectAnchors}
+                    [`${viewSide}Anchors`]: { ...objectAnchors }
                 } : v);
-                
+
                 // 2. Switch side state and load the target side data
                 const target = updatedVars.find(v => v.id === activeVariationId);
                 const targetData = target[`${side}CanvasData`];
-                
+
                 setTimeout(() => {
                     setViewSide(side);
                     if (targetData && fabricRef.current) {
@@ -812,7 +814,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         setHistoryStep(-1);
                     }
                 }, 0);
-                
+
                 return updatedVars;
             });
         } else {
@@ -827,25 +829,25 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         reader.onload = (event) => {
             const dataUrl = event.target.result;
             setUploadedAssets(prev => [{ id: Date.now(), url: dataUrl }, ...prev]);
-            
+
             const imgElement = new Image();
             imgElement.crossOrigin = 'anonymous';
             imgElement.onload = () => {
                 try {
                     const canvas = fabricRef.current;
                     if (!canvas) { console.error('Canvas missing'); return; }
-                    
+
                     const ImgClass = fabric.FabricImage || fabric.Image;
                     const img = new ImgClass(imgElement, {
                         width: imgElement.naturalWidth || imgElement.width || 100,
                         height: imgElement.naturalHeight || imgElement.height || 100
                     });
-                    
+
                     const targetWidth = canvas.width ? canvas.width * 0.4 : 200;
                     img.scaleToWidth(targetWidth);
                     const uid = `upload_${Date.now()}`;
                     img.set({ originX: 'center', originY: 'center', left: canvas.width ? canvas.width / 2 : 250, top: canvas.height ? canvas.height / 2 : 300, uid });
-                    
+
                     if (pendingAnchor) {
                         setObjectAnchors(prev => ({ ...prev, [uid]: pendingAnchor }));
                         setPendingAnchor(null);
@@ -910,7 +912,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             const blob = await (await fetch(activeObj.toDataURL())).blob();
             const fd = new FormData(); fd.append('image', blob, 'design.png');
             const res = await axios.post('/api/public/remove-bg', fd, { responseType: 'arraybuffer' });
-            
+
             const imgElement = new Image();
             const url = URL.createObjectURL(new Blob([res.data]));
             imgElement.onload = () => {
@@ -948,28 +950,28 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     const handleFinalSubmit = async (isBuyNow = false) => {
         if (!userData) return requireLogin(() => handleFinalSubmit(isBuyNow), "finalize your order");
-        
+
         if (designMode === 'company' && !companyInstructions.trim() && companyReferences.length === 0) {
             return toast.error("Please provide instructions or reference images.");
         }
 
         setIsSubmitting(true);
         saveCurrentToVariation();
-        
+
         try {
             // Process ALL variations
             const allItems = variations.map(v => {
                 const isCurrent = v.id === activeVariationId && fabricRef.current;
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
-                
-                const designPayload = designMode === 'self' 
+
+                const designPayload = designMode === 'self'
                     ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData }
                     : { mode: 'company', instructions: companyInstructions, references: companyReferences };
-                
-                const wMin = (product.isBulkEnabled && product.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r=>r.minQty)) : (product.minOrder || 1);
+
+                const wMin = (product.isBulkEnabled && product.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
-                
+
                 const frontSnapshot = isCurrent && viewSide === 'front' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
                 const backSnapshot = isCurrent && viewSide === 'back' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
 
@@ -981,15 +983,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     itemType: 'Custom',
                     selectedVariation: { sku: `custom_${v.id}`, size: 'Custom' },
                     image: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0], // The preview mockup
-                    designImage: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0], 
+                    designImage: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0],
                     isBulkEnabled: product.isBulkEnabled,
                     bulkRules: product.bulkRules,
                     gstRate: product.gstRate || 0,
-                    customData: { 
-                        design: designPayload, 
+                    customData: {
+                        design: designPayload,
                         variationName: v.name,
                         appliedFrontDesign: frontSnapshot,
-                        appliedBackDesign: backSnapshot 
+                        appliedBackDesign: backSnapshot
                     }
                 };
             });
@@ -1033,7 +1035,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             `}</style>
 
             <header className="h-[100px] shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b border-slate-100 bg-white/50 backdrop-blur-3xl">
-                <button onClick={onClose} className="w-12 h-12 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-all active:scale-90"><FiX size={24}/></button>
+                <button onClick={onClose} className="w-12 h-12 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-all active:scale-90"><FiX size={24} /></button>
                 <div className="flex flex-col items-center">
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
                     <div className="flex bg-slate-100 p-1 rounded-full mt-2">
@@ -1052,349 +1054,349 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {designMode === 'self' ? (
                     <>
-                    {/* Variation Selector - Floating at top */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
-                        {variations.map((v, i) => (
-                            <div key={v.id} className="flex items-center">
-                                <button onClick={() => switchVariation(v.id)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeVariationId === v.id ? 'bg-[#0c0c2a] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}>
-                                    <span>{v.name}</span>
-                                    {variations.length > 1 && (
-                                        <FiX onClick={(e) => { e.stopPropagation(); removeVariation(v.id); }} className="hover:text-rose-500 cursor-pointer" />
-                                    )}
-                                </button>
-                                {i < variations.length - 1 && <div className="w-[1px] h-4 bg-slate-100 mx-1" />}
-                            </div>
-                        ))}
-                        <button onClick={addVariation} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all ml-2 shadow-sm">
-                            <FiPlus size={14} />
-                        </button>
-                    </div>
-
-                    {/* Left Panel: High-Contrast Desktop Designer Tools */}
-                    <div className="hidden xl:flex w-[320px] flex-col gap-6">
-                        <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
-                            <div className="space-y-2 mb-2">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button onClick={() => addText()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
-                                        <FiType size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Add Text</span>
+                        {/* Variation Selector - Floating at top */}
+                        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
+                            {variations.map((v, i) => (
+                                <div key={v.id} className="flex items-center">
+                                    <button onClick={() => switchVariation(v.id)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeVariationId === v.id ? 'bg-[#0c0c2a] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}>
+                                        <span>{v.name}</span>
+                                        {variations.length > 1 && (
+                                            <FiX onClick={(e) => { e.stopPropagation(); removeVariation(v.id); }} className="hover:text-rose-500 cursor-pointer" />
+                                        )}
                                     </button>
-                                    <button onClick={() => document.getElementById('desktop-image-upload')?.click()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
-                                        <FiImage size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                        <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
-                                    </button>
-                                    <input id="desktop-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-                                    <button onClick={() => setIsDrawing(!isDrawing)} className={`h-14 col-span-2 rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
-                                        <FiZap size={14}/> {isDrawing ? 'Stop Drawing' : 'Ink Mode'}
-                                    </button>
+                                    {i < variations.length - 1 && <div className="w-[1px] h-4 bg-slate-100 mx-1" />}
                                 </div>
-                            </div>
-
-                            <div className="h-px bg-slate-100 w-full" />
-
-                            <div className="space-y-2">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Designer Tools</h4>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-1 w-8 bg-[#0c0c2a] rounded-full"></div>
-                                    <span className="text-[11px] font-black uppercase text-[#0c0c2a]">{activeObject ? activeObject.type : 'Master Studio'}</span>
-                                </div>
-                            </div>
-
-                            {/* Theme Palette (Visible for both global and selected) */}
-                            <div className="space-y-4">
-                                <div className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Theme Palette</div>
-                                <div className="grid grid-cols-5 gap-3">
-                                    {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
-                                        <button key={i} onClick={() => { 
-                                            const active = fabricRef.current?.getActiveObject(); 
-                                            if(active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fill: color}); } 
-                                            setBrushColor(color);
-                                        }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-md' : 'border-slate-100 hover:border-[#0c0c2a]/20'}`} style={{ backgroundColor: color }}></button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {activeObject ? (
-                                <div className="space-y-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                                    {/* Property Matrix */}
-                                    <div className="grid gap-8">
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Scale Matrix</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
-                                            <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
-                                                const val = parseFloat(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set({scaleX: val, scaleY: val}).setCoords();
-                                                fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, scaleX: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Angular Rotation</span><span>{Math.round(activeObject.angle)}°</span></div>
-                                            <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, angle: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos X</span><span>{Math.round(activeObject.left)}</span></div>
-                                                <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
-                                                    const val = parseInt(e.target.value);
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, left: val}));
-                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos Y</span><span>{Math.round(activeObject.top)}</span></div>
-                                                <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
-                                                    const val = parseInt(e.target.value);
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, top: val}));
-                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Layer Opacity</span><span>{Math.round(activeObject.opacity * 100)}%</span></div>
-                                            <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
-                                                const val = parseFloat(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, opacity: val}));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                    </div>
-
-                                    {/* Typography Suite */}
-                                    {(activeObject.type === 'i-text' || activeObject.type === 'text') && (
-                                        <div className="space-y-6">
-                                            <div className="space-y-4">
-                                                <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Update Design Text</h4>
-                                                <textarea value={activeObject.text} onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set('text', val); 
-                                                    fabricRef.current.renderAll(); 
-                                                    fastSync(); 
-                                                    setActiveObject(prev => ({...prev, text: val}));
-                                                    if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
-                                                    window.textSyncTimer = setTimeout(() => {
-                                                        updateTexture(true);
-                                                    }, 300);
-                                                }} className="w-full h-28 bg-slate-50 border border-slate-100 rounded-3xl p-6 text-[14px] font-bold text-[#0c0c2a] focus:bg-white focus:border-[#0c0c2a]/20 transition-all outline-none resize-none" placeholder="Type here..." />
-                                            </div>
-                                            
-                                            <div className="space-y-4">
-                                                <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest leading-relaxed">Studio Fonts</h4>
-                                                <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2 no-scrollbar">
-                                                    {premiumFonts.map(font => (
-                                                        <button key={font} onClick={() => {
-                                                            const active = fabricRef.current.getActiveObject();
-                                                            active.set('fontFamily', font); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fontFamily: font});
-                                                        }} className={`h-11 rounded-[14px] text-[10px] border transition-all font-black uppercase tracking-tighter ${activeObject.fontFamily === font ? 'bg-[#0c0c2a] text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-[#0c0c2a]/10'}`} style={{ fontFamily: font }}>{font}</button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Object Actions */}
-                                    <div className="space-y-3 pt-4 border-t border-slate-50">
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiMove size={14}/> Center Obj</button>
-                                            <button onClick={() => {
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.clone().then(cloned => {
-                                                    cloned.set({ left: active.left + 20, top: active.top + 20, uid: `clone_${Date.now()}` });
-                                                    fabricRef.current.add(cloned); fabricRef.current.setActiveObject(cloned); fabricRef.current.renderAll(); updateTexture();
-                                                });
-                                            }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiRepeat size={14}/> Clone</button>
-                                        </div>
-                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest border border-rose-100 hover:bg-rose-100 transition-all active:scale-95"><FiTrash2 size={16}/> Delete Layer</button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-slate-50/50 rounded-[48px] border-2 border-dashed border-slate-100">
-                                    <FiBox size={40} className="text-slate-200 mb-6 animate-pulse"/>
-                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] leading-relaxed">Select Layer<br/>to Configure</span>
-                                </div>
-                            )}
+                            ))}
+                            <button onClick={addVariation} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all ml-2 shadow-sm">
+                                <FiPlus size={14} />
+                            </button>
                         </div>
-                    </div>
-                    {/* Center Viewport */}
-                    <div className="flex-1 flex flex-col relative h-full">
 
-                                {isDrawing && (
-                                    <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[200]">
-                                        <button onClick={() => setIsDrawing(false)} className="px-8 h-12 bg-rose-500 text-white rounded-full shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 animate-bounce">
-                                            <FiX/> Exit Ink Mode
+                        {/* Left Panel: High-Contrast Desktop Designer Tools */}
+                        <div className="hidden xl:flex w-[320px] flex-col gap-6">
+                            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
+                                <div className="space-y-2 mb-2">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button onClick={() => addText()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                            <FiType size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Text</span>
+                                        </button>
+                                        <button onClick={() => document.getElementById('desktop-image-upload')?.click()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                            <FiImage size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
+                                        </button>
+                                        <input id="desktop-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-14 col-span-2 rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
+                                            <FiZap size={14} /> {isDrawing ? 'Stop Drawing' : 'Ink Mode'}
                                         </button>
                                     </div>
-                                )}
+                                </div>
 
-                                <div className="flex-1 flex items-center justify-center relative">
-                                    <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                        {/* View Multiplexer: Conditional Rendering based on activeStudioView */}
-                                        {activeStudioView === '2D' ? (
-                                            <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
-                                                {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                    <div className="relative aspect-[5/6] h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group">
-                                                         <img 
-                                                            src={viewSide === 'front' ? product.blankFrontImage : product.blankBackImage} 
-                                                            className="w-full h-full object-contain"
-                                                            alt="Product Base"
-                                                         />
-                                                         {/* Fabric.js Canvas Overlay */}
-                                                         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                                                               <div className="pointer-events-auto" style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
-                                                                     <canvas ref={canvasRef} />
-                                                               </div>
-                                                         </div>
-                                                         
-                                                         {/* Quick Side Toggle */}
-                                                         {(product.blankFrontImage && product.blankBackImage) && (
-                                                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
-                                                                <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
-                                                                <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
-                                                            </div>
-                                                         )}
-                                                    </div>
+                                <div className="h-px bg-slate-100 w-full" />
+
+                                <div className="space-y-2">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Designer Tools</h4>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-1 w-8 bg-[#0c0c2a] rounded-full"></div>
+                                        <span className="text-[11px] font-black uppercase text-[#0c0c2a]">{activeObject ? activeObject.type : 'Master Studio'}</span>
+                                    </div>
+                                </div>
+
+                                {/* Theme Palette (Visible for both global and selected) */}
+                                <div className="space-y-4">
+                                    <div className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Theme Palette</div>
+                                    <div className="grid grid-cols-5 gap-3">
+                                        {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
+                                            <button key={i} onClick={() => {
+                                                const active = fabricRef.current?.getActiveObject();
+                                                if (active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fill: color }); }
+                                                setBrushColor(color);
+                                            }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-md' : 'border-slate-100 hover:border-[#0c0c2a]/20'}`} style={{ backgroundColor: color }}></button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {activeObject ? (
+                                    <div className="space-y-10 animate-in fade-in slide-in-from-left-4 duration-500">
+                                        {/* Property Matrix */}
+                                        <div className="grid gap-8">
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Scale Matrix</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
+                                                <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
+                                                    const val = parseFloat(e.target.value);
+                                                    const active = fabricRef.current.getActiveObject();
+                                                    active.set({ scaleX: val, scaleY: val }).setCoords();
+                                                    fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, scaleX: val }));
+                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Angular Rotation</span><span>{Math.round(activeObject.angle)}°</span></div>
+                                                <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
+                                                    const val = parseInt(e.target.value);
+                                                    const active = fabricRef.current.getActiveObject();
+                                                    active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, angle: val }));
+                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos X</span><span>{Math.round(activeObject.left)}</span></div>
+                                                    <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const active = fabricRef.current.getActiveObject();
+                                                        active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, left: val }));
+                                                    }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos Y</span><span>{Math.round(activeObject.top)}</span></div>
+                                                    <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
+                                                        const val = parseInt(e.target.value);
+                                                        const active = fabricRef.current.getActiveObject();
+                                                        active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, top: val }));
+                                                    }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                                 </div>
                                             </div>
-                                        ) : (
-                                            /* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */
-                                            <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[88vh] mt-4'}`}>
-                                                {/* Invisible source for 3D textures */}
-                                                <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
-                                                    <div style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
-                                                        <canvas ref={canvasRef} />
-                                                    </div>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Layer Opacity</span><span>{Math.round(activeObject.opacity * 100)}%</span></div>
+                                                <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
+                                                    const val = parseFloat(e.target.value);
+                                                    const active = fabricRef.current.getActiveObject();
+                                                    active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, opacity: val }));
+                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
+                                            </div>
+                                        </div>
+
+                                        {/* Typography Suite */}
+                                        {(activeObject.type === 'i-text' || activeObject.type === 'text') && (
+                                            <div className="space-y-6">
+                                                <div className="space-y-4">
+                                                    <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Update Design Text</h4>
+                                                    <textarea value={activeObject.text} onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        const active = fabricRef.current.getActiveObject();
+                                                        active.set('text', val);
+                                                        fabricRef.current.renderAll();
+                                                        fastSync();
+                                                        setActiveObject(prev => ({ ...prev, text: val }));
+                                                        if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
+                                                        window.textSyncTimer = setTimeout(() => {
+                                                            updateTexture(true);
+                                                        }, 300);
+                                                    }} className="w-full h-28 bg-slate-50 border border-slate-100 rounded-3xl p-6 text-[14px] font-bold text-[#0c0c2a] focus:bg-white focus:border-[#0c0c2a]/20 transition-all outline-none resize-none" placeholder="Type here..." />
                                                 </div>
 
-                                                <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
-                                                        <Canvas 
-                                                            shadows 
-                                                            camera={{ position: [0, 0, 5], fov: 45 }}
-                                                            gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
-                                                            dpr={[1, 2]}
-                                                            onCreated={({ gl }) => {
-                                                                gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                                                    console.warn("3D Canvas WebGL Context Lost. Recovering...");
-                                                                    e.preventDefault();
-                                                                    // Force remount of 3D Canvas
-                                                                    setTimeout(() => setContextKey(prev => prev + 1), 500);
-                                                                    setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
-                                                                }, false);
-                                                            }}
-                                                            onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
-                                                            key={contextKey}
-                                                        >
-                                                            <ambientLight intensity={1.8} />
-                                                            <spotLight position={[10, 20, 10]} intensity={3} />
-                                                            <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
-                                                                <Model3D baseModelId={product?.baseModelId} url={product?.model3d || product?.base3DModelUrl} canvasObjects={canvasObjects} objectAnchors={objectAnchors} onAnchorUpdate={handleAnchorUpdate} activeObjectId={activeObject?.uid} />
-                                                            </Stage>
-                                                            <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
-                                                        </Canvas>
-                                                </React.Suspense>
-
-                                                {/* Vertical Floating Designer Rail (Desktop & Large Screens) */}
-                                                <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
-                                                    {[
-                                                        { id: 'uploads', icon: <FiImage size={20}/>, label: 'Images' },
-                                                        { id: 'text', icon: <FiType size={20}/>, label: 'Text' },
-                                                        { id: 'stickers', icon: <FiSmile size={20}/>, label: 'Emotes' },
-                                                        { id: 'draw', icon: <FiEdit3 size={20}/>, label: 'Ink' },
-                                                        { id: 'layers', icon: <FiLayers size={21}/>, label: 'Nodes' }
-                                                    ].map(item => (
-                                                        <button 
-                                                            key={item.id} 
-                                                            onClick={() => { setActiveTab(item.id); if(item.id !== 'draw') setIsDrawing(false); }} 
-                                                            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all group relative ${activeTab === item.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-[#0c0c2a]'}`}
-                                                        >
-                                                            {item.icon}
-                                                            <span className="absolute right-full mr-4 px-3 py-1 bg-[#0c0c2a] text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">{item.label}</span>
-                                                        </button>
-                                                    ))}
+                                                <div className="space-y-4">
+                                                    <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest leading-relaxed">Studio Fonts</h4>
+                                                    <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2 no-scrollbar">
+                                                        {premiumFonts.map(font => (
+                                                            <button key={font} onClick={() => {
+                                                                const active = fabricRef.current.getActiveObject();
+                                                                active.set('fontFamily', font); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fontFamily: font });
+                                                            }} className={`h-11 rounded-[14px] text-[10px] border transition-all font-black uppercase tracking-tighter ${activeObject.fontFamily === font ? 'bg-[#0c0c2a] text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-[#0c0c2a]/10'}`} style={{ fontFamily: font }}>{font}</button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
-                                    </div>
-                                </div>
-                                <div className="absolute top-4 left-4 flex gap-3">
-                                    <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18}/></button>
-                                    <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18}/></button>
-                                </div>
-                                 {/* Mockup Redesign: Floating Commerce Pill (Responsive) */}
-                                 {designMode === 'self' && (
-                                    <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
-                                        <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                                            <FiArrowRight/> Buy Now
-                                        </button>
-                                        <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 px-6 bg-[#0c0c2a] text-white rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
-                                            <FiShoppingCart/> {isSubmitting ? '...' : 'Add to Cart'}
-                                        </button>
-                                    </div>
-                                 )}
-                    </div>
 
-                    {/* Right Panel: Transaction Suite */}
-                    <div className="hidden xl:flex w-[320px] flex-col gap-6">
-                        <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
-                            <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Order Summary</h4>
+                                        {/* Object Actions */}
+                                        <div className="space-y-3 pt-4 border-t border-slate-50">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiMove size={14} /> Center Obj</button>
+                                                <button onClick={() => {
+                                                    const active = fabricRef.current.getActiveObject();
+                                                    active.clone().then(cloned => {
+                                                        cloned.set({ left: active.left + 20, top: active.top + 20, uid: `clone_${Date.now()}` });
+                                                        fabricRef.current.add(cloned); fabricRef.current.setActiveObject(cloned); fabricRef.current.renderAll(); updateTexture();
+                                                    });
+                                                }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiRepeat size={14} /> Clone</button>
+                                            </div>
+                                            <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest border border-rose-100 hover:bg-rose-100 transition-all active:scale-95"><FiTrash2 size={16} /> Delete Layer</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-slate-50/50 rounded-[48px] border-2 border-dashed border-slate-100">
+                                        <FiBox size={40} className="text-slate-200 mb-6 animate-pulse" />
+                                        <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] leading-relaxed">Select Layer<br />to Configure</span>
+                                    </div>
+                                )}
                             </div>
-                            
-                            <div className="p-6 bg-slate-50/80 rounded-[32px] space-y-4">
-                                <div className="flex justify-between items-center text-[11px] font-bold">
-                                    <span className="text-slate-400 uppercase">Per Unit Cost</span>
-                                    <span className="text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm text-sm">₹ {(product.discountPrice || product.basePrice || 0).toLocaleString()}</span>
-                                </div>
-                                <div className="h-px bg-slate-200/50 w-full"></div>
-                                <p className="text-[9px] text-slate-500 uppercase tracking-widest text-center">Quantity & Sizes apply in cart</p>
-                            </div>
+                        </div>
+                        {/* Center Viewport */}
+                        <div className="flex-1 flex flex-col relative h-full">
 
-                            {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Wholesale Ready</h4>
-                                    </div>
-                                    <div className="overflow-hidden border border-slate-50 rounded-2xl">
-                                        <table className="w-full text-[9px] font-bold">
-                                            <thead className="bg-slate-50 text-slate-400">
-                                                <tr>
-                                                    <th className="px-3 py-2 text-left">BATCH RANGE</th>
-                                                    <th className="px-3 py-2 text-right">UNIT OFF</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-50">
-                                                {product.bulkRules.sort((a,b)=>a.minQty-b.minQty).map((rule, idx) => (
-                                                    <tr key={idx} className="text-slate-500">
-                                                        <td className="px-3 py-2">ABOVE {rule.minQty}</td>
-                                                        <td className="px-3 py-2 text-right">₹{rule.pricePerUnit}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            {isDrawing && (
+                                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[200]">
+                                    <button onClick={() => setIsDrawing(false)} className="px-8 h-12 bg-rose-500 text-white rounded-full shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 animate-bounce">
+                                        <FiX /> Exit Ink Mode
+                                    </button>
                                 </div>
                             )}
 
-                            <div className="mt-auto space-y-4">
-                                <div className="flex justify-between items-end pb-2">
-                                    <span className="text-[11px] font-bold text-slate-400 uppercase">Subtotal</span>
-                                    <span className="text-2xl font-black text-[#0c0c2a]">₹ {((product.discountPrice || product.basePrice || 0) * variations.length).toLocaleString()}</span>
+                            <div className="flex-1 flex items-center justify-center relative">
+                                <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
+                                    {/* View Multiplexer: Conditional Rendering based on activeStudioView */}
+                                    {activeStudioView === '2D' ? (
+                                        <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
+                                            {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
+                                                <div className="relative aspect-[5/6] h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group">
+                                                    <img
+                                                        src={viewSide === 'front' ? product.blankFrontImage : product.blankBackImage}
+                                                        className="w-full h-full object-contain"
+                                                        alt="Product Base"
+                                                    />
+                                                    {/* Fabric.js Canvas Overlay */}
+                                                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                                                        <div className="pointer-events-auto" style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
+                                                            <canvas ref={canvasRef} />
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Quick Side Toggle */}
+                                                    {(product.blankFrontImage && product.blankBackImage) && (
+                                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
+                                                            <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
+                                                            <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        /* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */
+                                        <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[88vh] mt-4'}`}>
+                                            {/* Invisible source for 3D textures */}
+                                            <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
+                                                <div style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
+                                                    <canvas ref={canvasRef} />
+                                                </div>
+                                            </div>
+
+                                            <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
+                                                <Canvas
+                                                    shadows
+                                                    camera={{ position: [0, 0, 5], fov: 45 }}
+                                                    gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
+                                                    dpr={[1, 2]}
+                                                    onCreated={({ gl }) => {
+                                                        gl.domElement.addEventListener('webglcontextlost', (e) => {
+                                                            console.warn("3D Canvas WebGL Context Lost. Recovering...");
+                                                            e.preventDefault();
+                                                            // Force remount of 3D Canvas
+                                                            setTimeout(() => setContextKey(prev => prev + 1), 500);
+                                                            setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
+                                                        }, false);
+                                                    }}
+                                                    onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
+                                                    key={contextKey}
+                                                >
+                                                    <ambientLight intensity={1.8} />
+                                                    <spotLight position={[10, 20, 10]} intensity={3} />
+                                                    <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
+                                                        <Model3D baseModelId={product?.baseModelId} url={product?.model3d || product?.base3DModelUrl} canvasObjects={canvasObjects} objectAnchors={objectAnchors} onAnchorUpdate={handleAnchorUpdate} activeObjectId={activeObject?.uid} />
+                                                    </Stage>
+                                                    <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
+                                                </Canvas>
+                                            </React.Suspense>
+
+                                            {/* Vertical Floating Designer Rail (Desktop & Large Screens) */}
+                                            <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
+                                                {[
+                                                    { id: 'uploads', icon: <FiImage size={20} />, label: 'Images' },
+                                                    { id: 'text', icon: <FiType size={20} />, label: 'Text' },
+                                                    { id: 'stickers', icon: <FiSmile size={20} />, label: 'Emotes' },
+                                                    { id: 'draw', icon: <FiEdit3 size={20} />, label: 'Ink' },
+                                                    { id: 'layers', icon: <FiLayers size={21} />, label: 'Nodes' }
+                                                ].map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        onClick={() => { setActiveTab(item.id); if (item.id !== 'draw') setIsDrawing(false); }}
+                                                        className={`w-14 h-14 rounded-full flex items-center justify-center transition-all group relative ${activeTab === item.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-[#0c0c2a]'}`}
+                                                    >
+                                                        {item.icon}
+                                                        <span className="absolute right-full mr-4 px-3 py-1 bg-[#0c0c2a] text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">{item.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <button onClick={() => handleFinalSubmit(true)} className="w-full h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm">
-                                    <FiArrowRight size={18}/> Buy Now
-                                </button>
-                                <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] flex items-center justify-center gap-4 font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50">
-                                    {isSubmitting ? <span className="animate-pulse">Syncing...</span> : <><FiShoppingCart size={18}/> Add to Cart</>}
-                                </button>
-                                
-                                <button onClick={handleDiscardDraft} className="w-full text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-rose-500 transition-colors">Abort Custom Design</button>
+                            </div>
+                            <div className="absolute top-4 left-4 flex gap-3">
+                                <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18} /></button>
+                                <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18} /></button>
+                            </div>
+                            {/* Mockup Redesign: Floating Commerce Pill (Responsive) */}
+                            {designMode === 'self' && (
+                                <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
+                                    <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
+                                        <FiArrowRight /> Buy Now
+                                    </button>
+                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 px-6 bg-[#0c0c2a] text-white rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
+                                        <FiShoppingCart /> {isSubmitting ? '...' : 'Add to Cart'}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Right Panel: Transaction Suite */}
+                        <div className="hidden xl:flex w-[320px] flex-col gap-6">
+                            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Order Summary</h4>
+                                </div>
+
+                                <div className="p-6 bg-slate-50/80 rounded-[32px] space-y-4">
+                                    <div className="flex justify-between items-center text-[11px] font-bold">
+                                        <span className="text-slate-400 uppercase">Per Unit Cost</span>
+                                        <span className="text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm text-sm">₹ {(product.discountPrice || product.basePrice || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="h-px bg-slate-200/50 w-full"></div>
+                                    <p className="text-[9px] text-slate-500 uppercase tracking-widest text-center">Quantity & Sizes apply in cart</p>
+                                </div>
+
+                                {product.isBulkEnabled && product.bulkRules?.length > 0 && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Wholesale Ready</h4>
+                                        </div>
+                                        <div className="overflow-hidden border border-slate-50 rounded-2xl">
+                                            <table className="w-full text-[9px] font-bold">
+                                                <thead className="bg-slate-50 text-slate-400">
+                                                    <tr>
+                                                        <th className="px-3 py-2 text-left">BATCH RANGE</th>
+                                                        <th className="px-3 py-2 text-right">UNIT OFF</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-50">
+                                                    {product.bulkRules.sort((a, b) => a.minQty - b.minQty).map((rule, idx) => (
+                                                        <tr key={idx} className="text-slate-500">
+                                                            <td className="px-3 py-2">ABOVE {rule.minQty}</td>
+                                                            <td className="px-3 py-2 text-right">₹{rule.pricePerUnit}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="mt-auto space-y-4">
+                                    <div className="flex justify-between items-end pb-2">
+                                        <span className="text-[11px] font-bold text-slate-400 uppercase">Subtotal</span>
+                                        <span className="text-2xl font-black text-[#0c0c2a]">₹ {((product.discountPrice || product.basePrice || 0) * variations.length).toLocaleString()}</span>
+                                    </div>
+                                    <button onClick={() => handleFinalSubmit(true)} className="w-full h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm">
+                                        <FiArrowRight size={18} /> Buy Now
+                                    </button>
+                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] flex items-center justify-center gap-4 font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50">
+                                        {isSubmitting ? <span className="animate-pulse">Syncing...</span> : <><FiShoppingCart size={18} /> Add to Cart</>}
+                                    </button>
+
+                                    <button onClick={handleDiscardDraft} className="w-full text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-rose-500 transition-colors">Abort Custom Design</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </>
                 ) : (
                     /* Mode 2: Company Design (Instructions Only) */
@@ -1407,7 +1409,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                             <div className="space-y-6">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Project Brief & Instructions</label>
-                                <textarea 
+                                <textarea
                                     value={companyInstructions}
                                     onChange={(e) => setCompanyInstructions(e.target.value)}
                                     placeholder="e.g., Use my logo on the center, add 'Agneya' in gold font below it. Keep the background minimal..."
@@ -1419,9 +1421,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
-                                        <input 
-                                            type="file" 
-                                            multiple 
+                                        <input
+                                            type="file"
+                                            multiple
                                             onChange={(e) => {
                                                 const files = Array.from(e.target.files);
                                                 files.forEach(file => {
@@ -1430,7 +1432,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     reader.readAsDataURL(file);
                                                 });
                                             }}
-                                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
                                         />
                                         <FiArrowUp size={20} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
                                         <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Upload</span>
@@ -1438,7 +1440,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     {companyReferences.map(ref => (
                                         <div key={ref.id} className="relative aspect-square bg-slate-50 rounded-3xl overflow-hidden group">
                                             <img src={ref.url} className="w-full h-full object-cover" />
-                                            <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12}/></button>
+                                            <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12} /></button>
                                         </div>
                                     ))}
                                 </div>
@@ -1458,19 +1460,19 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
                             </div>
                             <div className="flex gap-4">
-                                <button 
-                                    onClick={() => handleFinalSubmit(false)} 
-                                    disabled={isSubmitting} 
+                                <button
+                                    onClick={() => handleFinalSubmit(false)}
+                                    disabled={isSubmitting}
                                     className="h-12 px-8 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all disabled:opacity-50 flex items-center gap-3 border border-slate-200"
                                 >
-                                    {isSubmitting ? 'Syncing...' : <>Add to Cart <FiShoppingCart size={14}/></>}
+                                    {isSubmitting ? 'Syncing...' : <>Add to Cart <FiShoppingCart size={14} /></>}
                                 </button>
-                                <button 
-                                    onClick={() => handleFinalSubmit(true)} 
-                                    disabled={isSubmitting} 
+                                <button
+                                    onClick={() => handleFinalSubmit(true)}
+                                    disabled={isSubmitting}
                                     className="h-12 px-8 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all disabled:opacity-50 flex items-center gap-3 shadow-xl shadow-indigo-500/20"
                                 >
-                                    {isSubmitting ? 'Processing...' : <>Buy Now & Checkout <FiCreditCard size={14}/></>}
+                                    {isSubmitting ? 'Processing...' : <>Buy Now & Checkout <FiCreditCard size={14} /></>}
                                 </button>
                             </div>
                         </div>
@@ -1483,20 +1485,20 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             {designMode === 'self' && (
                 <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-slate-100 ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[40%]'}`}>
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-200 rounded-full" />
-                    
+
                     <div className="flex justify-between items-center shrink-0 pt-2 text-[#0c0c2a]">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
                             <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 cursor-pointer">
-                                Design Tools {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14}/>}
+                                Design Tools {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
                             </h3>
                             <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Studio Canvas'}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                             {activeObject && (
+                            {activeObject && (
                                 <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-5 py-2 bg-[#0c0c2a]/10 text-[#0c0c2a] rounded-full text-[9px] font-black uppercase tracking-tight active:scale-95 transition-all">Deselect</button>
                             )}
                             <button onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)} className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-[#0c0c2a] shadow-sm">
-                                {isMobileUiMinimized ? <FiMaximize2 size={16}/> : <FiMinimize2 size={16}/>}
+                                {isMobileUiMinimized ? <FiMaximize2 size={16} /> : <FiMinimize2 size={16} />}
                             </button>
                         </div>
                     </div>
@@ -1504,7 +1506,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     <div className="flex-1 flex gap-6 overflow-hidden">
                         {/* Middle Section: Tool Hierarchy (Sliders -> Input -> Colors) */}
                         <div className="flex-1 overflow-y-auto no-scrollbar space-y-8 pb-10">
-                            
+
                             {activeObject ? (
                                 <div className="space-y-8 pt-2">
                                     {/* 1. SLIDERS (Size, Rotate, Pos X, Pos Y, Opacity) */}
@@ -1514,8 +1516,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
                                                 const val = parseFloat(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set({scaleX: val, scaleY: val}).setCoords();
-                                                fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, scaleX: val}));
+                                                active.set({ scaleX: val, scaleY: val }).setCoords();
+                                                fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, scaleX: val }));
                                             }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
@@ -1523,7 +1525,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, angle: val}));
+                                                active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, angle: val }));
                                             }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
@@ -1531,7 +1533,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, left: val}));
+                                                active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, left: val }));
                                             }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3">
@@ -1539,7 +1541,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
                                                 const val = parseInt(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, top: val}));
+                                                active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, top: val }));
                                             }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                         <div className="space-y-3 col-span-2">
@@ -1547,7 +1549,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
                                                 const val = parseFloat(e.target.value);
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({...prev, opacity: val}));
+                                                active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, opacity: val }));
                                             }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
                                         </div>
                                     </div>
@@ -1559,12 +1561,12 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <textarea rows="2" value={activeObject.text} onChange={(e) => {
                                                 const val = e.target.value;
                                                 const active = fabricRef.current.getActiveObject();
-                                                active.set('text', val); 
-                                                fabricRef.current.renderAll(); 
+                                                active.set('text', val);
+                                                fabricRef.current.renderAll();
                                                 // Immediate projection sync (fast), but debounced texture sync (slow)
-                                                fastSync(); 
-                                                setActiveObject(prev => ({...prev, text: val}));
-                                                
+                                                fastSync();
+                                                setActiveObject(prev => ({ ...prev, text: val }));
+
                                                 // Clear existing timer
                                                 if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
                                                 window.textSyncTimer = setTimeout(() => {
@@ -1579,9 +1581,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                         <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Theme Palette</div>
                                         <div className="grid grid-cols-5 gap-3">
                                             {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
-                                                <button key={i} onClick={() => { 
-                                                    const active = fabricRef.current?.getActiveObject(); 
-                                                    if(active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({...active, fill: color}); } 
+                                                <button key={i} onClick={() => {
+                                                    const active = fabricRef.current?.getActiveObject();
+                                                    if (active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fill: color }); }
                                                     setBrushColor(color);
                                                 }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-slate-100'}`} style={{ backgroundColor: color }}></button>
                                             ))}
@@ -1590,14 +1592,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                     {/* Quick Actions */}
                                     <div className="flex gap-3 pt-4">
-                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-14 bg-slate-50 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-slate-100"><FiMove size={14}/> Center Object</button>
-                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-14 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm active:bg-rose-100"><FiTrash2 size={14}/> Remove Layer</button>
+                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-14 bg-slate-50 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-slate-100"><FiMove size={14} /> Center Object</button>
+                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-14 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm active:bg-rose-100"><FiTrash2 size={14} /> Remove Layer</button>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-center py-10 opacity-30">
-                                    <FiBox size={48} className="text-[#0c0c2a] mb-6 animate-pulse"/>
-                                    <p className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-[0.3em] leading-relaxed">No Selection<br/>Active</p>
+                                    <FiBox size={48} className="text-[#0c0c2a] mb-6 animate-pulse" />
+                                    <p className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-[0.3em] leading-relaxed">No Selection<br />Active</p>
                                 </div>
                             )}
                         </div>
@@ -1605,13 +1607,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         {/* Right Section: Integrated Navigation Dock */}
                         <div className="w-16 h-full bg-slate-50 rounded-[32px] p-2 flex flex-col gap-2 border border-slate-100 shrink-0 shadow-sm">
                             {[
-                                { id: 'uploads', icon: <FiImage size={20}/> },
-                                { id: 'text', icon: <FiType size={20}/> },
-                                { id: 'stickers', icon: <FiSmile size={20}/> },
-                                { id: 'draw', icon: <FiEdit3 size={20}/> },
-                                { id: 'layers', icon: <FiLayers size={20}/> }
+                                { id: 'uploads', icon: <FiImage size={20} /> },
+                                { id: 'text', icon: <FiType size={20} /> },
+                                { id: 'stickers', icon: <FiSmile size={20} /> },
+                                { id: 'draw', icon: <FiEdit3 size={20} /> },
+                                { id: 'layers', icon: <FiLayers size={20} /> }
                             ].map(tab => (
-                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if(tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-[24px] flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-105' : 'text-slate-400 hover:text-[#0c0c2a]'}`}>
+                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-[24px] flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-105' : 'text-slate-400 hover:text-[#0c0c2a]'}`}>
                                     {tab.icon}
                                 </button>
                             ))}
@@ -1645,7 +1647,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4">
                             {uploadedAssets.map(a => (
                                 <div key={a.id} className="group relative aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                                     <img src={a.url} onClick={() => { 
+                                    <img src={a.url} onClick={() => {
                                         const imgElement = new Image();
                                         imgElement.crossOrigin = 'anonymous';
                                         imgElement.onload = () => {
@@ -1656,7 +1658,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     height: imgElement.naturalHeight || imgElement.height || 100
                                                 });
                                                 img.scaleToWidth(180);
-                                                img.set({left:250, top:300, originX:'center', originY:'center', uid:`up_${Date.now()}`});
+                                                img.set({ left: 250, top: 300, originX: 'center', originY: 'center', uid: `up_${Date.now()}` });
                                                 if (fabricRef.current) {
                                                     fabricRef.current.add(img);
                                                     fabricRef.current.setActiveObject(img);
@@ -1682,7 +1684,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
             {activeTab === 'draw' && (
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX/></button></div>
+                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX /></button></div>
                     <div className="space-y-10">
                         <div className="space-y-6">
                             <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>Brush Diameter</span><span>{brushSize}px</span></div>
@@ -1712,7 +1714,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="grid grid-cols-4 gap-5">
-                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{__html: s.svg}} />)}
+                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{ __html: s.svg }} />)}
                     </div>
                 </div>
             )}
@@ -1721,22 +1723,22 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[450px] xl:h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Layers</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
                     <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-2">
-                        {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24}/><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> : 
-                        canvasObjects.map((obj, i) => (
-                            <div key={i} onClick={() => {
-                                const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid);
-                                if(real) { fabricRef.current.setActiveObject(real); fabricRef.current.renderAll(); setActiveObject({...real, uid: real.uid, type: real.type}); }
-                            }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'bg-[#0c0c2a] text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`}>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[10px] font-black">{i+1}</div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
+                        {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24} /><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> :
+                            canvasObjects.map((obj, i) => (
+                                <div key={i} onClick={() => {
+                                    const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid);
+                                    if (real) { fabricRef.current.setActiveObject(real); fabricRef.current.renderAll(); setActiveObject({ ...real, uid: real.uid, type: real.type }); }
+                                }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'bg-[#0c0c2a] text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`}>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[10px] font-black">{i + 1}</div>
+                                        <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.bringToFront(real); fabricRef.current.renderAll(); updateTexture(); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"><FiArrowUp size={14} /></button>
+                                        <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.remove(real); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-rose-500"><FiTrash2 size={14} /></button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-2">
-                                    <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if(real) { fabricRef.current.bringToFront(real); fabricRef.current.renderAll(); updateTexture(); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"><FiArrowUp size={14}/></button>
-                                    <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if(real) { fabricRef.current.remove(real); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-rose-500"><FiTrash2 size={14}/></button>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             )}
