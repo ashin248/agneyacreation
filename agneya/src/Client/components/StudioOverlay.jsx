@@ -44,8 +44,8 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
                 depthTest={true}
                 depthWrite={false}
                 polygonOffset={true}
-                polygonOffsetFactor={-50} // Forced priority to stay on top of frame glass/default textures
-                polygonOffsetUnits={-50}
+                polygonOffsetFactor={-100} // Absolute top priority
+                polygonOffsetUnits={-100}
                 side={THREE.DoubleSide}
                 color={texture ? '#ffffff' : '#000000'}
                 opacity={texture ? 1 : 0}
@@ -253,10 +253,13 @@ function Model3D({
 
         clickedMesh.geometry.computeBoundingBox();
         const box = clickedMesh.geometry.boundingBox;
+        const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(e.point.clone()) : pushedPos;
+
         const newAnchor = {
             meshId: clickedMesh.uuid,
             meshName: clickedMesh.name,
             pos: [pushedPos.x, pushedPos.y, pushedPos.z],
+            groupPos: [groupPosVec.x, groupPosVec.y, groupPosVec.z], // Needed for scene-wide projection
             rot,
             dim: [
                 (box.max.x - box.min.x),
@@ -313,7 +316,7 @@ function Model3D({
                 let decalDepth = isPlanar ? 
                     (modelConfig?.category === 'Tshirt' ? 0.15 : 
                      modelConfig?.category === 'Plate' ? 0.015 : 
-                     modelConfig?.category === 'Photoframe' ? 0.05 : 0.02) 
+                     modelConfig?.category === 'Photoframe' ? 0.5 : 0.02) 
                     : 1;
 
                 if (isPlanar) {
@@ -327,8 +330,8 @@ function Model3D({
                     const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
                     
                     // Map canvas offsets to the surface geometry
-                    const xShift = obj.offsetX * (maxDim * 0.5);
-                    const yShift = -obj.offsetY * (maxDim * 0.5);
+                    const xShift = obj.offsetX * (maxDim * (sourceCanvasWidth / sourceCanvasHeight));
+                    const yShift = -obj.offsetY * (maxDim);
                     
                     finalPos[0] += localX.x * xShift + localY.x * yShift;
                     finalPos[1] += localX.y * xShift + localY.y * yShift;
@@ -336,7 +339,8 @@ function Model3D({
 
                     dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
                     finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
-                } else {
+                }
+ else {
                     // CYLINDRICAL WRAPPING (For Mugs)
                     const trueDiameter = Math.min(anchor.dim[0], anchor.dim[2]);
                     const radius = trueDiameter * 0.5;
@@ -354,18 +358,32 @@ function Model3D({
                     decalDepth = radius * 1.5;
                 }
 
+                const decalProps = {
+                    key: obj.uid,
+                    dataUrl: obj.dataUrl,
+                    position: finalPos,
+                    rotation: finalRotation,
+                    scale: [decalWidth, decalHeight, decalDepth],
+                    active: active,
+                    zIndex: index * 2
+                };
+
+                // CRITICAL FIX: For Photoframes, project onto the WHOLE GROUP to cover both border and center
+                if (isPlanar && modelConfig?.category === 'Photoframe') {
+                    return (
+                        <group key={`group-decal-${obj.uid}`} renderOrder={100 + index}>
+                             <ProjectedDecalWrapper {...decalProps} />
+                        </group>
+                    );
+                }
+
                 return (
                     <group key={`portal-${obj.uid}`}>
                         {createPortal(
                             <React.Suspense fallback={null}>
                                 <ProjectedDecalWrapper
                                     mesh={targetMesh}
-                                    dataUrl={obj.dataUrl}
-                                    position={finalPos}
-                                    rotation={finalRotation}
-                                    scale={[decalWidth, decalHeight, decalDepth]}
-                                    active={active}
-                                    zIndex={index * 2}
+                                    {...decalProps}
                                 />
                             </React.Suspense>,
                             targetMesh
