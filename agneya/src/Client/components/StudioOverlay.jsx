@@ -82,12 +82,22 @@ function Model3D({
     useLayoutEffect(() => {
         if (!scene || !modelConfig) return;
         
-        console.log("3D Model Loaded. Mesh Inventory:", scene.name); // DEBUG
         scene.traverse((node) => {
             if (node.isMesh) {
-                console.log(" - Mesh found:", node.name); // EXHAUSTIVE DEBUG
-                // If it's a Photoframe, we want to clear out the default NYC/Stock photos
                 const lowerName = node.name.toLowerCase();
+                
+                // GLASS PASS-THROUGH: Prevent glass from intercepting clicks meant for photos
+                if (lowerName.includes('glass')) {
+                    node.raycast = () => null; // Make invisible to Raycaster
+                    if (node.material) {
+                        node.material = node.material.clone();
+                        node.material.transparent = true;
+                        node.material.opacity = 0.4;
+                        node.material.needsUpdate = true;
+                    }
+                }
+
+                // If it's a Photoframe, we want to clear out the default NYC/Stock photos
                 const isPhotoArea = modelConfig.category === 'Photoframe' && 
                                   (!modelConfig.printableMeshes || 
                                    modelConfig.printableMeshes.length === 0 || 
