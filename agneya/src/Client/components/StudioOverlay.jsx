@@ -1163,7 +1163,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         >
                                                             <ambientLight intensity={1.8} />
                                                             <spotLight position={[10, 20, 10]} intensity={3} />
-                                                            <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
+                                                            <Stage intensity={0.6} environment={null} adjustCamera={false} center={false}>
                                                                 <Model3D baseModelId={product?.baseModelId} url={product?.model3d || product?.base3DModelUrl} canvasObjects={canvasObjects} objectAnchors={objectAnchors} onAnchorUpdate={handleAnchorUpdate} activeObjectId={activeObject?.uid} />
                                                             </Stage>
                                                             <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
