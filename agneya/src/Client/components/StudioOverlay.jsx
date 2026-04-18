@@ -946,9 +946,28 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                     {/* Left Panel: High-Contrast Desktop Designer Tools */}
                     <div className="hidden xl:flex w-[320px] flex-col gap-6">
-                        <div className="floating-card flex-1 p-8 flex flex-col gap-8 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
+                        <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
+                            <div className="space-y-2 mb-2">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={handleAddText} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                        <FiType size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Add Text</span>
+                                    </button>
+                                    <button onClick={handleImageUpload} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                        <FiImage size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
+                                    </button>
+                                    <button onClick={() => setIsDrawing(!isDrawing)} className={`h-14 col-span-2 rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
+                                        <FiZap size={14}/> {isDrawing ? 'Stop Drawing' : 'Ink Mode'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="h-px bg-slate-100 w-full" />
+
                             <div className="space-y-2">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Design Tools</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Designer Tools</h4>
                                 <div className="flex items-center gap-2">
                                     <div className="h-1 w-8 bg-[#0c0c2a] rounded-full"></div>
                                     <span className="text-[11px] font-black uppercase text-[#0c0c2a]">{activeObject ? activeObject.type : 'Master Studio'}</span>
@@ -1115,8 +1134,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                 </div>
                                             </div>
                                         ) : (
-                                            /* 3D DESIGN MODE: Interactive Three.js Studio with Dynamic Viewport */
-                                            <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[82vh] mt-10'}`}>
+                                            /* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */
+                                            <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[88vh] mt-4'}`}>
                                                 {/* Invisible source for 3D textures */}
                                                 <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
                                                     <div style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
@@ -1129,7 +1148,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             shadows={false} 
                                                             gl={{ alpha: true, powerPreference: 'high-performance' }}
                                                             camera={{ 
-                                                                position: [0, 0, 2.5], 
+                                                                position: [0, window.innerWidth < 1280 ? 0 : -0.3, 2.5], 
                                                                 fov: 45 
                                                             }}
                                                             onCreated={({ gl }) => {
