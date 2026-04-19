@@ -1247,10 +1247,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     {activeStudioView === '2D' ? (
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className={`relative ${product?.phoneMask ? 'aspect-auto' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
+                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
                                                     
                                                     {product?.phoneMask ? (
-                                                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                                                        <div className="absolute inset-0 z-10 pointer-events-none">
                                                             {/* We use a path to create an inverted mask (white outside, transparent inside phone bounds) */}
                                                             <svg width="100%" height="100%" viewBox={`0 0 400 800`} preserveAspectRatio="xMidYMid meet" className="drop-shadow-2xl">
                                                                 <defs>
@@ -1327,7 +1327,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                     {/* Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 ${product?.phoneMask ? 'z-0' : 'z-20'} flex items-center justify-center pointer-events-none`}>
-                                                        <div className="pointer-events-auto" style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
+                                                        <div className="pointer-events-auto" style={{ width: `${product?.phoneMask ? 400 : 500}px`, height: `${product?.phoneMask ? 800 : 600}px`, transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : 1)})`, transformOrigin: 'center' }}>
                                                             <canvas ref={canvasRef} />
                                                         </div>
                                                     </div>
