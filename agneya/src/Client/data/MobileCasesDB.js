@@ -9,7 +9,8 @@ export const phoneBrands = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
     series: ["iPhone 15", "iPhone 14", "iPhone 13", "iPhone 12"],
     theme: "#111111",
-    mockup: "https://i.ibb.co/WkPy9Xf/iphone-mockup.png"
+    mockup: "https://i.ibb.co/WkPy9Xf/iphone-mockup.png",
+    caseOverlay: "https://i.ibb.co/nbWvC7M/case-overlay.png"
   },
   {
     id: "samsung",
@@ -17,7 +18,8 @@ export const phoneBrands = [
     logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
     series: ["Galaxy S24", "Galaxy S23", "Galaxy A Series"],
     theme: "#034ea2",
-    mockup: "https://i.ibb.co/L5hY5M0/samsung-mockup.png"
+    mockup: "https://i.ibb.co/L5hY5M0/samsung-mockup.png",
+    caseOverlay: "https://i.ibb.co/nbWvC7M/case-overlay.png"
   },
   {
     id: "oneplus",
@@ -117,6 +119,7 @@ export const phoneModels = [
     name: "OnePlus 12",
     shape: { width: 310, height: 640, rx: 35 },
     camera: { type: 'circle', cx: 80, cy: 90, r: 65 },
+    bodyImage: "https://i.ibb.co/L5hY5M0/samsung-mockup.png",
     price: 399
   },
   {id:"iphone-17e",brand:"apple",name:"iPhone 17e",shape:{width:300,height:610,rx:42},camera:{type:"rounded-rect",x:20,y:20,width:95,height:95,rx:25},price:399},
@@ -134,7 +137,7 @@ export const phoneModels = [
   {id:"iphone-15",brand:"apple",name:"iPhone 15",shape:{width:300,height:610,rx:42},camera:{type:"rounded-rect",x:20,y:20,width:95,height:95,rx:22},price:399},
   {id:"iphone-15-plus",brand:"apple",name:"iPhone 15 Plus",shape:{width:320,height:650,rx:45},camera:{type:"rounded-rect",x:20,y:20,width:95,height:95,rx:22},price:399},
   {id:"iphone-15-pro",brand:"apple",name:"iPhone 15 Pro",shape:{width:300,height:610,rx:45},camera:{type:"rounded-rect",x:20,y:20,width:105,height:115,rx:25},price:399},
-  {id:"iphone-15-pro-max",brand:"apple",name:"iPhone 15 Pro Max",shape:{width:320,height:650,rx:45},camera:{type:"rounded-rect",x:20,y:20,width:110,height:120,rx:25},price:399},
+  {id:"iphone-15-pro-max",brand:"apple",name:"iPhone 15 Pro Max",shape:{width:320,height:650,rx:45},camera:{type:"rounded-rect",x:20,y:20,width:110,height:120,rx:25},bodyImage: "https://i.ibb.co/WkPy9Xf/iphone-mockup.png", price:399},
 
   {id:"iphone-14",brand:"apple",name:"iPhone 14",shape:{width:300,height:610,rx:40},camera:{type:"rounded-rect",x:20,y:20,width:90,height:90,rx:20},price:399},
   {id:"iphone-14-plus",brand:"apple",name:"iPhone 14 Plus",shape:{width:320,height:650,rx:42},camera:{type:"rounded-rect",x:20,y:20,width:90,height:90,rx:20},price:399},

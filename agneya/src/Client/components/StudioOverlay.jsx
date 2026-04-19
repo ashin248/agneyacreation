@@ -1339,6 +1339,17 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
+                                                    {/* Layer 25: Case Reflection Overlay (Above the design) */}
+                                                    {product?.phoneMask && (
+                                                        <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-40 mix-blend-screen transition-opacity">
+                                                            <img 
+                                                                src={phoneBrands.find(b => b.id === product.phoneMask.brand)?.caseOverlay || "https://i.ibb.co/nbWvC7M/case-overlay.png"} 
+                                                                alt="Case Texture"
+                                                                className="w-full h-full object-contain"
+                                                            />
+                                                        </div>
+                                                    )}
+
                                                     {/* Quick Side Toggle */}
                                                     {(product.blankFrontImage && product.blankBackImage) && (
                                                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
