@@ -1268,8 +1268,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         />
                                                                     </mask>
                                                                 </defs>
-                                                                {/* Solid white background covering everything, BUT masked by the phone shape to punch a hole through it */}
-                                                                <rect width="100%" height="100%" fill="#f1f5f9" mask="url(#phone-mask)" />
+                                                                {/* Solid background for the phone body, masked by the phone shape */}
+                                                                <rect 
+                                                                    x={200 - (product.phoneMask.shape.width/2)} 
+                                                                    y={400 - (product.phoneMask.shape.height/2)} 
+                                                                    width={product.phoneMask.shape.width} 
+                                                                    height={product.phoneMask.shape.height} 
+                                                                    rx={product.phoneMask.shape.rx} 
+                                                                    fill={product.phoneMask.color || "#ffffff"} 
+                                                                />
 
                                                                 {/* Draw the Camera cutout (solid white to obscure canvas underneath) */}
                                                                 {product.phoneMask.camera.type === 'rounded-rect' && (
@@ -1279,7 +1286,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         width={product.phoneMask.camera.width} 
                                                                         height={product.phoneMask.camera.height} 
                                                                         rx={product.phoneMask.camera.rx} 
-                                                                        fill="#f8fafc" 
+                                                                        fill="#111111" 
                                                                         className="drop-shadow-sm"
                                                                     />
                                                                 )}
@@ -1288,7 +1295,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         cx={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.cx} 
                                                                         cy={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.cy} 
                                                                         r={product.phoneMask.camera.r} 
-                                                                        fill="#f8fafc" 
+                                                                        fill="#111111" 
                                                                         className="drop-shadow-sm"
                                                                     />
                                                                 )}
@@ -1298,8 +1305,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
                                                                         cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
                                                                         r={lens.r} 
-                                                                        fill="#f8fafc" 
-                                                                        stroke="#e2e8f0" strokeWidth="2"
+                                                                        fill="#111111" 
+                                                                        stroke="#333" strokeWidth="2"
                                                                         className="drop-shadow-sm"
                                                                     />
                                                                 ))}
@@ -1313,7 +1320,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                     rx={product.phoneMask.shape.rx} 
                                                                     fill="none" 
                                                                     stroke="#e2e8f0"
-                                                                    strokeWidth="3"
+                                                                    strokeWidth="1"
+                                                                    mask="url(#phone-mask)"
                                                                 />
                                                             </svg>
                                                         </div>

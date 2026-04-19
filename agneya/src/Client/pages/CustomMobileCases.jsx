@@ -156,6 +156,22 @@ const CustomMobileCases = () => {
                                                     transform: 'translateX(2px) translateY(2px)' // Centering offset tweak
                                                 }}></div>
                                             )}
+                                            {model.camera.type === 'circle' && (
+                                                <div className="absolute bg-slate-200 rounded-full" style={{
+                                                    top: `${((model.camera.cy - model.camera.r) / model.shape.height) * 100}%`,
+                                                    left: `${((model.camera.cx - model.camera.r) / model.shape.width) * 100}%`,
+                                                    width: `${(model.camera.r * 2 / model.shape.width) * 100}%`,
+                                                    height: `${(model.camera.r * 2 / model.shape.height) * 100}%`,
+                                                }}></div>
+                                            )}
+                                            {model.camera.type === 'lenses' && model.camera.lenses.map((lens, i) => (
+                                                <div key={i} className="absolute bg-slate-200 rounded-full" style={{
+                                                    top: `${((lens.cy - lens.r) / model.shape.height) * 100}%`,
+                                                    left: `${((lens.cx - lens.r) / model.shape.width) * 100}%`,
+                                                    width: `${(lens.r * 2 / model.shape.width) * 100}%`,
+                                                    height: `${(lens.r * 2 / model.shape.height) * 100}%`,
+                                                }}></div>
+                                            ))}
                                         </div>
                                         <div className="mt-auto">
                                             <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-900 mb-1">{model.name}</h4>
