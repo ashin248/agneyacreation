@@ -40,6 +40,7 @@ const ProductDetails = () => {
     const [overrideImage, setOverrideImage] = useState(null);
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const [initialStudioMode, setInitialStudioMode] = useState('self');
+    const [forcedDimension, setForcedDimension] = useState(null);
 
     const { currentUser } = useAuth();
     
@@ -450,16 +451,31 @@ const ProductDetails = () => {
 
                                     {product.isCustomizable && (
                                         <div className="space-y-4 pt-6">
-                                            {/* Specialized Studio Entry: 2D or 3D */}
-                                            {product.customizationType !== 'None' && (
+                                            {/* Strictly Separate: 3D Studio Entry */}
+                                            {(product.customizationType === '3D' || product.customizationType === 'Both') && (
                                                 <button 
                                                     onClick={() => requireLogin(() => {
                                                         setInitialStudioMode('self');
+                                                        setForcedDimension('3D');
                                                         setCustomizingProduct(product);
                                                     })} 
-                                                    className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-600 hover:-translate-y-1 transition-all active:scale-95"
+                                                    className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-slate-700 transition-all active:scale-95"
                                                 >
-                                                    <Palette size={20} /> INITIALIZE CUSTOM STUDIO
+                                                    <Palette size={20} /> CREATE 3D DESIGN
+                                                </button>
+                                            )}
+
+                                            {/* Strictly Separate: 2D Studio Entry */}
+                                            {(product.customizationType === '2D' || product.customizationType === 'Both') && (
+                                                <button 
+                                                    onClick={() => requireLogin(() => {
+                                                        setInitialStudioMode('self');
+                                                        setForcedDimension('2D');
+                                                        setCustomizingProduct(product);
+                                                    })} 
+                                                    className="w-full h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-700 transition-all active:scale-95"
+                                                >
+                                                    <Palette size={20} /> CREATE 2D DESIGN
                                                 </button>
                                             )}
                                             
@@ -467,11 +483,12 @@ const ProductDetails = () => {
                                             <button 
                                                 onClick={() => requireLogin(() => {
                                                     setInitialStudioMode('company');
+                                                    setForcedDimension(null);
                                                     setCustomizingProduct(product);
                                                 })}
-                                                className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-slate-50 hover:-translate-y-1 transition-all active:scale-95 shadow-sm"
+                                                className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
                                             >
-                                                <Upload size={18} /> SUBMIT PRIMARY DESIGN FILES
+                                                <Upload size={18} /> DESIGN ASSISTANCE
                                             </button>
                                         </div>
                                     )}
@@ -585,6 +602,7 @@ const ProductDetails = () => {
                 product={customizingProduct} 
                 requireLogin={requireLogin}
                 initialMode={initialStudioMode}
+                forcedDimension={forcedDimension}
             />
         </div>
     );
