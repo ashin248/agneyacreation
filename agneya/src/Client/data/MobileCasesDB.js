@@ -1,3 +1,7 @@
+/**
+ * Mobile Cases Database
+ * Contains branding and geometric mask configurations for all supported phone models.
+ */
 export const phoneBrands = [
   {
     id: "apple",
