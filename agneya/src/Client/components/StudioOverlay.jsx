@@ -1249,15 +1249,38 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
                                                 <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
                                                     
-                                                    {product?.phoneMask ? (
-                                                        <div className="absolute inset-0 z-10 pointer-events-none">
+                                                    {/* Layer -1: Phone Base Color (Behind the canvas) */}
+                                                    {product?.phoneMask && (
+                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+                                                            <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid meet">
+                                                                <rect 
+                                                                    x={200 - (product.phoneMask.shape.width/2)} 
+                                                                    y={400 - (product.phoneMask.shape.height/2)} 
+                                                                    width={product.phoneMask.shape.width} 
+                                                                    height={product.phoneMask.shape.height} 
+                                                                    rx={product.phoneMask.shape.rx} 
+                                                                    fill={product.phoneMask.color || "#ffffff"} 
+                                                                />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Layer 10: Fabric.js Canvas Overlay */}
+                                                    <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
+                                                        <div className="pointer-events-auto" style={{ width: `${product?.phoneMask ? 400 : 500}px`, height: `${product?.phoneMask ? 800 : 600}px`, transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : 1)})`, transformOrigin: 'center' }}>
+                                                            <canvas ref={canvasRef} />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {product?.phoneMask && (
+                                                        <div className="absolute inset-0 z-20 pointer-events-none">
                                                             {/* We use a path to create an inverted mask (white outside, transparent inside phone bounds) */}
                                                             <svg width="100%" height="100%" viewBox={`0 0 400 800`} preserveAspectRatio="xMidYMid meet" className="drop-shadow-2xl">
                                                                 <defs>
-                                                                    <mask id="phone-mask">
-                                                                        {/* Everything white is visible by default */}
+                                                                    <mask id="phone-mask-inverted">
+                                                                        {/* Everything white is visible (will show the page background color) */}
                                                                         <rect width="100%" height="100%" fill="white" />
-                                                                        {/* Subtract phone body (black means invisible in mask) */}
+                                                                        {/* Subtract phone body (black means invisible in mask, showing design behind) */}
                                                                         <rect 
                                                                             x={200 - (product.phoneMask.shape.width/2)} 
                                                                             y={400 - (product.phoneMask.shape.height/2)} 
@@ -1268,17 +1291,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         />
                                                                     </mask>
                                                                 </defs>
-                                                                {/* Solid background for the phone body, masked by the phone shape */}
-                                                                <rect 
-                                                                    x={200 - (product.phoneMask.shape.width/2)} 
-                                                                    y={400 - (product.phoneMask.shape.height/2)} 
-                                                                    width={product.phoneMask.shape.width} 
-                                                                    height={product.phoneMask.shape.height} 
-                                                                    rx={product.phoneMask.shape.rx} 
-                                                                    fill={product.phoneMask.color || "#ffffff"} 
-                                                                />
+                                                                {/* Solid background covering EVERYTHING outside the phone hole */}
+                                                                <rect width="100%" height="100%" fill="#fafafa" mask="url(#phone-mask-inverted)" />
 
-                                                                {/* Draw the Camera cutout (solid white to obscure canvas underneath) */}
+                                                                {/* Draw the Camera cutout (solid block to skip design underneath) */}
                                                                 {product.phoneMask.camera.type === 'rounded-rect' && (
                                                                     <rect 
                                                                         x={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.x} 
@@ -1321,24 +1337,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                     fill="none" 
                                                                     stroke="#e2e8f0"
                                                                     strokeWidth="1"
-                                                                    mask="url(#phone-mask)"
                                                                 />
                                                             </svg>
                                                         </div>
-                                                    ) : (
-                                                        <img
-                                                            src={viewSide === 'front' ? product.blankFrontImage : product.blankBackImage}
-                                                            className="w-full h-full object-contain"
-                                                            alt="Product Base"
-                                                        />
                                                     )}
-
-                                                    {/* Fabric.js Canvas Overlay */}
-                                                    <div className={`absolute inset-0 ${product?.phoneMask ? 'z-0' : 'z-20'} flex items-center justify-center pointer-events-none`}>
-                                                        <div className="pointer-events-auto" style={{ width: `${product?.phoneMask ? 400 : 500}px`, height: `${product?.phoneMask ? 800 : 600}px`, transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : 1)})`, transformOrigin: 'center' }}>
-                                                            <canvas ref={canvasRef} />
-                                                        </div>
-                                                    </div>
 
                                                     {/* Quick Side Toggle */}
                                                     {(product.blankFrontImage && product.blankBackImage) && (
