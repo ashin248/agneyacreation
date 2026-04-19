@@ -419,7 +419,7 @@ const ProductDetails = () => {
                                         }}
                                         className="flex-1 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 px-4"
                                     >
-                                        <ShoppingCart size={18} /> Buy Now (₹{cartItemTotal.toLocaleString('en-IN')})
+                                        <ShoppingCart size={18} /> BUY NOW (₹{cartItemTotal.toLocaleString('en-IN')})
                                     </button>
                                     <button 
                                         onClick={() => {
@@ -441,7 +441,7 @@ const ProductDetails = () => {
                                         }}
                                         className="flex-1 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-slate-50 transition-all shadow-sm active:scale-95 flex items-center justify-center gap-3 px-4"
                                     >
-                                        <ShoppingCart size={18} /> Add to Cart
+                                        <ShoppingCart size={18} /> ADD TO TRANSACTION
                                     </button>
                             </div>
 
@@ -456,7 +456,7 @@ const ProductDetails = () => {
                                                     })} 
                                                     className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-600 hover:-translate-y-1 transition-all active:scale-95"
                                                 >
-                                                    <Palette size={20} /> Design Your Own {product.customizationType}
+                                                    <Palette size={20} /> INITIALIZE CUSTOM STUDIO
                                                 </button>
                                             )}
                                             
@@ -467,7 +467,7 @@ const ProductDetails = () => {
                                                 })}
                                                 className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-slate-50 hover:-translate-y-1 transition-all active:scale-95 shadow-sm"
                                             >
-                                                <Upload size={18} /> Request Expert Assistance
+                                                <Upload size={18} /> SUBMIT PRIMARY DESIGN FILES
                                             </button>
                                         </div>
                                     )}
@@ -495,7 +495,7 @@ const ProductDetails = () => {
                                         }}
                                         className="w-full bg-slate-50 border-2 border-slate-200 text-slate-900 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:border-indigo-600 transition-all active:scale-95 flex items-center justify-center gap-3"
                                     >
-                                        <Building2 size={18} /> Bulk Order
+                                        <Building2 size={18} /> ORDER WHOLESALE BATCH
                                     </button>
                                     {product.isCustomizable && (
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
