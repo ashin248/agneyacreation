@@ -1256,19 +1256,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
                                                 <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
                                                     
-                                                    {/* Layer -1: Phone Base Color (Behind the canvas) */}
+                                                    {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                                                     {product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-                                                            <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid meet">
-                                                                <rect 
-                                                                    x={200 - (product.phoneMask.shape.width/2)} 
-                                                                    y={400 - (product.phoneMask.shape.height/2)} 
-                                                                    width={product.phoneMask.shape.width} 
-                                                                    height={product.phoneMask.shape.height} 
-                                                                    rx={product.phoneMask.shape.rx} 
-                                                                    fill={product.phoneMask.color || "#ffffff"} 
-                                                                />
-                                                            </svg>
+                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-80 transition-opacity">
+                                                            <img 
+                                                                src={product.phoneMask.bodyImage || phoneBrands.find(b => b.id === product.phoneMask.brand)?.mockup || "https://i.ibb.co/L5hY5M0/samsung-mockup.png"} 
+                                                                alt="Phone Body"
+                                                                className="w-full h-full object-contain"
+                                                            />
                                                         </div>
                                                     )}
 
@@ -1296,43 +1291,38 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                             rx={product.phoneMask.shape.rx} 
                                                                             fill="black" 
                                                                         />
+                                                                        {/* Re-add Camera holes to mask (white = visible dashboard color) */}
+                                                                        {product.phoneMask.camera.type === 'rounded-rect' && (
+                                                                            <rect 
+                                                                                x={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.x} 
+                                                                                y={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.y} 
+                                                                                width={product.phoneMask.camera.width} 
+                                                                                height={product.phoneMask.camera.height} 
+                                                                                rx={product.phoneMask.camera.rx} 
+                                                                                fill="white" 
+                                                                            />
+                                                                        )}
+                                                                        {product.phoneMask.camera.type === 'circle' && (
+                                                                            <circle 
+                                                                                cx={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.cx} 
+                                                                                cy={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.cy} 
+                                                                                r={product.phoneMask.camera.r} 
+                                                                                fill="white" 
+                                                                            />
+                                                                        )}
+                                                                        {product.phoneMask.camera.type === 'lenses' && product.phoneMask.camera.lenses.map((lens, i) => (
+                                                                            <circle 
+                                                                                key={i}
+                                                                                cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
+                                                                                cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
+                                                                                r={lens.r} 
+                                                                                fill="white" 
+                                                                            />
+                                                                        ))}
                                                                     </mask>
                                                                 </defs>
-                                                                {/* Solid background covering EVERYTHING outside the phone hole */}
+                                                                {/* Solid background covering EVERYTHING outside the phone hole AND in the camera hole */}
                                                                 <rect width="100%" height="100%" fill="#fafafa" mask="url(#phone-mask-inverted)" />
-
-                                                                {/* Draw the Camera cutout (solid block to skip design underneath) */}
-                                                                {product.phoneMask.camera.type === 'rounded-rect' && (
-                                                                    <rect 
-                                                                        x={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.x} 
-                                                                        y={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.y} 
-                                                                        width={product.phoneMask.camera.width} 
-                                                                        height={product.phoneMask.camera.height} 
-                                                                        rx={product.phoneMask.camera.rx} 
-                                                                        fill="#111111" 
-                                                                        className="drop-shadow-sm"
-                                                                    />
-                                                                )}
-                                                                {product.phoneMask.camera.type === 'circle' && (
-                                                                    <circle 
-                                                                        cx={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.cx} 
-                                                                        cy={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.cy} 
-                                                                        r={product.phoneMask.camera.r} 
-                                                                        fill="#111111" 
-                                                                        className="drop-shadow-sm"
-                                                                    />
-                                                                )}
-                                                                {product.phoneMask.camera.type === 'lenses' && product.phoneMask.camera.lenses.map((lens, i) => (
-                                                                    <circle 
-                                                                        key={i}
-                                                                        cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
-                                                                        cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
-                                                                        r={lens.r} 
-                                                                        fill="#111111" 
-                                                                        stroke="#333" strokeWidth="2"
-                                                                        className="drop-shadow-sm"
-                                                                    />
-                                                                ))}
                                                                 
                                                                 {/* Thin outer stroke for definition */}
                                                                 <rect 

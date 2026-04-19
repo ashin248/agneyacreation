@@ -8,21 +8,24 @@ export const phoneBrands = [
     name: "Apple",
     logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
     series: ["iPhone 15", "iPhone 14", "iPhone 13", "iPhone 12"],
-    theme: "#111111"
+    theme: "#111111",
+    mockup: "https://i.ibb.co/WkPy9Xf/iphone-mockup.png"
   },
   {
     id: "samsung",
     name: "Samsung",
     logo: "https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg",
     series: ["Galaxy S24", "Galaxy S23", "Galaxy A Series"],
-    theme: "#034ea2"
+    theme: "#034ea2",
+    mockup: "https://i.ibb.co/L5hY5M0/samsung-mockup.png"
   },
   {
     id: "oneplus",
     name: "OnePlus",
     logo: "https://upload.wikimedia.org/wikipedia/commons/f/f8/OnePlus_logo.svg",
     series: ["OnePlus 12", "OnePlus 11", "Nord Series"],
-    theme: "#f50514"
+    theme: "#f50514",
+    mockup: "https://i.ibb.co/L5hY5M0/samsung-mockup.png"
   },
   {
     id: "xiaomi",
@@ -99,7 +102,8 @@ export const phoneBrands = [
     name: "Motorola",
     logo: "https://upload.wikimedia.org/wikipedia/commons/d/dd/Motorola_logo.svg",
     series: ["Edge 50 Pro", "Moto G84", "Razr 40"],
-    theme: "#001438"
+    theme: "#001438",
+    mockup: "https://i.ibb.co/L5hY5M0/samsung-mockup.png"
   }
 ];
 
