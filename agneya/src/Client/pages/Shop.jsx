@@ -258,6 +258,12 @@ const Shop = () => {
                         >
                             Explore All
                         </button>
+                        <button 
+                            onClick={() => navigate('/custom-mobile-cases')}
+                            className="flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-black uppercase transition-all flex-shrink-0 border bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-600 hover:text-white shadow-sm"
+                        >
+                            📱 Phone Covers
+                        </button>
                         <div className="w-px h-4 bg-slate-200/60 flex-shrink-0"></div>
                         {categories.map((cat) => {
                             const catName = typeof cat === 'string' ? cat : cat.name;
