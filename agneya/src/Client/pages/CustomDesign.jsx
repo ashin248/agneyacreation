@@ -13,8 +13,9 @@ import {
     FiChevronLeft, FiPlus, FiTrash2, FiX, FiZap, FiBox, FiArrowRight, FiShoppingBag,
     FiArrowUp, FiRotateCcw, FiSave, FiMove, FiActivity, FiMaximize, FiCheckCircle, FiFeather, FiCloud
 } from 'react-icons/fi';
+import { MODELS } from '../components/Three/ProductLibrary';
 
-function Model3D({ url, textureUrl }) {
+function Model3D({ url, textureUrl, scale = 1.5, rotation = [0,0,0] }) {
     if (!url) return null;
     const { scene } = useGLTF(url);
     const textureRef = useRef(null);
@@ -72,7 +73,7 @@ function Model3D({ url, textureUrl }) {
         };
     }, [textureUrl, scene]);
 
-    return <primitive object={scene} scale={1.5} />;
+    return <primitive object={scene} scale={scale} rotation={rotation} />;
 }
 
 
@@ -355,7 +356,14 @@ const CustomDesign = ({ initialMode, initial3D }) => {
                                         <ambientLight intensity={1.5} />
                                         <spotLight position={[10, 10, 10]} intensity={2} angle={0.15} penumbra={1} />
                                         <React.Suspense fallback={null}>
-                                            {product?.base3DModelUrl ? <Model3D url={product.base3DModelUrl} textureUrl={canvasTexture} /> : null}
+                                            {(product?.base3DModelUrl || (product?.baseModelId && MODELS[product.baseModelId]?.path)) ? (
+                                                <Model3D 
+                                                    url={product.base3DModelUrl || MODELS[product.baseModelId].path} 
+                                                    textureUrl={canvasTexture}
+                                                    scale={product.baseModelId && MODELS[product.baseModelId] ? MODELS[product.baseModelId].defaultScale : 1.5}
+                                                    rotation={product.baseModelId && MODELS[product.baseModelId] ? MODELS[product.baseModelId].defaultRotation : [0,0,0]}
+                                                />
+                                            ) : null}
                                         </React.Suspense>
                                         <OrbitControls enablePan={false} maxDistance={8} minDistance={3} />
                                     </Canvas>
