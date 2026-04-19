@@ -22,6 +22,7 @@ import StarRating from '../components/StarRating';
 import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
+import StudioOverlay from '../components/StudioOverlay';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -37,6 +38,8 @@ const ProductDetails = () => {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [isImageTransitioning, setIsImageTransitioning] = useState(false);
     const [overrideImage, setOverrideImage] = useState(null);
+    const [customizingProduct, setCustomizingProduct] = useState(null);
+    const [initialStudioMode, setInitialStudioMode] = useState('self');
 
     const { currentUser } = useAuth();
     
@@ -451,8 +454,8 @@ const ProductDetails = () => {
                                             {product.customizationType !== 'None' && (
                                                 <button 
                                                     onClick={() => requireLogin(() => {
-                                                        const target = product.customizationType === '3D' ? '3d' : '2d';
-                                                        navigate(`/studio/${target}/${product._id}`);
+                                                        setInitialStudioMode('self');
+                                                        setCustomizingProduct(product);
                                                     })} 
                                                     className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-600 hover:-translate-y-1 transition-all active:scale-95"
                                                 >
@@ -463,7 +466,8 @@ const ProductDetails = () => {
                                             {/* Specialized Studio Entry: Assistance */}
                                             <button 
                                                 onClick={() => requireLogin(() => {
-                                                    navigate(`/studio/assistance/${product._id}`);
+                                                    setInitialStudioMode('company');
+                                                    setCustomizingProduct(product);
                                                 })}
                                                 className="w-full h-16 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] hover:bg-slate-50 hover:-translate-y-1 transition-all active:scale-95 shadow-sm"
                                             >
@@ -566,6 +570,22 @@ const ProductDetails = () => {
                 )}
             </div>
 
+            {/* Login Overlay */}
+            <LoginModal 
+                isOpen={isLoginModalOpen} 
+                onClose={() => setIsLoginModalOpen(false)} 
+                title="Authentication Required"
+                subtitle="Please log into your Agneya account to continue with design studio functionalities."
+            />
+
+            {/* Custom Studio Overlay restores all legacy rendering, UI layout, & missing features requested by user */}
+            <StudioOverlay 
+                isOpen={!!customizingProduct} 
+                onClose={() => setCustomizingProduct(null)} 
+                product={customizingProduct} 
+                requireLogin={requireLogin}
+                initialMode={initialStudioMode}
+            />
         </div>
     );
 };
