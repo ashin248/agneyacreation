@@ -1,3 +1,7 @@
+/**
+ * Mobile Cases Database
+ * Contains branding and geometric mask configurations for all supported phone models.
+ */
 export const phoneBrands = [
   {
     id: "apple",
@@ -102,7 +106,7 @@ export const phoneModels = [
   { id: "iphone-17-air", brand: "apple", name: "iPhone 17 Air", shape: { width: 305, height: 615, rx: 45 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 95, height: 95, rx: 25 }, price: 399 },
   { id: "iphone-17-pro", brand: "apple", name: "iPhone 17 Pro", shape: { width: 305, height: 615, rx: 45 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 105, height: 110, rx: 28 }, price: 399 },
   { id: "iphone-17-pro-max", brand: "apple", name: "iPhone 17 Pro Max", shape: { width: 320, height: 650, rx: 48 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 110, height: 115, rx: 30 }, price: 399 },
-  
+
   { id: "iphone-16e", brand: "apple", name: "iPhone 16e", shape: { width: 300, height: 610, rx: 42 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 60, height: 100, rx: 25 }, price: 399 },
   { id: "iphone-16", brand: "apple", name: "iPhone 16", shape: { width: 300, height: 610, rx: 42 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 50, height: 100, rx: 30 }, price: 399 },
   { id: "iphone-16-plus", brand: "apple", name: "iPhone 16 Plus", shape: { width: 320, height: 650, rx: 45 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 50, height: 100, rx: 30 }, price: 399 },
@@ -180,12 +184,11 @@ export const phoneModels = [
   { id: "oneplus-nord-ce2", brand: "oneplus", name: "OnePlus Nord CE 2 5G", shape: { width: 300, height: 620, rx: 30 }, camera: { type: 'rounded-rect', x: 15, y: 15, width: 50, height: 90, rx: 15 }, price: 399 },
   { id: "oneplus-nord-2-5g", brand: "oneplus", name: "OnePlus Nord 2 5G", shape: { width: 300, height: 620, rx: 30 }, camera: { type: 'rounded-rect', x: 15, y: 15, width: 50, height: 90, rx: 15 }, price: 399 },
 
-  {
 
   { id: "galaxy-m17e-5g", brand: "samsung", name: "Galaxy M17e 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s26-plus-5g", brand: "samsung", name: "Galaxy S26 Plus 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s26-5g", brand: "samsung", name: "Galaxy S26 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
-  { id: "galaxy-s26-ultra-5g", brand: "samsung", name: "Galaxy S26 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{cx: 45, cy: 50, r: 14}, {cx: 45, cy: 90, r: 14}, {cx: 45, cy: 130, r: 14}, {cx: 80, cy: 70, r: 10}] }, price: 399 },
+  { id: "galaxy-s26-ultra-5g", brand: "samsung", name: "Galaxy S26 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{ cx: 45, cy: 50, r: 14 }, { cx: 45, cy: 90, r: 14 }, { cx: 45, cy: 130, r: 14 }, { cx: 80, cy: 70, r: 10 }] }, price: 399 },
   { id: "galaxy-f70e-5g", brand: "samsung", name: "Galaxy F70e 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-a17-5g", brand: "samsung", name: "Galaxy A17 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-a26-5g", brand: "samsung", name: "Galaxy A26 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
@@ -310,17 +313,17 @@ export const phoneModels = [
   { id: "galaxy-s25-edge-5g", brand: "samsung", name: "Galaxy S25 Edge 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s25-plus-5g", brand: "samsung", name: "Galaxy S25 Plus 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s25-5g", brand: "samsung", name: "Galaxy S25 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
-  { id: "galaxy-s25-ultra-5g", brand: "samsung", name: "Galaxy S25 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{cx: 45, cy: 50, r: 14}, {cx: 45, cy: 90, r: 14}, {cx: 45, cy: 130, r: 14}, {cx: 80, cy: 70, r: 10}] }, price: 399 },
+  { id: "galaxy-s25-ultra-5g", brand: "samsung", name: "Galaxy S25 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{ cx: 45, cy: 50, r: 14 }, { cx: 45, cy: 90, r: 14 }, { cx: 45, cy: 130, r: 14 }, { cx: 80, cy: 70, r: 10 }] }, price: 399 },
   { id: "galaxy-s24-fe-5g", brand: "samsung", name: "Galaxy S24 Fe 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s24-5g", brand: "samsung", name: "Galaxy S24 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s24-plus-5g", brand: "samsung", name: "Galaxy S24 Plus 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s23-fe-5g", brand: "samsung", name: "Galaxy S23 FE 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s23-5g", brand: "samsung", name: "Galaxy S23 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s23-plus-5g", brand: "samsung", name: "Galaxy S23 Plus 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
-  { id: "galaxy-s23-ultra-5g", brand: "samsung", name: "Galaxy S23 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{cx: 45, cy: 50, r: 14}, {cx: 45, cy: 90, r: 14}, {cx: 45, cy: 130, r: 14}, {cx: 80, cy: 70, r: 10}] }, price: 399 },
+  { id: "galaxy-s23-ultra-5g", brand: "samsung", name: "Galaxy S23 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{ cx: 45, cy: 50, r: 14 }, { cx: 45, cy: 90, r: 14 }, { cx: 45, cy: 130, r: 14 }, { cx: 80, cy: 70, r: 10 }] }, price: 399 },
   { id: "galaxy-s22-5g", brand: "samsung", name: "Galaxy S22 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s22-plus-5g", brand: "samsung", name: "Galaxy S22 Plus 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
-  { id: "galaxy-s22-ultra-5g", brand: "samsung", name: "Galaxy S22 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{cx: 45, cy: 50, r: 14}, {cx: 45, cy: 90, r: 14}, {cx: 45, cy: 130, r: 14}, {cx: 80, cy: 70, r: 10}] }, price: 399 },
+  { id: "galaxy-s22-ultra-5g", brand: "samsung", name: "Galaxy S22 Ultra 5G", shape: { width: 330, height: 670, rx: 10 }, camera: { type: 'lenses', lenses: [{ cx: 45, cy: 50, r: 14 }, { cx: 45, cy: 90, r: 14 }, { cx: 45, cy: 130, r: 14 }, { cx: 80, cy: 70, r: 10 }] }, price: 399 },
   { id: "galaxy-s21-fe-5g", brand: "samsung", name: "Galaxy S21 FE 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s20-fe", brand: "samsung", name: "Galaxy S20 FE", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "galaxy-s20-fe-5g", brand: "samsung", name: "Galaxy S20 FE 5G", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
@@ -1078,3 +1081,4 @@ export const phoneModels = [
   { id: "tecno-camon-12-air", brand: "tecno", name: "Tecno Camon 12 Air", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
   { id: "tecno-spark-4", brand: "tecno", name: "Tecno Spark 4", shape: { width: 310, height: 640, rx: 35 }, camera: { type: 'rounded-rect', x: 20, y: 20, width: 45, height: 110, rx: 20 }, price: 399 },
 ];
+
