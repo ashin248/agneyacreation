@@ -398,7 +398,7 @@ function Model3D({
     );
 };
 
-const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self', forcedDimension = null }) => {
+const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self' }) => {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -693,10 +693,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         if (isOpen) {
             resetStudio();
             setDesignMode(initialMode);
-            // Strict View Selection: Directly driven by Admin's customizationType and Product Details Buttons
-            if (forcedDimension) {
-                setActiveStudioView(forcedDimension);
-            } else if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d) {
+            // Strict View Selection: Default to 3D if available, else 2D
+            if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
                 setActiveStudioView('3D');
             } else {
                 setActiveStudioView('2D');
@@ -1046,12 +1044,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 <div className="flex flex-col items-center">
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
                     <div className="flex bg-slate-100 p-1 rounded-full mt-2">
-                        {product.customizationType !== 'None' && (
-                            <button onClick={() => setDesignMode('self')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'self' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}>
-                                {forcedDimension ? `${forcedDimension} STUDIO` : 'CUSTOMER DESIGNS'}
-                            </button>
+                        {(product.customizationType === 'Both' || product.customizationType === '3D') && (
+                            <button onClick={() => { setDesignMode('self'); setActiveStudioView('3D'); }} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'self' && activeStudioView === '3D' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setDesignMode('company')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'company' || product.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}>Design Assistance</button>
+                        <button onClick={() => setDesignMode('company')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'company' || product.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
+                        {(product.customizationType === 'Both' || product.customizationType === '2D') && (
+                            <button onClick={() => { setDesignMode('self'); setActiveStudioView('2D'); }} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'self' && activeStudioView === '2D' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
+                        )}
                     </div>
                 </div>
                 <div className="flex items-center gap-4">

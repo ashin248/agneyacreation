@@ -40,8 +40,6 @@ const ProductDetails = () => {
     const [overrideImage, setOverrideImage] = useState(null);
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const [initialStudioMode, setInitialStudioMode] = useState('self');
-    const [forcedDimension, setForcedDimension] = useState(null);
-    const [showCustomizationModal, setShowCustomizationModal] = useState(false);
 
     const { currentUser } = useAuth();
     
@@ -452,12 +450,15 @@ const ProductDetails = () => {
 
                                     {product.isCustomizable && product.customizationType !== 'None' && (
                                         <div className="space-y-4 pt-6">
-                                            {/* Unified Customization Entry */}
+                                            {/* Unified Studio Entry */}
                                             <button 
-                                                onClick={() => setShowCustomizationModal(true)} 
-                                                className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-indigo-600 transition-all active:scale-95"
+                                                onClick={() => requireLogin(() => {
+                                                    setInitialStudioMode('self');
+                                                    setCustomizingProduct(product);
+                                                })} 
+                                                className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-slate-700 transition-all active:scale-95"
                                             >
-                                                <Palette size={20} /> CUSTOMIZE DESIGN
+                                                <Palette size={20} /> CUSTOMIZE PRODUCT
                                             </button>
                                         </div>
                                     )}
@@ -556,56 +557,6 @@ const ProductDetails = () => {
                 )}
             </div>
 
-            {/* Customization Options Modal */}
-            {showCustomizationModal && (
-                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-all" onClick={() => setShowCustomizationModal(false)} />
-                    <div className="relative bg-white rounded-[32px] p-8 w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-sm font-black text-[#0c0c2a] text-center mb-6 uppercase tracking-widest">Select Design Pathway</h3>
-                        <div className="space-y-3">
-                            {(product.customizationType === '3D' || product.customizationType === 'Both') && (
-                                <button 
-                                    onClick={() => requireLogin(() => {
-                                        setShowCustomizationModal(false);
-                                        setInitialStudioMode('self');
-                                        setForcedDimension('3D');
-                                        setCustomizingProduct(product);
-                                    })} 
-                                    className="w-full h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[9px] hover:bg-slate-700 transition-all active:scale-95"
-                                >
-                                    <Palette size={16} /> CREATE 3D DESIGN
-                                </button>
-                            )}
-                            {(product.customizationType === '2D' || product.customizationType === 'Both') && (
-                                <button 
-                                    onClick={() => requireLogin(() => {
-                                        setShowCustomizationModal(false);
-                                        setInitialStudioMode('self');
-                                        setForcedDimension('2D');
-                                        setCustomizingProduct(product);
-                                    })} 
-                                    className="w-full h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[9px] hover:bg-indigo-700 transition-all active:scale-95"
-                                >
-                                    <Palette size={16} /> CREATE 2D DESIGN
-                                </button>
-                            )}
-                            <button 
-                                onClick={() => requireLogin(() => {
-                                    setShowCustomizationModal(false);
-                                    setInitialStudioMode('company');
-                                    setForcedDimension(null);
-                                    setCustomizingProduct(product);
-                                })}
-                                className="w-full h-14 bg-white border-2 border-slate-900 text-slate-900 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-[0.2em] text-[9px] hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
-                            >
-                                <Upload size={16} /> DESIGN ASSISTANCE
-                            </button>
-                        </div>
-                        <button onClick={() => setShowCustomizationModal(false)} className="mt-6 w-full py-3 text-[9px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-widest text-center transition-colors">Cancel</button>
-                    </div>
-                </div>
-            )}
-
             {/* Login Overlay */}
             <LoginModal 
                 isOpen={isLoginModalOpen} 
@@ -621,7 +572,6 @@ const ProductDetails = () => {
                 product={customizingProduct} 
                 requireLogin={requireLogin}
                 initialMode={initialStudioMode}
-                forcedDimension={forcedDimension}
             />
         </div>
     );
