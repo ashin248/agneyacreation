@@ -1247,14 +1247,86 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     {activeStudioView === '2D' ? (
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className="relative aspect-[5/6] h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group">
-                                                    <img
-                                                        src={viewSide === 'front' ? product.blankFrontImage : product.blankBackImage}
-                                                        className="w-full h-full object-contain"
-                                                        alt="Product Base"
-                                                    />
+                                                <div className={`relative ${product?.phoneMask ? 'aspect-auto' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
+                                                    
+                                                    {product?.phoneMask ? (
+                                                        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+                                                            {/* We use a path to create an inverted mask (white outside, transparent inside phone bounds) */}
+                                                            <svg width="100%" height="100%" viewBox={`0 0 400 800`} preserveAspectRatio="xMidYMid meet" className="drop-shadow-2xl">
+                                                                <defs>
+                                                                    <mask id="phone-mask">
+                                                                        {/* Everything white is visible by default */}
+                                                                        <rect width="100%" height="100%" fill="white" />
+                                                                        {/* Subtract phone body (black means invisible in mask) */}
+                                                                        <rect 
+                                                                            x={200 - (product.phoneMask.shape.width/2)} 
+                                                                            y={400 - (product.phoneMask.shape.height/2)} 
+                                                                            width={product.phoneMask.shape.width} 
+                                                                            height={product.phoneMask.shape.height} 
+                                                                            rx={product.phoneMask.shape.rx} 
+                                                                            fill="black" 
+                                                                        />
+                                                                    </mask>
+                                                                </defs>
+                                                                {/* Solid white background covering everything, BUT masked by the phone shape to punch a hole through it */}
+                                                                <rect width="100%" height="100%" fill="#f1f5f9" mask="url(#phone-mask)" />
+
+                                                                {/* Draw the Camera cutout (solid white to obscure canvas underneath) */}
+                                                                {product.phoneMask.camera.type === 'rounded-rect' && (
+                                                                    <rect 
+                                                                        x={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.x} 
+                                                                        y={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.y} 
+                                                                        width={product.phoneMask.camera.width} 
+                                                                        height={product.phoneMask.camera.height} 
+                                                                        rx={product.phoneMask.camera.rx} 
+                                                                        fill="#f8fafc" 
+                                                                        className="drop-shadow-sm"
+                                                                    />
+                                                                )}
+                                                                {product.phoneMask.camera.type === 'circle' && (
+                                                                    <circle 
+                                                                        cx={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.cx} 
+                                                                        cy={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.cy} 
+                                                                        r={product.phoneMask.camera.r} 
+                                                                        fill="#f8fafc" 
+                                                                        className="drop-shadow-sm"
+                                                                    />
+                                                                )}
+                                                                {product.phoneMask.camera.type === 'lenses' && product.phoneMask.camera.lenses.map((lens, i) => (
+                                                                    <circle 
+                                                                        key={i}
+                                                                        cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
+                                                                        cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
+                                                                        r={lens.r} 
+                                                                        fill="#f8fafc" 
+                                                                        stroke="#e2e8f0" strokeWidth="2"
+                                                                        className="drop-shadow-sm"
+                                                                    />
+                                                                ))}
+                                                                
+                                                                {/* Thin outer stroke for definition */}
+                                                                <rect 
+                                                                    x={200 - (product.phoneMask.shape.width/2)} 
+                                                                    y={400 - (product.phoneMask.shape.height/2)} 
+                                                                    width={product.phoneMask.shape.width} 
+                                                                    height={product.phoneMask.shape.height} 
+                                                                    rx={product.phoneMask.shape.rx} 
+                                                                    fill="none" 
+                                                                    stroke="#e2e8f0"
+                                                                    strokeWidth="3"
+                                                                />
+                                                            </svg>
+                                                        </div>
+                                                    ) : (
+                                                        <img
+                                                            src={viewSide === 'front' ? product.blankFrontImage : product.blankBackImage}
+                                                            className="w-full h-full object-contain"
+                                                            alt="Product Base"
+                                                        />
+                                                    )}
+
                                                     {/* Fabric.js Canvas Overlay */}
-                                                    <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                                                    <div className={`absolute inset-0 ${product?.phoneMask ? 'z-0' : 'z-20'} flex items-center justify-center pointer-events-none`}>
                                                         <div className="pointer-events-auto" style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
                                                             <canvas ref={canvasRef} />
                                                         </div>

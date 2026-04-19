@@ -37,6 +37,7 @@ import UserDashboard from './Client/pages/UserDashboard';
 import BulkInquiry from './Client/pages/BulkInquiry';
 import Wishlist from './Client/pages/Wishlist';
 import CustomRequest from './Client/pages/CustomRequest';
+import CustomMobileCases from './Client/pages/CustomMobileCases';
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
         {/* === Public Client Storefront === */}
         <Route path="/" element={<ClientLayout />}>
           <Route index element={<Shop />} />
+          <Route path="shop" element={<Shop />} />
+          <Route path="custom-mobile-cases" element={<CustomMobileCases />} />
           <Route path="product/:productId" element={<ProductDetails />} />
           <Route path="studio/2d/:productId" element={<CustomDesign initialMode="EDITOR" initial3D={false} />} />
           <Route path="studio/3d/:productId" element={<CustomDesign initialMode="PREVIEW" initial3D={true} />} />
