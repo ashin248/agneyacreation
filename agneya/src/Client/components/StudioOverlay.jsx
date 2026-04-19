@@ -1095,8 +1095,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
                                         </button>
                                         <input id="desktop-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-14 col-span-2 rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
-                                            <FiZap size={14} /> {isDrawing ? 'Stop Drawing' : 'Ink Mode'}
+                                        <button onClick={() => setActiveTab('stickers')} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
+                                            <FiSmile size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Art</span>
+                                        </button>
+                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-20 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all group shadow-sm ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
+                                            <FiZap size={20} className={isDrawing ? 'text-white' : 'text-slate-400 group-hover:text-[#0c0c2a]'} />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">{isDrawing ? 'Stop Ink' : 'Ink Mode'}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1207,8 +1212,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             </div>
                                         )}
 
-                                        {/* Object Actions */}
                                         <div className="space-y-3 pt-4 border-t border-slate-50">
+                                            <button onClick={() => setActiveTab('layers')} className="w-full h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95">
+                                                <FiLayers size={16} /> Manage Layers ({canvasObjects.length})
+                                            </button>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiMove size={14} /> Center Obj</button>
                                                 <button onClick={() => {

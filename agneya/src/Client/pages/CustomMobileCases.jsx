@@ -86,32 +86,31 @@ const CustomMobileCases = () => {
                 {/* Main Layout */}
                 <div className="flex flex-col lg:flex-row gap-10">
                     
-                    {/* Left: Brand Selection Sidebar */}
+                    {/* Left: Brand Selection Sidebar (Horizontal Scroll on Mobile) */}
                     <div className="w-full lg:w-72 flex-shrink-0">
-                        <div className="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 border border-gray-100 sticky top-24">
-                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                                <FiGrid size={14}/> Select Brand
+                        <div className="bg-white rounded-3xl lg:rounded-[2rem] p-4 lg:p-6 shadow-xl shadow-gray-200/50 border border-gray-100 sticky top-24">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4 lg:mb-6 flex items-center gap-2">
+                                <FiGrid size={12}/> Brands
                             </h3>
-                            <div className="space-y-2">
+                            <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible no-scrollbar gap-2 lg:gap-2 pb-2 lg:pb-0">
                                 <button
                                     onClick={() => setSelectedBrand(null)}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${!selectedBrand ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+                                    className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center gap-3 px-5 py-3 rounded-2xl transition-all ${!selectedBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
                                 >
-                                    <span className="text-[11px] font-black uppercase tracking-widest">All Brands</span>
-                                    {!selectedBrand && <FiChevronRight className="ml-auto" />}
+                                    <span className="text-[10px] font-black uppercase tracking-widest">All Devices</span>
                                 </button>
                                 
                                 {phoneBrands.map(brand => (
                                     <button
                                         key={brand.id}
                                         onClick={() => setSelectedBrand(brand.id)}
-                                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${selectedBrand === brand.id ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'bg-white border border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-indigo-200'}`}
+                                        className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center gap-3 px-5 py-3 rounded-2xl transition-all border ${selectedBrand === brand.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-indigo-200'}`}
+                                        style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
                                     >
-                                        <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center p-1 border border-slate-100 overflow-hidden">
+                                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center p-0.5 border border-slate-100 overflow-hidden shrink-0">
                                             <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                                         </div>
-                                        <span className="text-[11px] font-black uppercase tracking-widest">{brand.name}</span>
-                                        {selectedBrand === brand.id && <FiChevronRight className="ml-auto" />}
+                                        <span className="text-[10px] font-black uppercase tracking-widest">{brand.name}</span>
                                     </button>
                                 ))}
                             </div>
@@ -121,61 +120,60 @@ const CustomMobileCases = () => {
                     {/* Right: Models Grid */}
                     <div className="flex-1">
                         <div className="mb-6">
-                            <input 
-                                type="text"
-                                placeholder="Search for your model (e.g. iPhone 15)"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-14 bg-white border border-slate-200 rounded-[1.5rem] px-6 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-400 transition-all outline-none shadow-sm"
-                            />
+                            <div className="relative group">
+                                <input 
+                                    type="text"
+                                    placeholder="Search for your model..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full h-16 bg-white border-2 border-slate-100 rounded-3xl px-8 text-sm font-bold text-slate-900 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all outline-none shadow-sm"
+                                />
+                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
+                                    <FiSmartphone size={20}/>
+                                </div>
+                            </div>
                         </div>
 
                         {filteredModels.length === 0 ? (
-                            <div className="py-20 text-center bg-white rounded-[2rem] border border-slate-100 shadow-sm">
-                                <FiSmartphone size={40} className="mx-auto text-slate-300 mb-4" />
-                                <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500">No Models Found</h4>
-                                <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase">Try adjusting your search or brand filter.</p>
+                            <div className="py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
+                                <FiSmartphone size={48} className="mx-auto text-slate-200 mb-6 animate-pulse" />
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">No matching devices</h4>
+                                <p className="text-[9px] text-slate-300 mt-2 font-bold uppercase tracking-widest">Try a different name or brand</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
                                 {filteredModels.map(model => (
-                                    <div key={model.id} className="bg-white rounded-[1.5rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all group flex flex-col cursor-pointer" onClick={() => handleCustomize(model)}>
-                                        {/* Abstract UI representation of the phone mask */}
-                                        <div className="w-full aspect-[1/2] bg-slate-50 rounded-2xl border-2 border-slate-100 mb-4 flex items-center justify-center overflow-hidden relative group-hover:scale-[1.02] transition-transform">
-                                            {/* We draw a mini SVG preview of the mask */}
-                                            <svg viewBox={`0 0 ${model.shape.width} ${model.shape.height}`} className="w-2/3 h-full object-contain text-slate-300 fill-current drop-shadow-sm">
-                                                <rect x="0" y="0" width={model.shape.width} height={model.shape.height} rx={model.shape.rx} />
-                                            </svg>
-                                            {/* Camera representation */}
-                                            {model.camera.type === 'rounded-rect' && (
-                                                <div className="absolute bg-slate-200 rounded-[8px]" style={{
-                                                    top: `${(model.camera.y / model.shape.height) * 100}%`,
-                                                    left: `${(model.camera.x / model.shape.width) * 100}%`,
-                                                    width: `${(model.camera.width / model.shape.width) * 100}%`,
-                                                    height: `${(model.camera.height / model.shape.height) * 100}%`,
-                                                    transform: 'translateX(2px) translateY(2px)' // Centering offset tweak
-                                                }}></div>
-                                            )}
-                                            {model.camera.type === 'circle' && (
-                                                <div className="absolute bg-slate-200 rounded-full" style={{
-                                                    top: `${((model.camera.cy - model.camera.r) / model.shape.height) * 100}%`,
-                                                    left: `${((model.camera.cx - model.camera.r) / model.shape.width) * 100}%`,
-                                                    width: `${(model.camera.r * 2 / model.shape.width) * 100}%`,
-                                                    height: `${(model.camera.r * 2 / model.shape.height) * 100}%`,
-                                                }}></div>
-                                            )}
-                                            {model.camera.type === 'lenses' && model.camera.lenses.map((lens, i) => (
-                                                <div key={i} className="absolute bg-slate-200 rounded-full" style={{
-                                                    top: `${((lens.cy - lens.r) / model.shape.height) * 100}%`,
-                                                    left: `${((lens.cx - lens.r) / model.shape.width) * 100}%`,
-                                                    width: `${(lens.r * 2 / model.shape.width) * 100}%`,
-                                                    height: `${(lens.r * 2 / model.shape.height) * 100}%`,
-                                                }}></div>
-                                            ))}
+                                    <div 
+                                        key={model.id} 
+                                        className="bg-white rounded-[2rem] p-5 lg:p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-200 hover:-translate-y-1 transition-all group flex flex-col cursor-pointer relative overflow-hidden" 
+                                        onClick={() => handleCustomize(model)}
+                                    >
+                                        <div className="mb-6 flex justify-between items-start">
+                                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors group-hover:bg-indigo-50">
+                                                <FiSmartphone size={24} />
+                                            </div>
+                                            <div className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                                START
+                                            </div>
                                         </div>
+                                        
                                         <div className="mt-auto">
-                                            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-900 mb-1">{model.name}</h4>
-                                            <p className="text-[10px] font-bold text-indigo-600">₹{model.price}</p>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Ready to Edit</span>
+                                            </div>
+                                            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-900 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+                                                {model.name}
+                                            </h4>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">SOFT CASE</span>
+                                                <p className="text-[11px] font-black text-slate-900">₹{model.price}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Subtle pattern background on hover */}
+                                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity translate-x-4 -translate-y-4">
+                                            <FiSmartphone size={100} />
                                         </div>
                                     </div>
                                 ))}
