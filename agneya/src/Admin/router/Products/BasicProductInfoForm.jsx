@@ -451,8 +451,9 @@ const BasicProductInfoForm = ({
             {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
               <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div>
-                  <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-4">
-                    Select 2D Model Architecture
+                  <label className="block text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <FiGrid size={12} />
+                    2D System Architecture Presets
                   </label>
                   
                   {isLibraryLoading ? (
@@ -466,14 +467,14 @@ const BasicProductInfoForm = ({
                         <div 
                           key={model._id}
                           onClick={() => selectModel(model)}
-                          className={`group relative aspect-square bg-white rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
-                            formData.baseModelId === model._id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-blue-100 hover:border-blue-300'
+                          className={`group relative aspect-square rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
+                            formData.baseModelId === model._id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
                           }`}
                         >
-                           <img src={model.thumbnail} alt={model.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
-                           <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <p className="text-[8px] font-black text-white uppercase tracking-tighter leading-tight">{model.name}</p>
-                              <p className="text-[6px] font-bold text-blue-200 uppercase tracking-widest mt-1">{model.category}</p>
+                           <img src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
+                              <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model.name}</p>
+                              <p className="text-[7px] font-bold text-blue-200 uppercase tracking-widest mt-1 opacity-80">{model.category}</p>
                            </div>
                            {formData.baseModelId === model._id && (
                              <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-lg">
