@@ -5,7 +5,7 @@ const TwoDModel = require('../src/schema/TwoDModelSchema');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/agneya';
+const MONGODB_URI = process.env.Server_DB_URL || process.env.Local_DB_URL || 'mongodb://localhost:27017/agneya';
 
 const models = [
   {
