@@ -149,6 +149,13 @@ const productSchema = new mongoose.Schema(
       type: String, // URL for the .glb/.gltf 3D model file
       default: null
     },
+    canvasConfig: {
+      width: { type: Number, default: 500 },
+      height: { type: Number, default: 600 },
+      offsetX: { type: Number, default: 0 },
+      offsetY: { type: Number, default: 0 },
+      scale: { type: Number, default: 1 }
+    },
     isActive: { 
       type: Boolean, 
       default: true 

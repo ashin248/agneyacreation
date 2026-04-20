@@ -1267,9 +1267,27 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
+                                                    {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
+                                                    {!product?.phoneMask && (product?.blankFrontImage || product?.images?.[0]) && (
+                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4">
+                                                            <img 
+                                                                src={product.blankFrontImage || product.images[0]} 
+                                                                alt="Product Backdrop"
+                                                                className="w-full h-full object-contain"
+                                                            />
+                                                        </div>
+                                                    )}
+
                                                     {/* Layer 10: Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
-                                                        <div className="pointer-events-auto" style={{ width: `${product?.phoneMask ? 400 : 500}px`, height: `${product?.phoneMask ? 800 : 600}px`, transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : 1)})`, transformOrigin: 'center' }}>
+                                                        <div className="pointer-events-auto" style={{ 
+                                                            width: `${product?.phoneMask ? 400 : (product?.canvasConfig?.width || 500)}px`, 
+                                                            height: `${product?.phoneMask ? 800 : (product?.canvasConfig?.height || 600)}px`,
+                                                            marginLeft: `${product?.canvasConfig?.offsetX || 0}px`,
+                                                            marginTop: `${product?.canvasConfig?.offsetY || 0}px`,
+                                                            transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : (product?.canvasConfig?.scale || 1))})`, 
+                                                            transformOrigin: 'center' 
+                                                        }}>
                                                             <canvas ref={canvasRef} />
                                                         </div>
                                                     </div>
@@ -1350,6 +1368,26 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
+                                                    {/* Layer 25: Generic 2D Mask/Overlay (For Acrylic/Frame Realism) */}
+                                                    {!product?.phoneMask && (product?.frontMaskImage || product?.frontOverlayImage) && (
+                                                        <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
+                                                            {product.frontMaskImage && (
+                                                                <img 
+                                                                    src={product.frontMaskImage} 
+                                                                    alt="Model Mask"
+                                                                    className="absolute inset-0 w-full h-full object-contain mix-blend-multiply opacity-50"
+                                                                />
+                                                            )}
+                                                            {product.frontOverlayImage && (
+                                                                <img 
+                                                                    src={product.frontOverlayImage} 
+                                                                    alt="Model Overlay"
+                                                                    className="absolute inset-0 w-full h-full object-contain mix-blend-screen opacity-40"
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
+
                                                     {/* Quick Side Toggle */}
                                                     {(product.blankFrontImage && product.blankBackImage) && (
                                                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
@@ -1365,7 +1403,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                         <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[88vh] mt-4'}`}>
                                             {/* Invisible source for 3D textures */}
                                             <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
-                                                <div style={{ width: `${500 * canvasScale}px`, height: `${600 * canvasScale}px` }}>
+                                                <div style={{ 
+                                                    width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
+                                                    height: `${(product?.canvasConfig?.height || 600) * canvasScale}px` 
+                                                }}>
                                                     <canvas ref={canvasRef} />
                                                 </div>
                                             </div>

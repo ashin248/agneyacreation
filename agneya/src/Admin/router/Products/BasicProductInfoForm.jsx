@@ -20,6 +20,50 @@ const BasicProductInfoForm = ({
   backOverlayImagePreview, setBackOverlayImagePreview,
   base3DModelFile, setBase3DModelFile 
 }) => {
+  const [libraryModels, setLibraryModels] = React.useState([]);
+  const [isLibraryLoading, setIsLibraryLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (formData.isCustomizable && (formData.customizationType === '2D' || formData.customizationType === 'Both')) {
+      fetchLibraryModels();
+    }
+  }, [formData.isCustomizable, formData.customizationType]);
+
+  const fetchLibraryModels = async () => {
+    try {
+      setIsLibraryLoading(true);
+      const res = await fetch('/api/public/models');
+      const data = await res.json();
+      setLibraryModels(data);
+    } catch (err) {
+      console.error('Failed to fetch 2D models:', err);
+    } finally {
+      setIsLibraryLoading(false);
+    }
+  };
+
+  const selectModel = (model) => {
+    // Populate form data with model URLs and config
+    setFormData(prev => ({
+      ...prev,
+      blankFrontImage: model.frontImage,
+      frontMaskImage: model.frontMask,
+      frontOverlayImage: model.frontOverlay,
+      canvasConfig: model.canvasConfig, // Synchronize resolution and offsets
+      // If we want to store the reference as well
+      baseModelId: model._id 
+    }));
+
+    // Update previews
+    setBlankFrontImagePreview(model.frontImage);
+    setFrontMaskImagePreview(model.frontMask);
+    setFrontOverlayImagePreview(model.frontOverlay);
+
+    // Reset file uploads if any
+    setBlankFrontImage(null);
+    setFrontMaskImage(null);
+    setFrontOverlayImage(null);
+  };
 
   // Helper to sync basic info changes to the parent controller
   const handleBasicInfoChange = (e) => {
@@ -407,14 +451,57 @@ const BasicProductInfoForm = ({
             {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
               <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div>
-                  <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-1">
-                    Blank Front Image
+                  <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-4">
+                    Select 2D Model Architecture
                   </label>
-                  <p className="text-xs text-blue-600 mb-4 font-medium">For the front-facing 2D canvas.</p>
-                  <div className="relative group">
+                  
+                  {isLibraryLoading ? (
+                    <div className="py-12 flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-dashed border-blue-100 animate-pulse">
+                      <div className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Scanning Registry...</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                      {libraryModels.map(model => (
+                        <div 
+                          key={model._id}
+                          onClick={() => selectModel(model)}
+                          className={`group relative aspect-square bg-white rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
+                            formData.baseModelId === model._id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-blue-100 hover:border-blue-300'
+                          }`}
+                        >
+                           <img src={model.thumbnail} alt={model.name} className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500" />
+                           <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-transparent to-transparent flex flex-col justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <p className="text-[8px] font-black text-white uppercase tracking-tighter leading-tight">{model.name}</p>
+                              <p className="text-[6px] font-bold text-blue-200 uppercase tracking-widest mt-1">{model.category}</p>
+                           </div>
+                           {formData.baseModelId === model._id && (
+                             <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-lg">
+                               <FiCheckCircle size={10} />
+                             </div>
+                           )}
+                        </div>
+                      ))}
+                      
+                      {/* Placeholder for "Add manual" if needed, but user wants automatic */}
+                      {libraryModels.length === 0 && (
+                        <div className="col-span-full py-12 text-center bg-white rounded-2xl border-2 border-dashed border-blue-100">
+                          <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">No 2D models registered in library.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-4 py-4">
+                     <div className="h-px bg-blue-100 flex-1"></div>
+                     <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">OR UPLOAD MANUALLY</span>
+                     <div className="h-px bg-blue-100 flex-1"></div>
+                  </div>
+
+                  <div className="relative group mt-4">
                     <label htmlFor="frontImageInput" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 bg-white rounded-xl hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer">
                       <div className="text-center">
-                        <span className="block text-xs font-bold text-blue-500">Upload Front Image</span>
+                        <span className="block text-xs font-bold text-blue-500">Upload Unique Front Backdrop</span>
                       </div>
                     </label>
                     <input id="frontImageInput" type="file" onChange={handleFrontImageChange} className="hidden" accept="image/*" />
@@ -425,19 +512,23 @@ const BasicProductInfoForm = ({
                         <div className="w-32 aspect-square rounded-xl border-4 border-white shadow-xl overflow-hidden bg-white shrink-0">
                           <img src={blankFrontImagePreview} alt="Front preview" className="w-full h-full object-contain" />
                         </div>
-                        <button type="button" onClick={() => { setBlankFrontImage(null); setBlankFrontImagePreview(''); }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Remove Front</button>
+                        <button type="button" onClick={() => { 
+                          setBlankFrontImage(null); 
+                          setBlankFrontImagePreview(''); 
+                          setFormData(prev => ({...prev, baseModelId: ''}));
+                        }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Clear Selection</button>
                       </div>
                       
                       {/* Front Mask & Overlay Slots */}
                       <div className="space-y-4 pt-4 border-t border-blue-100">
                         <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Front_Mask (Clipping)</label>
+                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Mask (Alpha Clipping)</label>
                           <label htmlFor="frontMaskInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Mask File</label>
                           <input id="frontMaskInput" type="file" onChange={handleFrontMaskChange} className="hidden" accept="image/*" />
                           {frontMaskImagePreview && <img src={frontMaskImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
                         </div>
                         <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Front_Overlay (Realism)</label>
+                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Overlay (Surface Relighting)</label>
                           <label htmlFor="frontOverlayInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Overlay File</label>
                           <input id="frontOverlayInput" type="file" onChange={handleFrontOverlayChange} className="hidden" accept="image/*" />
                           {frontOverlayImagePreview && <img src={frontOverlayImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
