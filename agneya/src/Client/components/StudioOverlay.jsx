@@ -410,6 +410,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
+    // Dynamic Initialization: Set the correct studio mode on mount
+    useEffect(() => {
+        if (isOpen && product?.customizationType === '2D') {
+            setActiveStudioView('2D');
+        }
+    }, [isOpen, product?.customizationType]);
+
+
 
 
 
