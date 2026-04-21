@@ -26,8 +26,6 @@ import NotAvailable from './SorryPage/SorryPage';
 import ClientLayout from './Client/components/ClientLayout';
 import Home from './Client/pages/Home';
 import Shop from './Client/pages/Shop';
-import CustomCatalog from './Client/pages/CustomCatalog';
-import CustomDesign from './Client/pages/CustomDesign';
 import ProductDetails from './Client/pages/ProductDetails';
 import Cart from './Client/pages/Cart'; // Still keep for compatibility if needed, but route to BulkMaster
 import BulkOrderMaster from './Client/pages/BulkOrderMaster';
@@ -50,9 +48,6 @@ function App() {
           <Route path="shop" element={<Shop />} />
           <Route path="custom-mobile-cases" element={<CustomMobileCases />} />
           <Route path="product/:productId" element={<ProductDetails />} />
-          <Route path="studio/2d/:productId" element={<CustomDesign initialMode="EDITOR" initial3D={false} />} />
-          <Route path="studio/3d/:productId" element={<CustomDesign initialMode="PREVIEW" initial3D={true} />} />
-          <Route path="studio/assistance/:productId" element={<CustomDesign initialMode="ASSISTANCE" initial3D={false} />} />
           <Route path="cart" element={<BulkOrderMaster />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="dashboard" element={<UserDashboard />} />

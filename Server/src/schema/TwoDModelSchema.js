@@ -50,6 +50,10 @@ const twoDModelSchema = new mongoose.Schema(
       offsetY: { type: Number, default: 0 },
       scale: { type: Number, default: 1 }
     },
+    shapeConfig: { 
+      type: mongoose.Schema.Types.Mixed, 
+      default: null 
+    },
     isActive: { 
       type: Boolean, 
       default: true 

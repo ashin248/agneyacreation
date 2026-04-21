@@ -43,21 +43,28 @@ const BasicProductInfoForm = ({
   };
 
   const selectModel = (model) => {
+    if (!model) {
+      setFormData(prev => ({
+        ...prev,
+        blankFrontImageUrl: '',
+        frontMaskImageUrl: '',
+        frontOverlayImageUrl: '',
+        canvasConfig: null,
+        shapeConfig: null,
+        baseModelId: ''
+      }));
+      return;
+    }
     // Populate form data with model URLs and config
     setFormData(prev => ({
       ...prev,
-      blankFrontImage: model.frontImage,
-      frontMaskImage: model.frontMask,
-      frontOverlayImage: model.frontOverlay,
+      blankFrontImageUrl: model.frontImage,
+      frontMaskImageUrl: model.frontMask,
+      frontOverlayImageUrl: model.frontOverlay,
       canvasConfig: model.canvasConfig, // Synchronize resolution and offsets
-      // If we want to store the reference as well
+      shapeConfig: model.shapeConfig, // ADD THIS
       baseModelId: model._id 
     }));
-
-    // Update previews
-    setBlankFrontImagePreview(model.frontImage);
-    setFrontMaskImagePreview(model.frontMask);
-    setFrontOverlayImagePreview(model.frontOverlay);
 
     // Reset file uploads if any
     setBlankFrontImage(null);
@@ -449,136 +456,48 @@ const BasicProductInfoForm = ({
 
             {/* 2D SECTION: Remount on type change to ensure clean transition */}
             {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
-              <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div>
-                  <label className="block text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <FiGrid size={12} />
-                    2D System Architecture Presets
-                  </label>
-                  
-                  {isLibraryLoading ? (
-                    <div className="py-12 flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-dashed border-blue-100 animate-pulse">
-                      <div className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Scanning Registry...</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                      {libraryModels.map(model => (
-                        <div 
-                          key={model._id}
-                          onClick={() => selectModel(model)}
-                          className={`group relative aspect-square rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
-                            formData.baseModelId === model._id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
-                          }`}
-                        >
-                           <img src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
-                              <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model.name}</p>
-                              <p className="text-[7px] font-bold text-blue-200 uppercase tracking-widest mt-1 opacity-80">{model.category}</p>
-                           </div>
-                           {formData.baseModelId === model._id && (
-                             <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-lg">
-                               <FiCheckCircle size={10} />
-                             </div>
-                           )}
-                        </div>
-                      ))}
-                      
-                      {/* Placeholder for "Add manual" if needed, but user wants automatic */}
-                      {libraryModels.length === 0 && (
-                        <div className="col-span-full py-12 text-center bg-white rounded-2xl border-2 border-dashed border-blue-100">
-                          <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">No 2D models registered in library.</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-4 py-4">
-                     <div className="h-px bg-blue-100 flex-1"></div>
-                     <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">OR UPLOAD MANUALLY</span>
-                     <div className="h-px bg-blue-100 flex-1"></div>
+              <div key="custom-2d-block" className="animate-in fade-in slide-in-from-bottom-4 duration-500 mb-8 p-6 bg-white rounded-2xl border border-blue-100">
+                <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <FiGrid size={16} />
+                  Select 2D Template
+                </label>
+                
+                {isLibraryLoading ? (
+                  <div className="py-6 flex items-center gap-4">
+                    <div className="w-5 h-5 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                    <p className="text-xs font-bold text-blue-400">Loading templates...</p>
                   </div>
-
-                  <div className="relative group mt-4">
-                    <label htmlFor="frontImageInput" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 bg-white rounded-xl hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer">
-                      <div className="text-center">
-                        <span className="block text-xs font-bold text-blue-500">Upload Unique Front Backdrop</span>
-                      </div>
-                    </label>
-                    <input id="frontImageInput" type="file" onChange={handleFrontImageChange} className="hidden" accept="image/*" />
+                ) : (
+                  <select
+                    className="w-full px-4 py-3 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-blue-50/50 text-blue-900 font-bold appearance-none cursor-pointer"
+                    value={formData.baseModelId || ''}
+                    onChange={(e) => {
+                      if (!e.target.value) {
+                        selectModel(null);
+                      } else {
+                        const model = libraryModels.find(m => m._id === e.target.value);
+                        if (model) selectModel(model);
+                      }
+                    }}
+                  >
+                    <option value="">-- Choose a predefined 2D Template --</option>
+                    {libraryModels.map(model => (
+                      <option key={model._id} value={model._id}>
+                        {model.name} {model.category ? `(${model.category})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                
+                {formData.baseModelId && (
+                  <div className="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center gap-3">
+                     <FiCheckCircle className="text-emerald-500" size={20} />
+                     <div>
+                       <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">Template Confirmed</p>
+                       <p className="text-[10px] font-bold text-emerald-600">The 2D engine will automatically apply dynamic SVG boundaries and canvas configurations.</p>
+                     </div>
                   </div>
-                  {blankFrontImagePreview && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-32 aspect-square rounded-xl border-4 border-white shadow-xl overflow-hidden bg-white shrink-0">
-                          <img src={blankFrontImagePreview} alt="Front preview" className="w-full h-full object-contain" />
-                        </div>
-                        <button type="button" onClick={() => { 
-                          setBlankFrontImage(null); 
-                          setBlankFrontImagePreview(''); 
-                          setFormData(prev => ({...prev, baseModelId: ''}));
-                        }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Clear Selection</button>
-                      </div>
-                      
-                      {/* Front Mask & Overlay Slots */}
-                      <div className="space-y-4 pt-4 border-t border-blue-100">
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Mask (Alpha Clipping)</label>
-                          <label htmlFor="frontMaskInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Mask File</label>
-                          <input id="frontMaskInput" type="file" onChange={handleFrontMaskChange} className="hidden" accept="image/*" />
-                          {frontMaskImagePreview && <img src={frontMaskImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Overlay (Surface Relighting)</label>
-                          <label htmlFor="frontOverlayInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Overlay File</label>
-                          <input id="frontOverlayInput" type="file" onChange={handleFrontOverlayChange} className="hidden" accept="image/*" />
-                          {frontOverlayImagePreview && <img src={frontOverlayImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-1">
-                    Blank Back Image
-                  </label>
-                  <p className="text-xs text-blue-600 mb-4 font-medium">For the back-facing 2D canvas.</p>
-                  <div className="relative group">
-                    <label htmlFor="backImageInput" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 bg-white rounded-xl hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer">
-                      <div className="text-center">
-                        <span className="block text-xs font-bold text-blue-500">Upload Back Image</span>
-                      </div>
-                    </label>
-                    <input id="backImageInput" type="file" onChange={handleBackImageChange} className="hidden" accept="image/*" />
-                  </div>
-                  {blankBackImagePreview && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-32 aspect-square rounded-xl border-4 border-white shadow-xl overflow-hidden bg-white shrink-0">
-                          <img src={blankBackImagePreview} alt="Back preview" className="w-full h-full object-contain" />
-                        </div>
-                        <button type="button" onClick={() => { setBlankBackImage(null); setBlankBackImagePreview(''); }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Remove Back</button>
-                      </div>
-
-                      {/* Back Mask & Overlay Slots */}
-                      <div className="space-y-4 pt-4 border-t border-blue-100">
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Back_Mask (Clipping)</label>
-                          <label htmlFor="backMaskInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Mask File</label>
-                          <input id="backMaskInput" type="file" onChange={handleBackMaskChange} className="hidden" accept="image/*" />
-                          {backMaskImagePreview && <img src={backMaskImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Back_Overlay (Realism)</label>
-                          <label htmlFor="backOverlayInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Overlay File</label>
-                          <input id="backOverlayInput" type="file" onChange={handleBackOverlayChange} className="hidden" accept="image/*" />
-                          {backOverlayImagePreview && <img src={backOverlayImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             )}
 

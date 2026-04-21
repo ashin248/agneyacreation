@@ -1368,8 +1368,32 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
+                                                    {/* New Layer: Dynamic SVG Shape Overlay & Mask */}
+                                                    {product?.shapeConfig && !product?.phoneMask && (
+                                                        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+                                                            <svg width={product.canvasConfig?.width || 500} height={product.canvasConfig?.height || 600} viewBox={`0 0 ${product.canvasConfig?.width || 500} ${product.canvasConfig?.height || 600}`} style={{ transform: `scale(${canvasScale * (product.canvasConfig?.scale || 1)})`, marginLeft: `${product.canvasConfig?.offsetX || 0}px`, marginTop: `${product.canvasConfig?.offsetY || 0}px` }} className="drop-shadow-2xl">
+                                                                <defs>
+                                                                    <mask id={`shape-mask-${product._id || 'new'}`}>
+                                                                        <rect width="100%" height="100%" fill="white" />
+                                                                        {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} fill="black" />}
+                                                                        {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                                        {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                                        {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} fill="black" />}
+                                                                    </mask>
+                                                                </defs>
+                                                                <rect width="100%" height="100%" fill="#fafafa" mask={`url(#shape-mask-${product._id || 'new'})`} />
+                                                                <g fill={`rgba(255,255,255,${product.shapeConfig.overlayOpacity || 0.1})`} stroke={product.shapeConfig.borderColor || 'none'} strokeWidth={product.shapeConfig.strokeWidth || 0}>
+                                                                    {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} />}
+                                                                    {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                                                    {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                                                    {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} />}
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    )}
+
                                                     {/* Layer 25: Generic 2D Mask/Overlay (For Acrylic/Frame Realism) */}
-                                                    {!product?.phoneMask && (product?.frontMaskImage || product?.frontOverlayImage) && (
+                                                    {!product?.phoneMask && !product?.shapeConfig && (product?.frontMaskImage || product?.frontOverlayImage) && (
                                                         <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
                                                             {product.frontMaskImage && (
                                                                 <img 

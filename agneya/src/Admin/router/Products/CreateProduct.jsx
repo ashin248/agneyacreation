@@ -19,6 +19,14 @@ const CreateProduct = () => {
     customizationType: 'None',
     originalPrice: '',
     baseModelId: '',
+    shapeConfig: null,
+    canvasConfig: null,
+    blankFrontImageUrl: '',
+    frontMaskImageUrl: '',
+    frontOverlayImageUrl: '',
+    blankBackImageUrl: '',
+    backMaskImageUrl: '',
+    backOverlayImageUrl: '',
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -142,6 +150,18 @@ const CreateProduct = () => {
       if (basicInfo.baseModelId) {
         formData.append('baseModelId', basicInfo.baseModelId);
       }
+      if (basicInfo.shapeConfig) {
+        formData.append('shapeConfig', JSON.stringify(basicInfo.shapeConfig));
+      }
+      if (basicInfo.canvasConfig) {
+        formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
+      }
+      if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
+      if (basicInfo.frontMaskImageUrl) formData.append('frontMaskImage', basicInfo.frontMaskImageUrl);
+      if (basicInfo.frontOverlayImageUrl) formData.append('frontOverlayImage', basicInfo.frontOverlayImageUrl);
+      if (basicInfo.blankBackImageUrl) formData.append('blankBackImage', basicInfo.blankBackImageUrl);
+      if (basicInfo.backMaskImageUrl) formData.append('backMaskImage', basicInfo.backMaskImageUrl);
+      if (basicInfo.backOverlayImageUrl) formData.append('backOverlayImage', basicInfo.backOverlayImageUrl);
 
       // Arrays formatting and appending
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({

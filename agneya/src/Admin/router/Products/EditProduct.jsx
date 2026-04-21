@@ -23,6 +23,14 @@ const EditProduct = () => {
     isCustomizable: false,
     customizationType: 'None',
     baseModelId: '',
+    shapeConfig: null,
+    canvasConfig: null,
+    blankFrontImageUrl: '',
+    frontMaskImageUrl: '',
+    frontOverlayImageUrl: '',
+    blankBackImageUrl: '',
+    backMaskImageUrl: '',
+    backOverlayImageUrl: '',
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -111,6 +119,14 @@ const EditProduct = () => {
           isCustomizable: product.isCustomizable,
           customizationType: product.customizationType || 'None',
           baseModelId: product.baseModelId || '',
+          shapeConfig: product.shapeConfig || null,
+          canvasConfig: product.canvasConfig || null,
+          blankFrontImageUrl: product.blankFrontImage || '',
+          frontMaskImageUrl: product.frontMaskImage || '',
+          frontOverlayImageUrl: product.frontOverlayImage || '',
+          blankBackImageUrl: product.blankBackImage || '',
+          backMaskImageUrl: product.backMaskImage || '',
+          backOverlayImageUrl: product.backOverlayImage || '',
         });
         
         setGalleryImagePreviews(product.galleryImages || []);
@@ -174,6 +190,18 @@ const EditProduct = () => {
       formData.append('isCustomizable', basicInfo.isCustomizable);
       formData.append('customizationType', basicInfo.customizationType);
       if (basicInfo.baseModelId) formData.append('baseModelId', basicInfo.baseModelId);
+      if (basicInfo.shapeConfig) {
+        formData.append('shapeConfig', JSON.stringify(basicInfo.shapeConfig));
+      }
+      if (basicInfo.canvasConfig) {
+        formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
+      }
+      if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
+      if (basicInfo.frontMaskImageUrl) formData.append('frontMaskImage', basicInfo.frontMaskImageUrl);
+      if (basicInfo.frontOverlayImageUrl) formData.append('frontOverlayImage', basicInfo.frontOverlayImageUrl);
+      if (basicInfo.blankBackImageUrl) formData.append('blankBackImage', basicInfo.blankBackImageUrl);
+      if (basicInfo.backMaskImageUrl) formData.append('backMaskImage', basicInfo.backMaskImageUrl);
+      if (basicInfo.backOverlayImageUrl) formData.append('backOverlayImage', basicInfo.backOverlayImageUrl);
 
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
         ...rest,

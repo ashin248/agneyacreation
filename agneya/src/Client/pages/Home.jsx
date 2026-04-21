@@ -204,7 +204,7 @@ const Home = () => {
           </p>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-10">
-              <button onClick={() => navigate('/custom-design')} className="group px-12 py-5 bg-white text-gray-900 font-black text-[11px] uppercase tracking-[0.3em] rounded-full hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20 flex items-center gap-4 active:scale-95">
+              <button onClick={() => navigate('/shop')} className="group px-12 py-5 bg-white text-gray-900 font-black text-[11px] uppercase tracking-[0.3em] rounded-full hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20 flex items-center gap-4 active:scale-95">
                   Design Studio <FiEdit3 className="transition-transform group-hover:rotate-12" />
               </button>
               <a href="#three-pillars" className="group px-12 py-5 bg-white/5 backdrop-blur-xl text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-full border border-white/10 hover:bg-white/10 transition-all flex items-center gap-4 active:scale-95">
@@ -240,7 +240,7 @@ const Home = () => {
                         <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> High-Res Vector Support</li>
                         <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> Neural Background Removal</li>
                     </ul>
-                    <Link to="/custom-design" className="inline-flex items-center gap-3 text-indigo-600 font-black text-xs uppercase tracking-widest group/btn">
+                    <Link to="/shop" className="inline-flex items-center gap-3 text-indigo-600 font-black text-xs uppercase tracking-widest group/btn">
                         Start Designing <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
                     </Link>
                 </div>
