@@ -1,5 +1,6 @@
 import React from 'react';
 import { MODELS } from '../../../Client/components/Three/ProductLibrary';
+import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
 import { FiCheckCircle, FiBox, FiPackage, FiTrash2, FiAlertCircle, FiGrid, FiImage, FiPlus } from 'react-icons/fi';
 
 const BasicProductInfoForm = ({ 
@@ -15,73 +16,28 @@ const BasicProductInfoForm = ({
     // #endregion
   };
 
-  const [libraryModels, setLibraryModels] = React.useState([]);
-  const [isLibraryLoading, setIsLibraryLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    if (formData.isCustomizable && (formData.customizationType === '2D' || formData.customizationType === 'Both')) {
-      fetchLibraryModels();
-    }
-  }, [formData.isCustomizable, formData.customizationType]);
-
-  const fetchLibraryModels = async () => {
-    try {
-      setIsLibraryLoading(true);
-      const res = await fetch('/api/public/models');
-      const data = await res.json();
-      const models = Array.isArray(data?.data)
-        ? data.data
-        : Array.isArray(data)
-          ? data
-          : [];
-      setLibraryModels(models);
-      sendDebugLog('H1', 'BasicProductInfoForm.jsx:fetchLibraryModels', 'Fetched 2D model library', {
-        ok: res.ok,
-        status: res.status,
-        modelCount: models.length
-      });
-    } catch (err) {
-      console.error('Failed to fetch 2D models:', err);
-      sendDebugLog('H1', 'BasicProductInfoForm.jsx:fetchLibraryModels:catch', '2D model library fetch failed', {
-        errorName: err?.name || 'Unknown',
-        hasMessage: !!err?.message
-      });
-    } finally {
-      setIsLibraryLoading(false);
-    }
-  };
-
-  const selectModel = (model) => {
-    if (!model) {
+  const select2DTemplate = (template) => {
+    if (!template) {
       setFormData(prev => ({
         ...prev,
-        blankFrontImageUrl: '',
-        frontMaskImageUrl: '',
-        frontOverlayImageUrl: '',
         canvasConfig: null,
         shapeConfig: null,
         baseModelId: ''
       }));
       return;
     }
-    // Populate form data with model URLs and config
     setFormData(prev => ({
       ...prev,
-      blankFrontImageUrl: model.frontImage,
-      canvasConfig: model.canvasConfig, // Synchronize resolution and offsets
-      shapeConfig: model.shapeConfig, // ADD THIS
-      baseModelId: model._id 
+      canvasConfig: template.canvasConfig,
+      shapeConfig: template.shapeConfig,
+      baseModelId: template.id
     }));
-    sendDebugLog('H2', 'BasicProductInfoForm.jsx:selectModel', 'Selected 2D library model', {
-      hasModel: !!model?._id,
-      hasShapeConfig: !!model?.shapeConfig,
-      hasCanvasConfig: !!model?.canvasConfig,
-      hasFrontImage: !!model?.frontImage
+    sendDebugLog('H2', 'BasicProductInfoForm.jsx:select2DTemplate', 'Selected 2D code template', {
+      templateId: template.id,
+      hasShapeConfig: !!template.shapeConfig
     });
-
   };
 
-  // Helper to sync basic info changes to the parent controller
   const handleBasicInfoChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -90,33 +46,32 @@ const BasicProductInfoForm = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // EXCLUSIVE STATE CLEANING: If switching customization type, clear unrelated assets
     if (name === 'customizationType') {
-      sendDebugLog('H3', 'BasicProductInfoForm.jsx:handleInputChange', 'Customization type changed', {
-        toType: value,
-        hadBaseModelId: !!formData.baseModelId
-      });
+      sendDebugLog('H3', 'BasicProductInfoForm.jsx:handleInputChange', 'Customization type changed', { toType: value });
+      
       if (value === '2D') {
-        // Clear 3D artifacts: Wipe baseModelId in parent and clear manual file upload
-        handleBasicInfoChange({ target: { name: 'baseModelId', value: '' }});
+        // Clean 3D
         setBase3DModelFile && setBase3DModelFile(null);
+        setFormData(prev => ({ ...prev, baseModelId: '' }));
       } else if (value === '3D') {
-        // Clear 2D artifacts now sourced from dynamic template engine
-        handleBasicInfoChange({ target: { name: 'blankFrontImageUrl', value: '' }});
-        handleBasicInfoChange({ target: { name: 'canvasConfig', value: null }});
-        handleBasicInfoChange({ target: { name: 'shapeConfig', value: null }});
+        // Clean 2D
+        setBase2DImageFile && setBase2DImageFile(null);
+        setFormData(prev => ({ ...prev, baseModelId: '', canvasConfig: null, shapeConfig: null }));
+      } else if (value === 'Both') {
+          // Keep both accessible; baseModelId will track the primary selector
       } else if (value === 'None') {
-        // Clear everything if customization is disabled
         setBase3DModelFile && setBase3DModelFile(null);
         setBase2DImageFile && setBase2DImageFile(null);
-        handleBasicInfoChange({ target: { name: 'baseModelId', value: '' }});
-        handleBasicInfoChange({ target: { name: 'blankFrontImageUrl', value: '' }});
-        handleBasicInfoChange({ target: { name: 'canvasConfig', value: null }});
-        handleBasicInfoChange({ target: { name: 'shapeConfig', value: null }});
+        setFormData(prev => ({ 
+            ...prev, 
+            baseModelId: '', 
+            canvasConfig: null, 
+            shapeConfig: null,
+            customizationType: 'None'
+        }));
       }
     }
 
-    // Update the master state
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -494,56 +449,47 @@ const BasicProductInfoForm = ({
                     Select 2D Template
                   </label>
                   
-                  {isLibraryLoading ? (
-                    <div className="py-4 flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                      <p className="text-xs font-bold text-blue-400">Loading templates...</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <select
-                        onChange={(e) => {
-                          if (!Array.isArray(libraryModels)) return;
-                          const selected = libraryModels.find(m => m?._id === e.target.value);
-                          selectModel(selected);
-                        }}
-                        value={formData.baseModelId || ''}
-                        className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
-                      >
-                        <option value="">-- Choose a Product Template --</option>
-                        {Array.isArray(libraryModels) && libraryModels.map(model => (
-                          <option key={model?._id} value={model?._id}>
-                            {model?.name || 'Untitled'} {model?.category ? `(${model.category})` : ''}
-                          </option>
-                        ))}
-                      </select>
+                  <div className="space-y-6">
+                    <select
+                      onChange={(e) => {
+                        const selected = TWOD_TEMPLATES[e.target.value];
+                        select2DTemplate(selected);
+                      }}
+                      value={formData.baseModelId || ''}
+                      className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
+                    >
+                      <option value="">-- Choose a Product Template --</option>
+                      {Object.values(TWOD_TEMPLATES).map(template => (
+                        <option key={template.id} value={template.id}>
+                          {template.name} ({template.category})
+                        </option>
+                      ))}
+                    </select>
 
-                      {/* Smart Thumbnail Preview */}
-                      {formData.baseModelId && Array.isArray(libraryModels) && libraryModels.length > 0 && (
-                        <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
-                          {(() => {
-                            const activeModel = libraryModels.find(m => m?._id === formData.baseModelId);
-                            if (!activeModel) return null;
-                            return (
-                              <div className="w-full h-full relative group">
-                                {renderThumbnail(activeModel)}
-                                <div className="absolute top-2 right-2 bg-blue-600 text-white p-1.5 rounded-full shadow-lg">
-                                  <FiCheckCircle size={14} />
-                                </div>
+                    {/* Smart Thumbnail Preview */}
+                    {formData.baseModelId && TWOD_TEMPLATES[formData.baseModelId] && (
+                      <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
+                        {(() => {
+                          const activeTemplate = TWOD_TEMPLATES[formData.baseModelId];
+                          return (
+                            <div className="w-full h-full relative group">
+                              <img 
+                                src={activeTemplate.thumbnail} 
+                                alt={activeTemplate.name} 
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                              />
+                              <div className="absolute top-2 right-2 bg-blue-600 text-white p-1.5 rounded-full shadow-lg">
+                                <FiCheckCircle size={14} />
                               </div>
-                            );
-                          })()}
-                        </div>
-                      )}
-
-                      {(Array.isArray(libraryModels) && libraryModels.length === 0) && (
-                        <p className="text-sm text-red-500 font-medium">No templates available. Please contact admin.</p>
-                      )}
-                    </div>
-                  )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
 
                   <p className="text-[11px] text-gray-500 font-medium mt-4 leading-relaxed">
-                     Selecting a template automatically applies the clipping shape and realistic finishes (like glass reflections) in the design studio.
+                     Selecting a template automatically applies the clipping shape and realistic finishes in the design studio.
                   </p>
                 </div>
 

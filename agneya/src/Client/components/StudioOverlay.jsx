@@ -17,6 +17,7 @@ import {
 import toast from 'react-hot-toast';
 import { calculateWholesalePriceTotal, calculateSavings } from '../utils/pricingUtils';
 import { MODELS } from './Three/ProductLibrary';
+import { TWOD_TEMPLATES } from './TwoD/TwoDTemplateLibrary';
 
 const dummyDecal = new THREE.Object3D();
 
@@ -568,8 +569,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
-        const baseWidth = 500;
-        const baseHeight = 600;
+        const baseWidth = product?.canvasConfig?.width || 500;
+        const baseHeight = product?.canvasConfig?.height || 600;
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: baseWidth,
@@ -1406,31 +1407,58 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
-                                                    {/* New Layer: Dynamic SVG Shape Overlay & Mask */}
+                                                    {/* Layer: Code-Driven 2D Template Viewport (Universal) */}
                                                     {product?.shapeConfig && !product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-                                                            <svg width={product.canvasConfig?.width || 500} height={product.canvasConfig?.height || 600} viewBox={`0 0 ${product.canvasConfig?.width || 500} ${product.canvasConfig?.height || 600}`} style={{ transform: `scale(${canvasScale * (product.canvasConfig?.scale || 1)})`, marginLeft: `${product.canvasConfig?.offsetX || 0}px`, marginTop: `${product.canvasConfig?.offsetY || 0}px` }} className="drop-shadow-2xl">
-                                                                <defs>
-                                                                    <mask id={`shape-mask-${product._id || 'new'}`}>
-                                                                        <rect width="100%" height="100%" fill="white" />
-                                                                        {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} fill="black" />}
-                                                                        {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
-                                                                        {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
-                                                                        {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} fill="black" />}
-                                                                    </mask>
-                                                                </defs>
-                                                                <rect width="100%" height="100%" fill="#fafafa" mask={`url(#shape-mask-${product._id || 'new'})`} />
-                                                                <g fill={`rgba(255,255,255,${product.shapeConfig.overlayOpacity || 0.1})`} stroke={product.shapeConfig.borderColor || 'none'} strokeWidth={product.shapeConfig.strokeWidth || 0}>
-                                                                    {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} />}
-                                                                    {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} />}
-                                                                    {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} />}
-                                                                    {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} />}
-                                                                </g>
-                                                            </svg>
+                                                        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden">
+                                                            <div className="relative" style={{ 
+                                                                width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
+                                                                height: `${(product?.canvasConfig?.height || 600) * canvasScale}px`,
+                                                                marginLeft: `${(product?.canvasConfig?.offsetX || 0) * canvasScale}px`, 
+                                                                marginTop: `${(product?.canvasConfig?.offsetY || 0) * canvasScale}px`
+                                                            }}>
+                                                                {/* The Workspace Canvas Backdrop (The actual 'Product' surface) */}
+                                                                <div className="absolute inset-0 bg-white shadow-inner flex items-center justify-center opacity-90">
+                                                                     {/* Optional Texture/Grid for help */}
+                                                                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                                                                </div>
+
+                                                                {/* Dynamic SVG Frame / Mask / Border */}
+                                                                <svg 
+                                                                    width="100%" 
+                                                                    height="100%" 
+                                                                    viewBox={`0 0 ${product.canvasConfig?.width || 500} ${product.canvasConfig?.height || 600}`} 
+                                                                    className="absolute inset-0 z-30"
+                                                                >
+                                                                    <defs>
+                                                                        <mask id={`shape-mask-${product._id || 'new'}`}>
+                                                                            <rect width="100%" height="100%" fill="white" />
+                                                                            {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} fill="black" />}
+                                                                            {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                                            {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                                            {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} fill="black" />}
+                                                                        </mask>
+                                                                    </defs>
+                                                                    
+                                                                    {/* Inverted Mask for background cutout */}
+                                                                    <rect width="100%" height="100%" fill="#fafafa" mask={`url(#shape-mask-${product._id || 'new'})`} />
+                                                                    
+                                                                    {/* Subtle Border and Inner Shadow Logic */}
+                                                                    <g 
+                                                                        fill={`rgba(255,255,255,${product.shapeConfig.overlayOpacity || 0.05})`} 
+                                                                        stroke={product.shapeConfig.borderColor || '#e2e8f0'} 
+                                                                        strokeWidth={product.shapeConfig.strokeWidth || 1}
+                                                                    >
+                                                                        {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} />}
+                                                                        {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                                                        {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                                                        {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} />}
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
                                                         </div>
                                                     )}
 
-                                                    {/* Layer 25: Generic 2D Mask/Overlay (For Acrylic/Frame Realism) */}
+                                                    {/* Legacy 2D Mask/Overlay (Keep only as secondary fallback if shapeConfig is missing) */}
                                                     {!product?.phoneMask && !product?.shapeConfig && (product?.frontMaskImage || product?.frontOverlayImage) && (
                                                         <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
                                                             {product.frontMaskImage && (
@@ -1691,9 +1719,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     <div className="flex justify-between items-center shrink-0 pt-2 text-[#0c0c2a]">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
                             <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 cursor-pointer">
-                                Design Tools {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
+                                {activeStudioView === '2D' ? '2D STUDIO' : '3D STUDIO'} {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
                             </h3>
-                            <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Studio Canvas'}</span>
+                            <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Designer Canvas'}</span>
                         </div>
                         <div className="flex items-center gap-3">
                             {activeObject && (
