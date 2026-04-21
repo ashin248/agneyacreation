@@ -14,6 +14,12 @@ import {
 } from 'lucide-react';
 
 const TwoDModelLibrary = () => {
+  const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
+    // #region agent log
+    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+  };
+
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,13 +49,34 @@ const TwoDModelLibrary = () => {
     fetchModels();
   }, []);
 
+  const getApiErrorMessage = (error, fallback) => {
+    const status = error?.response?.status;
+    const apiMessage = error?.response?.data?.message;
+
+    if (status === 401) return 'Session expired. Please login again.';
+    if (status === 403) return 'You do not have permission to manage 2D models.';
+    if (apiMessage) return apiMessage;
+    return fallback;
+  };
+
   const fetchModels = async () => {
     try {
       setLoading(true);
       const res = await axios.get('/api/admin/models');
-      setModels(res.data);
+      const modelList = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
+      setModels(modelList);
+      sendDebugLog('H6', 'TwoDModelLibrary.jsx:fetchModels', 'Loaded admin 2D models', {
+        modelCount: modelList.length,
+        missingThumbnailCount: modelList.filter(m => !m?.thumbnail).length
+      });
     } catch (err) {
       console.error('Failed to fetch models:', err);
+      alert(getApiErrorMessage(err, 'Failed to load model library.'));
+      setModels([]);
     } finally {
       setLoading(false);
     }
@@ -79,14 +106,23 @@ const TwoDModelLibrary = () => {
       if (files.frontImage) formData.append('frontImage', files.frontImage);
       if (files.frontMask) formData.append('frontMask', files.frontMask);
       if (files.frontOverlay) formData.append('frontOverlay', files.frontOverlay);
+      sendDebugLog('H7', 'TwoDModelLibrary.jsx:handleSubmit', 'Submitting 2D model creation', {
+        hasFrontImage: !!files.frontImage,
+        hasFrontMask: !!files.frontMask,
+        hasFrontOverlay: !!files.frontOverlay,
+        hasName: !!newModel.name
+      });
 
-      await axios.post('/api/admin/models', formData);
+      const response = await axios.post('/api/admin/models', formData);
+      if (!response?.data?.success) {
+        throw new Error(response?.data?.message || 'Create model request failed.');
+      }
       setIsModalOpen(false);
       resetForm();
       fetchModels();
     } catch (err) {
       console.error('Failed to create model:', err);
-      alert('Failed to create model. Check console for details.');
+      alert(getApiErrorMessage(err, 'Failed to create model.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -95,10 +131,14 @@ const TwoDModelLibrary = () => {
   const deleteModel = async (id) => {
     if (window.confirm('Are you sure you want to remove this model preset?')) {
       try {
-        await axios.delete(`/api/admin/models/${id}`);
+        const response = await axios.delete(`/api/admin/models/${id}`);
+        if (!response?.data?.success) {
+          throw new Error(response?.data?.message || 'Delete model request failed.');
+        }
         fetchModels();
       } catch (err) {
         console.error('Failed to delete model:', err);
+        alert(getApiErrorMessage(err, 'Failed to delete model.'));
       }
     }
   };
@@ -116,6 +156,48 @@ const TwoDModelLibrary = () => {
     const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  const createTextThumbnail = (name) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return '';
+
+      ctx.fillStyle = '#111827';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = '700 34px Arial';
+
+      const words = String(name || '2D Template').split(' ');
+      const lines = [];
+      let line = '';
+      words.forEach((word) => {
+        const testLine = line ? `${line} ${word}` : word;
+        if (ctx.measureText(testLine).width > 500) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = testLine;
+        }
+      });
+      if (line) lines.push(line);
+
+      const clipped = lines.slice(0, 5);
+      const lineHeight = 44;
+      const startY = (canvas.height - (clipped.length - 1) * lineHeight) / 2;
+      clipped.forEach((text, index) => {
+        ctx.fillText(text, canvas.width / 2, startY + index * lineHeight);
+      });
+
+      return canvas.toDataURL('image/png');
+    } catch {
+      return '';
+    }
+  };
 
   return (
     <div className="p-8 bg-[#f8fafc] min-h-screen">
@@ -172,7 +254,12 @@ const TwoDModelLibrary = () => {
             {filteredModels.map(model => (
               <div key={model._id} className="group bg-white rounded-[32px] overflow-hidden border-2 border-slate-100 hover:border-indigo-600 transition-all hover:shadow-2xl hover:translate-y-[-8px]">
                 <div className="relative aspect-square bg-[#f1f5f9] overflow-hidden">
-                  <img src={model.thumbnail} alt={model.name} className="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-700" />
+                  <img
+                    src={model.thumbnail || createTextThumbnail(model.name)}
+                    alt={model.name}
+                    className="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-700"
+                    onError={(e) => { e.currentTarget.src = createTextThumbnail(model.name); }}
+                  />
                   <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
                     <button 
                       onClick={() => deleteModel(model._id)}

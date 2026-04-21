@@ -577,6 +577,44 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             backgroundColor: 'transparent',
             preserveObjectStacking: true
         });
+        
+        // --- 2D CLIPPING MAGIC: Apply SVG shape dynamically ---
+        if (product?.shapeConfig && !product?.phoneMask) {
+            let clipShape;
+            const w = product.canvasConfig?.width || baseWidth;
+            const h = product.canvasConfig?.height || baseHeight;
+            const { type, radius, width: sWidth, height: sHeight, rx, points } = product.shapeConfig;
+            
+            if (type === 'circle') {
+                clipShape = new fabric.Circle({
+                    radius: radius || Math.min(w, h) / 2,
+                    originX: 'center', originY: 'center',
+                    left: w / 2, top: h / 2
+                });
+            } else if (type === 'rectangle' || type === 'rounded-rectangle') {
+                clipShape = new fabric.Rect({
+                    width: sWidth || w, height: sHeight || h,
+                    rx: rx || 0, ry: rx || 0,
+                    originX: 'center', originY: 'center',
+                    left: w / 2, top: h / 2
+                });
+            } else if (type === 'polygon' && points) {
+                const mappedPoints = points.split(' ').map(p => {
+                    const [px, py] = p.split(',').map(Number);
+                    return { x: px, y: py };
+                });
+                clipShape = new fabric.Polygon(mappedPoints, {
+                    originX: 'center', originY: 'center',
+                    left: w / 2, top: h / 2
+                });
+            }
+
+            if (clipShape) {
+                clipShape.absolutePositioned = true; // Crucial for static frame windows
+                canvas.clipPath = clipShape;
+            }
+        }
+        
         fabricRef.current = canvas;
 
         // Resize Observer for Dynamic Scaling

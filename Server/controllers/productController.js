@@ -2,6 +2,14 @@ const Product = require('../src/schema/ProductSchema');
 const cloudinary = require('../config/cloudinary');
 const streamifier = require('streamifier');
 
+const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
+  // #region agent log
+  if (typeof fetch === 'function') {
+    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
+  }
+  // #endregion
+};
+
 // Helper function to upload an image buffer directly to Cloudinary
 const uploadToCloudinary = (buffer, folderName, resourceType = 'auto') => {
   return new Promise((resolve, reject) => {
@@ -79,6 +87,19 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
+    console.log('[DBG H5] createProduct hit', {
+      customizationType: req.body?.customizationType || null,
+      hasBaseModelId: !!req.body?.baseModelId,
+      hasShapeConfig: !!req.body?.shapeConfig,
+      hasCanvasConfig: !!req.body?.canvasConfig,
+      fileCount: Array.isArray(req.files) ? req.files.length : 0
+    });
+    sendDebugLog('H5', 'productController.js:createProduct', 'Create endpoint reached', {
+      hasVariations: !!req.body?.variations,
+      hasShapeConfig: !!req.body?.shapeConfig,
+      hasCanvasConfig: !!req.body?.canvasConfig,
+      fileCount: Array.isArray(req.files) ? req.files.length : 0
+    });
     // 1. Extract Basic Fields (flat properties)
     const { name, description, category, productType, originalPrice, basePrice, gstRate, minOrder, isBulkEnabled, isCustomizable, customizationType } = req.body;
 
@@ -176,6 +197,12 @@ exports.createProduct = async (req, res) => {
         else if (file.fieldname === 'base3DModelFile') {
           const promise = uploadToCloudinary(file.buffer, 'products/3d', 'raw').then(url => {
             base3DModelUrl = url;
+          });
+          uploadPromises.push(promise);
+        }
+        else if (file.fieldname === 'base2DImageFile') {
+          const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
+            blankFrontImageUrl = url;
           });
           uploadPromises.push(promise);
         }
@@ -292,6 +319,20 @@ exports.deleteProduct = async (req, res) => {
 // Update product logic (Partial/Full mapping parameterized via req.body and req.files)
 exports.updateProduct = async (req, res) => {
     try {
+        console.log('[DBG H5] updateProduct hit', {
+          productId: req.params?.id || null,
+          customizationType: req.body?.customizationType || null,
+          hasBaseModelId: !!req.body?.baseModelId,
+          hasShapeConfig: !!req.body?.shapeConfig,
+          hasCanvasConfig: !!req.body?.canvasConfig,
+          fileCount: Array.isArray(req.files) ? req.files.length : 0
+        });
+        sendDebugLog('H5', 'productController.js:updateProduct', 'Update endpoint reached', {
+          hasVariations: !!req.body?.variations,
+          hasShapeConfig: !!req.body?.shapeConfig,
+          hasCanvasConfig: !!req.body?.canvasConfig,
+          fileCount: Array.isArray(req.files) ? req.files.length : 0
+        });
         const { id } = req.params;
         const product = await Product.findById(id);
         if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
@@ -375,6 +416,11 @@ exports.updateProduct = async (req, res) => {
                     const promise = uploadToCloudinary(file.buffer, 'products/3d', 'raw').then(url => {
                         updateData.model3d = url;
                         updateData.base3DModelUrl = url;
+                    });
+                    uploadPromises.push(promise);
+                } else if (file.fieldname === 'base2DImageFile') {
+                    const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
+                        updateData.blankFrontImage = url;
                     });
                     uploadPromises.push(promise);
                 } else if (file.fieldname.startsWith('variationImage_')) {

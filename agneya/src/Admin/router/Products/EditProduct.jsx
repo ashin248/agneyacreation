@@ -7,6 +7,12 @@ import ProductVariationsManager from './ProductVariationsManager';
 import BulkPricingManager from './BulkPricingManager';
 
 const EditProduct = () => {
+  const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
+    // #region agent log
+    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+  };
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -26,18 +32,9 @@ const EditProduct = () => {
     shapeConfig: null,
     canvasConfig: null,
     blankFrontImageUrl: '',
-    frontMaskImageUrl: '',
-    frontOverlayImageUrl: '',
-    blankBackImageUrl: '',
-    backMaskImageUrl: '',
-    backOverlayImageUrl: '',
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
-  const [blankFrontImage, setBlankFrontImage] = useState(null);
-  const [blankFrontImagePreview, setBlankFrontImagePreview] = useState('');
-  const [blankBackImage, setBlankBackImage] = useState(null);
-  const [blankBackImagePreview, setBlankBackImagePreview] = useState('');
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
@@ -61,8 +58,7 @@ const EditProduct = () => {
     if (basicInfo.basePrice === '' || Number(basicInfo.basePrice) < 0) return "Valid base value is required.";
     if (basicInfo.isCustomizable) {
       if (!basicInfo.customizationType || basicInfo.customizationType === 'None') return "Design framework type is required.";
-      // For editing, we check PREVIEWS as well since files might not be re-uploaded
-      if (basicInfo.customizationType === '2D' && !blankFrontImagePreview && !blankBackImagePreview) return "Blueprint images are required for 2D assets.";
+      if (basicInfo.customizationType === '2D' && !basicInfo.baseModelId) return "Select a 2D template from library.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
     }
 
@@ -100,6 +96,13 @@ const EditProduct = () => {
       
       if (response.data.success) {
         const product = response.data.data;
+        sendDebugLog('H2', 'EditProduct.jsx:fetchProductDetails', 'Loaded product for edit', {
+          hasBaseModelId: !!product?.baseModelId,
+          customizationType: product?.customizationType || 'None',
+          hasShapeConfig: !!product?.shapeConfig,
+          hasCanvasConfig: !!product?.canvasConfig,
+          hasBlankFrontImage: !!product?.blankFrontImage
+        });
         setBasicInfo({
           name: product.name,
           description: product.description,
@@ -115,16 +118,9 @@ const EditProduct = () => {
           shapeConfig: product.shapeConfig || null,
           canvasConfig: product.canvasConfig || null,
           blankFrontImageUrl: product.blankFrontImage || '',
-          frontMaskImageUrl: product.frontMaskImage || '',
-          frontOverlayImageUrl: product.frontOverlayImage || '',
-          blankBackImageUrl: product.blankBackImage || '',
-          backMaskImageUrl: product.backMaskImage || '',
-          backOverlayImageUrl: product.backOverlayImage || '',
         });
         
         setGalleryImagePreviews(product.galleryImages || []);
-        setBlankFrontImagePreview(product.blankFrontImage || '');
-        setBlankBackImagePreview(product.blankBackImage || '');
 
         
         setVariations((product.variations || []).map(v => ({
@@ -157,6 +153,14 @@ const EditProduct = () => {
 
     const errorMessage = validatePayload();
     if (errorMessage) {
+      sendDebugLog('H4', 'EditProduct.jsx:handleUpdateProduct', 'Update payload validation failed', {
+        errorMessage,
+        isCustomizable: !!basicInfo.isCustomizable,
+        customizationType: basicInfo.customizationType || 'None',
+        hasBaseModelId: !!basicInfo.baseModelId,
+        hasBase2dModel: !!basicInfo.baseModelId,
+        hasShapeConfig: !!basicInfo.shapeConfig
+      });
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -187,7 +191,6 @@ const EditProduct = () => {
         formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
       }
       if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
-      if (basicInfo.blankBackImageUrl) formData.append('blankBackImage', basicInfo.blankBackImageUrl);
 
 
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
@@ -213,9 +216,6 @@ const EditProduct = () => {
           formData.append('galleryImages', img);
         });
       }
-
-      if (blankFrontImage) formData.append('blankFrontImage', blankFrontImage);
-      if (blankBackImage) formData.append('blankBackImage', blankBackImage);
 
       if (base3DModelFile) formData.append('base3DModelFile', base3DModelFile);
 
@@ -300,14 +300,6 @@ const EditProduct = () => {
               setImages={setGalleryImages}
               imagePreviews={galleryImagePreviews}
               setImagePreviews={setGalleryImagePreviews}
-              blankFrontImage={blankFrontImage}
-              setBlankFrontImage={setBlankFrontImage}
-              blankFrontImagePreview={blankFrontImagePreview}
-              setBlankFrontImagePreview={setBlankFrontImagePreview}
-              blankBackImage={blankBackImage}
-              setBlankBackImage={setBlankBackImage}
-              blankBackImagePreview={blankBackImagePreview}
-              setBlankBackImagePreview={setBlankBackImagePreview}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
             />

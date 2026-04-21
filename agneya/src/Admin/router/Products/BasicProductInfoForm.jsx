@@ -6,20 +6,15 @@ const BasicProductInfoForm = ({
   formData, setFormData, 
   images, setImages, 
   imagePreviews, setImagePreviews, 
-  blankFrontImage, setBlankFrontImage, 
-  blankFrontImagePreview, setBlankFrontImagePreview, 
-  frontMaskImage, setFrontMaskImage,
-  frontMaskImagePreview, setFrontMaskImagePreview,
-  frontOverlayImage, setFrontOverlayImage,
-  frontOverlayImagePreview, setFrontOverlayImagePreview,
-  blankBackImage, setBlankBackImage, 
-  blankBackImagePreview, setBlankBackImagePreview, 
-  backMaskImage, setBackMaskImage,
-  backMaskImagePreview, setBackMaskImagePreview,
-  backOverlayImage, setBackOverlayImage,
-  backOverlayImagePreview, setBackOverlayImagePreview,
-  base3DModelFile, setBase3DModelFile 
+  base3DModelFile, setBase3DModelFile,
+  base2DImageFile, setBase2DImageFile
 }) => {
+  const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
+    // #region agent log
+    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+  };
+
   const [libraryModels, setLibraryModels] = React.useState([]);
   const [isLibraryLoading, setIsLibraryLoading] = React.useState(false);
 
@@ -34,9 +29,23 @@ const BasicProductInfoForm = ({
       setIsLibraryLoading(true);
       const res = await fetch('/api/public/models');
       const data = await res.json();
-      setLibraryModels(data);
+      const models = Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+          ? data
+          : [];
+      setLibraryModels(models);
+      sendDebugLog('H1', 'BasicProductInfoForm.jsx:fetchLibraryModels', 'Fetched 2D model library', {
+        ok: res.ok,
+        status: res.status,
+        modelCount: models.length
+      });
     } catch (err) {
       console.error('Failed to fetch 2D models:', err);
+      sendDebugLog('H1', 'BasicProductInfoForm.jsx:fetchLibraryModels:catch', '2D model library fetch failed', {
+        errorName: err?.name || 'Unknown',
+        hasMessage: !!err?.message
+      });
     } finally {
       setIsLibraryLoading(false);
     }
@@ -59,17 +68,17 @@ const BasicProductInfoForm = ({
     setFormData(prev => ({
       ...prev,
       blankFrontImageUrl: model.frontImage,
-      frontMaskImageUrl: model.frontMask,
-      frontOverlayImageUrl: model.frontOverlay,
       canvasConfig: model.canvasConfig, // Synchronize resolution and offsets
       shapeConfig: model.shapeConfig, // ADD THIS
       baseModelId: model._id 
     }));
+    sendDebugLog('H2', 'BasicProductInfoForm.jsx:selectModel', 'Selected 2D library model', {
+      hasModel: !!model?._id,
+      hasShapeConfig: !!model?.shapeConfig,
+      hasCanvasConfig: !!model?.canvasConfig,
+      hasFrontImage: !!model?.frontImage
+    });
 
-    // Reset file uploads if any
-    setBlankFrontImage(null);
-    setFrontMaskImage(null);
-    setFrontOverlayImage(null);
   };
 
   // Helper to sync basic info changes to the parent controller
@@ -83,32 +92,27 @@ const BasicProductInfoForm = ({
     
     // EXCLUSIVE STATE CLEANING: If switching customization type, clear unrelated assets
     if (name === 'customizationType') {
+      sendDebugLog('H3', 'BasicProductInfoForm.jsx:handleInputChange', 'Customization type changed', {
+        toType: value,
+        hadBaseModelId: !!formData.baseModelId
+      });
       if (value === '2D') {
         // Clear 3D artifacts: Wipe baseModelId in parent and clear manual file upload
         handleBasicInfoChange({ target: { name: 'baseModelId', value: '' }});
         setBase3DModelFile && setBase3DModelFile(null);
       } else if (value === '3D') {
-        // Clear 2D artifacts: Wipe images and their previews
-        setBlankFrontImage && setBlankFrontImage(null);
-        setBlankFrontImagePreview && setBlankFrontImagePreview('');
-        setBlankBackImage && setBlankBackImage(null);
-        setBlankBackImagePreview && setBlankBackImagePreview('');
-        
-        // Also clear associated masks and overlays
-        setFrontMaskImage && setFrontMaskImage(null);
-        setFrontMaskImagePreview && setFrontMaskImagePreview('');
-        setFrontOverlayImage && setFrontOverlayImage(null);
-        setFrontOverlayImagePreview && setFrontOverlayImagePreview('');
-        setBackMaskImage && setBackMaskImage(null);
-        setBackMaskImagePreview && setBackMaskImagePreview('');
-        setBackOverlayImage && setBackOverlayImage(null);
-        setBackOverlayImagePreview && setBackOverlayImagePreview('');
+        // Clear 2D artifacts now sourced from dynamic template engine
+        handleBasicInfoChange({ target: { name: 'blankFrontImageUrl', value: '' }});
+        handleBasicInfoChange({ target: { name: 'canvasConfig', value: null }});
+        handleBasicInfoChange({ target: { name: 'shapeConfig', value: null }});
       } else if (value === 'None') {
         // Clear everything if customization is disabled
-        setBlankFrontImage && setBlankFrontImage(null);
-        setBlankBackImage && setBlankBackImage(null);
         setBase3DModelFile && setBase3DModelFile(null);
+        setBase2DImageFile && setBase2DImageFile(null);
         handleBasicInfoChange({ target: { name: 'baseModelId', value: '' }});
+        handleBasicInfoChange({ target: { name: 'blankFrontImageUrl', value: '' }});
+        handleBasicInfoChange({ target: { name: 'canvasConfig', value: null }});
+        handleBasicInfoChange({ target: { name: 'shapeConfig', value: null }});
       }
     }
 
@@ -161,68 +165,63 @@ const BasicProductInfoForm = ({
   };
 
   const renderThumbnail = (model) => {
-    // Determine the clearest preview image link based on model data
-    const isBrokenOrMissing = !model.thumbnail || model.thumbnail.includes('ibb.co') || model.thumbnail.includes('imgbb.com');
-    const displayUrl = isBrokenOrMissing
-      ? `https://dummyimage.com/400x400/3b82f6/ffffff&text=${encodeURIComponent(model.name.replace(/\s+/g, '+'))}`
-      : model.thumbnail;
+    const generateTextThumbnail = (name) => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return '';
 
-    return <img src={displayUrl} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = "https://dummyimage.com/200x200/f0f0f0/666.png&text=No+Preview" }} />;
-  };
+        ctx.fillStyle = '#1e3a8a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = '700 30px Arial';
 
-  
-  const handleFrontImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBlankFrontImage(file);
-      setBlankFrontImagePreview(URL.createObjectURL(file));
-    }
-  };
+        const words = String(name || '2D Template').split(' ');
+        const lines = [];
+        let line = '';
+        words.forEach((word) => {
+          const testLine = line ? `${line} ${word}` : word;
+          if (ctx.measureText(testLine).width > 420) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = testLine;
+          }
+        });
+        if (line) lines.push(line);
 
-  const handleBackImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBlankBackImage(file);
-      setBlankBackImagePreview(URL.createObjectURL(file));
-    }
-  };
+        const maxLines = 4;
+        const clipped = lines.slice(0, maxLines);
+        const lineHeight = 40;
+        const startY = (canvas.height - (clipped.length - 1) * lineHeight) / 2;
+        clipped.forEach((text, index) => {
+          ctx.fillText(text, canvas.width / 2, startY + index * lineHeight);
+        });
+        return canvas.toDataURL('image/png');
+      } catch {
+        return '';
+      }
+    };
 
-  const handleFrontMaskChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFrontMaskImage(file);
-      setFrontMaskImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleFrontOverlayChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFrontOverlayImage(file);
-      setFrontOverlayImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleBackMaskChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBackMaskImage(file);
-      setBackMaskImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleBackOverlayChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBackOverlayImage(file);
-      setBackOverlayImagePreview(URL.createObjectURL(file));
-    }
+    const displayUrl = model.thumbnail || generateTextThumbnail(model.name);
+    return <img src={displayUrl} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = generateTextThumbnail(model.name); }} />;
   };
 
   const handle3DModelChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setBase3DModelFile(file);
+    }
+  };
+
+  const handle2DImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBase2DImageFile(file);
     }
   };
 
@@ -480,103 +479,110 @@ const BasicProductInfoForm = ({
 
             {/* 2D SECTION: Remount on type change to ensure clean transition */}
             {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
-              <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-6 rounded-2xl border border-blue-100 mb-6">
+                
+                {/* Left Column: Template Selection */}
                 <div>
-                  <label className="block text-[10px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <FiGrid size={12} />
-                    2D System Architecture Presets
+                  <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <FiGrid size={14} />
+                    Select 2D Template
                   </label>
                   
                   {isLibraryLoading ? (
-                    <div className="py-12 flex flex-col items-center justify-center bg-white rounded-2xl border-2 border-dashed border-blue-100 animate-pulse">
-                      <div className="w-8 h-8 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                      <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Scanning Registry...</p>
+                    <div className="py-4 flex items-center gap-3">
+                      <div className="w-5 h-5 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                      <p className="text-xs font-bold text-blue-400">Loading templates...</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                      {libraryModels.map(model => (
-                        <div 
-                          key={model._id}
-                          onClick={() => selectModel(model)}
-                          className={`group relative aspect-square rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
-                            formData.baseModelId === model._id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
-                          }`}
-                        >
-                           {renderThumbnail(model)}
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3 pointer-events-none">
-                              <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model.name}</p>
-                              <p className="text-[7px] font-bold text-blue-200 uppercase tracking-widest mt-1 opacity-80">{model.category}</p>
-                           </div>
-                           {formData.baseModelId === model._id && (
-                             <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-lg">
-                               <FiCheckCircle size={10} />
-                             </div>
-                           )}
+                    <div className="space-y-6">
+                      <select
+                        onChange={(e) => {
+                          const selected = libraryModels.find(m => m._id === e.target.value);
+                          selectModel(selected);
+                        }}
+                        value={formData.baseModelId || ''}
+                        className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
+                      >
+                        <option value="">-- Choose a Product Template --</option>
+                        {libraryModels.map(model => (
+                          <option key={model._id} value={model._id}>
+                            {model.name} {model.category ? `(${model.category})` : ''}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Smart Thumbnail Preview */}
+                      {formData.baseModelId && libraryModels.length > 0 && (
+                        <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
+                          {(() => {
+                            const activeModel = libraryModels.find(m => m._id === formData.baseModelId);
+                            if (!activeModel) return null;
+                            return (
+                              <div className="w-full h-full relative group">
+                                {renderThumbnail(activeModel)}
+                                <div className="absolute top-2 right-2 bg-blue-600 text-white p-1.5 rounded-full shadow-lg">
+                                  <FiCheckCircle size={14} />
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </div>
-                      ))}
-                      
-                      {/* Placeholder for "Add manual" if needed, but user wants automatic */}
+                      )}
+
                       {libraryModels.length === 0 && (
-                        <div className="col-span-full py-12 text-center bg-white rounded-2xl border-2 border-dashed border-blue-100">
-                          <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest">No 2D models registered in library.</p>
-                        </div>
+                        <p className="text-sm text-red-500 font-medium">No templates available. Please contact admin.</p>
                       )}
                     </div>
                   )}
 
-                  <div className="flex items-center gap-4 py-4">
-                     <div className="h-px bg-blue-100 flex-1"></div>
-                     <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">OR UPLOAD MANUALLY</span>
-                     <div className="h-px bg-blue-100 flex-1"></div>
-                  </div>
-
-                  <div className="relative group mt-4">
-                    <label htmlFor="frontImageInput" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 bg-white rounded-xl hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer">
-                       <div className="text-center">
-                         <span className="block text-xs font-bold text-blue-500">Upload Unique Front Backdrop</span>
-                       </div>
-                    </label>
-                    <input id="frontImageInput" type="file" onChange={handleFrontImageChange} className="hidden" accept="image/*" />
-                  </div>
-                  {blankFrontImagePreview && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-32 aspect-square rounded-xl border-4 border-white shadow-xl overflow-hidden bg-white shrink-0">
-                          <img src={blankFrontImagePreview} alt="Front preview" className="w-full h-full object-contain" />
-                        </div>
-                        <button type="button" onClick={() => { 
-                          setBlankFrontImage(null); 
-                          setBlankFrontImagePreview(''); 
-                        }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Clear Selection</button>
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-[11px] text-gray-500 font-medium mt-4 leading-relaxed">
+                     Selecting a template automatically applies the clipping shape and realistic finishes (like glass reflections) in the design studio.
+                  </p>
                 </div>
 
+                {/* Right Column: Base Backdrop Image Upload */}
                 <div>
-                  <label className="block text-sm font-black text-blue-900 uppercase tracking-widest mb-1">
-                    Blank Back Image
+                  <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <FiImage size={14} />
+                    Base Backdrop Image (Optional)
                   </label>
-                  <p className="text-xs text-blue-600 mb-4 font-medium">For the back-facing 2D canvas.</p>
-                  <div className="relative group">
-                    <label htmlFor="backImageInput" className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 bg-white rounded-xl hover:border-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer">
-                      <div className="text-center">
-                        <span className="block text-xs font-bold text-blue-500">Upload Back Image</span>
+                  
+                  <div className={`p-6 border-2 border-dashed rounded-2xl group transition-all relative overflow-hidden ${base2DImageFile ? 'border-emerald-300 bg-emerald-50/30' : 'border-blue-200 bg-blue-50/20 hover:border-blue-400'}`}>
+                    <div className="relative z-10 text-center space-y-3">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto shadow-sm mb-2 ${base2DImageFile ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-blue-500'}`}>
+                         <FiImage size={24} />
                       </div>
-                    </label>
-                    <input id="backImageInput" type="file" onChange={handleBackImageChange} className="hidden" accept="image/*" />
-                  </div>
-                  {blankBackImagePreview && (
-                    <div className="mt-4 flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-32 aspect-square rounded-xl border-4 border-white shadow-xl overflow-hidden bg-white shrink-0">
-                          <img src={blankBackImagePreview} alt="Back preview" className="w-full h-full object-contain" />
+                      
+                      <div className="space-y-1">
+                        <h4 className={`text-[13px] font-bold ${base2DImageFile ? 'text-emerald-800' : 'text-blue-900'}`}>Upload Base Photo</h4>
+                        <p className={`text-[10px] leading-relaxed ${base2DImageFile ? 'text-emerald-600' : 'text-gray-500'}`}>
+                           Provide a clear photo of the plain product (e.g., wooden plaque or blank medal). 
+                           <br/>Leave empty to use the template's default image.
+                        </p>
+                      </div>
+
+                      <div className="pt-3">
+                        <label className={`inline-flex items-center gap-2 px-6 py-2.5 text-white text-[11px] font-bold rounded-xl cursor-pointer transition-all shadow-md active:scale-95 ${base2DImageFile ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                           {base2DImageFile ? 'Change Photo' : 'Select Photo'}
+                           <FiPlus size={14} />
+                           <input type="file" onChange={handle2DImageChange} className="hidden" accept="image/png, image/jpeg, image/webp" />
+                        </label>
+                      </div>
+
+                      {base2DImageFile && (
+                        <div className="mt-3 flex items-center justify-center gap-2 animate-in fade-in">
+                           <span className="text-[10px] font-bold text-emerald-700 truncate max-w-[150px] bg-emerald-100 px-2 py-1 rounded">
+                              {base2DImageFile.name}
+                           </span>
+                           <button type="button" onClick={() => setBase2DImageFile(null)} className="text-red-400 hover:text-red-600 p-1">
+                              <FiTrash2 size={14} />
+                           </button>
                         </div>
-                        <button type="button" onClick={() => { setBlankBackImage(null); setBlankBackImagePreview(''); }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Remove Back</button>
-                      </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
+
               </div>
             )}
 

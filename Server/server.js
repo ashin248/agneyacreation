@@ -8,7 +8,9 @@ dotenv.config()
 
 const connectDB = require('./db');
 const bootstrapAdmin = require('./services/adminBootstrap');
+console.log('[BOOT] Before WhatsApp service require');
 require('./services/whatsappService'); // Initialize WhatsApp Bot
+console.log('[BOOT] After WhatsApp service require');
 
 const app = express();
 const PORT = process.env.PORT || process.env.Server_port || 5000;
@@ -16,6 +18,17 @@ const PORT = process.env.PORT || process.env.Server_port || 5000;
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors());
+
+app.use((req, res, next) => {
+  if (
+    req.path.startsWith('/api/admin/products') ||
+    req.path.startsWith('/api/admin/models') ||
+    req.path.startsWith('/api/public/models')
+  ) {
+    console.log('[DBG ROUTE]', req.method, req.path);
+  }
+  next();
+});
 
 
 const bulkOrderRoutes = require('./routes/admin/bulkOrderRoutes');
@@ -62,7 +75,9 @@ app.get("/health", (req, res) => {
 //   res.sendFile(path.join(__dirname, '../agneya/dist/index.html'));
 // });
 
+console.log('[BOOT] Before app.listen');
 app.listen(PORT, '0.0.0.0', async () => {
+  console.log('[BOOT] app.listen callback entered');
   console.log(`🚀 API Server running on port http://localhost:${PORT}`);
   console.log(`🚀 API Server running on port http://localhost:${PORT}/admin/login`)
   console.log(`🚀 API Server running on port http://localhost:${PORT}/admin/dashboard`)
