@@ -82,7 +82,7 @@ const CustomOrders = () => {
                                 <td colSpan="6" className="p-8 text-center text-sm font-medium text-gray-500">No custom orders found.</td>
                             </tr>
                         ) : (
-                            designs.map(design => (
+                          {Array.isArray(designs) && designs.map(design => (
                                 <tr key={design._id} className="hover:bg-gray-50 transition-colors">
                                     <td className="p-4">
                                         <div className="font-bold text-sm text-gray-900">{design.name}</div>

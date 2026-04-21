@@ -145,7 +145,7 @@ const CategoryManager = () => {
         <div className="flex justify-center py-20"><Loader2 className="animate-spin text-indigo-500" size={48} /></div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((cat) => (
+          {Array.isArray(categories) && categories.map((cat) => (
             <div key={cat._id} className="group bg-white/70 backdrop-blur-md border border-white rounded-[32px] p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
               <div className="flex items-start gap-5">
                 <div className="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden flex-shrink-0 border border-slate-50 relative group-hover:scale-105 transition-transform duration-500">

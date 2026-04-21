@@ -22,7 +22,10 @@ const ProductListTable = () => {
       const response = await axios.get('/api/admin/products', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setProducts(response.data);
+      if (response.data.success) {
+        setProducts(Array.isArray(response.data.products) ? response.data.products : []);
+        setCategories(Array.isArray(response.data.categories) ? response.data.categories : []);
+      }
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Connection with central catalog failed.');
@@ -54,9 +57,10 @@ const ProductListTable = () => {
     return product.variations ? product.variations.reduce((acc, curr) => acc + (Number(curr.stock) || 0), 0) : 0;
   };
 
-  const filteredProducts = products.filter(p => {
+  const filteredProducts = (Array.isArray(products) ? products : []).filter(p => {
+    if (!p || !p.name) return false;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         p.category.toLowerCase().includes(searchQuery.toLowerCase());
+                         (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStock = showLowStockOnly ? getTotalStock(p) < 10 : true;
     return matchesSearch && matchesStock;
   });
@@ -143,7 +147,7 @@ const ProductListTable = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {filteredProducts.map((p) => {
+                        {Array.isArray(filteredProducts) && filteredProducts.map((p) => {
                             const stock = getTotalStock(p);
                             const img = p.galleryImages?.[0];
                             return (
