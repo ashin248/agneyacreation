@@ -1297,8 +1297,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                             <div className="flex-1 flex items-center justify-center relative">
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                    {/* View Multiplexer: Conditional Rendering based on activeStudioView */}
-                                    {activeStudioView === '2D' ? (
+                                    {/* View Multiplexer: Concurrent DOM mounting for persistence */}
+                                    <div className="absolute inset-0 transition-opacity duration-300" style={{ 
+                                        opacity: activeStudioView === '2D' ? 1 : 0, 
+                                        pointerEvents: activeStudioView === '2D' ? 'auto' : 'none', 
+                                        zIndex: activeStudioView === '2D' ? 10 : -10,
+                                        visibility: activeStudioView === '2D' ? 'visible' : 'hidden'
+                                    }}>
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
                                                 <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
@@ -1496,18 +1501,16 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                 </div>
                                             </div>
                                         </div>
-                                    ) : (
-                                        /* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */
-                                        <div id="studio-3d-canvas" className={`w-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out ${window.innerWidth < 1280 ? (isMobileUiMinimized ? 'h-[85vh]' : 'h-[55vh]') : 'h-[88vh] mt-4'}`}>
-                                            {/* Invisible source for 3D textures */}
-                                            <div style={{ position: 'absolute', left: '-9999px', pointerEvents: 'none' }}>
-                                                <div style={{ 
-                                                    width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
-                                                    height: `${(product?.canvasConfig?.height || 600) * canvasScale}px` 
-                                                }}>
-                                                    <canvas ref={canvasRef} />
-                                                </div>
-                                            </div>
+                                    </div>
+
+                                    {/* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */}
+                                    <div className="absolute inset-0 transition-opacity duration-300" style={{
+                                        opacity: activeStudioView === '3D' ? 1 : 0, 
+                                        pointerEvents: activeStudioView === '3D' ? 'auto' : 'none', 
+                                        zIndex: activeStudioView === '3D' ? 10 : -10,
+                                        visibility: activeStudioView === '3D' ? 'visible' : 'hidden'
+                                    }}>
+                                        <div id="studio-3d-canvas" className="w-full h-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out">
 
                                             <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
                                                 <Canvas
@@ -1536,8 +1539,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                 </Canvas>
                                             </React.Suspense>
                                         </div>
-                                    )}
-                                    
+                                    </div>
+
                                     {/* Vertical Floating Designer Rail (Desktop & Large Screens) - Global for 2D/3D */}
                                     <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
                                         {[
