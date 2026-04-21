@@ -136,8 +136,12 @@ const BasicProductInfoForm = ({
     const newImages = [...images, ...selectedFiles];
     setImages(newImages);
 
-    const newPreviews = selectedFiles.map(file => URL.createObjectURL(file));
-    setImagePreviews([...imagePreviews, ...newPreviews]);
+    const newPreviews = (Array.isArray(selectedFiles) ? selectedFiles : []).map(file => URL.createObjectURL(file));
+    if (Array.isArray(imagePreviews)) {
+      setImagePreviews([...imagePreviews, ...newPreviews]);
+    } else {
+      setImagePreviews(newPreviews);
+    }
   };
 
   const removeImage = (index) => {
@@ -159,9 +163,11 @@ const BasicProductInfoForm = ({
       URL.revokeObjectURL(previewUrl);
     }
     
-    const newPreviews = [...imagePreviews];
-    newPreviews.splice(index, 1);
-    setImagePreviews(newPreviews);
+    if (Array.isArray(imagePreviews)) {
+      const newPreviews = [...imagePreviews];
+      newPreviews.splice(index, 1);
+      setImagePreviews(newPreviews);
+    }
   };
 
   const renderThumbnail = (model) => {
@@ -428,11 +434,11 @@ const BasicProductInfoForm = ({
           </div>
 
           {/* Gallery Preview Grid */}
-          {imagePreviews.length > 0 && (
+          {Array.isArray(imagePreviews) && imagePreviews.length > 0 && (
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
               {imagePreviews.map((preview, index) => (
                 <div key={index} className="relative group aspect-square rounded-xl overflow-hidden shadow-md border-2 border-gray-100 bg-white">
-                  <img src={preview} alt={`Gallery ${index}`} className="w-full h-full object-cover" />
+                  {preview && <img src={preview} alt={`Gallery ${index}`} className="w-full h-full object-cover" />}
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
@@ -497,7 +503,8 @@ const BasicProductInfoForm = ({
                     <div className="space-y-6">
                       <select
                         onChange={(e) => {
-                          const selected = libraryModels.find(m => m._id === e.target.value);
+                          if (!Array.isArray(libraryModels)) return;
+                          const selected = libraryModels.find(m => m?._id === e.target.value);
                           selectModel(selected);
                         }}
                         value={formData.baseModelId || ''}
@@ -512,10 +519,10 @@ const BasicProductInfoForm = ({
                       </select>
 
                       {/* Smart Thumbnail Preview */}
-                      {formData.baseModelId && libraryModels.length > 0 && (
+                      {formData.baseModelId && Array.isArray(libraryModels) && libraryModels.length > 0 && (
                         <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
                           {(() => {
-                            const activeModel = libraryModels.find(m => m._id === formData.baseModelId);
+                            const activeModel = libraryModels.find(m => m?._id === formData.baseModelId);
                             if (!activeModel) return null;
                             return (
                               <div className="w-full h-full relative group">
@@ -529,7 +536,7 @@ const BasicProductInfoForm = ({
                         </div>
                       )}
 
-                      {libraryModels.length === 0 && (
+                      {(Array.isArray(libraryModels) && libraryModels.length === 0) && (
                         <p className="text-sm text-red-500 font-medium">No templates available. Please contact admin.</p>
                       )}
                     </div>
@@ -597,22 +604,22 @@ const BasicProductInfoForm = ({
                     System Architecture Presets
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {Object.values(MODELS).map((model) => (
+                    {MODELS && Object.values(MODELS).map((model) => (
                       <div 
-                        key={model.id}
+                        key={model?.id}
                         onClick={() => {
-                          handleInputChange({ target: { name: 'baseModelId', value: model.id }});
+                          handleInputChange({ target: { name: 'baseModelId', value: model?.id }});
                           setBase3DModelFile(null); // Clear manual upload
                         }}
                         className={`group relative aspect-square rounded-2xl border-2 transition-all cursor-pointer overflow-hidden ${
-                          formData.baseModelId === model.id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
+                          formData.baseModelId === model?.id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
                         }`}
                       >
-                        <img src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        {model?.thumbnail && <img src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
-                          <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model.name}</p>
+                          <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model?.name || '3D Asset'}</p>
                         </div>
-                        {formData.baseModelId === model.id && (
+                        {formData.baseModelId === model?.id && (
                           <div className="absolute top-2 right-2 bg-blue-600 text-white p-1 rounded-full shadow-lg">
                             <FiCheckCircle size={10} />
                           </div>

@@ -9,11 +9,13 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
   // ── GROUPING LOGIC ──
   const groupedVariations = useMemo(() => {
     const groups = {};
-    variations.forEach(v => {
-      const colorKey = v.color?.trim() || 'Neutral / Default';
-      if (!groups[colorKey]) groups[colorKey] = [];
-      groups[colorKey].push(v);
-    });
+    if (Array.isArray(variations)) {
+      variations.forEach(v => {
+        const colorKey = v?.color?.trim() || 'Neutral / Default';
+        if (!groups[colorKey]) groups[colorKey] = [];
+        groups[colorKey].push(v);
+      });
+    }
     return groups;
   }, [variations]);
 
@@ -22,10 +24,10 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
   // Add new empty variation
   const handleAddVariation = () => {
     const base = baseProductName ? baseProductName.replace(/\s+/g, '-').toUpperCase() : "PROD";
-    const newSku = `${base}-VAR-${variations.length + 1}-${Math.floor(Math.random() * 100)}`;
+    const newSku = `${base}-VAR-${(Array.isArray(variations) ? variations.length : 0) + 1}-${Math.floor(Math.random() * 100)}`;
     
-    setVariations([
-      ...variations,
+    setVariations(prev => [
+      ...(Array.isArray(prev) ? prev : []),
       {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         sku: newSku,
@@ -62,7 +64,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
       };
     });
 
-    setVariations([...variations, ...newVars]);
+    setVariations(prev => [...(Array.isArray(prev) ? prev : []), ...newVars]);
     // Reset batch state but keep color for convenience? No, clear it.
     setBatchSizes([]);
     setBatchColor('');
@@ -75,11 +77,11 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
 
     const previewUrl = URL.createObjectURL(file);
     
-    setVariations(prev => prev.map(v => {
-      const vColor = v.color?.trim() || 'Neutral / Default';
+    setVariations(prev => (Array.isArray(prev) ? prev : []).map(v => {
+      const vColor = v?.color?.trim() || 'Neutral / Default';
       if (vColor === colorKey) {
         // Revoke old URL if exists
-        if (v.previewUrl) URL.revokeObjectURL(v.previewUrl);
+        if (v?.previewUrl) URL.revokeObjectURL(v.previewUrl);
         return { ...v, imageFile: file, previewUrl };
       }
       return v;
@@ -93,16 +95,16 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
   };
 
   const handleChange = (id, field, value) => {
-    setVariations(variations.map(v => v.id === id ? { ...v, [field]: value } : v));
+    setVariations(prev => (Array.isArray(prev) ? prev : []).map(v => v?.id === id ? { ...v, [field]: value } : v));
   };
 
   const handleImageChange = (id, e) => {
     const file = e.target.files[0];
     if (file) {
       const previewUrl = URL.createObjectURL(file);
-      setVariations(variations.map(v => {
-        if (v.id === id) {
-          if (v.previewUrl) URL.revokeObjectURL(v.previewUrl);
+      setVariations(prev => (Array.isArray(prev) ? prev : []).map(v => {
+        if (v?.id === id) {
+          if (v?.previewUrl) URL.revokeObjectURL(v.previewUrl);
           return { ...v, imageFile: file, previewUrl };
         }
         return v;
@@ -115,9 +117,9 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
     <div key={colorKey} className="mb-12 last:mb-0">
       <div className="flex items-center justify-between mb-4 px-2">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full shadow-inner border border-gray-100" style={{ backgroundColor: colorKey.toLowerCase() === 'neutral / default' ? '#f3f4f6' : colorKey }}></div>
-          <h3 className="text-lg font-black text-gray-800 uppercase tracking-tighter">{colorKey} Group</h3>
-          <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">{items.length} Variants</span>
+          <div className="w-8 h-8 rounded-full shadow-inner border border-gray-100" style={{ backgroundColor: colorKey?.toLowerCase() === 'neutral / default' ? '#f3f4f6' : colorKey }}></div>
+          <h3 className="text-lg font-black text-gray-800 uppercase tracking-tighter">{colorKey || 'Unknown'} Group</h3>
+          <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">{(Array.isArray(items) ? items.length : 0)} Variants</span>
         </div>
         
         <div className="flex items-center gap-3">
@@ -141,11 +143,11 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {items.map((v) => (
-              <tr key={v.id} className="hover:bg-indigo-50/20 transition-colors">
+            {Array.isArray(items) && items.map((v) => (
+              <tr key={v?.id} className="hover:bg-indigo-50/20 transition-colors">
                 <td className="px-6 py-4">
                   <div className="relative w-14 h-14 rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/50 overflow-hidden flex items-center justify-center hover:border-indigo-400 transition-all cursor-pointer group">
-                    {v.previewUrl ? (
+                    {v?.previewUrl ? (
                       <img src={v.previewUrl} alt="V" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                     ) : (
                       <FiImage className="w-5 h-5 text-gray-300" />
@@ -156,7 +158,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                 <td className="px-6 py-4">
                   <input
                     type="text"
-                    value={v.sku}
+                    value={v?.sku || ''}
                     onChange={(e) => handleChange(v.id, 'sku', e.target.value)}
                     className="w-full max-w-[140px] px-3 py-2 text-xs font-bold border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 uppercase bg-gray-50"
                   />
@@ -164,7 +166,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                 <td className="px-6 py-4">
                   <input
                     type="text"
-                    value={v.size}
+                    value={v?.size || ''}
                     onChange={(e) => handleChange(v.id, 'size', e.target.value)}
                     className="w-20 px-3 py-2 text-xs font-bold border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 bg-gray-50"
                   />
@@ -172,7 +174,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                 <td className="px-6 py-4">
                   <input
                     type="number"
-                    value={v.stock}
+                    value={v?.stock || 0}
                     onChange={(e) => handleChange(v.id, 'stock', Math.max(0, parseInt(e.target.value) || 0))}
                     className="w-20 px-3 py-2 text-xs font-black border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 text-center bg-gray-50"
                   />
@@ -182,14 +184,14 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                     <span className="text-gray-400 text-[10px] font-bold">₹ +</span>
                     <input
                       type="number"
-                      value={v.priceModifier}
+                      value={v?.priceModifier || 0}
                       onChange={(e) => handleChange(v.id, 'priceModifier', e.target.value)}
                       className="w-24 px-3 py-2 text-xs font-bold border-gray-100 rounded-xl focus:ring-2 focus:ring-indigo-500 text-center bg-gray-50"
                     />
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button type="button" onClick={() => handleRemoveVariation(v.id)} className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
+                  <button type="button" onClick={() => handleRemoveVariation(v?.id)} className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
                     <FiTrash2 size={18} />
                   </button>
                 </td>

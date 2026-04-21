@@ -9,15 +9,15 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
 
   // Generic field handling
   const handleChange = (id, field, value) => {
-    setBulkRules(bulkRules.map(rule => 
-      rule.id === id ? { ...rule, [field]: value } : rule
+    setBulkRules(prev => (Array.isArray(prev) ? prev : []).map(rule => 
+      rule?.id === id ? { ...rule, [field]: value } : rule
     ));
   };
 
   // Add rule
   const handleAddRule = () => {
-    setBulkRules([
-      ...bulkRules,
+    setBulkRules(prev => [
+      ...(Array.isArray(prev) ? prev : []),
       {
         id: Date.now().toString(),
         minQty: 2,
@@ -29,7 +29,7 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
 
   // Remove rule
   const handleRemoveRule = (idToRemove) => {
-    setBulkRules(bulkRules.filter(rule => rule.id !== idToRemove));
+    setBulkRules(prev => (Array.isArray(prev) ? prev : []).filter(rule => rule?.id !== idToRemove));
   };
 
   // Validation function for a single rule (visual only)
@@ -100,7 +100,7 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
         </div>
       ) : (
         <div className="space-y-6 animate-fadeIn">
-          {bulkRules.length === 0 ? (
+          {(!Array.isArray(bulkRules) || bulkRules.length === 0) ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-gray-500 mb-3">No pricing rules configured.</p>
               <button
@@ -131,26 +131,26 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {bulkRules.map((rule, index) => {
+                  {Array.isArray(bulkRules) && bulkRules.map((rule, index) => {
                     const ruleError = getRuleError(rule);
                     
                     return (
-                      <tr key={rule.id} className={ruleError ? 'bg-red-50' : 'hover:bg-gray-50 transition-colors'}>
+                      <tr key={rule?.id || index} className={ruleError ? 'bg-red-50' : 'hover:bg-gray-50 transition-colors'}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <input
                             type="number"
                             min="2"
-                            value={rule.minQty}
+                            value={rule?.minQty || 2}
                             onChange={(e) => handleChange(rule.id, 'minQty', e.target.value)}
                             className={`w-full max-w-[120px] px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
-                              rule.minQty < 2 ? 'border-red-500' : 'border-gray-300'
+                              rule?.minQty < 2 ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap relative">
                           <input
                             type="number"
-                            value={rule.maxQty}
+                            value={rule?.maxQty || ''}
                             onChange={(e) => handleChange(rule.id, 'maxQty', e.target.value)}
                             className={`w-full max-w-[120px] px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
                               ruleError && ruleError.includes('Max Qty') ? 'border-red-500' : 'border-gray-300'
@@ -165,7 +165,7 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
                             type="number"
                             min="0"
                             step="0.01"
-                            value={rule.pricePerUnit}
+                            value={rule?.pricePerUnit || 0}
                             onChange={(e) => handleChange(rule.id, 'pricePerUnit', e.target.value)}
                             className={`w-full max-w-[150px] px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none ${
                               ruleError && ruleError.includes('Price') ? 'border-red-500' : 'border-gray-300'
@@ -175,7 +175,7 @@ const BulkPricingManager = ({ isBulkEnabled, setIsBulkEnabled, bulkRules, setBul
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           <button
                             type="button"
-                            onClick={() => handleRemoveRule(rule.id)}
+                            onClick={() => handleRemoveRule(rule?.id)}
                             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-colors"
                             title="Remove Rule"
                           >

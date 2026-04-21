@@ -41,15 +41,16 @@ const CreateProduct = () => {
       const next = typeof updateAction === 'function' ? updateAction(prev) : updateAction;
       
       // Auto-generate SKU for the first variation IF it's new and has no SKU yet
-      if (variations.length === 1 && !variations[0].sku && next.name) {
+      if (Array.isArray(variations) && variations.length === 1 && !variations[0].sku && next.name) {
         const generatedSku = next.name
           .toUpperCase()
           .replace(/[^A-Z0-9]/g, '')
           .substring(0, 8) + "-BASE";
           
-        setVariations(prevVars => [
-          { ...prevVars[0], sku: generatedSku }
-        ]);
+        setVariations(prevVars => {
+          if (!Array.isArray(prevVars) || prevVars.length === 0) return prevVars;
+          return [{ ...prevVars[0], sku: generatedSku }];
+        });
       }
       return next;
     });
@@ -161,13 +162,13 @@ const CreateProduct = () => {
       }
 
       // Arrays formatting and appending
-      const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
+      const finalVariations = (Array.isArray(variations) ? variations : []).map(({ id, previewUrl, ...rest }) => ({
         ...rest,
         stock: Number(rest.stock),
         priceModifier: Number(rest.priceModifier),
       }));
 
-      const finalBulkRules = isBulkEnabled ? bulkRules.map(({ id, ...rest }) => ({
+      const finalBulkRules = (isBulkEnabled && Array.isArray(bulkRules)) ? bulkRules.map(({ id, ...rest }) => ({
         minQty: Number(rest.minQty),
         maxQty: rest.maxQty === '' ? null : Number(rest.maxQty),
         pricePerUnit: Number(rest.pricePerUnit),
@@ -177,9 +178,9 @@ const CreateProduct = () => {
       formData.append('bulkRules', JSON.stringify(finalBulkRules));
 
       // Append Gallery Images
-      if (galleryImages && galleryImages.length > 0) {
+      if (Array.isArray(galleryImages) && galleryImages.length > 0) {
         galleryImages.forEach(img => {
-          formData.append('galleryImages', img);
+          if (img) formData.append('galleryImages', img);
         });
       }
 
@@ -187,11 +188,13 @@ const CreateProduct = () => {
       if (base2DImageFile) formData.append('base2DImageFile', base2DImageFile); // Custom 2D backdrop
 
       // Append Variation Images strictly pointing to index
-      variations.forEach((v, index) => {
-        if (v.imageFile) {
-          formData.append(`variationImage_${index}`, v.imageFile);
-        }
-      });
+      if (Array.isArray(variations)) {
+        variations.forEach((v, index) => {
+          if (v?.imageFile) {
+            formData.append(`variationImage_${index}`, v.imageFile);
+          }
+        });
+      }
 
       // Secure Administrative API Request
       const token = localStorage.getItem('adminToken');
