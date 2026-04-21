@@ -207,8 +207,8 @@ const BasicProductInfoForm = ({
       }
     };
 
-    const displayUrl = model.thumbnail || generateTextThumbnail(model.name);
-    return <img src={displayUrl} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = generateTextThumbnail(model.name); }} />;
+    const displayUrl = model?.thumbnail || generateTextThumbnail(model?.name);
+    return <img src={displayUrl} alt={model?.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = generateTextThumbnail(model?.name); }} />;
   };
 
   const handle3DModelChange = (e) => {
@@ -504,9 +504,9 @@ const BasicProductInfoForm = ({
                         className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
                       >
                         <option value="">-- Choose a Product Template --</option>
-                        {libraryModels.map(model => (
-                          <option key={model._id} value={model._id}>
-                            {model.name} {model.category ? `(${model.category})` : ''}
+                        {Array.isArray(libraryModels) && libraryModels.map(model => (
+                          <option key={model?._id} value={model?._id}>
+                            {model?.name || 'Untitled'} {model?.category ? `(${model.category})` : ''}
                           </option>
                         ))}
                       </select>

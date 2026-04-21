@@ -151,11 +151,13 @@ const TwoDModelLibrary = () => {
 
   const categories = ['All', 'Acrylics', 'Photo Frames', 'Cards', 'Stationery', 'Gifts'];
   
-  const filteredModels = models.filter(m => {
+  const filteredModels = Array.isArray(models) ? models.filter(m => {
+    if (!m) return false;
     const matchesFilter = filter === 'All' || m.category === filter;
-    const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const modelName = m.name || 'Untitled Model';
+    const matchesSearch = modelName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
-  });
+  }) : [];
 
   const createTextThumbnail = (name) => {
     try {
