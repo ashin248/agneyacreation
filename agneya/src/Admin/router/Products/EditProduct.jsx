@@ -38,14 +38,7 @@ const EditProduct = () => {
   const [blankFrontImagePreview, setBlankFrontImagePreview] = useState('');
   const [blankBackImage, setBlankBackImage] = useState(null);
   const [blankBackImagePreview, setBlankBackImagePreview] = useState('');
-  const [frontMaskImage, setFrontMaskImage] = useState(null);
-  const [frontMaskImagePreview, setFrontMaskImagePreview] = useState('');
-  const [frontOverlayImage, setFrontOverlayImage] = useState(null);
-  const [frontOverlayImagePreview, setFrontOverlayImagePreview] = useState('');
-  const [backMaskImage, setBackMaskImage] = useState(null);
-  const [backMaskImagePreview, setBackMaskImagePreview] = useState('');
-  const [backOverlayImage, setBackOverlayImage] = useState(null);
-  const [backOverlayImagePreview, setBackOverlayImagePreview] = useState('');
+
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
   // 2. Master State for Product Variations
@@ -131,11 +124,8 @@ const EditProduct = () => {
         
         setGalleryImagePreviews(product.galleryImages || []);
         setBlankFrontImagePreview(product.blankFrontImage || '');
-        setFrontMaskImagePreview(product.frontMaskImage || '');
-        setFrontOverlayImagePreview(product.frontOverlayImage || '');
         setBlankBackImagePreview(product.blankBackImage || '');
-        setBackMaskImagePreview(product.backMaskImage || '');
-        setBackOverlayImagePreview(product.backOverlayImage || '');
+
         
         setVariations((product.variations || []).map(v => ({
            ...v,
@@ -197,11 +187,8 @@ const EditProduct = () => {
         formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
       }
       if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
-      if (basicInfo.frontMaskImageUrl) formData.append('frontMaskImage', basicInfo.frontMaskImageUrl);
-      if (basicInfo.frontOverlayImageUrl) formData.append('frontOverlayImage', basicInfo.frontOverlayImageUrl);
       if (basicInfo.blankBackImageUrl) formData.append('blankBackImage', basicInfo.blankBackImageUrl);
-      if (basicInfo.backMaskImageUrl) formData.append('backMaskImage', basicInfo.backMaskImageUrl);
-      if (basicInfo.backOverlayImageUrl) formData.append('backOverlayImage', basicInfo.backOverlayImageUrl);
+
 
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
         ...rest,
@@ -228,11 +215,8 @@ const EditProduct = () => {
       }
 
       if (blankFrontImage) formData.append('blankFrontImage', blankFrontImage);
-      if (frontMaskImage) formData.append('frontMaskImage', frontMaskImage);
-      if (frontOverlayImage) formData.append('frontOverlayImage', frontOverlayImage);
       if (blankBackImage) formData.append('blankBackImage', blankBackImage);
-      if (backMaskImage) formData.append('backMaskImage', backMaskImage);
-      if (backOverlayImage) formData.append('backOverlayImage', backOverlayImage);
+
       if (base3DModelFile) formData.append('base3DModelFile', base3DModelFile);
 
       variations.forEach((v, index) => {
@@ -320,26 +304,10 @@ const EditProduct = () => {
               setBlankFrontImage={setBlankFrontImage}
               blankFrontImagePreview={blankFrontImagePreview}
               setBlankFrontImagePreview={setBlankFrontImagePreview}
-              frontMaskImage={frontMaskImage}
-              setFrontMaskImage={setFrontMaskImage}
-              frontMaskImagePreview={frontMaskImagePreview}
-              setFrontMaskImagePreview={setFrontMaskImagePreview}
-              frontOverlayImage={frontOverlayImage}
-              setFrontOverlayImage={setFrontOverlayImage}
-              frontOverlayImagePreview={frontOverlayImagePreview}
-              setFrontOverlayImagePreview={setFrontOverlayImagePreview}
               blankBackImage={blankBackImage}
               setBlankBackImage={setBlankBackImage}
               blankBackImagePreview={blankBackImagePreview}
               setBlankBackImagePreview={setBlankBackImagePreview}
-              backMaskImage={backMaskImage}
-              setBackMaskImage={setBackMaskImage}
-              backMaskImagePreview={backMaskImagePreview}
-              setBackMaskImagePreview={setBackMaskImagePreview}
-              backOverlayImage={backOverlayImage}
-              setBackOverlayImage={setBackOverlayImage}
-              backOverlayImagePreview={backOverlayImagePreview}
-              setBackOverlayImagePreview={setBackOverlayImagePreview}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
             />

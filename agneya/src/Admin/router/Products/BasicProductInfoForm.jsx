@@ -161,20 +161,15 @@ const BasicProductInfoForm = ({
   };
 
   const renderThumbnail = (model) => {
-    if (model?.shapeConfig) {
-      return (
-        <div className="w-full h-full bg-slate-100 flex items-center justify-center relative overflow-hidden group-hover:scale-110 transition-transform duration-500">
-           <svg viewBox="0 0 100 100" className="w-[60%] h-[60%] drop-shadow-md" preserveAspectRatio="xMidYMid meet">
-              {model.shapeConfig.type === 'circle' && <circle cx="50" cy="50" r="45" fill="#fafafa" stroke={model.shapeConfig.borderColor || '#333'} strokeWidth="4" />}
-              {model.shapeConfig.type === 'rectangle' && <rect x="5" y="15" width="90" height="70" fill="#fafafa" stroke={model.shapeConfig.borderColor || '#333'} strokeWidth="4" />}
-              {model.shapeConfig.type === 'rounded-rectangle' && <rect x="10" y="10" width="80" height="80" rx="15" fill="#fafafa" stroke={model.shapeConfig.borderColor || '#333'} strokeWidth="4" />}
-              {model.shapeConfig.type === 'polygon' && <polygon points="50,5 95,90 5,90" fill="#fafafa" stroke={model.shapeConfig.borderColor || '#333'} strokeWidth="4" />}
-           </svg>
-        </div>
-      );
-    }
-    return <img src={model.thumbnail || "https://i.ibb.co/nbWvC7M/case-overlay.png"} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = "https://i.ibb.co/nbWvC7M/case-overlay.png" }} />;
+    // Determine the clearest preview image link based on model data
+    const isBrokenOrMissing = !model.thumbnail || model.thumbnail.includes('ibb.co/3ykSj7d');
+    const displayUrl = isBrokenOrMissing
+      ? `https://dummyimage.com/400x400/e2e8f0/0f172a&text=${encodeURIComponent(model.name)}`
+      : model.thumbnail;
+
+    return <img src={displayUrl} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = "https://dummyimage.com/200x200/f0f0f0/666.png&text=No+Preview" }} />;
   };
+
   
   const handleFrontImageChange = (e) => {
     const file = e.target.files[0];
@@ -552,24 +547,7 @@ const BasicProductInfoForm = ({
                         <button type="button" onClick={() => { 
                           setBlankFrontImage(null); 
                           setBlankFrontImagePreview(''); 
-                          selectModel(null);
                         }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Clear Selection</button>
-                      </div>
-                      
-                      {/* Front Mask & Overlay Slots */}
-                      <div className="space-y-4 pt-4 border-t border-blue-100">
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Mask (Alpha Clipping)</label>
-                          <label htmlFor="frontMaskInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Mask File</label>
-                          <input id="frontMaskInput" type="file" onChange={handleFrontMaskChange} className="hidden" accept="image/*" />
-                          {frontMaskImagePreview && <img src={frontMaskImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Refine Overlay (Surface Relighting)</label>
-                          <label htmlFor="frontOverlayInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Overlay File</label>
-                          <input id="frontOverlayInput" type="file" onChange={handleFrontOverlayChange} className="hidden" accept="image/*" />
-                          {frontOverlayImagePreview && <img src={frontOverlayImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
                       </div>
                     </div>
                   )}
@@ -595,22 +573,6 @@ const BasicProductInfoForm = ({
                           <img src={blankBackImagePreview} alt="Back preview" className="w-full h-full object-contain" />
                         </div>
                         <button type="button" onClick={() => { setBlankBackImage(null); setBlankBackImagePreview(''); }} className="px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-lg hover:bg-red-100 transition-colors">Remove Back</button>
-                      </div>
-
-                      {/* Back Mask & Overlay Slots */}
-                      <div className="space-y-4 pt-4 border-t border-blue-100">
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Back_Mask (Clipping)</label>
-                          <label htmlFor="backMaskInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Mask File</label>
-                          <input id="backMaskInput" type="file" onChange={handleBackMaskChange} className="hidden" accept="image/*" />
-                          {backMaskImagePreview && <img src={backMaskImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black text-blue-900 uppercase tracking-widest block mb-2">Back_Overlay (Realism)</label>
-                          <label htmlFor="backOverlayInput" className="block w-fit px-4 py-2 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-blue-200 transition-colors mb-2">Select Overlay File</label>
-                          <input id="backOverlayInput" type="file" onChange={handleBackOverlayChange} className="hidden" accept="image/*" />
-                          {backOverlayImagePreview && <img src={backOverlayImagePreview} className="w-20 h-20 object-contain border border-blue-200 rounded-lg p-1 bg-white" />}
-                        </div>
                       </div>
                     </div>
                   )}

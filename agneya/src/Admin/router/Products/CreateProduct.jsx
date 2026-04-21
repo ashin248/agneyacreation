@@ -34,14 +34,7 @@ const CreateProduct = () => {
   const [blankFrontImagePreview, setBlankFrontImagePreview] = useState('');
   const [blankBackImage, setBlankBackImage] = useState(null);
   const [blankBackImagePreview, setBlankBackImagePreview] = useState('');
-  const [frontMaskImage, setFrontMaskImage] = useState(null);
-  const [frontMaskImagePreview, setFrontMaskImagePreview] = useState('');
-  const [frontOverlayImage, setFrontOverlayImage] = useState(null);
-  const [frontOverlayImagePreview, setFrontOverlayImagePreview] = useState('');
-  const [backMaskImage, setBackMaskImage] = useState(null);
-  const [backMaskImagePreview, setBackMaskImagePreview] = useState('');
-  const [backOverlayImage, setBackOverlayImage] = useState(null);
-  const [backOverlayImagePreview, setBackOverlayImagePreview] = useState('');
+
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
   // Custom helper to sync name to first variation SKU
@@ -157,11 +150,8 @@ const CreateProduct = () => {
         formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
       }
       if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
-      if (basicInfo.frontMaskImageUrl) formData.append('frontMaskImage', basicInfo.frontMaskImageUrl);
-      if (basicInfo.frontOverlayImageUrl) formData.append('frontOverlayImage', basicInfo.frontOverlayImageUrl);
       if (basicInfo.blankBackImageUrl) formData.append('blankBackImage', basicInfo.blankBackImageUrl);
-      if (basicInfo.backMaskImageUrl) formData.append('backMaskImage', basicInfo.backMaskImageUrl);
-      if (basicInfo.backOverlayImageUrl) formData.append('backOverlayImage', basicInfo.backOverlayImageUrl);
+
 
       // Arrays formatting and appending
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
@@ -188,11 +178,8 @@ const CreateProduct = () => {
 
       // Append Customization Files
       if (blankFrontImage) formData.append('blankFrontImage', blankFrontImage);
-      if (frontMaskImage) formData.append('frontMaskImage', frontMaskImage);
-      if (frontOverlayImage) formData.append('frontOverlayImage', frontOverlayImage);
       if (blankBackImage) formData.append('blankBackImage', blankBackImage);
-      if (backMaskImage) formData.append('backMaskImage', backMaskImage);
-      if (backOverlayImage) formData.append('backOverlayImage', backOverlayImage);
+
       if (base3DModelFile) formData.append('base3DModelFile', base3DModelFile);
 
       // Append Variation Images strictly pointing to index
@@ -271,26 +258,10 @@ const CreateProduct = () => {
               setBlankFrontImage={setBlankFrontImage}
               blankFrontImagePreview={blankFrontImagePreview}
               setBlankFrontImagePreview={setBlankFrontImagePreview}
-              frontMaskImage={frontMaskImage}
-              setFrontMaskImage={setFrontMaskImage}
-              frontMaskImagePreview={frontMaskImagePreview}
-              setFrontMaskImagePreview={setFrontMaskImagePreview}
-              frontOverlayImage={frontOverlayImage}
-              setFrontOverlayImage={setFrontOverlayImage}
-              frontOverlayImagePreview={frontOverlayImagePreview}
-              setFrontOverlayImagePreview={setFrontOverlayImagePreview}
               blankBackImage={blankBackImage}
               setBlankBackImage={setBlankBackImage}
               blankBackImagePreview={blankBackImagePreview}
               setBlankBackImagePreview={setBlankBackImagePreview}
-              backMaskImage={backMaskImage}
-              setBackMaskImage={setBackMaskImage}
-              backMaskImagePreview={backMaskImagePreview}
-              setBackMaskImagePreview={setBackMaskImagePreview}
-              backOverlayImage={backOverlayImage}
-              setBackOverlayImage={setBackOverlayImage}
-              backOverlayImagePreview={backOverlayImagePreview}
-              setBackOverlayImagePreview={setBackOverlayImagePreview}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
             />
