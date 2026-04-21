@@ -1,6 +1,6 @@
 import React from 'react';
 import { MODELS } from '../../../Client/components/Three/ProductLibrary';
-import { FiCheckCircle, FiBox, FiPackage, FiTrash2, FiAlertCircle, FiGrid } from 'react-icons/fi';
+import { FiCheckCircle, FiBox, FiPackage, FiTrash2, FiAlertCircle, FiGrid, FiImage, FiPlus } from 'react-icons/fi';
 
 const BasicProductInfoForm = ({ 
   formData, setFormData, 
