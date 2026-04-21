@@ -162,9 +162,9 @@ const BasicProductInfoForm = ({
 
   const renderThumbnail = (model) => {
     // Determine the clearest preview image link based on model data
-    const isBrokenOrMissing = !model.thumbnail || model.thumbnail.includes('ibb.co/3ykSj7d');
+    const isBrokenOrMissing = !model.thumbnail || model.thumbnail.includes('ibb.co') || model.thumbnail.includes('imgbb.com');
     const displayUrl = isBrokenOrMissing
-      ? `https://dummyimage.com/400x400/e2e8f0/0f172a&text=${encodeURIComponent(model.name)}`
+      ? `https://dummyimage.com/400x400/3b82f6/ffffff&text=${encodeURIComponent(model.name.replace(/\s+/g, '+'))}`
       : model.thumbnail;
 
     return <img src={displayUrl} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = "https://dummyimage.com/200x200/f0f0f0/666.png&text=No+Preview" }} />;
