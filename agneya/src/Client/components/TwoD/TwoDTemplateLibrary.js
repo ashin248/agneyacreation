@@ -11,6 +11,7 @@ export const TWOD_TEMPLATES = {
     id: TICKER_ID_MUG_WRAP,
     name: 'Standard Mug Wrap (11oz)',
     category: 'Mug',
+    mockupProfile: 'mug-wrap',
     thumbnail: 'https://i.ibb.co/nbWvC7M/case-overlay.png', // Placeholder or dedicated thumb
     canvasConfig: {
       width: 500,

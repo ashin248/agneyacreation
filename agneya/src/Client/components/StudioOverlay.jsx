@@ -1306,7 +1306,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     }}>
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : 'aspect-[5/6]'} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white group`}>
+                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2] overflow-hidden' : (product?.mockupProfile === 'mug-wrap' ? 'w-[90%] max-w-[900px] aspect-[2.22]' : 'aspect-[5/6] overflow-hidden')} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl bg-white group transition-all duration-700`}>
                                                     
                                                     {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                                                     {product?.phoneMask && (
@@ -1422,15 +1422,25 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                     {/* Layer: Code-Driven 2D Template Viewport (Universal) */}
                                                     {product?.shapeConfig && !product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center overflow-hidden">
+                                                        <div className={`absolute inset-0 z-20 pointer-events-none flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'visible' : 'overflow-hidden'}`}>
                                                             <div className="relative" style={{ 
                                                                 width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
                                                                 height: `${(product?.canvasConfig?.height || 600) * canvasScale}px`,
                                                                 marginLeft: `${(product?.canvasConfig?.offsetX || 0) * canvasScale}px`, 
                                                                 marginTop: `${(product?.canvasConfig?.offsetY || 0) * canvasScale}px`
                                                             }}>
+                                                                {/* Optional CSS Mug Handle (Protruding Left) */}
+                                                                {product?.mockupProfile === 'mug-wrap' && (
+                                                                    <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 border-[#f8fafc] rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
+                                                                        left: `-${Math.max(40, 80 * canvasScale)}px`,
+                                                                        width: `${Math.max(40, 80 * canvasScale)}px`,
+                                                                        borderWidth: `${Math.max(12, 24 * canvasScale)}px`,
+                                                                        zIndex: -1
+                                                                    }}></div>
+                                                                )}
+                                                                
                                                                 {/* The Workspace Canvas Backdrop (The actual 'Product' surface) */}
-                                                                <div className="absolute inset-0 bg-white shadow-inner flex items-center justify-center opacity-90">
+                                                                <div className={`absolute inset-0 bg-white shadow-inner flex items-center justify-center opacity-90 ${product?.mockupProfile === 'mug-wrap' ? 'rounded-[16px] shadow-[inset_10px_0_20px_rgba(0,0,0,0.03)]' : ''}`}>
                                                                      {/* Optional Texture/Grid for help */}
                                                                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
                                                                 </div>
