@@ -63,7 +63,10 @@ const EditProduct = () => {
       if (basicInfo.customizationType === '2D' && !basicInfo.base2DTemplateId) return "Select a 2D template from library.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
       if (basicInfo.customizationType === 'Both') {
-        if (!basicInfo.base2DTemplateId) return "2D Template selection is required for Dual-Mode.";
+        const hasGallery = basicInfo.linkedTemplates?.length > 0;
+        if (!basicInfo.base2DTemplateId && !hasGallery) {
+           return "2D Template selection or Design Gallery items are required for Dual-Mode.";
+        }
         if (!base3DModelFile && !basicInfo.baseModelId) return "3D Model selection is required for Dual-Mode.";
       }
     }
