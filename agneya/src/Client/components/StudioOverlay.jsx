@@ -628,6 +628,30 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             }
         }
 
+        // --- BACKDROP LOADER: Add the template's background artwork ---
+        if (activeTemplate?.defaultBackdrop) {
+            const ImgClass = fabric.FabricImage || fabric.Image;
+            const imgElement = new Image();
+            imgElement.crossOrigin = 'anonymous';
+            imgElement.src = activeTemplate.defaultBackdrop;
+            imgElement.onload = () => {
+                const backdrop = new ImgClass(imgElement, {
+                    left: 0,
+                    top: 0,
+                    width: baseWidth,
+                    height: baseHeight,
+                    selectable: false,
+                    evented: false,
+                    excludeFromExport: false, // We WANT the background in the print file
+                    isBackdrop: true
+                });
+                // Ensure backdrop is always at the bottom
+                canvas.insertAt(backdrop, 0);
+                canvas.renderAll();
+                updateTexture(true);
+            };
+        }
+
         // --- IMAGE SLOT VISUALIZER: Add placeholders for predefined slots ---
         if (activeTemplate?.imageSlots) {
             activeTemplate.imageSlots.forEach(slot => {
