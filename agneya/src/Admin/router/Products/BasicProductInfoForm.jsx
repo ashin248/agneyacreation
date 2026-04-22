@@ -528,8 +528,8 @@ const BasicProductInfoForm = ({
                         </div>
 
                         {/* Checkbox Mask */}
-                        <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isSelected ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
-                           {isSelected && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
+                        <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isAssociated ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
+                           {isAssociated && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
                         </div>
                       </div>
                     );
