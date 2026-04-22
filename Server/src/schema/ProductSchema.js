@@ -161,7 +161,10 @@ const productSchema = new mongoose.Schema(
       scale: { type: Number, default: 1 }
     },
     linkedTemplates: {
-      type: [String],
+      type: [{
+        templateId: { type: String, required: true },
+        overrideImageUrl: { type: String, default: null }
+      }],
       default: []
     },
     shapeConfig: { 

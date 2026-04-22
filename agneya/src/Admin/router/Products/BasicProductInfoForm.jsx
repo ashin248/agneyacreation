@@ -8,8 +8,7 @@ const BasicProductInfoForm = ({
   formData, setFormData, 
   images, setImages, 
   imagePreviews, setImagePreviews, 
-  base3DModelFile, setBase3DModelFile,
-  base2DImageFile, setBase2DImageFile
+  base3DModelFile, setBase3DModelFile
 }) => {
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
@@ -57,13 +56,11 @@ const BasicProductInfoForm = ({
         setFormData(prev => ({ ...prev, baseModelId: '' }));
       } else if (value === '3D') {
         // Clean 2D
-        setBase2DImageFile && setBase2DImageFile(null);
         setFormData(prev => ({ ...prev, base2DTemplateId: '', canvasConfig: null, shapeConfig: null }));
       } else if (value === 'Both') {
           // Keep both accessible; baseModelId will track the primary selector
       } else if (value === 'None') {
         setBase3DModelFile && setBase3DModelFile(null);
-        setBase2DImageFile && setBase2DImageFile(null);
         setFormData(prev => ({ 
             ...prev, 
             baseModelId: '', 
@@ -134,13 +131,6 @@ const BasicProductInfoForm = ({
     }
   };
 
-  const handle2DImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setBase2DImageFile(file);
-    }
-  };
-
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
@@ -152,11 +142,50 @@ const BasicProductInfoForm = ({
   const toggleLinkedTemplate = (templateId) => {
     setFormData(prev => {
       const current = prev.linkedTemplates || [];
-      const next = current.includes(templateId)
-        ? current.filter(id => id !== templateId)
-        : [...current, templateId];
+      const existingIndex = current.findIndex(t => t.id === templateId || t === templateId);
+      
+      let next;
+      if (existingIndex >= 0) {
+        next = current.filter((_, i) => i !== existingIndex);
+      } else {
+        next = [...current, { id: templateId, overrideFile: null, overridePreview: null }];
+      }
       return { ...prev, linkedTemplates: next };
     });
+  };
+
+  const handleOverrideImageChange = (e, templateId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setFormData(prev => {
+      const current = prev.linkedTemplates || [];
+      const next = current.map(t => {
+        const id = typeof t === 'string' ? t : t.id;
+        if (id === templateId) {
+          return {
+            id,
+            overrideFile: file,
+            overridePreview: URL.createObjectURL(file)
+          };
+        }
+        return typeof t === 'string' ? { id: t } : t;
+      });
+      return { ...prev, linkedTemplates: next };
+    });
+  };
+
+  const selectAllTemplates = () => {
+    const filteredTemplates = Object.values(TWOD_TEMPLATES)
+      .filter(template => !formData.category || template.category === formData.category);
+    
+    setFormData(prev => ({
+      ...prev,
+      linkedTemplates: filteredTemplates.map(t => {
+         const existing = (prev.linkedTemplates || []).find(ext => (typeof ext === 'string' ? ext : ext.id) === t.id);
+         return existing || { id: t.id, overrideFile: null, overridePreview: null };
+      })
+    }));
   };
 
   return (
@@ -424,7 +453,9 @@ const BasicProductInfoForm = ({
                       className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
                     >
                       <option value="">-- Choose a Product Template --</option>
-                      {Object.values(TWOD_TEMPLATES).map(template => (
+                      {Object.values(TWOD_TEMPLATES)
+                        .filter(template => !formData.category || template.category === formData.category)
+                        .map(template => (
                         <option key={template.id} value={template.id}>
                           {template.name} ({template.category})
                         </option>
@@ -454,83 +485,63 @@ const BasicProductInfoForm = ({
                   </p>
                 </div>
 
-                {/* Right Column: Base Backdrop Image Upload */}
-                <div>
-                  <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <FiImage size={14} />
-                    Base Backdrop Image (Optional)
-                  </label>
-                  
-                  <div className={`p-6 border-2 border-dashed rounded-2xl group transition-all relative overflow-hidden ${base2DImageFile ? 'border-emerald-300 bg-emerald-50/30' : 'border-blue-200 bg-blue-50/20 hover:border-blue-400'}`}>
-                    <div className="relative z-10 text-center space-y-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mx-auto shadow-sm mb-2 ${base2DImageFile ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-blue-500'}`}>
-                         <FiImage size={24} />
-                      </div>
-                      
-                      <div className="space-y-1">
-                        <h4 className={`text-[13px] font-bold ${base2DImageFile ? 'text-emerald-800' : 'text-blue-900'}`}>Upload Base Photo</h4>
-                        <p className={`text-[10px] leading-relaxed ${base2DImageFile ? 'text-emerald-600' : 'text-gray-500'}`}>
-                           Provide a clear photo of the plain product (e.g., wooden plaque or blank medal). 
-                           <br/>Leave empty to use the template's default image.
-                        </p>
-                      </div>
-
-                      <div className="pt-3">
-                        <label className={`inline-flex items-center gap-2 px-6 py-2.5 text-white text-[11px] font-bold rounded-xl cursor-pointer transition-all shadow-md active:scale-95 ${base2DImageFile ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-blue-600 hover:bg-blue-700'}`}>
-                           {base2DImageFile ? 'Change Photo' : 'Select Photo'}
-                           <FiPlus size={14} />
-                           <input type="file" onChange={handle2DImageChange} className="hidden" accept="image/png, image/jpeg, image/webp" />
-                        </label>
-                      </div>
-
-                      {base2DImageFile && (
-                        <div className="mt-3 flex items-center justify-center gap-2 animate-in fade-in">
-                           <span className="text-[10px] font-bold text-emerald-700 truncate max-w-[150px] bg-emerald-100 px-2 py-1 rounded">
-                              {base2DImageFile.name}
-                           </span>
-                           <button type="button" onClick={() => setBase2DImageFile(null)} className="text-red-400 hover:text-red-600 p-1">
-                              <FiTrash2 size={14} />
-                           </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
               </div>
             )}
 
             {/* DESIGN GALLERY ASSOCIATION - Multiple 2D Templates */}
             {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
               <div key="gallery-association-block" className="mt-8 pt-8 border-t border-blue-100 animate-in fade-in duration-700">
-                <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <FiGrid size={14} />
-                  Associated Design Gallery Templates
-                </label>
+                <div className="flex items-center justify-between mb-6">
+                    <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
+                    <FiGrid size={14} />
+                    Associated Design Gallery Templates
+                    </label>
+                    <button type="button" onClick={selectAllTemplates} className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors">
+                        Select All Filtered
+                    </button>
+                </div>
 
-                <div className="flex flex-wrap gap-4 pt-2">
-                  {Object.values(TWOD_TEMPLATES).map((template) => {
-                    const isAssociated = Array.isArray(formData.linkedTemplates) && formData.linkedTemplates.includes(template.id);
+                <div className="flex flex-wrap gap-6 pt-2">
+                  {Object.values(TWOD_TEMPLATES)
+                    .filter(template => !formData.category || template.category === formData.category)
+                    .map((template) => {
+                    const associatedItem = (formData.linkedTemplates || []).find(t => (typeof t === 'string' ? t : t.id) === template.id);
+                    const isAssociated = !!associatedItem;
+                    const overridePreview = associatedItem?.overridePreview || null;
+
                     return (
-                      <div 
-                        key={template.id}
-                        onClick={() => toggleLinkedTemplate(template.id)}
-                        className={`group relative w-32 cursor-pointer transition-all ${isAssociated ? 'scale-100' : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:scale-95'}`}
-                      >
-                        <div className={`aspect-[3/4] bg-white rounded-3xl overflow-hidden border-2 transition-all ${isAssociated ? 'border-indigo-600 shadow-xl shadow-indigo-500/20' : 'border-slate-100'}`}>
-                          <TemplateThumbnail template={template} className="h-full" />
-                          
-                          {isAssociated && (
-                            <div className="absolute top-2 right-2 bg-indigo-600 text-white p-1 rounded-full shadow-lg p-1.5 animate-in zoom-in duration-300">
-                              <FiCheck size={10} />
+                      <div key={template.id} className="flex flex-col gap-2">
+                          <div 
+                            onClick={() => toggleLinkedTemplate(template.id)}
+                            className={`group relative w-32 cursor-pointer transition-all ${isAssociated ? 'scale-100' : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:scale-95'}`}
+                          >
+                            <div className={`aspect-[3/4] bg-white rounded-3xl overflow-hidden border-2 transition-all ${isAssociated ? 'border-indigo-600 shadow-xl shadow-indigo-500/20' : 'border-slate-100'}`}>
+                              {overridePreview ? (
+                                  <img src={overridePreview} className="w-full h-full object-cover" alt="Override" />
+                              ) : (
+                                  <TemplateThumbnail template={template} className="w-full h-full" />
+                              )}
+                              
+                              {isAssociated && (
+                                <div className="absolute top-2 right-2 bg-indigo-600 text-white p-1 rounded-full shadow-lg p-1.5 animate-in zoom-in duration-300">
+                                  <FiCheck size={10} />
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        {/* Checkbox Mask */}
-                        <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isAssociated ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
-                           {isAssociated && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
-                        </div>
+                            {/* Checkbox Mask */}
+                            <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isAssociated ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
+                               {isAssociated && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
+                            </div>
+                          </div>
+                          
+                          {/* Override Button */}
+                          {isAssociated && (
+                              <label className="cursor-pointer text-center py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 hover:border-indigo-200 transition-all">
+                                  {overridePreview ? 'Change Backdrop' : 'Upload Backdrop'}
+                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleOverrideImageChange(e, template.id)} />
+                              </label>
+                          )}
                       </div>
                     );
                   })}
@@ -539,7 +550,7 @@ const BasicProductInfoForm = ({
                 <div className="mt-6 bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
                    <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-1">Configuration Hint:</p>
                    <p className="text-[11px] text-blue-700 font-bold leading-relaxed">
-                     Selected templates will appear as a gallery on the product page. Users can pick one to pre-load a design theme into the editor.
+                     Selected templates will appear as a gallery on the product page. Users can pick one to pre-load a design theme into the editor. You can now upload specific overriding background images for each template.
                    </p>
                 </div>
               </div>

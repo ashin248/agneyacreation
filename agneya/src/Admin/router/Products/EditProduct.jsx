@@ -187,7 +187,14 @@ const EditProduct = () => {
       }
       if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
       if (Array.isArray(basicInfo.linkedTemplates)) {
-        formData.append('linkedTemplates', JSON.stringify(basicInfo.linkedTemplates));
+        const templateIds = basicInfo.linkedTemplates.map(t => typeof t === 'string' ? t : t.id);
+        formData.append('linkedTemplates', JSON.stringify(templateIds));
+        
+        basicInfo.linkedTemplates.forEach(t => {
+            if (t && typeof t === 'object' && t.overrideFile) {
+                formData.append(`override_image_${t.id}`, t.overrideFile);
+            }
+        });
       }
 
 

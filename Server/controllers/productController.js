@@ -135,7 +135,8 @@ exports.createProduct = async (req, res) => {
     let linkedTemplates = [];
     if (req.body.linkedTemplates) {
       try {
-        linkedTemplates = JSON.parse(req.body.linkedTemplates);
+        const parsed = JSON.parse(req.body.linkedTemplates);
+        linkedTemplates = Array.isArray(parsed) ? parsed.map(id => ({ templateId: id, overrideImageUrl: null })) : [];
       } catch (e) {
         console.warn('Malformed linkedTemplates received:', req.body.linkedTemplates);
       }
@@ -224,6 +225,16 @@ exports.createProduct = async (req, res) => {
             // Push to upload queue for Variation Image
             const promise = uploadToCloudinary(file.buffer, 'products/variations').then(url => {
               variations[index].imageUrl = url; // Attaching to the specific variation object
+            });
+            uploadPromises.push(promise);
+          }
+        }
+        else if (file.fieldname.startsWith('override_image_')) {
+          const templateId = file.fieldname.replace('override_image_', '');
+          const templateObj = linkedTemplates.find(t => t.templateId === templateId);
+          if (templateObj) {
+            const promise = uploadToCloudinary(file.buffer, 'products/overrides').then(url => {
+              templateObj.overrideImageUrl = url;
             });
             uploadPromises.push(promise);
           }
@@ -376,7 +387,18 @@ exports.updateProduct = async (req, res) => {
            try { updateData.canvasConfig = JSON.parse(req.body.canvasConfig); } catch(e){}
         }
         if (req.body.linkedTemplates) {
-           try { updateData.linkedTemplates = JSON.parse(req.body.linkedTemplates); } catch(e){}
+           try { 
+              const parsed = JSON.parse(req.body.linkedTemplates);
+              if (Array.isArray(parsed)) {
+                  updateData.linkedTemplates = parsed.map(id => {
+                      const existing = (product.linkedTemplates || []).find(t => t.templateId === id);
+                      return {
+                          templateId: id,
+                          overrideImageUrl: existing ? existing.overrideImageUrl : null
+                      };
+                  });
+              }
+           } catch(e){}
         }
         
         if (req.body.blankFrontImage) updateData.blankFrontImage = req.body.blankFrontImage;
@@ -446,6 +468,17 @@ exports.updateProduct = async (req, res) => {
                             updateData.variations[index].imageUrl = url;
                         });
                         uploadPromises.push(promise);
+                    }
+                } else if (file.fieldname.startsWith('override_image_')) {
+                    const templateId = file.fieldname.replace('override_image_', '');
+                    if (updateData.linkedTemplates) {
+                        const templateObj = updateData.linkedTemplates.find(t => t.templateId === templateId);
+                        if (templateObj) {
+                            const promise = uploadToCloudinary(file.buffer, 'products/overrides').then(url => {
+                                templateObj.overrideImageUrl = url;
+                            });
+                            uploadPromises.push(promise);
+                        }
                     }
                 }
             }

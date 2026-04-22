@@ -31,7 +31,6 @@ const CreateProduct = () => {
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
-  const [base2DImageFile, setBase2DImageFile] = useState(null); // Single base backdrop for 2D Products
   
   // Custom helper to sync name to first variation SKU
   const handleBasicInfoChange = (updateAction) => {
@@ -86,7 +85,7 @@ const CreateProduct = () => {
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
       if (basicInfo.customizationType === 'Both') {
         const hasGallery = basicInfo.linkedTemplates?.length > 0;
-        if (!basicInfo.base2DTemplateId && !hasGallery && !base2DImageFile) {
+        if (!basicInfo.base2DTemplateId && !hasGallery) {
            return "2D Template selection or Design Gallery items are required for Dual-Mode.";
         }
         if (!base3DModelFile && !basicInfo.baseModelId) return "3D Model selection is required for Dual-Mode.";
@@ -158,11 +157,20 @@ const CreateProduct = () => {
         formData.append('canvasConfig', JSON.stringify(basicInfo.canvasConfig));
       }
       // Provide the fallback template blank image URL if admin hasn't provided a custom one
-      if (basicInfo.blankFrontImageUrl && !base2DImageFile) {
+      if (basicInfo.blankFrontImageUrl) {
         formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
       }
       if (Array.isArray(basicInfo.linkedTemplates)) {
-        formData.append('linkedTemplates', JSON.stringify(basicInfo.linkedTemplates));
+        // Strip out the file objects before stringifying the array of IDs for the backend to parse
+        const templateIds = basicInfo.linkedTemplates.map(t => typeof t === 'string' ? t : t.id);
+        formData.append('linkedTemplates', JSON.stringify(templateIds));
+        
+        // Append individual override images with a structured key
+        basicInfo.linkedTemplates.forEach(t => {
+            if (t.overrideFile) {
+                formData.append(`override_image_${t.id}`, t.overrideFile);
+            }
+        });
       }
 
       // Arrays formatting and appending
@@ -189,7 +197,6 @@ const CreateProduct = () => {
       }
 
       if (base3DModelFile) formData.append('base3DModelFile', base3DModelFile);
-      if (base2DImageFile) formData.append('base2DImageFile', base2DImageFile); // Custom 2D backdrop
 
       // Append Variation Images strictly pointing to index
       if (Array.isArray(variations)) {
@@ -269,8 +276,6 @@ const CreateProduct = () => {
               setImagePreviews={setGalleryImagePreviews}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
-              base2DImageFile={base2DImageFile}
-              setBase2DImageFile={setBase2DImageFile}
             />
           </section>
 

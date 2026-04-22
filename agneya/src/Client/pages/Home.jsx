@@ -30,12 +30,16 @@ const Home = () => {
     const fetchStorefrontData = async () => {
       try {
         setLoading(true);
-        const [bannersRes, productsRes] = await Promise.all([
+        const results = await Promise.allSettled([
           axios.get('/api/public/banners'),
           axios.get('/api/public/products?limit=8')
         ]);
-        if (bannersRes.data.success) setBanners(bannersRes.data.data);
-        if (productsRes.data.success) setProducts(productsRes.data.data);
+        
+        const bannersRes = results[0].status === 'fulfilled' ? results[0].value : null;
+        const productsRes = results[1].status === 'fulfilled' ? results[1].value : null;
+
+        if (bannersRes && bannersRes.data.success) setBanners(bannersRes.data.data);
+        if (productsRes && productsRes.data.success) setProducts(productsRes.data.data);
       } catch (err) {
         console.error('Failed to fetch storefront data:', err);
       } finally {

@@ -403,21 +403,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
-    const [designMode, setDesignMode] = useState(initialMode); // 'self' or 'company'
+    const [activeStudioTab, setActiveStudioTab] = useState('3D_STUDIO');
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
-    const [activeStudioView, setActiveStudioView] = useState('3D'); // '2D' or '3D'
     const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
     const effectiveMockupProfile = activeTemplate?.mockupProfile || product?.mockupProfile;
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
-    // Dynamic Initialization: Set the correct studio mode on mount
-    useEffect(() => {
-        if (isOpen && product?.customizationType === '2D') {
-            setActiveStudioView('2D');
-        }
-    }, [isOpen, product?.customizationType]);
+    // Dynamic Initialization handled in main reset useEffect
 
 
 
@@ -814,14 +808,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
         if (isOpen) {
             resetStudio();
-            setDesignMode(initialMode);
             // Strict View Selection: Default to 2D if a template is active, otherwise check product config
             if (activeTemplateId) {
-                setActiveStudioView('2D');
+                setActiveStudioTab('2D_STUDIO');
+            } else if (initialMode === 'company') {
+                setActiveStudioTab('DESIGN_ASSISTANCE');
             } else if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
-                setActiveStudioView('3D');
+                setActiveStudioTab('3D_STUDIO');
             } else {
-                setActiveStudioView('2D');
+                setActiveStudioTab('2D_STUDIO');
             }
         } else {
             resetStudio(); // Clean up on close to be safe
@@ -1232,11 +1227,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
                     <div className="flex bg-slate-100 p-1 rounded-full mt-2">
                         {(product.customizationType === 'Both' || product.customizationType === '3D') && (
-                            <button onClick={() => { setDesignMode('self'); setActiveStudioView('3D'); }} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'self' && activeStudioView === '3D' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setDesignMode('company')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'company' || product.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
+                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
                         {(product.customizationType === 'Both' || product.customizationType === '2D') && (
-                            <button onClick={() => { setDesignMode('self'); setActiveStudioView('2D'); }} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${designMode === 'self' && activeStudioView === '2D' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
                         )}
                     </div>
                 </div>
@@ -1247,7 +1242,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             </header>
 
             <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
-                {designMode === 'self' ? (
+                {activeStudioTab !== 'DESIGN_ASSISTANCE' ? (
                     <>
                         {/* Variation Selector - Floating at top */}
                         <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
@@ -1439,10 +1434,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
                                     {/* View Multiplexer: Concurrent DOM mounting for persistence */}
                                     <div className="absolute inset-0 transition-opacity duration-300" style={{ 
-                                        opacity: activeStudioView === '2D' ? 1 : 0, 
-                                        pointerEvents: activeStudioView === '2D' ? 'auto' : 'none', 
-                                        zIndex: activeStudioView === '2D' ? 10 : -10,
-                                        visibility: activeStudioView === '2D' ? 'visible' : 'hidden'
+                                        opacity: activeStudioTab === '2D_STUDIO' ? 1 : 0, 
+                                        pointerEvents: activeStudioTab === '2D_STUDIO' ? 'auto' : 'none', 
+                                        zIndex: activeStudioTab === '2D_STUDIO' ? 10 : -10,
+                                        visibility: activeStudioTab === '2D_STUDIO' ? 'visible' : 'hidden'
                                     }}>
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
@@ -1655,10 +1650,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                     {/* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */}
                                     <div className="absolute inset-0 transition-opacity duration-300" style={{
-                                        opacity: activeStudioView === '3D' ? 1 : 0, 
-                                        pointerEvents: activeStudioView === '3D' ? 'auto' : 'none', 
-                                        zIndex: activeStudioView === '3D' ? 10 : -10,
-                                        visibility: activeStudioView === '3D' ? 'visible' : 'hidden'
+                                        opacity: activeStudioTab === '3D_STUDIO' ? 1 : 0, 
+                                        pointerEvents: activeStudioTab === '3D_STUDIO' ? 'auto' : 'none', 
+                                        zIndex: activeStudioTab === '3D_STUDIO' ? 10 : -10,
+                                        visibility: activeStudioTab === '3D_STUDIO' ? 'visible' : 'hidden'
                                     }}>
                                         <div id="studio-3d-canvas" className="w-full h-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out">
 
@@ -1718,7 +1713,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                 <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18} /></button>
                             </div>
                             {/* Mockup Redesign: Floating Commerce Pill (Responsive) */}
-                            {designMode === 'self' && (
+                            {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
                                 <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
                                     <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
                                         <FiArrowRight /> Buy Now
