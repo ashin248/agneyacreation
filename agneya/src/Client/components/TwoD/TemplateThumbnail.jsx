@@ -1,84 +1,124 @@
 import React from 'react';
+import { FiImage, FiHeart, FiGift, FiCoffee, FiStar, FiSmile, FiBookOpen, FiZap } from 'react-icons/fi';
 
 /**
- * TemplateThumbnail renders a dynamic, code-driven preview of a design template
- * using its metadata (shapeConfig, aspectRatio, colors).
- * This replaces static image thumbnails with a live, responsive representation.
+ * TemplateThumbnail renders a dynamic, code-driven preview of a design template.
+ * It visualizes:
+ * 1. The overall shape (Rect, Circle, etc.)
+ * 2. The backdrop (if available)
+ * 3. Each individual photo slot defined in imageSlots
  */
 const TemplateThumbnail = ({ template, className = '' }) => {
   if (!template) return null;
 
-  const { shapeConfig, canvasConfig, name } = template;
+  const { shapeConfig, canvasConfig, name, imageSlots = [], category, defaultBackdrop } = template;
   
-  // Calculate aspect ratio string for Tailwind-like logic or raw CSS
   const width = canvasConfig?.width || 500;
-  const height = canvasConfig?.height || 600;
+  const height = canvasConfig?.height || 225;
   const aspectRatio = `${width} / ${height}`;
 
-  // Convert shapeConfig to CSS clip-path
+  // Get category specific icon
+  const getCategoryIcon = () => {
+    switch (category?.toLowerCase()) {
+      case 'valentine': return <FiHeart className="text-white/80" />;
+      case 'parents': return <FiSmile className="text-white/80" />;
+      case 'friends': return <FiZap className="text-white/80" />;
+      case 'kids': return <FiStar className="text-white/80" />;
+      case 'coffee': return <FiCoffee className="text-white/80" />;
+      case 'teacher': return <FiBookOpen className="text-white/80" />;
+      default: return <FiGift className="text-white/80" />;
+    }
+  };
+
   const getClipPath = () => {
     if (!shapeConfig) return 'inset(0%)';
-    const { type, radius, points, rx } = shapeConfig;
-
+    const { type, points, rx } = shapeConfig;
     switch (type) {
-      case 'circle':
-        return 'circle(50% at 50% 50%)';
+      case 'circle': return 'circle(50% at 50% 50%)';
       case 'rectangle':
-      case 'rounded-rectangle':
-        return rx ? `inset(0% round ${rx}px)` : 'inset(0%)';
+      case 'rounded-rectangle': return rx ? `inset(0% round ${rx}px)` : 'inset(0%)';
       case 'polygon':
         if (points) {
-          // Input: "0,0 500,0 500,600 0,600"
-          // Convert to percentage-based points for CSS clip-path
           const pArray = points.split(' ').map(p => {
             const [px, py] = p.split(',').map(Number);
-            const xPerc = (px / width) * 100;
-            const yPerc = (py / height) * 100;
-            return `${xPerc}% ${yPerc}%`;
+            return `${(px / width) * 100}% ${(py / height) * 100}%`;
           });
           return `polygon(${pArray.join(', ')})`;
         }
         return 'inset(0%)';
-      default:
-        return 'inset(0%)';
+      default: return 'inset(0%)';
     }
   };
 
   return (
     <div 
-      className={`relative w-full overflow-hidden flex items-center justify-center bg-slate-50 ${className}`}
+      className={`relative w-full overflow-hidden flex items-center justify-center bg-slate-100 ${className}`}
       style={{ aspectRatio }}
     >
-      {/* Decorative Background Pattern */}
-      <div className="absolute inset-0 opacity-10" style={{ 
-        backgroundImage: 'radial-gradient(#6366f1 1px, transparent 0)',
-        backgroundSize: '20px 20px'
-      }}></div>
-      
-      {/* The Dynamic Shape */}
+      {/* Background Visualizer */}
       <div 
-        className="w-full h-full shadow-inner transition-all duration-500 flex flex-col items-center justify-center p-4 text-center group-hover:scale-105"
+        className="w-full h-full relative shadow-inner overflow-hidden flex items-center justify-center transition-all duration-700"
         style={{ 
           clipPath: getClipPath(),
-          background: template.thumbnail ? `url(${template.thumbnail}) center/cover no-repeat` : 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+          background: defaultBackdrop 
+            ? `url(${defaultBackdrop}) center/cover no-repeat` 
+            : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
         }}
       >
-        {/* If no thumbnail, show high-fidelity placeholder content */}
-        {!template.thumbnail && (
-          <div className="space-y-1 animate-in fade-in zoom-in duration-700">
-            <h4 className="text-white text-[10px] font-black uppercase tracking-widest drop-shadow-md">{name}</h4>
-            <div className="w-8 h-0.5 bg-white/50 mx-auto rounded-full"></div>
-            <p className="text-white/60 text-[8px] font-bold uppercase tracking-tighter">Design Preset</p>
+        {/* If no backdrop, show the name centered with better contrast */}
+        {!defaultBackdrop && (
+          <div className="relative z-10 p-4 text-center max-w-[80%] flex flex-col items-center gap-1.5 transform group-hover:scale-110 transition-transform">
+             <div className="p-2 bg-white/20 backdrop-blur-lg rounded-full mb-1">
+                {getCategoryIcon()}
+             </div>
+             <h4 className="text-white text-[12px] font-black uppercase leading-tight tracking-normal drop-shadow-lg">{name}</h4>
+             <div className="h-0.5 w-6 bg-white/40 rounded-full"></div>
+             <p className="text-white/70 text-[7px] font-bold uppercase tracking-widest">{category || 'Design Preset'}</p>
           </div>
         )}
-        
-        {/* Subtle Inner Glow */}
-        <div className="absolute inset-0 border border-white/10 pointer-events-none"></div>
-      </div>
 
-      {/* Modern Badge for Aspect Ratio / Type */}
-      <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/20 backdrop-blur-md rounded-lg border border-white/10">
-         <span className="text-[7px] font-black text-white uppercase tracking-widest">{width}x{height}</span>
+        {/* --- DYNAMIC SLOT VISUALIZER --- */}
+        {/* We use percentage positioning to ensure slots align correctly regardless of scale */}
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          {(imageSlots || []).map((slot, idx) => {
+            const left = (slot.x / width) * 100;
+            const top = (slot.y / height) * 100;
+            const w = (slot.width / width) * 100;
+            const h = (slot.height / height) * 100;
+            const isCircle = slot.shape === 'circle';
+
+            return (
+              <div 
+                key={slot.id || idx}
+                style={{
+                  position: 'absolute',
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  width: `${w}%`,
+                  height: `${h}%`,
+                  borderRadius: isCircle ? '50%' : '8px',
+                }}
+                className="bg-white/30 backdrop-blur-[2px] border border-white/50 flex items-center justify-center animate-in zoom-in fade-in duration-1000"
+              >
+                <FiImage className="text-white/60 text-[8px]" />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Subtle Overlay Pattern to make it look technical/blueprint */}
+        <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" style={{ 
+          backgroundImage: 'radial-gradient(#ffffff 1px, transparent 0)',
+          backgroundSize: '12px 12px'
+        }}></div>
+
+        {/* Modern Label */}
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/20 to-transparent">
+           <div className="flex items-center justify-between">
+              <span className="text-[6px] font-black text-white/50 uppercase tracking-widest">{width} x {height}</span>
+              <span className="text-[6px] font-black text-white/50 uppercase tracking-widest px-1.5 py-0.5 bg-black/10 rounded-sm">{imageSlots.length} Slots</span>
+           </div>
+        </div>
       </div>
     </div>
   );
