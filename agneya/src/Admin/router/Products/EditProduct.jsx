@@ -7,11 +7,7 @@ import ProductVariationsManager from './ProductVariationsManager';
 import BulkPricingManager from './BulkPricingManager';
 
 const EditProduct = () => {
-  const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
-    // #region agent log
-    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-  };
+
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -105,13 +101,7 @@ const EditProduct = () => {
       
       if (response.data.success) {
         const product = response.data.data;
-        sendDebugLog('H2', 'EditProduct.jsx:fetchProductDetails', 'Loaded product for edit', {
-          hasBaseModelId: !!product?.baseModelId,
-          customizationType: product?.customizationType || 'None',
-          hasShapeConfig: !!product?.shapeConfig,
-          hasCanvasConfig: !!product?.canvasConfig,
-          hasBlankFrontImage: !!product?.blankFrontImage
-        });
+
         setBasicInfo({
           name: product.name,
           description: product.description,
@@ -164,14 +154,7 @@ const EditProduct = () => {
 
     const errorMessage = validatePayload();
     if (errorMessage) {
-      sendDebugLog('H4', 'EditProduct.jsx:handleUpdateProduct', 'Update payload validation failed', {
-        errorMessage,
-        isCustomizable: !!basicInfo.isCustomizable,
-        customizationType: basicInfo.customizationType || 'None',
-        hasBaseModelId: !!basicInfo.baseModelId,
-        hasBase2dModel: !!basicInfo.baseModelId,
-        hasShapeConfig: !!basicInfo.shapeConfig
-      });
+
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;

@@ -6,11 +6,7 @@ import ProductVariationsManager from './ProductVariationsManager';
 import BulkPricingManager from './BulkPricingManager';
 
 const CreateProduct = () => {
-  const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
-    // #region agent log
-    fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-  };
+
 
   // 1. Master State for Basic Product Info
   const [basicInfo, setBasicInfo] = useState({
@@ -124,14 +120,7 @@ const CreateProduct = () => {
 
     const errorMessage = validatePayload();
     if (errorMessage) {
-      sendDebugLog('H4', 'CreateProduct.jsx:handlePublishProduct', 'Create payload validation failed', {
-        errorMessage,
-        isCustomizable: !!basicInfo.isCustomizable,
-        customizationType: basicInfo.customizationType || 'None',
-        hasBaseModelId: !!basicInfo.baseModelId,
-        hasBase2dModel: !!basicInfo.baseModelId,
-        hasShapeConfig: !!basicInfo.shapeConfig
-      });
+
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -213,16 +202,7 @@ const CreateProduct = () => {
 
       // Secure Administrative API Request
       const token = localStorage.getItem('adminToken');
-      sendDebugLog('H5', 'CreateProduct.jsx:handlePublishProduct', 'Submitting create request', {
-        customizationType: basicInfo.customizationType || 'None',
-        isCustomizable: !!basicInfo.isCustomizable,
-        hasBaseModelId: !!basicInfo.baseModelId,
-        hasShapeConfig: !!basicInfo.shapeConfig,
-        hasCanvasConfig: !!basicInfo.canvasConfig,
-        hasBase2dModel: !!basicInfo.baseModelId,
-        has3dFile: !!base3DModelFile,
-        galleryCount: galleryImages.length
-      });
+
       const response = await axios.post('/api/admin/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -237,10 +217,7 @@ const CreateProduct = () => {
       
     } catch (err) {
       console.error('Submission error:', err);
-      sendDebugLog('H5', 'CreateProduct.jsx:handlePublishProduct:catch', 'Create request failed', {
-        status: err?.response?.status || null,
-        hasServerMessage: !!(err?.response?.data?.message || err?.response?.data?.error || err?.response?.data?.debugError)
-      });
+
       const backendMessage = err.response?.data?.debugError || err.response?.data?.message || err.response?.data?.error;
       setGlobalError(backendMessage || 'Archive synchronization failure. Check network connectivity.');
       window.scrollTo({ top: 0, behavior: 'smooth' });
