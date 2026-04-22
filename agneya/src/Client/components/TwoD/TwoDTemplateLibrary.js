@@ -6,7 +6,7 @@
 
 export const TICKER_ID_MUG_WRAP = 'MUG_WRAP_11OZ';
 
-export const TWOD_TEMPLATES = {
+export const mug = {
   // --- 1. EXISTING TEMPLATES (RETAINED) ---
 
   [TICKER_ID_MUG_WRAP]: {
@@ -397,8 +397,10 @@ export const TWOD_TEMPLATES = {
   }
 };
 
-export const getTemplateById = (id) => TWOD_TEMPLATES[id] || null;
+export const getTemplateById = (id) => mug[id] || null;
 
-export const getAllTemplates = () => Object.values(TWOD_TEMPLATES);
+export const getAllTemplates = () => Object.values(mug);
 
-export const getTemplatesByCategory = (category) => Object.values(TWOD_TEMPLATES).filter(t => t.category === category);
+export const getTemplatesByCategory = (category) => Object.values(mug).filter(t => t.category === category);
+
+export const TWOD_TEMPLATES = mug;

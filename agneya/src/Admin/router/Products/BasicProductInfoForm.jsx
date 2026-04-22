@@ -446,18 +446,17 @@ const BasicProductInfoForm = ({
                   <div className="space-y-6">
                     <select
                       onChange={(e) => {
-                        const selected = TWOD_TEMPLATES[e.target.value];
-                        select2DTemplate(selected);
+                        const category = e.target.value;
+                        const defaultTemplate = Object.values(TWOD_TEMPLATES).find(t => t.category === category);
+                        select2DTemplate(defaultTemplate);
                       }}
-                      value={formData.base2DTemplateId || ''}
+                      value={TWOD_TEMPLATES[formData.base2DTemplateId]?.category || ''}
                       className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
                     >
-                      <option value="">-- Choose a Product Template --</option>
-                      {Object.values(TWOD_TEMPLATES)
-                        .filter(template => !formData.category || template.category === formData.category)
-                        .map(template => (
-                        <option key={template.id} value={template.id}>
-                          {template.name} ({template.category})
+                      <option value="">-- Choose a Product Model --</option>
+                      {Array.from(new Set(Object.values(TWOD_TEMPLATES).map(t => t.category))).map(category => (
+                        <option key={category} value={category}>
+                          {category} Standard
                         </option>
                       ))}
                     </select>
@@ -503,7 +502,6 @@ const BasicProductInfoForm = ({
 
                 <div className="flex flex-wrap gap-6 pt-2">
                   {Object.values(TWOD_TEMPLATES)
-                    .filter(template => !formData.category || template.category === formData.category)
                     .map((template) => {
                     const associatedItem = (formData.linkedTemplates || []).find(t => (typeof t === 'string' ? t : t.id) === template.id);
                     const isAssociated = !!associatedItem;
