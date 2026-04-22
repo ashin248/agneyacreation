@@ -407,6 +407,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
     const [activeStudioView, setActiveStudioView] = useState('3D'); // '2D' or '3D'
+    const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
+    const effectiveMockupProfile = activeTemplate?.mockupProfile || product?.mockupProfile;
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
@@ -1444,7 +1446,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     }}>
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2] overflow-hidden' : (product?.mockupProfile === 'mug-wrap' ? 'w-[90%] max-w-[900px] aspect-[2.22]' : 'aspect-[5/6] overflow-hidden')} h-full flex items-center justify-center shadow-2xl rounded-2xl sm:rounded-3xl bg-white group transition-all duration-700`}>
+                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'aspect-[5/6]')} h-full flex items-center justify-center group transition-all duration-700`}>
                                                     
                                                     {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                                                     {product?.phoneMask && (
