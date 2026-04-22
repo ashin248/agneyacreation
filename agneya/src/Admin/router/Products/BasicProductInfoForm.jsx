@@ -22,7 +22,7 @@ const BasicProductInfoForm = ({
         ...prev,
         canvasConfig: null,
         shapeConfig: null,
-        baseModelId: ''
+        base2DTemplateId: ''
       }));
       return;
     }
@@ -30,7 +30,8 @@ const BasicProductInfoForm = ({
       ...prev,
       canvasConfig: template.canvasConfig,
       shapeConfig: template.shapeConfig,
-      baseModelId: template.id
+      base2DTemplateId: template.id,
+      blankFrontImageUrl: template.defaultBackdrop || template.thumbnail || ''
     }));
     sendDebugLog('H2', 'BasicProductInfoForm.jsx:select2DTemplate', 'Selected 2D code template', {
       templateId: template.id,
@@ -56,7 +57,7 @@ const BasicProductInfoForm = ({
       } else if (value === '3D') {
         // Clean 2D
         setBase2DImageFile && setBase2DImageFile(null);
-        setFormData(prev => ({ ...prev, baseModelId: '', canvasConfig: null, shapeConfig: null }));
+        setFormData(prev => ({ ...prev, base2DTemplateId: '', canvasConfig: null, shapeConfig: null }));
       } else if (value === 'Both') {
           // Keep both accessible; baseModelId will track the primary selector
       } else if (value === 'None') {
@@ -192,6 +193,16 @@ const BasicProductInfoForm = ({
       ...prev,
       [name]: checked,
     }));
+  };
+
+  const toggleLinkedTemplate = (templateId) => {
+    setFormData(prev => {
+      const current = prev.linkedTemplates || [];
+      const next = current.includes(templateId)
+        ? current.filter(id => id !== templateId)
+        : [...current, templateId];
+      return { ...prev, linkedTemplates: next };
+    });
   };
 
   return (
@@ -455,7 +466,7 @@ const BasicProductInfoForm = ({
                         const selected = TWOD_TEMPLATES[e.target.value];
                         select2DTemplate(selected);
                       }}
-                      value={formData.baseModelId || ''}
+                      value={formData.base2DTemplateId || ''}
                       className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
                     >
                       <option value="">-- Choose a Product Template --</option>
@@ -467,10 +478,10 @@ const BasicProductInfoForm = ({
                     </select>
 
                     {/* Smart Thumbnail Preview */}
-                    {formData.baseModelId && TWOD_TEMPLATES[formData.baseModelId] && (
+                    {formData.base2DTemplateId && TWOD_TEMPLATES[formData.base2DTemplateId] && (
                       <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
                         {(() => {
-                          const activeTemplate = TWOD_TEMPLATES[formData.baseModelId];
+                          const activeTemplate = TWOD_TEMPLATES[formData.base2DTemplateId];
                           return (
                             <div className="w-full h-full relative group">
                               <img 
@@ -536,6 +547,65 @@ const BasicProductInfoForm = ({
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* DESIGN GALLERY ASSOCIATION - Multiple 2D Templates */}
+            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
+              <div key="gallery-association-block" className="mt-8 pt-8 border-t border-blue-100 animate-in fade-in duration-700">
+                <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <FiGrid size={14} />
+                  Associated Design Gallery Templates
+                </label>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {Object.values(TWOD_TEMPLATES).map((template) => {
+                    const isSelected = (formData.linkedTemplates || []).includes(template.id);
+                    return (
+                      <div 
+                        key={template.id}
+                        onClick={() => toggleLinkedTemplate(template.id)}
+                        className={`relative group cursor-pointer transition-all duration-300 rounded-[24px] border-2 overflow-hidden ${
+                          isSelected ? 'border-blue-600 bg-blue-50/50 shadow-xl shadow-blue-500/10 scale-[1.02]' : 'border-gray-100 bg-white hover:border-blue-200'
+                        }`}
+                      >
+                        {/* Thumbnail */}
+                        <div className="aspect-square relative overflow-hidden bg-gray-50">
+                          <img 
+                            src={template.thumbnail} 
+                            alt={template.name} 
+                            className={`w-full h-full object-cover transition-transform duration-700 ${isSelected ? 'scale-110' : 'group-hover:scale-105'}`}
+                          />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-blue-600/10 backdrop-blur-[2px] flex items-center justify-center">
+                              <div className="bg-blue-600 text-white p-2 rounded-full shadow-lg animate-in zoom-in duration-300">
+                                <FiCheckCircle size={20} />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Title Hub */}
+                        <div className="p-3">
+                          <p className="text-[10px] font-black text-blue-900 uppercase tracking-tight truncate mb-1">{template.name}</p>
+                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{template.category}</p>
+                        </div>
+
+                        {/* Checkbox Mask */}
+                        <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isSelected ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
+                           {isSelected && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
+                   <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-1">Configuration Hint:</p>
+                   <p className="text-[11px] text-blue-700 font-bold leading-relaxed">
+                     Selected templates will appear as a gallery on the product page. Users can pick one to pre-load a design theme into the editor.
+                   </p>
+                </div>
               </div>
             )}
 

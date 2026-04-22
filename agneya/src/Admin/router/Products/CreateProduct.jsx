@@ -25,9 +25,11 @@ const CreateProduct = () => {
     customizationType: 'None',
     originalPrice: '',
     baseModelId: '',
+    base2DTemplateId: '',
     shapeConfig: null,
     canvasConfig: null,
     blankFrontImageUrl: '',
+    linkedTemplates: [],
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -84,8 +86,12 @@ const CreateProduct = () => {
     if (basicInfo.basePrice === '' || Number(basicInfo.basePrice) < 0) return "Valid base value is required.";
     if (basicInfo.isCustomizable) {
       if (!basicInfo.customizationType || basicInfo.customizationType === 'None') return "Design framework type is required.";
-      if (basicInfo.customizationType === '2D' && !basicInfo.baseModelId) return "Select a 2D template from library.";
+      if (basicInfo.customizationType === '2D' && !basicInfo.base2DTemplateId) return "Select a 2D template from library.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
+      if (basicInfo.customizationType === 'Both') {
+        if (!basicInfo.base2DTemplateId) return "2D Template selection is required for Dual-Mode.";
+        if (!base3DModelFile && !basicInfo.baseModelId) return "3D Model selection is required for Dual-Mode.";
+      }
     }
 
     // Variations validation
@@ -150,6 +156,9 @@ const CreateProduct = () => {
       if (basicInfo.baseModelId) {
         formData.append('baseModelId', basicInfo.baseModelId);
       }
+      if (basicInfo.base2DTemplateId) {
+        formData.append('base2DTemplateId', basicInfo.base2DTemplateId);
+      }
       if (basicInfo.shapeConfig) {
         formData.append('shapeConfig', JSON.stringify(basicInfo.shapeConfig));
       }
@@ -159,6 +168,9 @@ const CreateProduct = () => {
       // Provide the fallback template blank image URL if admin hasn't provided a custom one
       if (basicInfo.blankFrontImageUrl && !base2DImageFile) {
         formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
+      }
+      if (Array.isArray(basicInfo.linkedTemplates)) {
+        formData.append('linkedTemplates', JSON.stringify(basicInfo.linkedTemplates));
       }
 
       // Arrays formatting and appending

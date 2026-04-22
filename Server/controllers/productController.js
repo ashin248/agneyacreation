@@ -132,6 +132,15 @@ exports.createProduct = async (req, res) => {
       }
     }
 
+    let linkedTemplates = [];
+    if (req.body.linkedTemplates) {
+      try {
+        linkedTemplates = JSON.parse(req.body.linkedTemplates);
+      } catch (e) {
+        console.warn('Malformed linkedTemplates received:', req.body.linkedTemplates);
+      }
+    }
+
     // Convert boolean string
     const bulkActive = isBulkEnabled === 'true' || isBulkEnabled === true;
 
@@ -246,6 +255,7 @@ exports.createProduct = async (req, res) => {
       isCustomizable: isCustomizable === 'true' || isCustomizable === true,
       customizationType: customizationType || 'None',
       baseModelId: req.body.baseModelId || null,
+      base2DTemplateId: req.body.base2DTemplateId || null,
       model3d: base3DModelUrl,
       blankFrontImage: blankFrontImageUrl || req.body.blankFrontImage || null,
       frontMaskImage: frontMaskImageUrl || req.body.frontMaskImage || null,
@@ -255,6 +265,7 @@ exports.createProduct = async (req, res) => {
       backOverlayImage: backOverlayImageUrl || req.body.backOverlayImage || null,
       shapeConfig: shapeConfig,
       canvasConfig: req.body.canvasConfig ? JSON.parse(req.body.canvasConfig) : null,
+      linkedTemplates: linkedTemplates,
       isActive: true, // Auto-active default
     };
 
@@ -364,6 +375,9 @@ exports.updateProduct = async (req, res) => {
         if (req.body.canvasConfig) {
            try { updateData.canvasConfig = JSON.parse(req.body.canvasConfig); } catch(e){}
         }
+        if (req.body.linkedTemplates) {
+           try { updateData.linkedTemplates = JSON.parse(req.body.linkedTemplates); } catch(e){}
+        }
         
         if (req.body.blankFrontImage) updateData.blankFrontImage = req.body.blankFrontImage;
         if (req.body.frontMaskImage) updateData.frontMaskImage = req.body.frontMaskImage;
@@ -371,6 +385,8 @@ exports.updateProduct = async (req, res) => {
         if (req.body.blankBackImage) updateData.blankBackImage = req.body.blankBackImage;
         if (req.body.backMaskImage) updateData.backMaskImage = req.body.backMaskImage;
         if (req.body.backOverlayImage) updateData.backOverlayImage = req.body.backOverlayImage;
+        if (req.body.base2DTemplateId) updateData.base2DTemplateId = req.body.base2DTemplateId;
+        if (req.body.baseModelId) updateData.baseModelId = req.body.baseModelId;
 
         let galleryImageUrls = req.body.existingGalleryImages ? JSON.parse(req.body.existingGalleryImages) : (product.galleryImages || []);
         

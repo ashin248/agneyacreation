@@ -117,6 +117,10 @@ const productSchema = new mongoose.Schema(
       type: String, // ID referencing the front-end ProductLibrary.jsx
       default: null
     },
+    base2DTemplateId: {
+      type: String, // ID referencing the front-end TwoDTemplateLibrary.js
+      default: null
+    },
     model3d: {
       type: String, // GLB URL (Legacy/Custom)
       default: null
@@ -155,6 +159,10 @@ const productSchema = new mongoose.Schema(
       offsetX: { type: Number, default: 0 },
       offsetY: { type: Number, default: 0 },
       scale: { type: Number, default: 1 }
+    },
+    linkedTemplates: {
+      type: [String],
+      default: []
     },
     shapeConfig: { 
       type: mongoose.Schema.Types.Mixed, 

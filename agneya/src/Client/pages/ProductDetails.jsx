@@ -23,6 +23,8 @@ import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
 import StudioOverlay from '../components/StudioOverlay';
+import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+import { Grid, Check } from 'lucide-react';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -40,6 +42,7 @@ const ProductDetails = () => {
     const [overrideImage, setOverrideImage] = useState(null);
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const [initialStudioMode, setInitialStudioMode] = useState('self');
+    const [activeTemplateId, setActiveTemplateId] = useState(null);
 
     const { currentUser } = useAuth();
     
@@ -516,6 +519,56 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
+                {/* --- TEMPLATE GALLERY SECTION --- */}
+                {product?.isCustomizable && product?.linkedTemplates?.length > 0 && (
+                    <div className="mt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                        <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-4">
+                            <div className="space-y-2">
+                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500">Design Selection</span>
+                                <h3 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none">Pre-Designed Themes</h3>
+                                <p className="text-gray-500 font-medium max-w-xl">Choose a theme to start with. Every design is fully customizable after selection.</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                            {product.linkedTemplates.map((tid) => {
+                                const template = TWOD_TEMPLATES[tid];
+                                if (!template) return null;
+                                return (
+                                    <div 
+                                        key={tid}
+                                        onClick={() => {
+                                            setActiveTemplateId(tid);
+                                            requireLogin(() => {
+                                                setInitialStudioMode('self');
+                                                setCustomizingProduct(product);
+                                            });
+                                        }}
+                                        className="group relative cursor-pointer"
+                                    >
+                                        <div className="aspect-[3/4] bg-white rounded-[32px] overflow-hidden border-2 border-slate-50 shadow-sm transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-indigo-100 group-hover:translate-y-[-8px] group-hover:border-indigo-100">
+                                            <img 
+                                                src={template.thumbnail} 
+                                                alt={template.name} 
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+                                                <button className="w-full py-3 bg-white text-indigo-600 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                                    Use Template
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 px-2">
+                                            <h4 className="text-[11px] font-black uppercase tracking-tight text-gray-900 truncate">{template.name}</h4>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-indigo-500/60">{template.category}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Related Products Section */}
                 {relatedProducts.length > 0 && (
                     <div className="mt-32 pt-16 border-t border-gray-100">
@@ -572,6 +625,7 @@ const ProductDetails = () => {
                 product={customizingProduct} 
                 requireLogin={requireLogin}
                 initialMode={initialStudioMode}
+                activeTemplateId={activeTemplateId}
             />
         </div>
     );

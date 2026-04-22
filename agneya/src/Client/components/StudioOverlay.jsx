@@ -399,7 +399,7 @@ function Model3D({
     );
 };
 
-const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self' }) => {
+const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self', activeTemplateId = null }) => {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -577,8 +577,12 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
-        const baseWidth = product?.canvasConfig?.width || 500;
-        const baseHeight = product?.canvasConfig?.height || 600;
+        const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
+        const effectiveCanvasConfig = activeTemplate?.canvasConfig || product?.canvasConfig;
+        const effectiveShapeConfig = activeTemplate?.shapeConfig || product?.shapeConfig;
+
+        const baseWidth = effectiveCanvasConfig?.width || 500;
+        const baseHeight = effectiveCanvasConfig?.height || 600;
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: baseWidth,
@@ -588,11 +592,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         });
         
         // --- 2D CLIPPING MAGIC: Apply SVG shape dynamically ---
-        if (product?.shapeConfig && !product?.phoneMask) {
+        if (effectiveShapeConfig && !product?.phoneMask) {
             let clipShape;
-            const w = product.canvasConfig?.width || baseWidth;
-            const h = product.canvasConfig?.height || baseHeight;
-            const { type, radius, width: sWidth, height: sHeight, rx, points } = product.shapeConfig;
+            const w = effectiveCanvasConfig?.width || baseWidth;
+            const h = effectiveCanvasConfig?.height || baseHeight;
+            const { type, radius, width: sWidth, height: sHeight, rx, points } = effectiveShapeConfig;
             
             if (type === 'circle') {
                 clipShape = new fabric.Circle({
@@ -749,7 +753,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         } else {
             resetStudio(); // Clean up on close to be safe
         }
-    }, [product?._id, isOpen]);
+    }, [product?._id, isOpen, activeTemplateId]);
 
     const [isDrawing, setIsDrawing] = useState(false);
 
