@@ -12,7 +12,6 @@ export const TWOD_TEMPLATES = {
     name: 'Standard Mug Wrap (11oz)',
     category: 'Mug',
     mockupProfile: 'mug-wrap',
-    thumbnail: 'https://i.ibb.co/nbWvC7M/case-overlay.png', // Placeholder or dedicated thumb
     canvasConfig: {
       width: 500,
       height: 225, // 200mm x 90mm => 2.22 aspect ratio. 500/225 = 2.22
@@ -35,7 +34,6 @@ export const TWOD_TEMPLATES = {
     id: 'BUSINESS_CARD_STD',
     name: 'Business Card (3.5" x 2")',
     category: 'Stationery',
-    thumbnail: '/thumbnails/business_card.png',
     canvasConfig: {
       width: 525, // 3.5 inches
       height: 300, // 2 inches

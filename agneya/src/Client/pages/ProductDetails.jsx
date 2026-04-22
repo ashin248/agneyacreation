@@ -24,6 +24,7 @@ import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
 import StudioOverlay from '../components/StudioOverlay';
 import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
 import { Grid, Check } from 'lucide-react';
 
 const ProductDetails = () => {
@@ -547,11 +548,7 @@ const ProductDetails = () => {
                                         className="group relative cursor-pointer"
                                     >
                                         <div className="aspect-[3/4] bg-white rounded-[32px] overflow-hidden border-2 border-slate-50 shadow-sm transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-indigo-100 group-hover:translate-y-[-8px] group-hover:border-indigo-100">
-                                            <img 
-                                                src={template.thumbnail} 
-                                                alt={template.name} 
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
+                                            <TemplateThumbnail template={template} className="h-full" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
                                                 <button className="w-full py-3 bg-white text-indigo-600 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
                                                     Use Template

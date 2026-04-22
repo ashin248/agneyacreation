@@ -1,7 +1,8 @@
 import React from 'react';
 import { MODELS } from '../../../Client/components/Three/ProductLibrary';
 import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
-import { FiCheckCircle, FiGrid, FiImage, FiPlus, FiTrash2, FiBox, FiPackage, FiAlertCircle } from 'react-icons/fi';
+import TemplateThumbnail from '../../../Client/components/TwoD/TemplateThumbnail';
+import { FiCheckCircle, FiGrid, FiImage, FiPlus, FiTrash2, FiBox, FiPackage, FiAlertCircle, FiCheck } from 'react-icons/fi';
 
 const BasicProductInfoForm = ({ 
   formData, setFormData, 
@@ -124,53 +125,6 @@ const BasicProductInfoForm = ({
       newPreviews.splice(index, 1);
       setImagePreviews(newPreviews);
     }
-  };
-
-  const renderThumbnail = (model) => {
-    const generateTextThumbnail = (name) => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return '';
-
-        ctx.fillStyle = '#1e3a8a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = '700 30px Arial';
-
-        const words = String(name || '2D Template').split(' ');
-        const lines = [];
-        let line = '';
-        words.forEach((word) => {
-          const testLine = line ? `${line} ${word}` : word;
-          if (ctx.measureText(testLine).width > 420) {
-            lines.push(line);
-            line = word;
-          } else {
-            line = testLine;
-          }
-        });
-        if (line) lines.push(line);
-
-        const maxLines = 4;
-        const clipped = lines.slice(0, maxLines);
-        const lineHeight = 40;
-        const startY = (canvas.height - (clipped.length - 1) * lineHeight) / 2;
-        clipped.forEach((text, index) => {
-          ctx.fillText(text, canvas.width / 2, startY + index * lineHeight);
-        });
-        return canvas.toDataURL('image/png');
-      } catch {
-        return '';
-      }
-    };
-
-    const displayUrl = model?.thumbnail || generateTextThumbnail(model?.name);
-    return <img src={displayUrl} alt={model?.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.target.src = generateTextThumbnail(model?.name); }} />;
   };
 
   const handle3DModelChange = (e) => {
@@ -484,11 +438,7 @@ const BasicProductInfoForm = ({
                           const activeTemplate = TWOD_TEMPLATES[formData.base2DTemplateId];
                           return (
                             <div className="w-full h-full relative group">
-                              <img 
-                                src={activeTemplate.thumbnail} 
-                                alt={activeTemplate.name} 
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                              />
+                              <TemplateThumbnail template={activeTemplate} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                               <div className="absolute top-2 right-2 bg-blue-600 text-white p-1.5 rounded-full shadow-lg">
                                 <FiCheckCircle size={14} />
                               </div>
@@ -558,37 +508,23 @@ const BasicProductInfoForm = ({
                   Associated Design Gallery Templates
                 </label>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="flex flex-wrap gap-4 pt-2">
                   {Object.values(TWOD_TEMPLATES).map((template) => {
-                    const isSelected = (formData.linkedTemplates || []).includes(template.id);
+                    const isAssociated = Array.isArray(formData.linkedTemplates) && formData.linkedTemplates.includes(template.id);
                     return (
                       <div 
                         key={template.id}
                         onClick={() => toggleLinkedTemplate(template.id)}
-                        className={`relative group cursor-pointer transition-all duration-300 rounded-[24px] border-2 overflow-hidden ${
-                          isSelected ? 'border-blue-600 bg-blue-50/50 shadow-xl shadow-blue-500/10 scale-[1.02]' : 'border-gray-100 bg-white hover:border-blue-200'
-                        }`}
+                        className={`group relative w-32 cursor-pointer transition-all ${isAssociated ? 'scale-100' : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:scale-95'}`}
                       >
-                        {/* Thumbnail */}
-                        <div className="aspect-square relative overflow-hidden bg-gray-50">
-                          <img 
-                            src={template.thumbnail} 
-                            alt={template.name} 
-                            className={`w-full h-full object-cover transition-transform duration-700 ${isSelected ? 'scale-110' : 'group-hover:scale-105'}`}
-                          />
-                          {isSelected && (
-                            <div className="absolute inset-0 bg-blue-600/10 backdrop-blur-[2px] flex items-center justify-center">
-                              <div className="bg-blue-600 text-white p-2 rounded-full shadow-lg animate-in zoom-in duration-300">
-                                <FiCheckCircle size={20} />
-                              </div>
+                        <div className={`aspect-[3/4] bg-white rounded-3xl overflow-hidden border-2 transition-all ${isAssociated ? 'border-indigo-600 shadow-xl shadow-indigo-500/20' : 'border-slate-100'}`}>
+                          <TemplateThumbnail template={template} className="h-full" />
+                          
+                          {isAssociated && (
+                            <div className="absolute top-2 right-2 bg-indigo-600 text-white p-1 rounded-full shadow-lg p-1.5 animate-in zoom-in duration-300">
+                              <FiCheck size={10} />
                             </div>
                           )}
-                        </div>
-
-                        {/* Title Hub */}
-                        <div className="p-3">
-                          <p className="text-[10px] font-black text-blue-900 uppercase tracking-tight truncate mb-1">{template.name}</p>
-                          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{template.category}</p>
                         </div>
 
                         {/* Checkbox Mask */}
