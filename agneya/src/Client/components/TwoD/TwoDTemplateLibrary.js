@@ -80,7 +80,7 @@ export const mug = {
   'MUG_LOVE_HEART_1PIC': {
     id: 'MUG_LOVE_HEART_1PIC',
     name: 'Heartfelt Love (1 Pic)',
-    category: 'Valentine',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -91,7 +91,7 @@ export const mug = {
   'MUG_VAL_COUPLE_DUO': {
     id: 'MUG_VAL_COUPLE_DUO',
     name: 'Better Together (2 Pics)',
-    category: 'Valentine',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -105,7 +105,7 @@ export const mug = {
   'MUG_LOVE_QUOTE_TEXT': {
     id: 'MUG_LOVE_QUOTE_TEXT',
     name: 'Love Quote (Text Only)',
-    category: 'Valentine',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -118,7 +118,7 @@ export const mug = {
   'MUG_SUPER_MOM': {
     id: 'MUG_SUPER_MOM',
     name: 'Super Mom (1 Pic)',
-    category: 'Parents',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -129,7 +129,7 @@ export const mug = {
   'MUG_WORLD_BEST_DAD': {
     id: 'MUG_WORLD_BEST_DAD',
     name: 'Worlds Best Dad (1 Pic)',
-    category: 'Parents',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -140,7 +140,7 @@ export const mug = {
   'MUG_PARENT_DUO': {
     id: 'MUG_PARENT_DUO',
     name: 'Mom & Dad Duo (2 Pics)',
-    category: 'Parents',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -156,7 +156,7 @@ export const mug = {
   'MUG_BESTIES_CIRCLE': {
     id: 'MUG_BESTIES_CIRCLE',
     name: 'BFF Circle (1 Pic)',
-    category: 'Friends',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -167,7 +167,7 @@ export const mug = {
   'MUG_SQUAD_GOALS_3PIC': {
     id: 'MUG_SQUAD_GOALS_3PIC',
     name: 'Squad Goals (3 Pics)',
-    category: 'Friends',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -182,7 +182,7 @@ export const mug = {
   'MUG_TRAVEL_BUDDIES': {
     id: 'MUG_TRAVEL_BUDDIES',
     name: 'Partners in Crime (2 Pics)',
-    category: 'Friends',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -198,7 +198,7 @@ export const mug = {
   'MUG_BEST_TEACHER': {
     id: 'MUG_BEST_TEACHER',
     name: 'Best Teacher (1 Photo)',
-    category: 'Teacher',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -209,7 +209,7 @@ export const mug = {
   'MUG_TEACHER_QUOTE': {
     id: 'MUG_TEACHER_QUOTE',
     name: 'Inspiration Teacher (Text Only)',
-    category: 'Teacher',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -222,7 +222,7 @@ export const mug = {
   'MUG_NEWBORN_WELCOME': {
     id: 'MUG_NEWBORN_WELCOME',
     name: 'Welcome Little One (1 Large Pic)',
-    category: 'Kids',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -233,7 +233,7 @@ export const mug = {
   'MUG_KIDS_BDAY_2PIC': {
     id: 'MUG_KIDS_BDAY_2PIC',
     name: 'Birthday Party (2 Pics)',
-    category: 'Kids',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -247,7 +247,7 @@ export const mug = {
   'MUG_LITTLE_STAR': {
     id: 'MUG_LITTLE_STAR',
     name: 'Twinkle Little Star (1 Pic)',
-    category: 'Kids',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -260,7 +260,7 @@ export const mug = {
   'MUG_COFFEE_BREW_TEXT': {
     id: 'MUG_COFFEE_BREW_TEXT',
     name: 'Freshly Brewed (Text Only)',
-    category: 'Coffee',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -271,7 +271,7 @@ export const mug = {
   'MUG_COFFEE_BEAN_1PIC': {
     id: 'MUG_COFFEE_BEAN_1PIC',
     name: 'Coffee Mornings (1 Photo)',
-    category: 'Coffee',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -282,7 +282,7 @@ export const mug = {
   'MUG_MORNING_VIBE_TEXT': {
     id: 'MUG_MORNING_VIBE_TEXT',
     name: 'Good Morning Vibe (Text Only)',
-    category: 'Coffee',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -295,7 +295,7 @@ export const mug = {
   'MUG_HOLIDAY_XMAS_1PIC': {
     id: 'MUG_HOLIDAY_XMAS_1PIC',
     name: 'Merry Christmas (1 Pic)',
-    category: 'Holidays',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -306,7 +306,7 @@ export const mug = {
   'MUG_NEWYEAR_TEXT': {
     id: 'MUG_NEWYEAR_TEXT',
     name: 'Happy New Year (Text Only)',
-    category: 'Holidays',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -317,7 +317,7 @@ export const mug = {
   'MUG_DIWALI_FESTIVE_1PIC': {
     id: 'MUG_DIWALI_FESTIVE_1PIC',
     name: 'Festive Lights (1 Pic)',
-    category: 'Holidays',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -330,7 +330,7 @@ export const mug = {
   'MUG_COLLAGE_4GRID': {
     id: 'MUG_COLLAGE_4GRID',
     name: 'Classic 4-Photo Grid',
-    category: 'Collage',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -346,7 +346,7 @@ export const mug = {
   'MUG_HORIZ_3STRIP': {
     id: 'MUG_HORIZ_3STRIP',
     name: 'Horizon 3-Strip',
-    category: 'Collage',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -361,7 +361,7 @@ export const mug = {
   'MUG_DUO_LARGE_RECT': {
     id: 'MUG_DUO_LARGE_RECT',
     name: 'Duo Masterpieces (2 Large)',
-    category: 'Collage',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -377,7 +377,7 @@ export const mug = {
   'MUG_ABSTRAC_MODERN_1PIC': {
     id: 'MUG_ABSTRAC_MODERN_1PIC',
     name: 'Modern Abstract (1 Pic)',
-    category: 'Artistic',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
@@ -388,7 +388,7 @@ export const mug = {
   'MUG_NATURE_ZEN_1PIC': {
     id: 'MUG_NATURE_ZEN_1PIC',
     name: 'Zen Nature (1 Pic)',
-    category: 'Artistic',
+    category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
