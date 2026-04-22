@@ -1879,7 +1879,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     <div className="flex justify-between items-center shrink-0 pt-2 text-[#0c0c2a]">
                         <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
                             <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 cursor-pointer">
-                                {activeStudioView === '2D' ? '2D STUDIO' : '3D STUDIO'} {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
+                                {activeStudioTab === '2D' ? '2D STUDIO' : '3D STUDIO'} {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
                             </h3>
                             <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Designer Canvas'}</span>
                         </div>

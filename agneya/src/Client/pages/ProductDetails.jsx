@@ -499,7 +499,10 @@ const ProductDetails = () => {
 
                             {/* Category Tabs */}
                             <div className="flex flex-wrap justify-center gap-2 mb-12 border-b border-slate-100 pb-8">
-                                {['All Designs', ...new Set(product.linkedTemplates.map(tid => TWOD_TEMPLATES[tid]?.category).filter(Boolean))].map(cat => (
+                                {['All Designs', ...new Set((product.linkedTemplates || []).map(t => {
+                                    const tid = typeof t === 'string' ? t : t?.id;
+                                    return TWOD_TEMPLATES[tid]?.category;
+                                }).filter(Boolean))].map(cat => (
                                     <button 
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
@@ -512,11 +515,13 @@ const ProductDetails = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                                 {product.linkedTemplates
-                                    .filter(tid => {
+                                    .filter(t => {
+                                        const tid = typeof t === 'string' ? t : t?.id;
                                         if (selectedCategory === 'All Designs') return true;
                                         return TWOD_TEMPLATES[tid]?.category === selectedCategory;
                                     })
-                                    .map((templateId) => {
+                                    .map((t) => {
+                                    const templateId = typeof t === 'string' ? t : t?.id;
                                     const template = TWOD_TEMPLATES[templateId];
                                     if (!template) return null;
                                     
