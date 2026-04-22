@@ -501,7 +501,8 @@ const ProductDetails = () => {
                             <div className="flex flex-wrap justify-center gap-2 mb-12 border-b border-slate-100 pb-8">
                                 {['All Designs', ...new Set((product.linkedTemplates || []).map(t => {
                                     const tid = typeof t === 'string' ? t : t?.id;
-                                    return TWOD_TEMPLATES[tid]?.category;
+                                    const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
+                                    return template?.category;
                                 }).filter(Boolean))].map(cat => (
                                     <button 
                                         key={cat}
@@ -518,11 +519,12 @@ const ProductDetails = () => {
                                     .filter(t => {
                                         const tid = typeof t === 'string' ? t : t?.id;
                                         if (selectedCategory === 'All Designs') return true;
-                                        return TWOD_TEMPLATES[tid]?.category === selectedCategory;
+                                        const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
+                                        return template?.category === selectedCategory;
                                     })
                                     .map((t) => {
                                     const templateId = typeof t === 'string' ? t : t?.id;
-                                    const template = TWOD_TEMPLATES[templateId];
+                                    const template = TWOD_TEMPLATES && TWOD_TEMPLATES[templateId];
                                     if (!template) return null;
                                     
                                     return (

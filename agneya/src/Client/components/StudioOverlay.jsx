@@ -649,46 +649,72 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             };
         }
 
-        // --- IMAGE SLOT VISUALIZER: Add placeholders for predefined slots ---
         if (activeTemplate?.imageSlots) {
             activeTemplate.imageSlots.forEach(slot => {
                 const isCircle = slot.shape === 'circle';
-                const slotRect = new fabric.Rect({
-                    left: slot.x,
-                    top: slot.y,
-                    width: slot.width,
-                    height: slot.height,
-                    fill: '#eef2ff',
-                    stroke: '#818cf8',
-                    strokeDashArray: [10, 5],
-                    strokeWidth: 2,
-                    rx: isCircle ? slot.width / 2 : (slot.rx || 0),
-                    ry: isCircle ? slot.height / 2 : (slot.ry || 0),
-                    selectable: true,
-                    hasControls: false, // Prevent resizing the "frame"
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    isSlot: true,
-                    slotId: slot.id,
-                    opacity: 0.8
-                });
+                const isHeart = slot.shape === 'heart';
+                
+                let slotGraphic;
+                
+                if (isHeart) {
+                    const heartPath = `M 0 10 A 10 10 0 0 1 20 10 A 10 10 0 0 1 40 10 Q 40 25 20 40 Q 0 25 0 10 Z`;
+                    slotGraphic = new fabric.Path(heartPath, {
+                        left: slot.x,
+                        top: slot.y,
+                        width: slot.width,
+                        height: slot.height,
+                        fill: '#fcfcfc',
+                        stroke: '#000000',
+                        strokeWidth: 1.5,
+                        selectable: true,
+                        hasControls: false,
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        isSlot: true,
+                        slotId: slot.id,
+                        opacity: 0.8
+                    });
+                    // Scale path to fit slot dimensions
+                    const scaleX = slot.width / slotGraphic.width;
+                    const scaleY = slot.height / slotGraphic.height;
+                    slotGraphic.set({ scaleX, scaleY });
+                } else {
+                    slotGraphic = new fabric.Rect({
+                        left: slot.x,
+                        top: slot.y,
+                        width: slot.width,
+                        height: slot.height,
+                        fill: '#fcfcfc',
+                        stroke: '#000000',
+                        strokeWidth: 1.5,
+                        rx: isCircle ? slot.width / 2 : (slot.rx || 0),
+                        ry: isCircle ? slot.height / 2 : (slot.ry || 0),
+                        selectable: true,
+                        hasControls: false,
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        isSlot: true,
+                        slotId: slot.id,
+                        opacity: 0.8
+                    });
+                }
 
                 // Add a visual indicator label
                 const label = new fabric.IText('ADD PHOTO', {
                     left: slot.x + slot.width / 2,
                     top: slot.y + slot.height / 2,
-                    fontSize: 14,
+                    fontSize: 10,
                     fontFamily: 'Inter',
                     fontWeight: '900',
-                    fill: '#4f46e5',
+                    fill: '#000000',
                     textAlign: 'center',
                     originX: 'center',
                     originY: 'center',
                     selectable: false,
-                    opacity: 0.6
+                    opacity: 0.2
                 });
 
-                canvas.add(slotRect);
+                canvas.add(slotGraphic);
                 canvas.add(label);
             });
         }
@@ -992,29 +1018,41 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             originY: 'top'
                         });
 
-                        // If slot is a circle, apply a clipPath to the image
-                        if (activeObj.rx > 0) {
-                            const clipPath = new fabric.Rect({
+                        // If slot is a circle or heart, apply a clipPath to the image
+                        const isCircle = activeObj.rx > 0 && activeObj.width === activeObj.height;
+                        const isHeart = activeObj.type === 'path'; // We used a path for hearts
+
+                        let clipPath;
+                        if (isHeart) {
+                            const heartPath = `M 0 10 A 10 10 0 0 1 20 10 A 10 10 0 0 1 40 10 Q 40 25 20 40 Q 0 25 0 10 Z`;
+                            clipPath = new fabric.Path(heartPath, {
                                 left: slotX,
                                 top: slotY,
                                 width: slotW,
                                 height: slotH,
-                                rx: activeObj.rx,
-                                ry: activeObj.ry,
-                                absolutePositioned: true,
+                                absolutePositioned: true
                             });
-                            img.set({ clipPath });
+                            const sX = slotW / clipPath.width;
+                            const sY = slotH / clipPath.height;
+                            clipPath.set({ scaleX: sX, scaleY: sY });
                         } else {
-                            // Rectangle clip path to ensure it doesn't bleed out of slot bounds if scaled up
-                            const clipPath = new fabric.Rect({
+                            clipPath = new fabric.Rect({
                                 left: slotX,
                                 top: slotY,
                                 width: slotW,
                                 height: slotH,
+                                rx: activeObj.rx || 0,
+                                ry: activeObj.ry || 0,
                                 absolutePositioned: true,
                             });
-                            img.set({ clipPath });
                         }
+                        
+                        img.set({ 
+                            clipPath,
+                            stroke: '#000000',
+                            strokeWidth: 2,
+                            strokeUniform: true
+                        });
 
                         // Remove the Slot and its label from canvas
                         const objectsToRemove = canvas.getObjects().filter(o => 

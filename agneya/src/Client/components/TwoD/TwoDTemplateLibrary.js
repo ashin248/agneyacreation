@@ -85,7 +85,7 @@ export const mug = {
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
     defaultBackdrop: '/assets/templates/valentines_heart_bg.png',
-    imageSlots: [{ id: 'heart_pic', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
+    imageSlots: [{ id: 'heart_pic', x: 160, y: 22, width: 180, height: 180, shape: 'heart' }]
   },
 
   'MUG_VAL_COUPLE_DUO': {
@@ -161,7 +161,7 @@ export const mug = {
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
     defaultBackdrop: '/assets/templates/besties_circle_bg.png',
-    imageSlots: [{ id: 'bff_pic', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
+    imageSlots: [{ id: 'bff_pic', x: 160, y: 22, width: 180, height: 180, shape: 'heart' }]
   },
 
   'MUG_SQUAD_GOALS_3PIC': {
@@ -252,7 +252,7 @@ export const mug = {
     canvasConfig: { width: 540, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 540, height: 225, rx: 0 },
     defaultBackdrop: '/assets/templates/little_star_bg.png',
-    imageSlots: [{ id: 'star_baby', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
+    imageSlots: [{ id: 'star_baby', x: 160, y: 22, width: 180, height: 180, shape: 'heart' }]
   },
 
   // --- 7. COFFEE LOVERS ---
