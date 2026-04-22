@@ -404,6 +404,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const { addToCart } = useCart();
     const navigate = useNavigate();
     const [activeStudioTab, setActiveStudioTab] = useState('3D_STUDIO');
+    const [designMode, setDesignMode] = useState(initialMode); // Track if user is designing or company
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
     const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
