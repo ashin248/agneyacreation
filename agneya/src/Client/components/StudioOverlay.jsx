@@ -657,34 +657,33 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     top: slot.y,
                     width: slot.width,
                     height: slot.height,
-                    fill: '#f1f5f9',
-                    stroke: '#94a3b8',
-                    strokeDashArray: [5, 5],
-                    strokeWidth: 1,
-                    rx: isCircle ? slot.width / 2 : 0,
-                    ry: isCircle ? slot.height / 2 : 0,
+                    fill: '#eef2ff',
+                    stroke: '#818cf8',
+                    strokeDashArray: [10, 5],
+                    strokeWidth: 2,
+                    rx: isCircle ? slot.width / 2 : (slot.rx || 0),
+                    ry: isCircle ? slot.height / 2 : (slot.ry || 0),
                     selectable: true,
                     hasControls: false, // Prevent resizing the "frame"
                     lockMovementX: true,
                     lockMovementY: true,
                     isSlot: true,
-                    slotId: slot.id
+                    slotId: slot.id,
+                    opacity: 0.8
                 });
 
                 // Add a visual indicator label
-                const label = new fabric.Textbox('ADD PHOTO', {
+                const label = new fabric.IText('ADD PHOTO', {
                     left: slot.x + slot.width / 2,
                     top: slot.y + slot.height / 2,
-                    width: slot.width,
-                    fontSize: 10,
+                    fontSize: 14,
                     fontFamily: 'Inter',
                     fontWeight: '900',
-                    fill: '#64748b',
+                    fill: '#4f46e5',
                     textAlign: 'center',
                     originX: 'center',
                     originY: 'center',
                     selectable: false,
-                    evented: false,
                     opacity: 0.6
                 });
 
@@ -1212,10 +1211,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             <style>{`
                 .pill-btn { border-radius: 9999px; transition: all 0.3s; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; font-size: 10px; }
                 .floating-card { background: white; border-radius: 42px; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
-                .accent-btn { background: #0c0c2a; color: white; }
-                .accent-btn:hover { background: #1a1a4a; }
+                .accent-btn { background: #4f46e5; color: white; }
+                .accent-btn:hover { background: #4338ca; }
                 input[type=range] { -webkit-appearance: none; background: #f0f1f4; height: 6px; border-radius: 3px; }
-                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #0c0c2a; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #4f46e5; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -1248,7 +1247,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
                             {variations.map((v, i) => (
                                 <div key={v.id} className="flex items-center">
-                                    <button onClick={() => switchVariation(v.id)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeVariationId === v.id ? 'bg-[#0c0c2a] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}>
+                                    <button onClick={() => switchVariation(v.id)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeVariationId === v.id ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}>
                                         <span>{v.name}</span>
                                         {variations.length > 1 && (
                                             <FiX onClick={(e) => { e.stopPropagation(); removeVariation(v.id); }} className="hover:text-rose-500 cursor-pointer" />
@@ -1281,7 +1280,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                             <FiSmile size={20} className="text-slate-400 group-hover:text-white transition-colors" />
                                             <span className="text-[9px] font-black uppercase tracking-widest">Add Art</span>
                                         </button>
-                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-20 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all group shadow-sm ${isDrawing ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
+                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-20 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all group shadow-sm ${isDrawing ? 'bg-[#4f46e5] text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
                                             <FiZap size={20} className={isDrawing ? 'text-white' : 'text-slate-400 group-hover:text-[#0c0c2a]'} />
                                             <span className="text-[9px] font-black uppercase tracking-widest">{isDrawing ? 'Stop Ink' : 'Ink Mode'}</span>
                                         </button>
@@ -1307,7 +1306,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                 const active = fabricRef.current?.getActiveObject();
                                                 if (active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fill: color }); }
                                                 setBrushColor(color);
-                                            }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-md' : 'border-slate-100 hover:border-[#0c0c2a]/20'}`} style={{ backgroundColor: color }}></button>
+                                            }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#4f46e5] scale-110 shadow-md' : 'border-slate-100 hover:border-[#4f46e5]/20'}`} style={{ backgroundColor: color }}></button>
                                         ))}
                                     </div>
                                 </div>
@@ -1566,16 +1565,20 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                             }}>
                                                                 {/* Optional CSS Mug Handle (Protruding Left) */}
                                                                 {product?.mockupProfile === 'mug-wrap' && (
-                                                                    <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 border-[#f8fafc] rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
+                                                                    <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
                                                                         left: `-${Math.max(40, 80 * canvasScale)}px`,
                                                                         width: `${Math.max(40, 80 * canvasScale)}px`,
                                                                         borderWidth: `${Math.max(12, 24 * canvasScale)}px`,
+                                                                        borderColor: '#fcfdfd',
+                                                                        background: 'linear-gradient(to right, #ffffff, #f1f5f9)',
                                                                         zIndex: -1
                                                                     }}></div>
                                                                 )}
                                                                 
                                                                 {/* The Workspace Canvas Backdrop (The actual 'Product' surface) */}
-                                                                <div className={`absolute inset-0 bg-white shadow-inner flex items-center justify-center opacity-90 ${product?.mockupProfile === 'mug-wrap' ? 'rounded-[16px] shadow-[inset_10px_0_20px_rgba(0,0,0,0.03)]' : ''}`}>
+                                                                <div className={`absolute inset-0 shadow-inner flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'rounded-[16px] shadow-[inset_10px_0_20px_rgba(0,0,0,0.03)]' : 'bg-white'}`} style={{
+                                                                    background: product?.mockupProfile === 'mug-wrap' ? 'linear-gradient(to right, #fcfdfd 0%, #ffffff 50%, #fcfdfd 100%)' : 'white'
+                                                                }}>
                                                                      {/* Optional Texture/Grid for help */}
                                                                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
                                                                 </div>

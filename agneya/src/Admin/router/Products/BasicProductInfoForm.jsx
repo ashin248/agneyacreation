@@ -176,8 +176,12 @@ const BasicProductInfoForm = ({
   };
 
   const selectAllTemplates = () => {
+    // Determine target category from the currently selected base template
+    const currentCategory = TWOD_TEMPLATES[formData.base2DTemplateId]?.category;
+    if (!currentCategory) return;
+
     const filteredTemplates = Object.values(TWOD_TEMPLATES)
-      .filter(template => !formData.category || template.category === formData.category);
+      .filter(template => template.category === currentCategory);
     
     setFormData(prev => ({
       ...prev,
@@ -447,8 +451,23 @@ const BasicProductInfoForm = ({
                     <select
                       onChange={(e) => {
                         const category = e.target.value;
-                        const defaultTemplate = Object.values(TWOD_TEMPLATES).find(t => t.category === category);
+                        const templatesOfCategory = Object.values(TWOD_TEMPLATES).filter(t => t.category === category);
+                        const defaultTemplate = templatesOfCategory[0];
+                        
+                        // Select the base template
                         select2DTemplate(defaultTemplate);
+                        
+                        // Automatically select ALL templates of this category for the gallery if any exist
+                        if (templatesOfCategory.length > 0) {
+                          setFormData(prev => ({
+                            ...prev,
+                            linkedTemplates: templatesOfCategory.map(t => ({ 
+                              id: t.id, 
+                              overrideFile: null, 
+                              overridePreview: null 
+                            }))
+                          }));
+                        }
                       }}
                       value={TWOD_TEMPLATES[formData.base2DTemplateId]?.category || ''}
                       className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
