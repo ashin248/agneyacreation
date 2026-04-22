@@ -37,8 +37,8 @@ const CreateProduct = () => {
     setBasicInfo(prev => {
       const next = typeof updateAction === 'function' ? updateAction(prev) : updateAction;
       
-      // Auto-generate SKU for the first variation IF it's new and has no SKU yet
-      if (Array.isArray(variations) && variations.length === 1 && !variations[0].sku && next.name) {
+      // Auto-generate/Update SKU for the first variation if product name changes
+      if (Array.isArray(variations) && variations.length > 0 && next.name !== prev.name) {
         const generatedSku = next.name
           .toUpperCase()
           .replace(/[^A-Z0-9]/g, '')
@@ -46,7 +46,14 @@ const CreateProduct = () => {
           
         setVariations(prevVars => {
           if (!Array.isArray(prevVars) || prevVars.length === 0) return prevVars;
-          return [{ ...prevVars[0], sku: generatedSku }];
+          // Only update if it's currently empty OR looks like a generated SKU
+          const currentSku = prevVars[0].sku;
+          if (!currentSku || currentSku.endsWith('-BASE')) {
+            const newVars = [...prevVars];
+            newVars[0] = { ...newVars[0], sku: generatedSku };
+            return newVars;
+          }
+          return prevVars;
         });
       }
       return next;
@@ -54,7 +61,18 @@ const CreateProduct = () => {
   };
 
   // 2. Master State for Product Variations
-  const [variations, setVariations] = useState([]);
+  const [variations, setVariations] = useState([
+    {
+      id: 'base-variation-' + Date.now(),
+      sku: '',
+      size: 'Standard',
+      color: 'White',
+      stock: 10,
+      priceModifier: 0,
+      imageFile: null,
+      previewUrl: '',
+    }
+  ]);
 
   // 3. Master State for Bulk Pricing
   const [isBulkEnabled, setIsBulkEnabled] = useState(false);
