@@ -29,7 +29,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/birthday_bg_1.jpg',
+    defaultBackdrop: '/assets/templates/birthday_bg_1.png',
     imageSlots: [
       { id: 'bday_pic', x: 20, y: 22, width: 180, height: 180, shape: 'circle' } 
     ]
@@ -42,7 +42,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/anniversary_bg.jpg', 
+    defaultBackdrop: '/assets/templates/anniversary_bg.png', 
     imageSlots: [
       { id: 'couple_pic_1', x: 40, y: 35, width: 150, height: 150, shape: 'square' },
       { id: 'couple_pic_2', x: 310, y: 35, width: 150, height: 150, shape: 'square' }
@@ -56,7 +56,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/wooden_wall_bg.jpg',
+    defaultBackdrop: '/assets/templates/wooden_wall_bg.png',
     imageSlots: [
       { id: 'pic_1', x: 20, y: 25, width: 130, height: 175, shape: 'rectangle' },
       { id: 'pic_2', x: 185, y: 25, width: 130, height: 175, shape: 'rectangle' },
@@ -71,7 +71,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/best_dad_bg.jpg',
+    defaultBackdrop: '/assets/templates/best_dad_bg.png',
     imageSlots: []
   },
 
@@ -84,7 +84,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/valentines_heart_bg.jpg',
+    defaultBackdrop: '/assets/templates/valentines_heart_bg.png',
     imageSlots: [{ id: 'heart_pic', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
   },
 
@@ -95,7 +95,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/val_duo_bg.jpg',
+    defaultBackdrop: '/assets/templates/val_duo_bg.png',
     imageSlots: [
       { id: 'val_1', x: 50, y: 40, width: 140, height: 140, shape: 'circle' },
       { id: 'val_2', x: 310, y: 40, width: 140, height: 140, shape: 'circle' }
@@ -109,7 +109,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/love_quote_bg.jpg',
+    defaultBackdrop: '/assets/templates/love_quote_bg.png',
     imageSlots: []
   },
 
@@ -122,7 +122,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/super_mom_bg.jpg',
+    defaultBackdrop: '/assets/templates/super_mom_bg.png',
     imageSlots: [{ id: 'mom_pic', x: 280, y: 25, width: 175, height: 175, shape: 'square' }]
   },
 
@@ -133,7 +133,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/best_dad_photo_bg.jpg',
+    defaultBackdrop: '/assets/templates/best_dad_photo_bg.png',
     imageSlots: [{ id: 'dad_pic', x: 45, y: 25, width: 175, height: 175, shape: 'square' }]
   },
 
@@ -144,7 +144,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/parents_duo_bg.jpg',
+    defaultBackdrop: '/assets/templates/parents_duo_bg.png',
     imageSlots: [
       { id: 'mom_side', x: 30, y: 35, width: 155, height: 155, shape: 'circle' },
       { id: 'dad_side', x: 315, y: 35, width: 155, height: 155, shape: 'circle' }
@@ -160,7 +160,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/besties_circle_bg.jpg',
+    defaultBackdrop: '/assets/templates/besties_circle_bg.png',
     imageSlots: [{ id: 'bff_pic', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
   },
 
@@ -171,7 +171,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/squad_goals_bg.jpg',
+    defaultBackdrop: '/assets/templates/squad_goals_bg.png',
     imageSlots: [
       { id: 'squad_1', x: 20, y: 40, width: 140, height: 140, shape: 'square' },
       { id: 'squad_2', x: 180, y: 40, width: 140, height: 140, shape: 'square' },
@@ -186,7 +186,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/travel_buddies_bg.jpg',
+    defaultBackdrop: '/assets/templates/travel_buddies_bg.png',
     imageSlots: [
       { id: 'trip_1', x: 30, y: 30, width: 210, height: 165, shape: 'rectangle' },
       { id: 'trip_2', x: 260, y: 30, width: 210, height: 165, shape: 'rectangle' }
@@ -202,7 +202,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/teacher_day_bg.jpg',
+    defaultBackdrop: '/assets/templates/teacher_day_bg.png',
     imageSlots: [{ id: 'teacher_pic', x: 300, y: 25, width: 175, height: 175, shape: 'circle' }]
   },
 
@@ -213,7 +213,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/teacher_quote_bg.jpg',
+    defaultBackdrop: '/assets/templates/teacher_quote_bg.png',
     imageSlots: []
   },
 
@@ -226,7 +226,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/newborn_bg.jpg',
+    defaultBackdrop: '/assets/templates/newborn_bg.png',
     imageSlots: [{ id: 'baby_main', x: 15, y: 15, width: 260, height: 195, shape: 'rectangle' }]
   },
 
@@ -237,7 +237,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/kids_bday_bg.jpg',
+    defaultBackdrop: '/assets/templates/kids_bday_bg.png',
     imageSlots: [
       { id: 'kid_1', x: 40, y: 40, width: 145, height: 145, shape: 'circle' },
       { id: 'kid_2', x: 315, y: 40, width: 145, height: 145, shape: 'circle' }
@@ -251,7 +251,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/little_star_bg.jpg',
+    defaultBackdrop: '/assets/templates/little_star_bg.png',
     imageSlots: [{ id: 'star_baby', x: 160, y: 22, width: 180, height: 180, shape: 'circle' }]
   },
 
@@ -264,7 +264,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/coffee_brew_bg.jpg',
+    defaultBackdrop: '/assets/templates/coffee_brew_bg.png',
     imageSlots: []
   },
 
@@ -275,7 +275,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/coffee_bean_bg.jpg',
+    defaultBackdrop: '/assets/templates/coffee_bean_bg.png',
     imageSlots: [{ id: 'coffee_pic', x: 280, y: 35, width: 155, height: 155, shape: 'circle' }]
   },
 
@@ -286,7 +286,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/morning_vibe_bg.jpg',
+    defaultBackdrop: '/assets/templates/morning_vibe_bg.png',
     imageSlots: []
   },
 
@@ -299,7 +299,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/xmas_bg.jpg',
+    defaultBackdrop: '/assets/templates/xmas_bg.png',
     imageSlots: [{ id: 'xmas_pic', x: 70, y: 22, width: 180, height: 180, shape: 'circle' }]
   },
 
@@ -310,7 +310,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/newyear_bg.jpg',
+    defaultBackdrop: '/assets/templates/newyear_bg.png',
     imageSlots: []
   },
 
@@ -321,7 +321,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/diwali_bg.jpg',
+    defaultBackdrop: '/assets/templates/diwali_bg.png',
     imageSlots: [{ id: 'diwali_pic', x: 260, y: 35, width: 160, height: 160, shape: 'circle' }]
   },
 
@@ -334,7 +334,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/collage_4grid_bg.jpg',
+    defaultBackdrop: '/assets/templates/collage_4grid_bg.png',
     imageSlots: [
       { id: 'g1', x: 140, y: 15, width: 100, height: 90, shape: 'square' },
       { id: 'g2', x: 260, y: 15, width: 100, height: 90, shape: 'square' },
@@ -350,7 +350,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/horiz_3strip_bg.jpg',
+    defaultBackdrop: '/assets/templates/horiz_3strip_bg.png',
     imageSlots: [
       { id: 's1', x: 10, y: 40, width: 150, height: 145, shape: 'rectangle' },
       { id: 's2', x: 175, y: 40, width: 150, height: 145, shape: 'rectangle' },
@@ -365,7 +365,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/duo_large_bg.jpg',
+    defaultBackdrop: '/assets/templates/duo_large_bg.png',
     imageSlots: [
       { id: 'm1', x: 25, y: 25, width: 215, height: 175, shape: 'rectangle' },
       { id: 'm2', x: 260, y: 25, width: 215, height: 175, shape: 'rectangle' }
@@ -381,7 +381,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/abstract_bg.jpg',
+    defaultBackdrop: '/assets/templates/abstract_bg.png',
     imageSlots: [{ id: 'art_pic', x: 40, y: 40, width: 145, height: 145, shape: 'circle' }]
   },
 
@@ -392,7 +392,7 @@ export const TWOD_TEMPLATES = {
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 500, height: 225, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 500, height: 225, rx: 0 },
-    defaultBackdrop: '/assets/templates/nature_zen_bg.jpg',
+    defaultBackdrop: '/assets/templates/nature_zen_bg.png',
     imageSlots: [{ id: 'nature_pic', x: 310, y: 30, width: 165, height: 165, shape: 'square' }]
   }
 };

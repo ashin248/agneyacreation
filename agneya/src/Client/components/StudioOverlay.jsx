@@ -622,10 +622,55 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 });
             }
 
-            if (clipShape) {
+        if (clipShape) {
                 clipShape.absolutePositioned = true; // Crucial for static frame windows
                 canvas.clipPath = clipShape;
             }
+        }
+
+        // --- IMAGE SLOT VISUALIZER: Add placeholders for predefined slots ---
+        if (activeTemplate?.imageSlots) {
+            activeTemplate.imageSlots.forEach(slot => {
+                const isCircle = slot.shape === 'circle';
+                const slotRect = new fabric.Rect({
+                    left: slot.x,
+                    top: slot.y,
+                    width: slot.width,
+                    height: slot.height,
+                    fill: '#f1f5f9',
+                    stroke: '#94a3b8',
+                    strokeDashArray: [5, 5],
+                    strokeWidth: 1,
+                    rx: isCircle ? slot.width / 2 : 0,
+                    ry: isCircle ? slot.height / 2 : 0,
+                    selectable: true,
+                    hasControls: false, // Prevent resizing the "frame"
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    isSlot: true,
+                    slotId: slot.id
+                });
+
+                // Add a visual indicator label
+                const label = new fabric.Textbox('ADD PHOTO', {
+                    left: slot.x + slot.width / 2,
+                    top: slot.y + slot.height / 2,
+                    width: slot.width,
+                    fontSize: 10,
+                    fontFamily: 'Inter',
+                    fontWeight: '900',
+                    fill: '#64748b',
+                    textAlign: 'center',
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: false,
+                    evented: false,
+                    opacity: 0.6
+                });
+
+                canvas.add(slotRect);
+                canvas.add(label);
+            });
         }
         
         fabricRef.current = canvas;
@@ -744,8 +789,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         if (isOpen) {
             resetStudio();
             setDesignMode(initialMode);
-            // Strict View Selection: Default to 3D if available, else 2D
-            if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
+            // Strict View Selection: Default to 2D if a template is active, otherwise check product config
+            if (activeTemplateId) {
+                setActiveStudioView('2D');
+            } else if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
                 setActiveStudioView('3D');
             } else {
                 setActiveStudioView('2D');
@@ -899,10 +946,73 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         height: imgElement.naturalHeight || imgElement.height || 100
                     });
 
-                    const targetWidth = canvas.width ? canvas.width * 0.4 : 200;
-                    img.scaleToWidth(targetWidth);
                     const uid = `upload_${Date.now()}`;
-                    img.set({ originX: 'center', originY: 'center', left: canvas.width ? canvas.width / 2 : 250, top: canvas.height ? canvas.height / 2 : 300, uid });
+                    const activeObj = canvas.getActiveObject();
+                    
+                    // --- SMART SLOT SNAP ---
+                    if (activeObj && activeObj.isSlot) {
+                        const slotX = activeObj.left;
+                        const slotY = activeObj.top;
+                        const slotW = activeObj.width;
+                        const slotH = activeObj.height;
+                        
+                        // Calculate scale to "Fill" the slot (Cover style)
+                        const scaleX = slotW / img.width;
+                        const scaleY = slotH / img.height;
+                        const fillScale = Math.max(scaleX, scaleY);
+                        
+                        img.set({
+                            left: slotX,
+                            top: slotY,
+                            scaleX: fillScale,
+                            scaleY: fillScale,
+                            uid,
+                            originX: 'left',
+                            originY: 'top'
+                        });
+
+                        // If slot is a circle, apply a clipPath to the image
+                        if (activeObj.rx > 0) {
+                            const clipPath = new fabric.Rect({
+                                left: slotX,
+                                top: slotY,
+                                width: slotW,
+                                height: slotH,
+                                rx: activeObj.rx,
+                                ry: activeObj.ry,
+                                absolutePositioned: true,
+                            });
+                            img.set({ clipPath });
+                        } else {
+                            // Rectangle clip path to ensure it doesn't bleed out of slot bounds if scaled up
+                            const clipPath = new fabric.Rect({
+                                left: slotX,
+                                top: slotY,
+                                width: slotW,
+                                height: slotH,
+                                absolutePositioned: true,
+                            });
+                            img.set({ clipPath });
+                        }
+
+                        // Remove the Slot and its label from canvas
+                        const objectsToRemove = canvas.getObjects().filter(o => 
+                            (o.isSlot && o.slotId === activeObj.slotId) || 
+                            (o.type === 'textbox' && o.text === 'ADD PHOTO' && Math.abs(o.left - (slotX + slotW/2)) < 5)
+                        );
+                        objectsToRemove.forEach(o => canvas.remove(o));
+                    } else {
+                        // Default placement
+                        const targetWidth = canvas.width ? canvas.width * 0.4 : 200;
+                        img.scaleToWidth(targetWidth);
+                        img.set({ 
+                            originX: 'center', 
+                            originY: 'center', 
+                            left: canvas.width ? canvas.width / 2 : 250, 
+                            top: canvas.height ? canvas.height / 2 : 300, 
+                            uid 
+                        });
+                    }
 
                     if (pendingAnchor) {
                         setObjectAnchors(prev => ({ ...prev, [uid]: pendingAnchor }));
