@@ -187,12 +187,13 @@ const EditProduct = () => {
       }
       if (basicInfo.blankFrontImageUrl) formData.append('blankFrontImage', basicInfo.blankFrontImageUrl);
       if (Array.isArray(basicInfo.linkedTemplates)) {
-        const templateIds = basicInfo.linkedTemplates.map(t => typeof t === 'string' ? t : t.id);
+        const templateIds = basicInfo.linkedTemplates.map(t => typeof t === 'string' ? t : (t.templateId || t.id));
         formData.append('linkedTemplates', JSON.stringify(templateIds));
         
         basicInfo.linkedTemplates.forEach(t => {
+            const tid = typeof t === 'string' ? t : (t.templateId || t.id);
             if (t && typeof t === 'object' && t.overrideFile) {
-                formData.append(`override_image_${t.id}`, t.overrideFile);
+                formData.append(`override_image_${tid}`, t.overrideFile);
             }
         });
       }

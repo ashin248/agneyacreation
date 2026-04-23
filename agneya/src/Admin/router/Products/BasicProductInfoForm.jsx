@@ -142,13 +142,13 @@ const BasicProductInfoForm = ({
   const toggleLinkedTemplate = (templateId) => {
     setFormData(prev => {
       const current = prev.linkedTemplates || [];
-      const existingIndex = current.findIndex(t => t.id === templateId || t === templateId);
+      const existingIndex = current.findIndex(t => (t.templateId || t.id) === templateId || t === templateId);
       
       let next;
       if (existingIndex >= 0) {
         next = current.filter((_, i) => i !== existingIndex);
       } else {
-        next = [...current, { id: templateId, overrideFile: null, overridePreview: null }];
+        next = [...current, { templateId: templateId, overrideFile: null, overridePreview: null }];
       }
       return { ...prev, linkedTemplates: next };
     });
@@ -161,15 +161,15 @@ const BasicProductInfoForm = ({
     setFormData(prev => {
       const current = prev.linkedTemplates || [];
       const next = current.map(t => {
-        const id = typeof t === 'string' ? t : t.id;
+        const id = typeof t === 'string' ? t : (t.templateId || t.id);
         if (id === templateId) {
           return {
-            id,
+            templateId: id,
             overrideFile: file,
             overridePreview: URL.createObjectURL(file)
           };
         }
-        return typeof t === 'string' ? { id: t } : t;
+        return typeof t === 'string' ? { templateId: t } : t;
       });
       return { ...prev, linkedTemplates: next };
     });
@@ -186,8 +186,8 @@ const BasicProductInfoForm = ({
     setFormData(prev => ({
       ...prev,
       linkedTemplates: filteredTemplates.map(t => {
-         const existing = (prev.linkedTemplates || []).find(ext => (typeof ext === 'string' ? ext : ext.id) === t.id);
-         return existing || { id: t.id, overrideFile: null, overridePreview: null };
+         const existing = (prev.linkedTemplates || []).find(ext => (typeof ext === 'string' ? ext : (ext.templateId || ext.id)) === t.id);
+         return existing || { templateId: t.id, overrideFile: null, overridePreview: null };
       })
     }));
   };
@@ -522,7 +522,7 @@ const BasicProductInfoForm = ({
                 <div className="flex flex-wrap gap-6 pt-2">
                   {Object.values(TWOD_TEMPLATES)
                     .map((template) => {
-                    const associatedItem = (formData.linkedTemplates || []).find(t => (typeof t === 'string' ? t : t.id) === template.id);
+                    const associatedItem = (formData.linkedTemplates || []).find(t => (typeof t === 'string' ? t : (t.templateId || t.id)) === template.id);
                     const isAssociated = !!associatedItem;
                     const overridePreview = associatedItem?.overridePreview || null;
 

@@ -23,7 +23,8 @@ import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
 import StudioOverlay from '../components/StudioOverlay';
-import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+import TWOD_TEMPLATES_LIB, { TWOD_TEMPLATES as NAMED_TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+const TWOD_TEMPLATES = TWOD_TEMPLATES_LIB || NAMED_TWOD_TEMPLATES;
 import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
 import { Grid, Check, ChevronRight as FiChevronRight } from 'lucide-react';
 
@@ -500,7 +501,7 @@ const ProductDetails = () => {
                             {/* Category Tabs */}
                             <div className="flex flex-wrap justify-center gap-2 mb-12 border-b border-slate-100 pb-8">
                                 {['All Designs', ...new Set((product.linkedTemplates || []).map(t => {
-                                    const tid = typeof t === 'string' ? t : t?.id;
+                                    const tid = typeof t === 'string' ? t : t?.templateId;
                                     const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
                                     return template?.category;
                                 }).filter(Boolean))].map(cat => (
@@ -517,13 +518,13 @@ const ProductDetails = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
                                 {product.linkedTemplates
                                     .filter(t => {
-                                        const tid = typeof t === 'string' ? t : t?.id;
+                                        const tid = typeof t === 'string' ? t : t?.templateId;
                                         if (selectedCategory === 'All Designs') return true;
                                         const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
                                         return template?.category === selectedCategory;
                                     })
                                     .map((t) => {
-                                    const templateId = typeof t === 'string' ? t : t?.id;
+                                    const templateId = typeof t === 'string' ? t : t?.templateId;
                                     const template = TWOD_TEMPLATES && TWOD_TEMPLATES[templateId];
                                     if (!template) return null;
                                     

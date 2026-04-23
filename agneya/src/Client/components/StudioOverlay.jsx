@@ -1496,7 +1496,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     {!product?.phoneMask && (product?.blankFrontImage || product?.images?.[0]) && (
                                                         <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4">
                                                             <img 
-                                                                src={(product.blankFrontImage || product.images[0])?.includes('ibb.co') || (product.blankFrontImage || product.images[0])?.includes('imgbb.com') ? `https://dummyimage.com/1000x1200/f8fafc/cbd5e1.png&text=${encodeURIComponent('Base Canvas (' + product.name + ')')}` : (product.blankFrontImage || product.images[0])} 
+                                                                src={product.blankFrontImage || product.images[0]} 
                                                                 alt="Product Backdrop"
                                                                 className="w-full h-full object-contain"
                                                             />

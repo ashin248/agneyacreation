@@ -404,3 +404,4 @@ export const getAllTemplates = () => Object.values(mug);
 export const getTemplatesByCategory = (category) => Object.values(mug).filter(t => t.category === category);
 
 export const TWOD_TEMPLATES = mug;
+export default mug;
