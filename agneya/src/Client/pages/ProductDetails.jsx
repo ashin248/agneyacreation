@@ -16,7 +16,10 @@ import {
   Palette,
   Building2,
   Share2,
-  Upload
+  Upload,
+  Box,
+  PenTool,
+  Image
 } from 'lucide-react';
 import StarRating from '../components/StarRating';
 import LoginModal from '../components/LoginModal';
@@ -441,16 +444,35 @@ const ProductDetails = () => {
 
                                     {product.isCustomizable && product.customizationType !== 'None' && (
                                         <div className="space-y-4 pt-6">
-                                            {/* Unified Studio Entry */}
-                                            <button 
-                                                onClick={() => requireLogin(() => {
-                                                    setInitialStudioMode('self');
-                                                    setCustomizingProduct(product);
-                                                })} 
-                                                className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-slate-700 transition-all active:scale-95"
-                                            >
-                                                <Palette size={20} /> CUSTOMIZE PRODUCT
-                                            </button>
+                                            <div className="grid grid-cols-3 gap-3">
+                                                <button 
+                                                    onClick={() => requireLogin(() => {
+                                                        setInitialStudioMode('3d');
+                                                        setCustomizingProduct(product);
+                                                    })} 
+                                                    className="w-full h-16 bg-slate-900 text-white rounded-2xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-widest text-[9px] shadow-lg hover:bg-slate-700 transition-all active:scale-95"
+                                                >
+                                                    <Box size={18} /> 3D Edit
+                                                </button>
+                                                <button 
+                                                    onClick={() => requireLogin(() => {
+                                                        setInitialStudioMode('company');
+                                                        setCustomizingProduct(product);
+                                                    })} 
+                                                    className="w-full h-16 bg-indigo-600 text-white rounded-2xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-widest text-[9px] shadow-lg hover:bg-indigo-500 transition-all active:scale-95"
+                                                >
+                                                    <PenTool size={18} /> DESIGN ASSISTANCE
+                                                </button>
+                                                <button 
+                                                    onClick={() => requireLogin(() => {
+                                                        setInitialStudioMode('2d');
+                                                        setCustomizingProduct(product);
+                                                    })} 
+                                                    className="w-full h-16 bg-slate-900 text-white rounded-2xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-widest text-[9px] shadow-lg hover:bg-slate-700 transition-all active:scale-95"
+                                                >
+                                                    <Image size={18} /> 2D Edit
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
 

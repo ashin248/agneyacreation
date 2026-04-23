@@ -422,12 +422,28 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
 
     const [activeTab, setActiveTab] = useState('uploads');
-    const [viewSide, setViewSide] = useState('front'); // 'front' or 'back' for 2D mode
+    const [viewSide, setViewSide] = useState(product?.twoDModels?.length > 0 ? 'model_0_main' : 'front'); // 'front' or 'back' for 2D mode
     const [previewRotation] = useState(0);
     const [brushSize, setBrushSize] = useState(10);
     const [brushColor, setBrushColor] = useState('#0c0c2a');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRemovingBg, setIsRemovingBg] = useState(false);
+
+    const twoDModels = product?.twoDModels || [];
+    const [active2DModelIdx, setActive2DModelIdx] = useState(0);
+    const [activeSupportSide, setActiveSupportSide] = useState('Main'); // 'Main' or side name
+
+    // Compute active 2D image
+    let current2DImageUrl = product?.blankFrontImage || product?.images?.[0];
+    if (twoDModels.length > 0 && twoDModels[active2DModelIdx]) {
+        const activeModel = twoDModels[active2DModelIdx];
+        if (activeSupportSide === 'Main') {
+             current2DImageUrl = activeModel.mainModelUrl || current2DImageUrl;
+        } else {
+             const support = activeModel.supportModels?.find(s => s.side === activeSupportSide);
+             if (support) current2DImageUrl = support.url;
+        }
+    }
 
     const [variations, setVariations] = useState([{
         id: Date.now(), name: 'Item 1',
@@ -709,11 +725,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
         if (isOpen) {
             resetStudio();
-            // Strict View Selection: Default to 2D if a template is active, otherwise check product config
-            if (activeTemplateId) {
+            // Strict View Selection: Use initialMode if explicitly provided, else fallback to product config
+            if (initialMode === '2d' || activeTemplateId) {
                 setActiveStudioTab('2D_STUDIO');
             } else if (initialMode === 'company') {
                 setActiveStudioTab('DESIGN_ASSISTANCE');
+            } else if (initialMode === '3d') {
+                setActiveStudioTab('3D_STUDIO');
             } else if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
                 setActiveStudioTab('3D_STUDIO');
             } else {
@@ -1368,10 +1386,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     )}
 
                                                     {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
-                                                    {!product?.phoneMask && (product?.blankFrontImage || product?.images?.[0]) && (
+                                                    {!product?.phoneMask && current2DImageUrl && (
                                                         <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4">
                                                             <img 
-                                                                src={product.blankFrontImage || product.images[0]} 
+                                                                src={current2DImageUrl} 
                                                                 alt="Product Backdrop"
                                                                 className="w-full h-full object-contain"
                                                             />
@@ -1554,10 +1572,41 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     )}
 
                                                     {/* Quick Side Toggle */}
-                                                    {(product.blankFrontImage && product.blankBackImage) && (
+                                                    {(product.blankFrontImage && product.blankBackImage && twoDModels.length === 0) && (
                                                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
                                                             <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
                                                             <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Dynamic 2D Models Navigation */}
+                                                    {twoDModels.length > 0 && twoDModels[active2DModelIdx] && (
+                                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 bg-white/90 backdrop-blur-md p-3 rounded-3xl shadow-2xl z-30 border border-slate-100/50 max-h-[80%] overflow-y-auto no-scrollbar pointer-events-auto">
+                                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center pb-2 border-b border-slate-100">Views</div>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    handleSwitchSide(`model_${active2DModelIdx}_main`);
+                                                                    setActiveSupportSide('Main');
+                                                                }}
+                                                                className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                                            >
+                                                                <img src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
+                                                                <span className="text-[8px] font-black uppercase">Main</span>
+                                                            </button>
+                                                            
+                                                            {twoDModels[active2DModelIdx].supportModels?.map((sm, smIdx) => (
+                                                                <button 
+                                                                    key={smIdx}
+                                                                    onClick={() => {
+                                                                        handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`);
+                                                                        setActiveSupportSide(sm.side);
+                                                                    }}
+                                                                    className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                                                >
+                                                                    <img src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
+                                                                    <span className="text-[8px] font-black uppercase">{sm.side}</span>
+                                                                </button>
+                                                            ))}
                                                         </div>
                                                     )}
                                                 </div>

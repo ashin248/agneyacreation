@@ -167,6 +167,17 @@ const productSchema = new mongoose.Schema(
       }],
       default: []
     },
+    twoDModels: {
+      type: [{
+        id: String,
+        mainModelUrl: String,
+        supportModels: [{
+          side: String,
+          url: String
+        }]
+      }],
+      default: []
+    },
     shapeConfig: { 
       type: mongoose.Schema.Types.Mixed, 
       default: null 

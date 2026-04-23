@@ -8,7 +8,8 @@ const BasicProductInfoForm = ({
   formData, setFormData, 
   images, setImages, 
   imagePreviews, setImagePreviews, 
-  base3DModelFile, setBase3DModelFile
+  base3DModelFile, setBase3DModelFile,
+  twoDModels, setTwoDModels
 }) => {
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
@@ -436,7 +437,207 @@ const BasicProductInfoForm = ({
               </div>
             </div>
 
-            {/* 2D TEMPLATE MANAGEMENT CLEARED FOR RESET */}
+            {/* 2D TEMPLATE MANAGEMENT */}
+            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
+              <div className="space-y-8 animate-in fade-in zoom-in duration-500 mt-8 p-6 bg-white rounded-[24px] border border-blue-100">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[12px] font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
+                    <FiImage size={16} />
+                    2D Models Configuration
+                  </label>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      if (setTwoDModels) {
+                        setTwoDModels(prev => [...prev, {
+                          id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                          mainModelFile: null,
+                          mainModelPreview: '',
+                          activeTab: 'main', // 'main' or 'support'
+                          supportModels: []
+                        }]);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+                  >
+                    <FiPlus size={14} /> Add 2D Model
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {twoDModels?.map((model, idx) => (
+                    <div key={model.id} className="p-6 border-2 border-dashed border-blue-200 rounded-[24px] bg-blue-50/20 relative">
+                      <button 
+                        type="button"
+                        onClick={() => {
+                           setTwoDModels(prev => prev.filter((_, i) => i !== idx));
+                        }}
+                        className="absolute top-4 right-4 text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full transition-colors"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+
+                      <div className="flex gap-4 mb-6">
+                        <label className={`cursor-pointer px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${model.activeTab === 'main' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+                          <input 
+                            type="radio" 
+                            name={`tab-${model.id}`} 
+                            className="hidden" 
+                            checked={model.activeTab === 'main'}
+                            onChange={() => setTwoDModels(prev => {
+                               const next = [...prev];
+                               next[idx].activeTab = 'main';
+                               return next;
+                            })}
+                          />
+                          Main Model
+                        </label>
+                        <label className={`cursor-pointer px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${model.activeTab === 'support' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'}`}>
+                          <input 
+                            type="radio" 
+                            name={`tab-${model.id}`} 
+                            className="hidden" 
+                            checked={model.activeTab === 'support'}
+                            onChange={() => setTwoDModels(prev => {
+                               const next = [...prev];
+                               next[idx].activeTab = 'support';
+                               return next;
+                            })}
+                          />
+                          Support Model
+                        </label>
+                      </div>
+
+                      {model.activeTab === 'main' && (
+                        <div className="space-y-4">
+                          <p className="text-[11px] font-bold text-gray-500">Upload a transparent PNG for the main product model.</p>
+                          <div className="flex items-center gap-6">
+                             <div className={`w-32 h-32 rounded-2xl border-2 flex items-center justify-center overflow-hidden bg-white ${model.mainModelPreview ? 'border-blue-500' : 'border-dashed border-gray-300'}`}>
+                               {model.mainModelPreview ? (
+                                 <img src={model.mainModelPreview} className="w-full h-full object-contain" alt="Main Model" />
+                               ) : (
+                                 <FiImage className="text-gray-300" size={32} />
+                               )}
+                             </div>
+                             <div>
+                               <label className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-blue-200 text-blue-600 rounded-xl cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                 {model.mainModelPreview ? 'Change Image' : 'Upload Image'}
+                                 <input type="file" className="hidden" accept="image/png" onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                       setTwoDModels(prev => {
+                                          const next = [...prev];
+                                          next[idx].mainModelFile = file;
+                                          next[idx].mainModelPreview = URL.createObjectURL(file);
+                                          return next;
+                                       });
+                                    }
+                                 }} />
+                               </label>
+                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {model.activeTab === 'support' && (
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-between">
+                             <p className="text-[11px] font-bold text-gray-500">Upload transparent PNGs for other sides of the product (e.g., Right, Left, Top, Bottom).</p>
+                             <button 
+                               type="button"
+                               onClick={() => {
+                                  setTwoDModels(prev => {
+                                     const next = [...prev];
+                                     next[idx].supportModels.push({
+                                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                                        side: '',
+                                        file: null,
+                                        preview: ''
+                                     });
+                                     return next;
+                                  });
+                               }}
+                               className="px-4 py-2 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+                             >
+                               + Add Support Model
+                             </button>
+                          </div>
+
+                          <div className="space-y-4">
+                             {model.supportModels.map((sm, sIdx) => (
+                                <div key={sm.id} className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                                   <div className={`w-16 h-16 rounded-xl border flex items-center justify-center overflow-hidden bg-gray-50 flex-shrink-0 ${sm.preview ? 'border-blue-400' : 'border-dashed border-gray-300'}`}>
+                                      {sm.preview ? (
+                                        <img src={sm.preview} className="w-full h-full object-contain" alt="Support Model" />
+                                      ) : (
+                                        <FiImage className="text-gray-300" size={20} />
+                                      )}
+                                   </div>
+                                   
+                                   <div className="flex-1 space-y-2">
+                                      <input 
+                                        type="text" 
+                                        placeholder="Side Name (e.g. Left, Right, Top)" 
+                                        value={sm.side}
+                                        onChange={(e) => {
+                                           setTwoDModels(prev => {
+                                              const next = [...prev];
+                                              next[idx].supportModels[sIdx].side = e.target.value;
+                                              return next;
+                                           });
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-[12px] font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                      />
+                                      <label className="inline-block px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg cursor-pointer hover:bg-blue-100 transition-colors text-[10px] font-black uppercase tracking-widest">
+                                        {sm.preview ? 'Change File' : 'Upload PNG'}
+                                        <input type="file" className="hidden" accept="image/png" onChange={(e) => {
+                                           const file = e.target.files[0];
+                                           if (file) {
+                                              setTwoDModels(prev => {
+                                                 const next = [...prev];
+                                                 next[idx].supportModels[sIdx].file = file;
+                                                 next[idx].supportModels[sIdx].preview = URL.createObjectURL(file);
+                                                 return next;
+                                              });
+                                           }
+                                        }} />
+                                      </label>
+                                   </div>
+
+                                   <button 
+                                     type="button"
+                                     onClick={() => {
+                                        setTwoDModels(prev => {
+                                           const next = [...prev];
+                                           next[idx].supportModels = next[idx].supportModels.filter((_, i) => i !== sIdx);
+                                           return next;
+                                        });
+                                     }}
+                                     className="p-2 text-gray-400 hover:text-red-500 bg-gray-50 rounded-xl hover:bg-red-50 transition-colors"
+                                   >
+                                     <FiTrash2 size={14} />
+                                   </button>
+                                </div>
+                             ))}
+                             {model.supportModels.length === 0 && (
+                                <div className="text-center py-6 text-gray-400 text-sm font-bold border-2 border-dashed border-gray-100 rounded-2xl">
+                                   No support models added yet.
+                                </div>
+                             )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {(!twoDModels || twoDModels.length === 0) && (
+                     <div className="text-center py-10 text-gray-400 text-sm font-bold border-2 border-dashed border-blue-200 rounded-[24px]">
+                        Click "Add 2D Model" to begin uploading transparent PNGs.
+                     </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* 3D SECTION */}
             {(formData.customizationType === '3D' || formData.customizationType === 'Both') && (

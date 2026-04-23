@@ -142,6 +142,15 @@ exports.createProduct = async (req, res) => {
       }
     }
 
+    let twoDModels = [];
+    if (req.body.twoDModels) {
+      try {
+        twoDModels = JSON.parse(req.body.twoDModels);
+      } catch (e) {
+        console.warn('Malformed twoDModels');
+      }
+    }
+
     // Convert boolean string
     const bulkActive = isBulkEnabled === 'true' || isBulkEnabled === true;
 
@@ -239,6 +248,26 @@ exports.createProduct = async (req, res) => {
             uploadPromises.push(promise);
           }
         }
+        else if (file.fieldname.startsWith('twoDModel_main_')) {
+          const idx = parseInt(file.fieldname.replace('twoDModel_main_', ''), 10);
+          if (!isNaN(idx) && twoDModels[idx]) {
+            const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
+              twoDModels[idx].mainModelUrl = url;
+            });
+            uploadPromises.push(promise);
+          }
+        }
+        else if (file.fieldname.startsWith('twoDModel_support_')) {
+          const parts = file.fieldname.replace('twoDModel_support_', '').split('_');
+          const idx = parseInt(parts[0], 10);
+          const sIdx = parseInt(parts[1], 10);
+          if (!isNaN(idx) && !isNaN(sIdx) && twoDModels[idx] && twoDModels[idx].supportModels && twoDModels[idx].supportModels[sIdx]) {
+            const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
+              twoDModels[idx].supportModels[sIdx].url = url;
+            });
+            uploadPromises.push(promise);
+          }
+        }
       }
     }
 
@@ -277,6 +306,7 @@ exports.createProduct = async (req, res) => {
       shapeConfig: shapeConfig,
       canvasConfig: req.body.canvasConfig ? JSON.parse(req.body.canvasConfig) : null,
       linkedTemplates: linkedTemplates,
+      twoDModels: twoDModels,
       isActive: true, // Auto-active default
     };
 
@@ -400,6 +430,15 @@ exports.updateProduct = async (req, res) => {
               }
            } catch(e){}
         }
+
+        let twoDModelsUpdate = [];
+        if (req.body.twoDModels) {
+           try {
+              twoDModelsUpdate = JSON.parse(req.body.twoDModels);
+              // For update, we might want to just replace or merge. Let's just replace the whole array
+              updateData.twoDModels = twoDModelsUpdate;
+           } catch(e){}
+        }
         
         if (req.body.blankFrontImage) updateData.blankFrontImage = req.body.blankFrontImage;
         if (req.body.frontMaskImage) updateData.frontMaskImage = req.body.frontMaskImage;
@@ -479,6 +518,24 @@ exports.updateProduct = async (req, res) => {
                             });
                             uploadPromises.push(promise);
                         }
+                    }
+                } else if (file.fieldname.startsWith('twoDModel_main_')) {
+                    const idx = parseInt(file.fieldname.replace('twoDModel_main_', ''), 10);
+                    if (!isNaN(idx) && updateData.twoDModels && updateData.twoDModels[idx]) {
+                        const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
+                            updateData.twoDModels[idx].mainModelUrl = url;
+                        });
+                        uploadPromises.push(promise);
+                    }
+                } else if (file.fieldname.startsWith('twoDModel_support_')) {
+                    const parts = file.fieldname.replace('twoDModel_support_', '').split('_');
+                    const idx = parseInt(parts[0], 10);
+                    const sIdx = parseInt(parts[1], 10);
+                    if (!isNaN(idx) && !isNaN(sIdx) && updateData.twoDModels && updateData.twoDModels[idx] && updateData.twoDModels[idx].supportModels && updateData.twoDModels[idx].supportModels[sIdx]) {
+                        const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
+                            updateData.twoDModels[idx].supportModels[sIdx].url = url;
+                        });
+                        uploadPromises.push(promise);
                     }
                 }
             }

@@ -29,6 +29,7 @@ const CreateProduct = () => {
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
+  const [twoDModels, setTwoDModels] = useState([]);
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
@@ -190,6 +191,26 @@ const CreateProduct = () => {
         });
       }
 
+      // Add 2D Models Data
+      const twoDModelsMetadata = twoDModels.map((model, idx) => {
+        if (model.mainModelFile) {
+           formData.append(`twoDModel_main_${idx}`, model.mainModelFile);
+        }
+        
+        const supportModelsMeta = model.supportModels.map((sm, sIdx) => {
+           if (sm.file) {
+              formData.append(`twoDModel_support_${idx}_${sIdx}`, sm.file);
+           }
+           return { side: sm.side };
+        });
+
+        return {
+           id: model.id,
+           supportModels: supportModelsMeta
+        };
+      });
+      formData.append('twoDModels', JSON.stringify(twoDModelsMetadata));
+
       // Arrays formatting and appending
       const finalVariations = (Array.isArray(variations) ? variations : []).map(({ id, previewUrl, ...rest }) => ({
         ...rest,
@@ -293,6 +314,8 @@ const CreateProduct = () => {
               setImagePreviews={setGalleryImagePreviews}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
+              twoDModels={twoDModels}
+              setTwoDModels={setTwoDModels}
             />
           </section>
 
