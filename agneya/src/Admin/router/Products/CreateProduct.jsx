@@ -92,7 +92,7 @@ const CreateProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Validation function wrapper for child forms
-  const validatePayload = () => {
+  const validatePayload = (varsToValidate = variations) => {
     // Basic Info validation
     if (!String(basicInfo.name || '').trim()) return "Product Identity is required.";
     if (!String(basicInfo.description || '').trim()) return "Asset description is required.";
@@ -113,8 +113,8 @@ const CreateProduct = () => {
     }
 
     // Variations validation
-    if (variations.length === 0) return "At least one SKU variation must be defined.";
-    for (const v of variations) {
+    if (varsToValidate.length === 0) return "At least one SKU variation must be defined.";
+    for (const v of varsToValidate) {
       if (!String(v.sku || '').trim()) return "SKU marker is missing for variation.";
       if (v.stock === '' || isNaN(v.stock) || Number(v.stock) < 0) return "Inventory count is required for all variations.";
     }
@@ -137,9 +137,35 @@ const CreateProduct = () => {
     setGlobalError(null);
     setBulkError(null);
 
-    const errorMessage = validatePayload();
-    if (errorMessage) {
+    // Auto-fix variations before validation
+    let currentVars = [...variations];
+    if (currentVars.length === 0) {
+      currentVars = [{
+        id: 'base-variation-' + Date.now(),
+        sku: basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) + "-BASE" : 'BASE-SKU',
+        size: 'Standard',
+        color: 'White',
+        stock: 10,
+        priceModifier: 0,
+        imageFile: null,
+        previewUrl: '',
+      }];
+      setVariations(currentVars);
+    } else {
+      // Auto-fill missing SKUs
+      let modified = false;
+      currentVars = currentVars.map((v, i) => {
+        if (!String(v.sku || '').trim()) {
+          modified = true;
+          return { ...v, sku: (basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) : 'PROD') + `-VAR-${i+1}` };
+        }
+        return v;
+      });
+      if (modified) setVariations(currentVars);
+    }
 
+    const errorMessage = validatePayload(currentVars);
+    if (errorMessage) {
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
