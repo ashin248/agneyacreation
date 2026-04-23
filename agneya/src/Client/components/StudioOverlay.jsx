@@ -407,8 +407,10 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [designMode, setDesignMode] = useState(initialMode); // Track if user is designing or company
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
-    const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
+    const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
     const effectiveMockupProfile = activeTemplate?.mockupProfile || product?.mockupProfile;
+    const effectiveCanvasConfig = activeTemplate?.canvasConfig || product?.canvasConfig;
+    const effectiveShapeConfig = activeTemplate?.shapeConfig || product?.shapeConfig;
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
@@ -1506,11 +1508,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     {/* Layer 10: Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                                                         <div className="pointer-events-auto" style={{ 
-                                                            width: `${product?.phoneMask ? 400 : (product?.canvasConfig?.width || 500)}px`, 
-                                                            height: `${product?.phoneMask ? 800 : (product?.canvasConfig?.height || 600)}px`,
-                                                            marginLeft: `${product?.canvasConfig?.offsetX || 0}px`,
-                                                            marginTop: `${product?.canvasConfig?.offsetY || 0}px`,
-                                                            transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : (product?.canvasConfig?.scale || 1))})`, 
+                                                            width: `${product?.phoneMask ? 400 : (effectiveCanvasConfig?.width || 500)}px`, 
+                                                            height: `${product?.phoneMask ? 800 : (effectiveCanvasConfig?.height || 600)}px`,
+                                                            marginLeft: `${effectiveCanvasConfig?.offsetX || 0}px`,
+                                                            marginTop: `${effectiveCanvasConfig?.offsetY || 0}px`,
+                                                            transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : (effectiveCanvasConfig?.scale || 1))})`, 
                                                             transformOrigin: 'center' 
                                                         }}>
                                                             <canvas ref={canvasRef} />

@@ -70,6 +70,12 @@ const ProductDetails = () => {
                         setSelectedColor(first.color);
                         setSelectedSize(first.size);
                     }
+
+                    if (res.data.linkedTemplates?.length > 0) {
+                        const first = res.data.linkedTemplates[0];
+                        const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
+                        setActiveTemplateId(tid);
+                    }
                     
                     // Fetch related products
                     if (res.data.category) {
