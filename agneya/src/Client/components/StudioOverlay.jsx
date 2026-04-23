@@ -696,6 +696,67 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         };
     }, [isOpen, product?.customizationType, fastSync, updateTexture]);
 
+    const enforceLayering = useCallback(() => {
+        if (!fabricRef.current) return;
+        const canvas = fabricRef.current;
+        const objects = canvas.getObjects();
+        
+        const photos = [];
+        const models = [];
+        const topLayers = [];
+
+        objects.forEach(obj => {
+            if (obj.id === '2d_model_mask') {
+                models.push(obj);
+            } else if (obj.uid?.startsWith('upload_') || obj.type === 'image' || obj.type === 'FabricImage' || obj.isPhoto) {
+                photos.push(obj);
+            } else {
+                topLayers.push(obj);
+            }
+        });
+
+        let idx = 0;
+        photos.forEach(obj => canvas.moveTo(obj, idx++));
+        models.forEach(obj => canvas.moveTo(obj, idx++));
+        topLayers.forEach(obj => canvas.moveTo(obj, idx++));
+        
+        canvas.requestRenderAll();
+    }, []);
+
+    useEffect(() => {
+        if (!fabricRef.current || !current2DImageUrl) return;
+        const canvas = fabricRef.current;
+        
+        if (product?.phoneMask) return; // Phone cases handled differently via CSS mask
+
+        const existing = canvas.getObjects().find(o => o.id === '2d_model_mask');
+
+        const ImgClass = fabric.FabricImage || fabric.Image;
+        const imgElement = new Image();
+        imgElement.crossOrigin = 'anonymous';
+        imgElement.onload = () => {
+            if (existing) canvas.remove(existing);
+            
+            const img = new ImgClass(imgElement, {
+                id: '2d_model_mask',
+                selectable: false,
+                evented: false,
+                excludeFromExport: true,
+                originX: 'center',
+                originY: 'center',
+                left: canvas.width / 2,
+                top: canvas.height / 2
+            });
+            const scaleX = canvas.width / img.width;
+            const scaleY = canvas.height / img.height;
+            const scale = Math.min(scaleX, scaleY);
+            img.set({ scaleX: scale, scaleY: scale });
+            canvas.add(img);
+            enforceLayering();
+        };
+        imgElement.src = current2DImageUrl;
+    }, [current2DImageUrl, product?.phoneMask, enforceLayering, viewSide]);
+
     useEffect(() => {
         if (historyStep === -1 || isHistoryRecording.current || !fabricRef.current) return;
         isHistoryRecording.current = true;
@@ -973,6 +1034,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                     canvas.add(img);
                     canvas.setActiveObject(img);
+                    enforceLayering();
                     canvas.renderAll();
                     updateTexture(true); // Ensure texture sync runs
                 } catch (err) {
@@ -1000,6 +1062,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
         fabricRef.current.add(itext);
         fabricRef.current.setActiveObject(itext);
+        enforceLayering();
         fabricRef.current.renderAll();
         updateTexture();
     };
@@ -1018,6 +1081,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
         fabricRef.current.add(obj);
         fabricRef.current.setActiveObject(obj);
+        enforceLayering();
         fabricRef.current.renderAll();
         updateTexture();
     };
@@ -1387,7 +1451,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                     {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
                                                     {!product?.phoneMask && current2DImageUrl && (
-                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4">
+                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
                                                             <img 
                                                                 src={current2DImageUrl} 
                                                                 alt="Product Backdrop"
