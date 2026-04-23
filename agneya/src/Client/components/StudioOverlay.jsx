@@ -687,8 +687,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         width: slot.width,
                         height: slot.height,
                         fill: '#fcfcfc',
-                        stroke: '#000000',
-                        strokeWidth: 1.5,
+                        stroke: slot.stroke || '#000000',
+                        strokeWidth: slot.strokeWidth || 1.5,
                         rx: isCircle ? slot.width / 2 : (slot.rx || 0),
                         ry: isCircle ? slot.height / 2 : (slot.ry || 0),
                         selectable: true,
@@ -702,7 +702,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 }
 
                 // Add a visual indicator label
-                const label = new fabric.IText('ADD PHOTO', {
+                const label = new fabric.IText(slot.label || 'ADD PHOTO', {
                     left: slot.x + slot.width / 2,
                     top: slot.y + slot.height / 2,
                     fontSize: 10,

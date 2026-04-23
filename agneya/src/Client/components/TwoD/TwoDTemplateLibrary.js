@@ -7,79 +7,95 @@
 export const TICKER_ID_MUG_WRAP = 'MUG_WRAP_11OZ';
 
 export const mug = {
-  // --- 1. PREMIUM STANDARD TEMPLATES ---
-
-  [TICKER_ID_MUG_WRAP]: {
-    id: TICKER_ID_MUG_WRAP,
-    name: 'Standard Full Wrap (High Res)',
+  'MUG_WEDDING_SAVE_DATE': {
+    id: 'MUG_WEDDING_SAVE_DATE',
+    name: 'Wedding Save the Date (Styled)',
     category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 1000, height: 450, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 1000, height: 450, rx: 0 },
-    defaultBackdrop: '',
+    defaultBackdrop: './tablateimage/6324653.jpg',
     imageSlots: [
-      { id: 'main_wrap', x: 0, y: 0, width: 1000, height: 450, shape: 'rectangle' }
+      { 
+        id: 'couple_photo', 
+        x: 550, y: 40, 
+        width: 370, height: 370, 
+        shape: 'circle', 
+        label: 'COUPLE PHOTO',
+        stroke: '#d4af37', 
+        strokeWidth: 4
+      },
+      { 
+        id: 'text_area_guide', 
+        x: 50, y: 50, 
+        width: 450, height: 350, 
+        shape: 'rectangle', 
+        label: 'ADD WEDDING TEXT HERE',
+        stroke: '#e2e8f0', 
+        strokeWidth: 2
+      },
+      { 
+        id: 'floral_deco_tl', 
+        x: 20, y: 20, 
+        width: 100, height: 100, 
+        shape: 'square', 
+        label: 'ICON',
+        stroke: '#fce7f3', 
+        strokeWidth: 1
+      },
+      { 
+        id: 'floral_deco_bl', 
+        x: 20, y: 330, 
+        width: 100, height: 100, 
+        shape: 'square', 
+        label: 'ICON',
+        stroke: '#fce7f3',
+        strokeWidth: 1
+      }
     ]
   },
 
-  'MUG_PREMIUM_DUO_HEART': {
-    id: 'MUG_PREMIUM_DUO_HEART',
-    name: 'Love Duo (Two Hearts)',
+  'MUG_BIRTHDAY_FESTIVE': {
+    id: 'MUG_BIRTHDAY_FESTIVE',
+    name: 'Birthday Festive Celebration',
     category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 1000, height: 450, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 1000, height: 450, rx: 0 },
-    defaultBackdrop: 'https://i.ibb.co/3ykC0XN/mug-love-bg.png',
+    defaultBackdrop: '/src/Client/components/TwoD/tablateimage/6324653.jpg', 
     imageSlots: [
-      { id: 'heart_left', x: 50, y: 75, width: 300, height: 300, shape: 'heart' },
-      { id: 'heart_right', x: 650, y: 75, width: 300, height: 300, shape: 'heart' }
+      { 
+        id: 'birthday_pic', 
+        x: 345, y: 45, 
+        width: 310, height: 310, 
+        shape: 'circle', 
+        label: 'BIRTHDAY PHOTO',
+        stroke: '#ff4d4d', 
+        strokeWidth: 5
+      }
     ]
   },
 
-  'MUG_PREMIUM_TRIO_MODERN': {
-    id: 'MUG_PREMIUM_TRIO_MODERN',
-    name: 'Modern Trio (3 Rectangles)',
+  'MUG_BIRTHDAY_PNGTREE': {
+    id: 'MUG_BIRTHDAY_PNGTREE',
+    name: 'Birthday Party Celebration (Pngtree)',
     category: 'Mug',
     mockupProfile: 'mug-wrap',
     canvasConfig: { width: 1000, height: 450, scale: 1, offsetX: 0, offsetY: 0 },
     shapeConfig: { type: 'rectangle', width: 1000, height: 450, rx: 0 },
-    defaultBackdrop: 'https://i.ibb.co/L6V2S0r/modern-mug-bg.png',
+    defaultBackdrop: '/src/Client/components/TwoD/tablateimage/—Pngtree—mug design template birthday theme_7930529.png', 
     imageSlots: [
-      { id: 'pic_1', x: 40, y: 50, width: 280, height: 350, shape: 'rectangle' },
-      { id: 'pic_2', x: 360, y: 50, width: 280, height: 350, shape: 'rectangle' },
-      { id: 'pic_3', x: 680, y: 50, width: 280, height: 350, shape: 'rectangle' }
+      { 
+        id: 'main_pic', 
+        x: 350, y: 50, 
+        width: 300, height: 350, 
+        shape: 'rectangle', 
+        label: 'BIRTHDAY PHOTO',
+        stroke: '#fbbf24', 
+        strokeWidth: 3
+      }
     ]
   },
-
-  'MUG_CIRCLE_MOSAIC': {
-    id: 'MUG_CIRCLE_MOSAIC',
-    name: 'Circle Mosaic (5 Mini Pics)',
-    category: 'Mug',
-    mockupProfile: 'mug-wrap',
-    canvasConfig: { width: 1000, height: 450, scale: 1, offsetX: 0, offsetY: 0 },
-    shapeConfig: { type: 'rectangle', width: 1000, height: 450, rx: 0 },
-    defaultBackdrop: 'https://i.ibb.co/N2L8XwK/mosaic-bg.png',
-    imageSlots: [
-      { id: 'c1', x: 50, y: 150, width: 150, height: 150, shape: 'circle' },
-      { id: 'c2', x: 230, y: 100, width: 150, height: 150, shape: 'circle' },
-      { id: 'c3', x: 410, y: 150, width: 180, height: 180, shape: 'circle' },
-      { id: 'c4', x: 620, y: 100, width: 150, height: 150, shape: 'circle' },
-      { id: 'c5', x: 800, y: 150, width: 150, height: 150, shape: 'circle' }
-    ]
-  },
-
-  'MUG_PREMIUM_CENTER_FOCUS': {
-    id: 'MUG_PREMIUM_CENTER_FOCUS',
-    name: 'Center Focus (Portrait)',
-    category: 'Mug',
-    mockupProfile: 'mug-wrap',
-    canvasConfig: { width: 1000, height: 450, scale: 1, offsetX: 0, offsetY: 0 },
-    shapeConfig: { type: 'rectangle', width: 1000, height: 450, rx: 0 },
-    defaultBackdrop: 'https://i.ibb.co/9vFzL6M/center-focus-bg.png',
-    imageSlots: [
-      { id: 'main', x: 325, y: 25, width: 350, height: 400, shape: 'rectangle' }
-    ]
-  }
 };
 
 export const getTemplateById = (id) => mug[id] || null;
