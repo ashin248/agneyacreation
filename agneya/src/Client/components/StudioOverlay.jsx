@@ -407,10 +407,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [designMode, setDesignMode] = useState(initialMode); // Track if user is designing or company
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
-    const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
-    const effectiveMockupProfile = activeTemplate?.mockupProfile || product?.mockupProfile;
-    const effectiveCanvasConfig = activeTemplate?.canvasConfig || product?.canvasConfig;
-    const effectiveShapeConfig = activeTemplate?.shapeConfig || product?.shapeConfig;
+    // const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
+    const activeTemplate = null; // Cleared for reset
+    const effectiveMockupProfile = product?.mockupProfile;
+    const effectiveCanvasConfig = product?.canvasConfig;
+    const effectiveShapeConfig = product?.shapeConfig;
     const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
@@ -576,9 +577,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
-        const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
-        const effectiveCanvasConfig = activeTemplate?.canvasConfig || product?.canvasConfig;
-        const effectiveShapeConfig = activeTemplate?.shapeConfig || product?.shapeConfig;
+        // const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
+        const effectiveCanvasConfig = product?.canvasConfig;
+        const effectiveShapeConfig = product?.shapeConfig;
 
         const baseWidth = effectiveCanvasConfig?.width || 500;
         const baseHeight = effectiveCanvasConfig?.height || 600;
@@ -590,136 +591,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             preserveObjectStacking: true
         });
         
-        // --- 2D CLIPPING MAGIC: Apply SVG shape dynamically ---
-        if (effectiveShapeConfig && !product?.phoneMask) {
-            let clipShape;
-            const w = effectiveCanvasConfig?.width || baseWidth;
-            const h = effectiveCanvasConfig?.height || baseHeight;
-            const { type, radius, width: sWidth, height: sHeight, rx, points } = effectiveShapeConfig;
-            
-            if (type === 'circle') {
-                clipShape = new fabric.Circle({
-                    radius: radius || Math.min(w, h) / 2,
-                    originX: 'center', originY: 'center',
-                    left: w / 2, top: h / 2
-                });
-            } else if (type === 'rectangle' || type === 'rounded-rectangle') {
-                clipShape = new fabric.Rect({
-                    width: sWidth || w, height: sHeight || h,
-                    rx: rx || 0, ry: rx || 0,
-                    originX: 'center', originY: 'center',
-                    left: w / 2, top: h / 2
-                });
-            } else if (type === 'polygon' && points) {
-                const mappedPoints = points.split(' ').map(p => {
-                    const [px, py] = p.split(',').map(Number);
-                    return { x: px, y: py };
-                });
-                clipShape = new fabric.Polygon(mappedPoints, {
-                    originX: 'center', originY: 'center',
-                    left: w / 2, top: h / 2
-                });
-            }
-
-        if (clipShape) {
-                clipShape.absolutePositioned = true; // Crucial for static frame windows
-                canvas.clipPath = clipShape;
-            }
-        }
-
-        // --- BACKDROP LOADER: Add the template's background artwork ---
-        if (activeTemplate?.defaultBackdrop) {
-            const ImgClass = fabric.FabricImage || fabric.Image;
-            const imgElement = new Image();
-            imgElement.crossOrigin = 'anonymous';
-            imgElement.src = activeTemplate.defaultBackdrop;
-            imgElement.onload = () => {
-                const backdrop = new ImgClass(imgElement, {
-                    left: 0,
-                    top: 0,
-                    width: baseWidth,
-                    height: baseHeight,
-                    selectable: false,
-                    evented: false,
-                    excludeFromExport: false, // We WANT the background in the print file
-                    isBackdrop: true
-                });
-                // Ensure backdrop is always at the bottom
-                canvas.insertAt(backdrop, 0);
-                canvas.renderAll();
-                updateTexture(true);
-            };
-        }
-
-        if (activeTemplate?.imageSlots) {
-            activeTemplate.imageSlots.forEach(slot => {
-                const isCircle = slot.shape === 'circle';
-                const isHeart = slot.shape === 'heart';
-                
-                let slotGraphic;
-                
-                if (isHeart) {
-                    const heartPath = `M 0 10 A 10 10 0 0 1 20 10 A 10 10 0 0 1 40 10 Q 40 25 20 40 Q 0 25 0 10 Z`;
-                    slotGraphic = new fabric.Path(heartPath, {
-                        left: slot.x,
-                        top: slot.y,
-                        width: slot.width,
-                        height: slot.height,
-                        fill: '#fcfcfc',
-                        stroke: '#000000',
-                        strokeWidth: 1.5,
-                        selectable: true,
-                        hasControls: false,
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        isSlot: true,
-                        slotId: slot.id,
-                        opacity: 0.8
-                    });
-                    // Scale path to fit slot dimensions
-                    const scaleX = slot.width / slotGraphic.width;
-                    const scaleY = slot.height / slotGraphic.height;
-                    slotGraphic.set({ scaleX, scaleY });
-                } else {
-                    slotGraphic = new fabric.Rect({
-                        left: slot.x,
-                        top: slot.y,
-                        width: slot.width,
-                        height: slot.height,
-                        fill: '#fcfcfc',
-                        stroke: slot.stroke || '#000000',
-                        strokeWidth: slot.strokeWidth || 1.5,
-                        rx: isCircle ? slot.width / 2 : (slot.rx || 0),
-                        ry: isCircle ? slot.height / 2 : (slot.ry || 0),
-                        selectable: true,
-                        hasControls: false,
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        isSlot: true,
-                        slotId: slot.id,
-                        opacity: 0.8
-                    });
-                }
-
-                // Add a visual indicator label
-                const label = new fabric.IText(slot.label || 'ADD PHOTO', {
-                    left: slot.x + slot.width / 2,
-                    top: slot.y + slot.height / 2,
-                    fontSize: 10,
-                    fontFamily: 'Inter',
-                    fontWeight: '900',
-                    fill: '#000000',
-                    textAlign: 'center',
-                    originX: 'center',
-                    originY: 'center',
-                    selectable: false,
-                    opacity: 0.2
-                });
-
-                canvas.add(slotGraphic);
-                canvas.add(label);
-            });
-        }
+        // --- 2D TEMPLATE ENGINE LOGIC CLEARED FOR RESET ---
+        // (Previously handled clipping shapes, backdrops, and image slots)
         
         fabricRef.current = canvas;
 

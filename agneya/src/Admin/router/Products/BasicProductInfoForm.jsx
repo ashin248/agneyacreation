@@ -1,7 +1,7 @@
 import React from 'react';
 import { MODELS } from '../../../Client/components/Three/ProductLibrary';
-import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
-import TemplateThumbnail from '../../../Client/components/TwoD/TemplateThumbnail';
+// import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
+// import TemplateThumbnail from '../../../Client/components/TwoD/TemplateThumbnail';
 import { FiCheckCircle, FiGrid, FiImage, FiPlus, FiTrash2, FiBox, FiPackage, FiAlertCircle, FiCheck } from 'react-icons/fi';
 
 const BasicProductInfoForm = ({ 
@@ -436,142 +436,7 @@ const BasicProductInfoForm = ({
               </div>
             </div>
 
-            {/* 2D SECTION: Remount on type change to ensure clean transition */}
-            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
-              <div key="custom-2d-block" className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white p-6 rounded-2xl border border-blue-100 mb-6">
-                
-                {/* Left Column: Template Selection */}
-                <div>
-                  <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <FiGrid size={14} />
-                    Select 2D Template
-                  </label>
-                  
-                  <div className="space-y-6">
-                    <select
-                      onChange={(e) => {
-                        const category = e.target.value;
-                        const templatesOfCategory = Object.values(TWOD_TEMPLATES).filter(t => t.category === category);
-                        const defaultTemplate = templatesOfCategory[0];
-                        
-                        // Select the base template
-                        select2DTemplate(defaultTemplate);
-                        
-                        // Automatically select ALL templates of this category for the gallery if any exist
-                        if (templatesOfCategory.length > 0) {
-                          setFormData(prev => ({
-                            ...prev,
-                            linkedTemplates: templatesOfCategory.map(t => ({ 
-                              id: t.id, 
-                              overrideFile: null, 
-                              overridePreview: null 
-                            }))
-                          }));
-                        }
-                      }}
-                      value={TWOD_TEMPLATES[formData.base2DTemplateId]?.category || ''}
-                      className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-semibold text-gray-800"
-                    >
-                      <option value="">-- Choose a Product Model --</option>
-                      {Array.from(new Set(Object.values(TWOD_TEMPLATES).map(t => t.category))).map(category => (
-                        <option key={category} value={category}>
-                          {category} Standard
-                        </option>
-                      ))}
-                    </select>
-
-                    {/* Smart Thumbnail Preview */}
-                    {formData.base2DTemplateId && TWOD_TEMPLATES[formData.base2DTemplateId] && (
-                      <div className="border rounded-xl shadow-sm overflow-hidden bg-white aspect-square max-w-[240px] mx-auto animate-in zoom-in duration-300">
-                        {(() => {
-                          const activeTemplate = TWOD_TEMPLATES[formData.base2DTemplateId];
-                          return (
-                            <div className="w-full h-full relative group">
-                              <TemplateThumbnail template={activeTemplate} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                              <div className="absolute top-2 right-2 bg-blue-600 text-white p-1.5 rounded-full shadow-lg">
-                                <FiCheckCircle size={14} />
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    )}
-                  </div>
-
-                  <p className="text-[11px] text-gray-500 font-medium mt-4 leading-relaxed">
-                     Selecting a template automatically applies the clipping shape and realistic finishes in the design studio.
-                  </p>
-                </div>
-
-              </div>
-            )}
-
-            {/* DESIGN GALLERY ASSOCIATION - Multiple 2D Templates */}
-            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
-              <div key="gallery-association-block" className="mt-8 pt-8 border-t border-blue-100 animate-in fade-in duration-700">
-                <div className="flex items-center justify-between mb-6">
-                    <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
-                    <FiGrid size={14} />
-                    Associated Design Gallery Templates
-                    </label>
-                    <button type="button" onClick={selectAllTemplates} className="px-4 py-1.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-blue-100 transition-colors">
-                        Select All Filtered
-                    </button>
-                </div>
-
-                <div className="flex flex-wrap gap-6 pt-2">
-                  {Object.values(TWOD_TEMPLATES)
-                    .map((template) => {
-                    const associatedItem = (formData.linkedTemplates || []).find(t => (typeof t === 'string' ? t : (t.templateId || t.id)) === template.id);
-                    const isAssociated = !!associatedItem;
-                    const overridePreview = associatedItem?.overridePreview || null;
-
-                    return (
-                      <div key={template.id} className="flex flex-col gap-2">
-                          <div 
-                            onClick={() => toggleLinkedTemplate(template.id)}
-                            className={`group relative w-32 cursor-pointer transition-all ${isAssociated ? 'scale-100' : 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100 hover:scale-95'}`}
-                          >
-                            <div className={`aspect-[3/4] bg-white rounded-3xl overflow-hidden border-2 transition-all ${isAssociated ? 'border-indigo-600 shadow-xl shadow-indigo-500/20' : 'border-slate-100'}`}>
-                              {overridePreview ? (
-                                  <img src={overridePreview} className="w-full h-full object-cover" alt="Override" />
-                              ) : (
-                                  <TemplateThumbnail template={template} className="w-full h-full" />
-                              )}
-                              
-                              {isAssociated && (
-                                <div className="absolute top-2 right-2 bg-indigo-600 text-white p-1 rounded-full shadow-lg p-1.5 animate-in zoom-in duration-300">
-                                  <FiCheck size={10} />
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Checkbox Mask */}
-                            <div className={`absolute top-2 right-2 w-5 h-5 rounded-md border-2 transition-all ${isAssociated ? 'bg-blue-600 border-blue-600' : 'bg-white/80 border-gray-200'}`}>
-                               {isAssociated && <FiCheckCircle size={12} className="text-white mx-auto mt-0.5" />}
-                            </div>
-                          </div>
-                          
-                          {/* Override Button */}
-                          {isAssociated && (
-                              <label className="cursor-pointer text-center py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 hover:border-indigo-200 transition-all">
-                                  {overridePreview ? 'Change Backdrop' : 'Upload Backdrop'}
-                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleOverrideImageChange(e, template.id)} />
-                              </label>
-                          )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-6 bg-blue-50/50 rounded-2xl p-4 border border-blue-100">
-                   <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-1">Configuration Hint:</p>
-                   <p className="text-[11px] text-blue-700 font-bold leading-relaxed">
-                     Selected templates will appear as a gallery on the product page. Users can pick one to pre-load a design theme into the editor. You can now upload specific overriding background images for each template.
-                   </p>
-                </div>
-              </div>
-            )}
+            {/* 2D TEMPLATE MANAGEMENT CLEARED FOR RESET */}
 
             {/* 3D SECTION */}
             {(formData.customizationType === '3D' || formData.customizationType === 'Both') && (

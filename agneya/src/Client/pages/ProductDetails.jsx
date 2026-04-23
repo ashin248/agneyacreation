@@ -23,9 +23,9 @@ import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
 import StudioOverlay from '../components/StudioOverlay';
-import TWOD_TEMPLATES_LIB, { TWOD_TEMPLATES as NAMED_TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
-const TWOD_TEMPLATES = TWOD_TEMPLATES_LIB || NAMED_TWOD_TEMPLATES;
-import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
+// import TWOD_TEMPLATES_LIB, { TWOD_TEMPLATES as NAMED_TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+// const TWOD_TEMPLATES = TWOD_TEMPLATES_LIB || NAMED_TWOD_TEMPLATES;
+// import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
 import { Grid, Check, ChevronRight as FiChevronRight } from 'lucide-react';
 
 const ProductDetails = () => {
@@ -71,11 +71,12 @@ const ProductDetails = () => {
                         setSelectedSize(first.size);
                     }
 
-                    if (res.data.linkedTemplates?.length > 0) {
-                        const first = res.data.linkedTemplates[0];
-                        const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
-                        setActiveTemplateId(tid);
-                    }
+                    // 2D Template initialization cleared for reset
+                    // if (res.data.linkedTemplates?.length > 0) {
+                    //     const first = res.data.linkedTemplates[0];
+                    //     const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
+                    //     setActiveTemplateId(tid);
+                    // }
                     
                     // Fetch related products
                     if (res.data.category) {
@@ -493,93 +494,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* --- THEMES GALLERY --- */}
-                {product.linkedTemplates?.length > 0 && (
-                    <div className="mt-40 max-w-7xl mx-auto px-6 mb-40">
-                            <div className="text-center mb-16">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-500 mb-4">Design Archive</h2>
-                                <h3 className="text-5xl font-black text-gray-900 tracking-tighter uppercase mb-6">Choose Your Theme</h3>
-                                <p className="text-slate-400 font-bold max-w-xl mx-auto text-sm leading-relaxed">
-                                    Browse our premium library of pre-designed templates. Select a style to begin personalizing your custom asset.
-                                </p>
-                            </div>
-
-                            {/* Category Tabs */}
-                            <div className="flex flex-wrap justify-center gap-2 mb-12 border-b border-slate-100 pb-8">
-                                {['All Designs', ...new Set((product.linkedTemplates || []).map(t => {
-                                    const tid = typeof t === 'string' ? t : t?.templateId;
-                                    const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
-                                    return template?.category;
-                                }).filter(Boolean))].map(cat => (
-                                    <button 
-                                        key={cat}
-                                        onClick={() => setSelectedCategory(cat)}
-                                        className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'bg-white text-slate-400 hover:text-indigo-600 hover:bg-slate-50'}`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
-                                {product.linkedTemplates
-                                    .filter(t => {
-                                        const tid = typeof t === 'string' ? t : t?.templateId;
-                                        if (selectedCategory === 'All Designs') return true;
-                                        const template = TWOD_TEMPLATES && TWOD_TEMPLATES[tid];
-                                        return template?.category === selectedCategory;
-                                    })
-                                    .map((t) => {
-                                    const templateId = typeof t === 'string' ? t : t?.templateId;
-                                    const template = TWOD_TEMPLATES && TWOD_TEMPLATES[templateId];
-                                    if (!template) return null;
-                                    
-                                    return (
-                                        <div 
-                                            key={templateId} 
-                                            onClick={() => {
-                                                setActiveTemplateId(templateId);
-                                                requireLogin(() => {
-                                                    setInitialStudioMode('self');
-                                                    setCustomizingProduct(product);
-                                                });
-                                            }}
-                                            className="group relative cursor-pointer"
-                                        >
-                                            <div className="aspect-[3/4] bg-white rounded-[40px] overflow-hidden border border-slate-100 shadow-sm transition-all duration-700 group-hover:shadow-[0_45px_90px_rgba(79,70,229,0.15)] group-hover:translate-y-[-12px] group-hover:border-indigo-100 ring-1 ring-slate-100/50">
-                                                <TemplateThumbnail template={template} className="h-full" />
-                                                
-                                                {/* Hover Action Overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-indigo-950/80 via-indigo-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8">
-                                                    <div className="transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500 delay-75">
-                                                        <div className="flex items-center gap-3 mb-4">
-                                                            <div className="h-1 w-12 bg-indigo-400 rounded-full"></div>
-                                                            <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Active Template</span>
-                                                        </div>
-                                                        <button className="w-full py-5 bg-white text-gray-900 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:bg-indigo-500 hover:text-white transition-all transform active:scale-95 group/btn flex items-center justify-center gap-3">
-                                                            Start Designing
-                                                            <FiChevronRight className="group-hover/btn:translate-x-1 transition-transform" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="mt-8 px-6 text-center transform group-hover:translate-y-[-4px] transition-transform">
-                                                <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-2 block">{template.category}</span>
-                                                <h4 className="text-xl font-black text-gray-900 tracking-tighter uppercase line-clamp-1">{template.name}</h4>
-                                                <div className="flex items-center justify-center gap-4 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
-                                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                        Premium Layout
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                )}
+                {/* 2D Themes Gallery Cleared for Reset */}
 
                 {/* Related Products Section */}
                 {relatedProducts.length > 0 && (
