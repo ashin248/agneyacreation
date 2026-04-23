@@ -192,6 +192,41 @@ const BasicProductInfoForm = ({
     }));
   };
 
+  const addMockupView = () => {
+    const next = [...(formData.mockupViews || []), { 
+      id: Date.now(), 
+      label: 'New View', 
+      mockupFile: null, 
+      mockupPreview: null,
+      width: 500,
+      height: 500
+    }];
+    setFormData(prev => ({ ...prev, mockupViews: next }));
+  };
+
+  const removeMockupView = (id) => {
+    setFormData(prev => ({
+      ...prev,
+      mockupViews: (prev.mockupViews || []).filter(v => v.id !== id)
+    }));
+  };
+
+  const updateMockupView = (id, updates) => {
+    setFormData(prev => ({
+      ...prev,
+      mockupViews: (prev.mockupViews || []).map(v => v.id === id ? { ...v, ...updates } : v)
+    }));
+  };
+
+  const handleMockupFileChange = (e, id) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    updateMockupView(id, { 
+      mockupFile: file, 
+      mockupPreview: URL.createObjectURL(file) 
+    });
+  };
+
   return (
     <div className="bg-white shadow-md rounded-lg p-6 w-full">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Basic Product Info</h2>
@@ -436,7 +471,126 @@ const BasicProductInfoForm = ({
               </div>
             </div>
 
-            {/* 2D TEMPLATE MANAGEMENT CLEARED FOR RESET */}
+            {/* --- NEW 2D MOCKUP VIEWS ENGINE --- */}
+            {(formData.customizationType === '2D' || formData.customizationType === 'Both') && (
+              <div key="mockup-views-block" className="mt-8 pt-8 border-t border-blue-100 animate-in fade-in duration-700">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <label className="block text-[11px] font-black text-blue-900 uppercase tracking-widest flex items-center gap-2">
+                      <FiGrid size={14} />
+                      2D Mockup Architecture (Multi-View)
+                    </label>
+                    <p className="text-[9px] text-gray-500 font-bold mt-1 uppercase">Upload transparent PNGs for different product angles</p>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={addMockupView}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-900 transition-all shadow-lg active:scale-95"
+                  >
+                    <FiPlus size={14} /> Add New View
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {(formData.mockupViews || []).map((view) => (
+                    <div key={view.id} className="bg-white p-6 rounded-[24px] border-2 border-slate-100 hover:border-blue-200 transition-all shadow-sm group">
+                      <div className="flex items-center justify-between mb-4">
+                        <input 
+                          type="text" 
+                          value={view.label}
+                          onChange={(e) => updateMockupView(view.id, { label: e.target.value })}
+                          className="bg-slate-50 border-none text-[12px] font-black uppercase tracking-widest text-slate-900 focus:ring-0 w-2/3 rounded-lg px-3 py-1.5"
+                          placeholder="View Name (e.g. Front Side)"
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => removeMockupView(view.id)}
+                          className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-full transition-all"
+                        >
+                          <FiTrash2 size={16} />
+                        </button>
+                      </div>
+
+                      <div className="flex gap-4">
+                        {/* Mockup Upload */}
+                        <div className="flex-1">
+                          <label className={`relative block aspect-square rounded-2xl border-2 border-dashed overflow-hidden cursor-pointer transition-all ${view.mockupPreview ? 'border-blue-100' : 'border-slate-200 hover:border-blue-400 bg-slate-50'}`}>
+                            {view.mockupPreview ? (
+                              <img src={view.mockupPreview} className="w-full h-full object-contain" alt="Mockup" />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center h-full gap-2 p-4 text-center">
+                                <FiImage size={24} className="text-slate-400" />
+                                <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">Upload Mockup PNG<br/>(Transparent)</span>
+                              </div>
+                            )}
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/png"
+                              onChange={(e) => handleMockupFileChange(e, view.id)}
+                            />
+                          </label>
+                        </div>
+
+                        {/* Dimensions & Config */}
+                        <div className="w-1/3 space-y-4">
+                          <div>
+                            <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Canvas Width</label>
+                            <input 
+                              type="number" 
+                              value={view.width}
+                              onChange={(e) => updateMockupView(view.id, { width: parseInt(e.target.value) || 0 })}
+                              className="w-full px-3 py-2 bg-slate-50 border-none rounded-xl text-[10px] font-bold text-slate-900 focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Canvas Height</label>
+                            <input 
+                              type="number" 
+                              value={view.height}
+                              onChange={(e) => updateMockupView(view.id, { height: parseInt(e.target.value) || 0 })}
+                              className="w-full px-3 py-2 bg-slate-50 border-none rounded-xl text-[10px] font-bold text-slate-900 focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div className="pt-2">
+                             <div className="flex items-center gap-2 text-emerald-500 bg-emerald-50 px-2 py-1.5 rounded-lg border border-emerald-100">
+                                <FiCheck size={12} />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">View Connected</span>
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {(formData.mockupViews || []).length === 0 && (
+                    <div className="md:col-span-2 py-12 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-4 text-center">
+                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-slate-300">
+                          <FiImage size={32} />
+                       </div>
+                       <div>
+                          <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">No Mockup Views Added</p>
+                          <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">Start by adding your first product angle</p>
+                       </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 bg-slate-900 rounded-[32px] p-8 border border-white/5 relative overflow-hidden group">
+                   <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <FiZap size={80} className="text-blue-400" />
+                   </div>
+                   <div className="relative z-10 max-w-xl">
+                      <h5 className="text-[12px] font-black text-white uppercase tracking-[0.2em] mb-3">Architectural Blueprint</h5>
+                      <p className="text-[11px] text-slate-400 font-bold leading-relaxed">
+                        Your transparent mockup acts as the top-most layer in the studio. 
+                        User-uploaded photos will be automatically clipped by the transparent areas of your PNG, 
+                        ensuring a pixel-perfect placement on the actual product geometry.
+                      </p>
+                   </div>
+                </div>
+              </div>
+            )}
 
             {/* 3D SECTION */}
             {(formData.customizationType === '3D' || formData.customizationType === 'Both') && (

@@ -26,6 +26,7 @@ const CreateProduct = () => {
     canvasConfig: null,
     blankFrontImageUrl: '',
     linkedTemplates: [],
+    mockupViews: [],
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -137,7 +138,6 @@ const CreateProduct = () => {
 
     const errorMessage = validatePayload();
     if (errorMessage) {
-
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -210,6 +210,23 @@ const CreateProduct = () => {
       if (Array.isArray(galleryImages) && galleryImages.length > 0) {
         galleryImages.forEach(img => {
           if (img) formData.append('galleryImages', img);
+        });
+      }
+
+      // 2D Mockup Views appending
+      if (Array.isArray(basicInfo.mockupViews) && basicInfo.mockupViews.length > 0) {
+        const mockupMetadata = basicInfo.mockupViews.map(v => ({
+          id: v.id,
+          label: v.label,
+          width: v.width,
+          height: v.height
+        }));
+        formData.append('mockupViews', JSON.stringify(mockupMetadata));
+
+        basicInfo.mockupViews.forEach((view) => {
+          if (view.mockupFile) {
+            formData.append(`mockup_file_${view.id}`, view.mockupFile);
+          }
         });
       }
 

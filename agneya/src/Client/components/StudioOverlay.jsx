@@ -422,7 +422,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
 
     const [activeTab, setActiveTab] = useState('uploads');
-    const [viewSide, setViewSide] = useState('front'); // 'front' or 'back' for 2D mode
+    const [activeMockupViewId, setActiveMockupViewId] = useState(null);
+    const mockupViews = product?.mockupViews || [];
+    const currentMockupView = mockupViews.find(v => v.id === activeMockupViewId) || mockupViews[0];
     const [previewRotation] = useState(0);
     const [brushSize, setBrushSize] = useState(10);
     const [brushColor, setBrushColor] = useState('#0c0c2a');
@@ -431,8 +433,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     const [variations, setVariations] = useState([{
         id: Date.now(), name: 'Item 1',
-        frontCanvasData: null, frontCanvasObjects: [], frontAnchors: {},
-        backCanvasData: null, backCanvasObjects: [], backAnchors: {}
+        designs: {} // Map of viewId -> { canvasData, canvasObjects, anchors }
     }]);
     const [activeVariationId, setActiveVariationId] = useState(variations[0].id);
 
@@ -581,8 +582,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         const effectiveCanvasConfig = product?.canvasConfig;
         const effectiveShapeConfig = product?.shapeConfig;
 
-        const baseWidth = effectiveCanvasConfig?.width || 500;
-        const baseHeight = effectiveCanvasConfig?.height || 600;
+        const baseWidth = currentMockupView?.width || effectiveCanvasConfig?.width || 500;
+        const baseHeight = currentMockupView?.height || effectiveCanvasConfig?.height || 600;
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: baseWidth,
@@ -591,8 +592,36 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             preserveObjectStacking: true
         });
         
-        // --- 2D TEMPLATE ENGINE LOGIC CLEARED FOR RESET ---
-        // (Previously handled clipping shapes, backdrops, and image slots)
+        // --- 2D MOCKUP VIEWS ENGINE ---
+        if (currentMockupView) {
+            const mockupImg = new Image();
+            mockupImg.crossOrigin = 'anonymous';
+            mockupImg.src = currentMockupView.mockupPreview || currentMockupView.mockupUrl;
+            mockupImg.onload = () => {
+                const fabricMockup = new fabric.FabricImage(mockupImg, {
+                    selectable: false,
+                    evented: false,
+                    excludeFromExport: true
+                });
+                canvas.setOverlayImage(fabricMockup, canvas.renderAll.bind(canvas));
+            };
+        }
+
+        // LOAD SAVED DESIGN FOR THIS VIEW/VARIATION
+        const currentVar = variations.find(v => v.id === activeVariationId);
+        const sideKey = activeMockupViewId || 'front';
+        const savedDesign = currentVar?.designs?.[sideKey];
+
+        if (savedDesign?.canvasData) {
+            isHistoryRecording.current = true;
+            canvas.loadFromJSON(savedDesign.canvasData).then(() => {
+                canvas.renderAll();
+                setCanvasObjects(savedDesign.canvasObjects || []);
+                setObjectAnchors(savedDesign.anchors || {});
+                updateTexture(true);
+                isHistoryRecording.current = false;
+            });
+        }
         
         fabricRef.current = canvas;
 
@@ -678,7 +707,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 }
             }
         };
-    }, [isOpen, product?.customizationType, fastSync, updateTexture]);
+    }, [isOpen, product?.customizationType, fastSync, updateTexture, activeMockupViewId, activeVariationId]);
 
     useEffect(() => {
         if (historyStep === -1 || isHistoryRecording.current || !fabricRef.current) return;
@@ -700,6 +729,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             historyRef.current = [];
             setHistoryStep(-1);
             setActiveObject(null);
+            if (product?.mockupViews?.length > 0) {
+                setActiveMockupViewId(product.mockupViews[0].id);
+            } else {
+                setActiveMockupViewId(null);
+            }
             if (fabricRef.current) {
                 fabricRef.current.clear();
                 fabricRef.current.backgroundColor = 'transparent';
@@ -741,24 +775,35 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const handleUndo = () => { if (historyStep > 0) setHistoryStep(historyStep - 1); };
     const handleRedo = () => { if (historyStep < historyRef.current.length - 1) setHistoryStep(historyStep + 1); };
 
+    const handleSwitchMockupView = (viewId) => {
+        saveCurrentToVariation();
+        setActiveMockupViewId(viewId);
+        // The useEffect will handle re-initializing the canvas with new dimensions
+    };
+
     const saveCurrentToVariation = useCallback(() => {
         if (!fabricRef.current) return;
         const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
+        const sideKey = activeMockupViewId || 'front';
         setVariations(prev => prev.map(v => v.id === activeVariationId ? {
             ...v,
-            [`${viewSide}CanvasData`]: currentData,
-            [`${viewSide}CanvasObjects`]: [...canvasObjects],
-            [`${viewSide}Anchors`]: { ...objectAnchors }
+            designs: {
+                ...v.designs,
+                [sideKey]: {
+                    canvasData: currentData,
+                    canvasObjects: [...canvasObjects],
+                    anchors: { ...objectAnchors }
+                }
+            }
         } : v));
-    }, [activeVariationId, canvasObjects, objectAnchors, viewSide]);
+    }, [activeVariationId, canvasObjects, objectAnchors, activeMockupViewId]);
 
     const addVariation = () => {
         saveCurrentToVariation();
         const newId = Date.now();
         const newItem = {
             id: newId, name: `Item ${variations.length + 1}`,
-            frontCanvasData: null, frontCanvasObjects: [], frontAnchors: {},
-            backCanvasData: null, backCanvasObjects: [], backAnchors: {}
+            designs: {}
         };
         setVariations(prev => [...prev, newItem]);
         setActiveVariationId(newId);
@@ -783,12 +828,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         saveCurrentToVariation();
         const target = variations.find(v => v.id === id);
         setActiveVariationId(id);
-        const savedData = target[`${viewSide}CanvasData`];
-        if (savedData) {
-            fabricRef.current.loadFromJSON(savedData).then(() => {
+        
+        const sideKey = activeMockupViewId || 'front';
+        const savedDesign = target.designs?.[sideKey];
+
+        if (savedDesign?.canvasData) {
+            fabricRef.current.loadFromJSON(savedDesign.canvasData).then(() => {
                 fabricRef.current.renderAll();
-                setCanvasObjects(target[`${viewSide}CanvasObjects`] || []);
-                setObjectAnchors(target[`${viewSide}Anchors`] || {});
+                setCanvasObjects(savedDesign.canvasObjects || []);
+                setObjectAnchors(savedDesign.anchors || {});
                 updateTexture(true);
             });
         } else {
@@ -799,53 +847,6 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         }
     };
 
-    const handleSwitchSide = (side) => {
-        if (side === viewSide) return;
-
-        // 1. Capture current side
-        if (fabricRef.current) {
-            const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
-
-            setVariations(prev => {
-                // Update current variation with what we just captured
-                const updatedVars = prev.map(v => v.id === activeVariationId ? {
-                    ...v,
-                    [`${viewSide}CanvasData`]: currentData,
-                    [`${viewSide}CanvasObjects`]: [...canvasObjects],
-                    [`${viewSide}Anchors`]: { ...objectAnchors }
-                } : v);
-
-                // 2. Switch side state and load the target side data
-                const target = updatedVars.find(v => v.id === activeVariationId);
-                const targetData = target[`${side}CanvasData`];
-
-                setTimeout(() => {
-                    setViewSide(side);
-                    if (targetData && fabricRef.current) {
-                        fabricRef.current.loadFromJSON(targetData).then(() => {
-                            fabricRef.current.renderAll();
-                            setCanvasObjects(target[`${side}CanvasObjects`] || []);
-                            setObjectAnchors(target[`${side}Anchors`] || {});
-                            updateTexture(true);
-                            historyRef.current = [];
-                            setHistoryStep(-1);
-                        });
-                    } else if (fabricRef.current) {
-                        fabricRef.current.clear();
-                        setCanvasObjects([]);
-                        setObjectAnchors({});
-                        updateTexture(true);
-                        historyRef.current = [];
-                        setHistoryStep(-1);
-                    }
-                }, 0);
-
-                return updatedVars;
-            });
-        } else {
-            setViewSide(side);
-        }
-    };
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -1062,18 +1063,28 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             // Process ALL variations
             const allItems = variations.map(v => {
                 const isCurrent = v.id === activeVariationId && fabricRef.current;
-                const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
-                const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
+                
+                // If this is the current active variation, sync the active view's design to state first
+                let finalDesigns = { ...v.designs };
+                if (isCurrent) {
+                    const sideKey = activeMockupViewId || 'front';
+                    finalDesigns[sideKey] = {
+                        canvasData: fabricRef.current.toJSON(['uid', 'excludeFromExport']),
+                        canvasObjects: [...canvasObjects],
+                        anchors: { ...objectAnchors }
+                    };
+                }
 
                 const designPayload = designMode === 'self'
-                    ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData }
+                    ? { mode: 'self', designs: finalDesigns }
                     : { mode: 'company', instructions: companyInstructions, references: companyReferences };
 
                 const wMin = (product.isBulkEnabled && product.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
 
-                const frontSnapshot = isCurrent && viewSide === 'front' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
-                const backSnapshot = isCurrent && viewSide === 'back' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
+                // For the cart preview, we try to take a snapshot of the primary view
+                // In a perfect world, we'd loop and take snapshots of all, but for cart preview, one is enough
+                const cartPreviewImg = isCurrent ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : product.thumbnail || product.images?.[0];
 
                 return {
                     productId: product._id,
@@ -1082,16 +1093,15 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                     quantity: itemQty,
                     itemType: 'Custom',
                     selectedVariation: { sku: `custom_${v.id}`, size: 'Custom' },
-                    image: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0], // The preview mockup
-                    designImage: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0],
+                    image: cartPreviewImg,
+                    designImage: cartPreviewImg,
                     isBulkEnabled: product.isBulkEnabled,
                     bulkRules: product.bulkRules,
                     gstRate: product.gstRate || 0,
                     customData: {
                         design: designPayload,
                         variationName: v.name,
-                        appliedFrontDesign: frontSnapshot,
-                        appliedBackDesign: backSnapshot
+                        allDesigns: finalDesigns // Store all view designs here
                     }
                 };
             });
@@ -1553,11 +1563,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         </div>
                                                     )}
 
-                                                    {/* Quick Side Toggle */}
-                                                    {(product.blankFrontImage && product.blankBackImage) && (
-                                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
-                                                            <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
-                                                            <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
+                                                    {/* Side Selector (Dynamic) */}
+                                                    {mockupViews.length > 1 && (
+                                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1.5 rounded-2xl shadow-xl z-50 border border-slate-100 max-w-[90%] overflow-x-auto no-scrollbar">
+                                                            {mockupViews.map((view) => (
+                                                                <button 
+                                                                    key={view.id}
+                                                                    onClick={() => handleSwitchMockupView(view.id)} 
+                                                                    className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${currentMockupView?.id === view.id ? 'bg-[#0c0c2a] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50'}`}
+                                                                >
+                                                                    {view.label}
+                                                                </button>
+                                                            ))}
                                                         </div>
                                                     )}
                                                 </div>

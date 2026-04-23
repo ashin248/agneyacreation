@@ -30,6 +30,7 @@ const EditProduct = () => {
     canvasConfig: null,
     blankFrontImageUrl: '',
     linkedTemplates: [],
+    mockupViews: [],
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -119,6 +120,11 @@ const EditProduct = () => {
           canvasConfig: product.canvasConfig || null,
           blankFrontImageUrl: product.blankFrontImage || '',
           linkedTemplates: product.linkedTemplates || [],
+          mockupViews: (product.mockupViews || []).map(v => ({
+            ...v,
+            id: v.id || v._id,
+            mockupPreview: v.mockupUrl
+          })),
         });
         
         setGalleryImagePreviews(product.galleryImages || []);
@@ -220,6 +226,23 @@ const EditProduct = () => {
       if (galleryImages && galleryImages.length > 0) {
         galleryImages.forEach(img => {
           formData.append('galleryImages', img);
+        });
+      }
+
+      // 2D Mockup Views appending
+      if (Array.isArray(basicInfo.mockupViews) && basicInfo.mockupViews.length > 0) {
+        const mockupMetadata = basicInfo.mockupViews.map(v => ({
+          id: v.id,
+          label: v.label,
+          width: v.width,
+          height: v.height
+        }));
+        formData.append('mockupViews', JSON.stringify(mockupMetadata));
+
+        basicInfo.mockupViews.forEach((view) => {
+          if (view.mockupFile) {
+            formData.append(`mockup_file_${view.id}`, view.mockupFile);
+          }
         });
       }
 
