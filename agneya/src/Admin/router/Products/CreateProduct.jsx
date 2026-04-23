@@ -26,7 +26,6 @@ const CreateProduct = () => {
     canvasConfig: null,
     blankFrontImageUrl: '',
     linkedTemplates: [],
-    mockupViews: [],
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
@@ -100,12 +99,12 @@ const CreateProduct = () => {
     if (basicInfo.basePrice === '' || Number(basicInfo.basePrice) < 0) return "Valid base value is required.";
     if (basicInfo.isCustomizable) {
       if (!basicInfo.customizationType || basicInfo.customizationType === 'None') return "Design framework type is required.";
-      if (basicInfo.customizationType === '2D' && (!basicInfo.mockupViews || basicInfo.mockupViews.length === 0)) return "Define at least one 2D Mockup View.";
+      if (basicInfo.customizationType === '2D' && !basicInfo.base2DTemplateId) return "Select a 2D template from library.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
       if (basicInfo.customizationType === 'Both') {
-        const hasMockupViews = basicInfo.mockupViews?.length > 0;
-        if (!hasMockupViews) {
-           return "At least one 2D Mockup View is required for Dual-Mode.";
+        const hasGallery = basicInfo.linkedTemplates?.length > 0;
+        if (!basicInfo.base2DTemplateId && !hasGallery) {
+           return "2D Template selection or Design Gallery items are required for Dual-Mode.";
         }
         if (!base3DModelFile && !basicInfo.baseModelId) return "3D Model selection is required for Dual-Mode.";
       }
@@ -138,6 +137,7 @@ const CreateProduct = () => {
 
     const errorMessage = validatePayload();
     if (errorMessage) {
+
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -210,23 +210,6 @@ const CreateProduct = () => {
       if (Array.isArray(galleryImages) && galleryImages.length > 0) {
         galleryImages.forEach(img => {
           if (img) formData.append('galleryImages', img);
-        });
-      }
-
-      // 2D Mockup Views appending
-      if (Array.isArray(basicInfo.mockupViews) && basicInfo.mockupViews.length > 0) {
-        const mockupMetadata = basicInfo.mockupViews.map(v => ({
-          id: v.id,
-          label: v.label,
-          width: v.width,
-          height: v.height
-        }));
-        formData.append('mockupViews', JSON.stringify(mockupMetadata));
-
-        basicInfo.mockupViews.forEach((view) => {
-          if (view.mockupFile) {
-            formData.append(`mockup_file_${view.id}`, view.mockupFile);
-          }
         });
       }
 

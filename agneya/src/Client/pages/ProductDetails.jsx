@@ -124,12 +124,7 @@ const ProductDetails = () => {
         );
     }
 
-    const mockupImages = (product.mockupViews || []).map(v => v.mockupPreview || v.mockupUrl).filter(Boolean);
-    const images = [
-        ...(product.galleryImages?.length > 0 ? product.galleryImages : (product.images || [])),
-        ...mockupImages
-    ];
-    if (images.length === 0) images.push('https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80');
+    const images = (product.galleryImages?.length > 0 ? product.galleryImages : (product.images || ['https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80']));
     
     // Robust pricing mapping
     const currentPrice = Number(product.discountPrice || product.basePrice || 0) || 0;
@@ -450,7 +445,6 @@ const ProductDetails = () => {
                                             <button 
                                                 onClick={() => requireLogin(() => {
                                                     setInitialStudioMode('self');
-                                                    // Determine initial side based on active image if it matches a mockup
                                                     setCustomizingProduct(product);
                                                 })} 
                                                 className="w-full h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center gap-4 font-black uppercase tracking-[0.3em] text-[10px] shadow-2xl hover:bg-slate-700 transition-all active:scale-95"
