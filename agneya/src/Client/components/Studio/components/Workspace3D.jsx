@@ -414,7 +414,7 @@ const Workspace3D = ({
                     </div>
                 </div>
                 <Canvas
-                    shadows
+                    shadows={{ type: THREE.PCFShadowMap }}
                     camera={{ position: [0, 0, 5], fov: 45 }}
                     gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
                     dpr={[1, 2]}
