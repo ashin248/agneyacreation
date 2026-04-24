@@ -86,6 +86,7 @@ function Model3D({
         if (!scene || !modelConfig) return;
 
         const isPhotoframe = modelConfig.category === 'Photoframe';
+        const clonedMaterials = [];
 
         scene.traverse((node) => {
             if (node.isMesh) {
@@ -96,6 +97,7 @@ function Model3D({
                     node.raycast = () => null; // Make invisible to Raycaster
                     if (node.material) {
                         node.material = node.material.clone();
+                        clonedMaterials.push(node.material);
                         node.material.transparent = true;
                         node.material.opacity = 0.4;
                         node.material.needsUpdate = true;
@@ -111,6 +113,7 @@ function Model3D({
 
                 if (shouldStrip) {
                     node.material = node.material.clone();
+                    clonedMaterials.push(node.material);
                     // Strip ALL maps to ensure a completely blank canvas
                     node.material.map = null;
                     node.material.lightMap = null;
@@ -137,6 +140,10 @@ function Model3D({
                 }
             }
         });
+
+        return () => {
+            clonedMaterials.forEach(mat => mat.dispose());
+        };
     }, [scene, modelConfig]);
 
 
@@ -674,18 +681,28 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             setIsMobileUiMinimized(false);
         };
 
+        let debounceTimer;
+        const debouncedUpdateAndSave = () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                updateTexture(true);
+                saveHistory();
+            }, 300); // 300ms debounce prevents UI freezing during rapid changes
+        };
+
         canvas.on('selection:created', handleSelection);
         canvas.on('selection:updated', handleSelection);
         canvas.on('selection:cleared', () => setActiveObject(null));
         canvas.on('object:moving', fastSync);
         canvas.on('object:scaling', fastSync);
         canvas.on('object:rotating', fastSync);
-        canvas.on('object:modified', () => { updateTexture(true); saveHistory(); });
-        canvas.on('object:added', () => { updateTexture(true); saveHistory(); });
-        canvas.on('object:removed', () => { updateTexture(true); saveHistory(); });
-        canvas.on('path:created', () => { updateTexture(true); saveHistory(); });
+        canvas.on('object:modified', debouncedUpdateAndSave);
+        canvas.on('object:added', debouncedUpdateAndSave);
+        canvas.on('object:removed', debouncedUpdateAndSave);
+        canvas.on('path:created', debouncedUpdateAndSave);
 
         return () => {
+            clearTimeout(debounceTimer);
             resizeObserver.disconnect();
             if (fabricRef.current) {
                 const c = fabricRef.current;
@@ -758,6 +775,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             });
             
             // Automatic Bounding Box Detection: Crop away transparent padding from the PNG!
+            // Using a Web Worker to prevent main thread freeze on large images
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
             tempCanvas.width = img.width;
@@ -765,46 +783,81 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             tempCtx.drawImage(img.getElement(), 0, 0);
             
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
-            let minX = tempCanvas.width, minY = tempCanvas.height, maxX = 0, maxY = 0;
-            let found = false;
+            
+            const workerCode = `
+                self.onmessage = function(e) {
+                    const data = e.data.imageData;
+                    const width = e.data.width;
+                    const height = e.data.height;
+                    
+                    let minX = width, minY = height, maxX = 0, maxY = 0;
+                    let found = false;
 
-            for (let y = 0; y < tempCanvas.height; y++) {
-                for (let x = 0; x < tempCanvas.width; x++) {
-                    const alpha = imageData[(y * tempCanvas.width + x) * 4 + 3];
-                    if (alpha > 10) { // Threshold for non-transparent pixels
-                        if (x < minX) minX = x;
-                        if (y < minY) minY = y;
-                        if (x > maxX) maxX = x;
-                        if (y > maxY) maxY = y;
-                        found = true;
+                    for (let y = 0; y < height; y++) {
+                        for (let x = 0; x < width; x++) {
+                            const alpha = data[(y * width + x) * 4 + 3];
+                            if (alpha > 10) { // Threshold for non-transparent pixels
+                                if (x < minX) minX = x;
+                                if (y < minY) minY = y;
+                                if (x > maxX) maxX = x;
+                                if (y > maxY) maxY = y;
+                                found = true;
+                            }
+                        }
                     }
-                }
-            }
+                    self.postMessage({ found, minX, minY, maxX, maxY });
+                };
+            `;
+            
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            const worker = new Worker(workerUrl);
+            
+            worker.postMessage({ imageData, width: tempCanvas.width, height: tempCanvas.height });
+            
+            worker.onmessage = (e) => {
+                const { found, minX, minY, maxX, maxY } = e.data;
+                
+                // Fallback to full image size if no pixels found or detection fails
+                const contentWidth = found ? (maxX - minX + 1) : img.width;
+                const contentHeight = found ? (maxY - minY + 1) : img.height;
+                const offsetX = found ? minX : 0;
+                const offsetY = found ? minY : 0;
 
-            // Fallback to full image size if no pixels found or detection fails
-            const contentWidth = found ? (maxX - minX + 1) : img.width;
-            const contentHeight = found ? (maxY - minY + 1) : img.height;
-            const offsetX = found ? minX : 0;
-            const offsetY = found ? minY : 0;
-
-            // Set canvas and box to the detected visible content size
-            canvas.setDimensions({ width: contentWidth, height: contentHeight });
-            setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
+                // Set canvas and box to the detected visible content size
+                canvas.setDimensions({ width: contentWidth, height: contentHeight });
+                setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
+                
+                // 2D Model Auto-Crop Engine v2.0
+                // Align the image so the visible part (minX, minY) starts at (0, 0) of the new canvas
+                img.set({ 
+                    scaleX: 1, 
+                    scaleY: 1, 
+                    left: -offsetX, 
+                    top: -offsetY
+                });
+                canvas.add(img);
+                
+                // Trigger scaling calculation immediately
+                if (resizeRef.current) resizeRef.current();
+                
+                enforceLayering();
+                
+                worker.terminate();
+                URL.revokeObjectURL(workerUrl);
+            };
             
-            // 2D Model Auto-Crop Engine v2.0
-            // Align the image so the visible part (minX, minY) starts at (0, 0) of the new canvas
-            img.set({ 
-                scaleX: 1, 
-                scaleY: 1, 
-                left: -offsetX, 
-                top: -offsetY
-            });
-            canvas.add(img);
-            
-            // Trigger scaling calculation immediately
-            if (resizeRef.current) resizeRef.current();
-            
-            enforceLayering();
+            worker.onerror = (err) => {
+                console.error("Auto-crop worker failed, falling back to original size", err);
+                canvas.setDimensions({ width: img.width, height: img.height });
+                setCanvasIntrinsicDimensions({ width: img.width, height: img.height });
+                img.set({ scaleX: 1, scaleY: 1, left: 0, top: 0 });
+                canvas.add(img);
+                if (resizeRef.current) resizeRef.current();
+                enforceLayering();
+                worker.terminate();
+                URL.revokeObjectURL(workerUrl);
+            };
         };
         imgElement.src = current2DImageUrl;
     }, [current2DImageUrl, product?.phoneMask, enforceLayering, viewSide]);
@@ -1719,14 +1772,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                     {/* Dynamic 2D Models Navigation */}
                                                     {twoDModels.length > 0 && twoDModels[active2DModelIdx] && (
-                                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 bg-white/90 backdrop-blur-md p-3 rounded-3xl shadow-2xl z-30 border border-slate-100/50 max-h-[80%] overflow-y-auto no-scrollbar pointer-events-auto">
-                                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center pb-2 border-b border-slate-100">Views</div>
+                                                        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-row items-center gap-4 bg-white/90 backdrop-blur-md p-3 rounded-[32px] shadow-2xl z-30 border border-slate-100/50 max-w-[80%] overflow-x-auto no-scrollbar pointer-events-auto">
+                                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2 border-r border-slate-100 hidden md:block">Views</div>
                                                             <button 
                                                                 onClick={() => {
                                                                     handleSwitchSide(`model_${active2DModelIdx}_main`);
                                                                     setActiveSupportSide('Main');
                                                                 }}
-                                                                className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                                                className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 shrink-0 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                                                             >
                                                                 <img src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
                                                                 <span className="text-[8px] font-black uppercase">Main</span>
@@ -1739,7 +1792,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                                         handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`);
                                                                         setActiveSupportSide(sm.side);
                                                                     }}
-                                                                    className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                                                    className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 shrink-0 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                                                                 >
                                                                     <img src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
                                                                     <span className="text-[8px] font-black uppercase">{sm.side}</span>
