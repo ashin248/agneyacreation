@@ -139,8 +139,6 @@ const Workspace2D = forwardRef(({
                 width: currentWidth * newScale,
                 height: currentHeight * newScale
             }, { cssOnly: true });
-
-            fabricRef.current.setZoom(newScale);
         };
 
         // Resize Observer for Dynamic Scaling
@@ -402,7 +400,7 @@ const Workspace2D = forwardRef(({
 
                                                     {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
                                                     {!product?.phoneMask && current2DImageUrl && (
-                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
+                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity opacity-100`}>
                                                             <img 
                                                                 src={current2DImageUrl} 
                                                                 alt="Product Backdrop"
