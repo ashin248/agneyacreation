@@ -1538,8 +1538,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                         <div className="pointer-events-auto" style={{ 
                                                             width: `${(product?.phoneMask ? 400 : (canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
                                                             height: `${(product?.phoneMask ? 800 : (canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
-                                                            marginLeft: `${(effectiveCanvasConfig?.offsetX || 0) * canvasScale}px`,
-                                                            marginTop: `${(effectiveCanvasConfig?.offsetY || 0) * canvasScale}px`,
+                                                            marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
+                                                            marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
                                                             transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
                                                             transformOrigin: 'center' 
                                                         }}>
