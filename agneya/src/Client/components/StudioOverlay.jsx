@@ -469,6 +469,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const viewportRef = useRef(null);
     const resizeRef = useRef(null);
     const [canvasScale, setCanvasScale] = useState(1);
+    const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
 
     const premiumFonts = [
         'Inter', 'Montserrat', 'Bebas Neue', 'Playfair Display', 'Pacifico', 'Oswald', 'Dancing Script', 'Righteous',
@@ -756,10 +757,25 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 originY: 'center',
             });
             
-            // Adjust canvas to match exactly the intrinsic size of the uploaded model mask
-            canvas.setDimensions({ width: img.width, height: img.height });
+            // Adjust canvas to match the admin-defined canvasConfig (Printable Area),
+            // or fallback to intrinsic size. This crops away transparent padding in the PNG!
+            const targetWidth = product?.canvasConfig?.width || img.width;
+            const targetHeight = product?.canvasConfig?.height || img.height;
             
-            img.set({ scaleX: 1, scaleY: 1, left: img.width / 2, top: img.height / 2 });
+            canvas.setDimensions({ width: targetWidth, height: targetHeight });
+            setCanvasIntrinsicDimensions({ width: targetWidth, height: targetHeight });
+            
+            // To ensure the full mockup remains centered on the screen despite the Canvas wrapper 
+            // being shifted by canvasConfig offsets, apply an inverse shift to the image inside the Canvas.
+            const inverseOffsetX = -(product?.canvasConfig?.offsetX || 0);
+            const inverseOffsetY = -(product?.canvasConfig?.offsetY || 0);
+
+            img.set({ 
+                scaleX: 1, 
+                scaleY: 1, 
+                left: (targetWidth / 2) + inverseOffsetX, 
+                top: (targetHeight / 2) + inverseOffsetY 
+            });
             canvas.add(img);
             
             // Trigger scaling calculation immediately
@@ -1498,8 +1514,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     {/* Layer 10: Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                                                         <div className="pointer-events-auto" style={{ 
-                                                            width: `${(product?.phoneMask ? 400 : (fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
-                                                            height: `${(product?.phoneMask ? 800 : (fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
+                                                            width: `${(product?.phoneMask ? 400 : (canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
+                                                            height: `${(product?.phoneMask ? 800 : (canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
                                                             marginLeft: `${(effectiveCanvasConfig?.offsetX || 0) * canvasScale}px`,
                                                             marginTop: `${(effectiveCanvasConfig?.offsetY || 0) * canvasScale}px`,
                                                             transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
