@@ -614,7 +614,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         
         fabricRef.current = canvas;
 
-        const handleResize = useCallback(() => {
+        const handleResize = () => {
             if (!viewportRef.current || !fabricRef.current) return;
             const { clientWidth: width, clientHeight: height } = viewportRef.current;
             
@@ -633,7 +633,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             }, { cssOnly: true });
 
             fabricRef.current.setZoom(newScale);
-        }, [baseWidth, baseHeight]);
+        };
 
         // Resize Observer for Dynamic Scaling
         const resizeObserver = new ResizeObserver(() => {
