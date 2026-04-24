@@ -791,6 +791,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             canvas.setDimensions({ width: contentWidth, height: contentHeight });
             setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
             
+            // 2D Model Auto-Crop Engine v2.0
             // Align the image so the visible part (minX, minY) starts at (0, 0) of the new canvas
             img.set({ 
                 scaleX: 1, 
