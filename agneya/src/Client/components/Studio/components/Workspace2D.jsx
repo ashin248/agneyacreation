@@ -183,6 +183,7 @@ const Workspace2D = forwardRef(({
         const debouncedUpdateAndSave = () => {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
+                enforceLayering();
                 updateTexture(true);
                 saveHistory();
             }, 300); // 300ms debounce prevents UI freezing during rapid changes
@@ -222,7 +223,7 @@ const Workspace2D = forwardRef(({
                 }
             }
         };
-    }, [isOpen, product?.customizationType, fastSync, updateTexture]);
+    }, [isOpen, product?.customizationType, fastSync, updateTexture, enforceLayering]);
 
     const enforceLayering = useCallback(() => {
         if (!fabricRef.current) return;
@@ -398,16 +399,7 @@ const Workspace2D = forwardRef(({
                                                         </div>
                                                     )}
 
-                                                    {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
-                                                    {!product?.phoneMask && current2DImageUrl && (
-                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity opacity-100`}>
-                                                            <img 
-                                                                src={current2DImageUrl} 
-                                                                alt="Product Backdrop"
-                                                                className="w-full h-full object-contain"
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    
 
                                                     {/* Layer 10: Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
