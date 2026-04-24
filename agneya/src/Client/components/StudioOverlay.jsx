@@ -727,10 +727,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             }
         });
 
-        let idx = 0;
-        photos.forEach(obj => canvas.moveTo(obj, idx++));
-        models.forEach(obj => canvas.moveTo(obj, idx++));
-        topLayers.forEach(obj => canvas.moveTo(obj, idx++));
+        const sortedObjects = [...photos, ...models, ...topLayers];
+        canvas._objects = sortedObjects;
         
         canvas.requestRenderAll();
     }, []);
