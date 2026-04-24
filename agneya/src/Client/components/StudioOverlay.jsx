@@ -753,8 +753,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 selectable: false,
                 evented: false,
                 excludeFromExport: true,
-                originX: 'center',
-                originY: 'center',
+                originX: 'left',
+                originY: 'top',
             });
             
             // Automatic Bounding Box Detection: Crop away transparent padding from the PNG!
@@ -791,14 +791,12 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             canvas.setDimensions({ width: contentWidth, height: contentHeight });
             setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
             
-            // Correct Alignment Math: 
-            // We want the visible 'content' to be centered in the new 'contentWidth' canvas.
-            // Since Fabric's 'left' is the center of the image, we place it at (img.width/2 - offsetX).
+            // Align the image so the visible part (minX, minY) starts at (0, 0) of the new canvas
             img.set({ 
                 scaleX: 1, 
                 scaleY: 1, 
-                left: (img.width / 2) - offsetX, 
-                top: (img.height / 2) - offsetY
+                left: -offsetX, 
+                top: -offsetY
             });
             canvas.add(img);
             
