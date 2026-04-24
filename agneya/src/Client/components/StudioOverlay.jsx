@@ -735,39 +735,9 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
     useEffect(() => {
         if (!fabricRef.current || !current2DImageUrl) return;
-        const canvas = fabricRef.current;
         
-        if (product?.phoneMask) return; // Phone cases handled differently via CSS mask
-
-        const existing = canvas.getObjects().find(o => o.id === '2d_model_mask');
-
-        const ImgClass = fabric.FabricImage || fabric.Image;
-        const imgElement = new Image();
-        imgElement.crossOrigin = 'anonymous';
-        imgElement.onload = () => {
-            if (existing) canvas.remove(existing);
-            
-            const img = new ImgClass(imgElement, {
-                id: '2d_model_mask',
-                selectable: false,
-                evented: false,
-                excludeFromExport: true,
-                originX: 'center',
-                originY: 'center',
-            });
-            
-            // Adjust canvas to match exactly the intrinsic size of the uploaded model mask
-            canvas.setDimensions({ width: img.width, height: img.height });
-            
-            img.set({ scaleX: 1, scaleY: 1, left: img.width / 2, top: img.height / 2 });
-            canvas.add(img);
-            
-            // Trigger scaling calculation immediately
-            if (resizeRef.current) resizeRef.current();
-            
-            enforceLayering();
-        };
-        imgElement.src = current2DImageUrl;
+        // Use HTML CSS backdrop for T-Shirts/Mugs instead of putting the huge mockup directly into the printable Fabric Canvas
+        return; 
     }, [current2DImageUrl, product?.phoneMask, enforceLayering, viewSide]);
 
     useEffect(() => {
@@ -1468,7 +1438,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
                                                     {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
                                                     {!product?.phoneMask && current2DImageUrl && (
-                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
+                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity opacity-100`}>
                                                             <img 
                                                                 src={current2DImageUrl} 
                                                                 alt="Product Backdrop"
@@ -1480,11 +1450,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                                     {/* Layer 10: Fabric.js Canvas Overlay */}
                                                     <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                                                         <div className="pointer-events-auto" style={{ 
-                                                            width: `${product?.phoneMask ? 400 : (effectiveCanvasConfig?.width || 500)}px`, 
-                                                            height: `${product?.phoneMask ? 800 : (effectiveCanvasConfig?.height || 600)}px`,
-                                                            marginLeft: `${effectiveCanvasConfig?.offsetX || 0}px`,
-                                                            marginTop: `${effectiveCanvasConfig?.offsetY || 0}px`,
-                                                            transform: `scale(${canvasScale * (product?.phoneMask ? 0.7 : (effectiveCanvasConfig?.scale || 1))})`, 
+                                                            width: `${(product?.phoneMask ? 400 : (effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
+                                                            height: `${(product?.phoneMask ? 800 : (effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
+                                                            marginLeft: `${(effectiveCanvasConfig?.offsetX || 0) * canvasScale}px`,
+                                                            marginTop: `${(effectiveCanvasConfig?.offsetY || 0) * canvasScale}px`,
+                                                            transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
                                                             transformOrigin: 'center' 
                                                         }}>
                                                             <canvas ref={canvasRef} />
