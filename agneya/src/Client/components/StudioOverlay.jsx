@@ -759,9 +759,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             });
             
             // Adjust canvas to match exactly the intrinsic size of the uploaded model mask
-            canvas.setWidth(img.width);
-            canvas.setHeight(img.height);
-            canvas.setDimensions({ width: img.width, height: img.height }, { backstoreOnly: true });
+            canvas.setDimensions({ width: img.width, height: img.height });
             
             img.set({ scaleX: 1, scaleY: 1, left: img.width / 2, top: img.height / 2 });
             canvas.add(img);
