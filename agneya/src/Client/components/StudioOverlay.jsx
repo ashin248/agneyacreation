@@ -399,7 +399,7 @@ function Model3D({
     );
 };
 
-const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self', activeTemplateId = null }) => {
+const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) => {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -422,7 +422,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
 
     const [activeTab, setActiveTab] = useState('uploads');
-    const [viewSide, setViewSide] = useState(product?.twoDModels?.length > 0 ? 'model_0_main' : 'front'); // 'front' or 'back' for 2D mode
+    const [viewSide, setViewSide] = useState(product?.twoDModels?.length > 0 ? `model_${initial2DModelIdx}_main` : 'front'); // 'front' or 'back' for 2D mode
     const [previewRotation] = useState(0);
     const [brushSize, setBrushSize] = useState(10);
     const [brushColor, setBrushColor] = useState('#0c0c2a');
@@ -430,7 +430,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [isRemovingBg, setIsRemovingBg] = useState(false);
 
     const twoDModels = product?.twoDModels || [];
-    const [active2DModelIdx, setActive2DModelIdx] = useState(0);
+    const [active2DModelIdx, setActive2DModelIdx] = useState(initial2DModelIdx);
     const [activeSupportSide, setActiveSupportSide] = useState('Main'); // 'Main' or side name
 
     // Compute active 2D image
@@ -612,28 +612,38 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         
         fabricRef.current = canvas;
 
-        // Resize Observer for Dynamic Scaling
-        const resizeObserver = new ResizeObserver(entries => {
-            if (!entries[0] || !fabricRef.current) return;
-            const { width, height } = entries[0].contentRect;
+        const handleResize = useCallback(() => {
+            if (!viewportRef.current || !fabricRef.current) return;
+            const { clientWidth: width, clientHeight: height } = viewportRef.current;
+            
+            const currentWidth = fabricRef.current.width || baseWidth;
+            const currentHeight = fabricRef.current.height || baseHeight;
 
-            // Calculate scale to fit within container while maintaining aspect
-            const scaleX = width / baseWidth;
-            const scaleY = height / baseHeight;
-            const newScale = Math.min(scaleX, scaleY, 1.2) * 0.95; // 0.95 for safe padding
+            const scaleX = width / currentWidth;
+            const scaleY = height / currentHeight;
+            const newScale = Math.min(scaleX, scaleY, 1.2) * 0.95;
 
             setCanvasScale(newScale);
 
-            // Adjust canvas display size without changing internal coordinate space
-            canvas.setDimensions({
-                width: baseWidth * newScale,
-                height: baseHeight * newScale
+            fabricRef.current.setDimensions({
+                width: currentWidth * newScale,
+                height: currentHeight * newScale
             }, { cssOnly: true });
 
-            canvas.setZoom(newScale);
+            fabricRef.current.setZoom(newScale);
+        }, [baseWidth, baseHeight]);
+
+        // Resize Observer for Dynamic Scaling
+        const resizeObserver = new ResizeObserver(() => {
+            handleResize();
         });
 
         resizeObserver.observe(viewportRef.current);
+        
+        // Expose handleResize to the outer scope via ref if needed, 
+        // or just rely on the effect dependencies. 
+        // We'll add handleResize to a ref so we can call it from other effects.
+        resizeRef.current = handleResize;
 
         fabric.Object.prototype.set({
             cornerColor: '#0c0c2a', cornerStrokeColor: '#ffffff', cornerStyle: 'circle',
@@ -744,14 +754,19 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 excludeFromExport: true,
                 originX: 'center',
                 originY: 'center',
-                left: canvas.width / 2,
-                top: canvas.height / 2
             });
-            const scaleX = canvas.width / img.width;
-            const scaleY = canvas.height / img.height;
-            const scale = Math.min(scaleX, scaleY);
-            img.set({ scaleX: scale, scaleY: scale });
+            
+            // Adjust canvas to match exactly the intrinsic size of the uploaded model mask
+            canvas.setWidth(img.width);
+            canvas.setHeight(img.height);
+            canvas.setDimensions({ width: img.width, height: img.height }, { backstoreOnly: true });
+            
+            img.set({ scaleX: 1, scaleY: 1, left: img.width / 2, top: img.height / 2 });
             canvas.add(img);
+            
+            // Trigger scaling calculation immediately
+            if (resizeRef.current) resizeRef.current();
+            
             enforceLayering();
         };
         imgElement.src = current2DImageUrl;
@@ -766,6 +781,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             isHistoryRecording.current = false;
         });
     }, [historyStep, updateTexture]);
+
+    const lastOpenedProductId = useRef(null);
 
     // Product Isolation: Reset state when product changes or studio toggles
     useEffect(() => {
@@ -784,7 +801,8 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             }
         };
 
-        if (isOpen) {
+        if (isOpen && lastOpenedProductId.current !== product?._id) {
+            lastOpenedProductId.current = product?._id;
             resetStudio();
             // Strict View Selection: Use initialMode if explicitly provided, else fallback to product config
             if (initialMode === '2d' || activeTemplateId) {
@@ -798,10 +816,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             } else {
                 setActiveStudioTab('2D_STUDIO');
             }
-        } else {
+        } else if (!isOpen) {
+            lastOpenedProductId.current = null;
             resetStudio(); // Clean up on close to be safe
         }
-    }, [product?._id, isOpen, activeTemplateId]);
+    }, [product?._id, isOpen, activeTemplateId, initialMode]);
 
     const [isDrawing, setIsDrawing] = useState(false);
 
@@ -1436,7 +1455,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     }}>
                                         <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                                             {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'aspect-[5/6]')} h-full flex items-center justify-center group transition-all duration-700`}>
+                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
                                                     
                                                     {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                                                     {product?.phoneMask && (

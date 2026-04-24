@@ -19,7 +19,8 @@ import {
   Upload,
   Box,
   PenTool,
-  Image
+  Image,
+  X
 } from 'lucide-react';
 import StarRating from '../components/StarRating';
 import LoginModal from '../components/LoginModal';
@@ -49,6 +50,8 @@ const ProductDetails = () => {
     const [customizingProduct, setCustomizingProduct] = useState(null);
     const [initialStudioMode, setInitialStudioMode] = useState('self');
     const [activeTemplateId, setActiveTemplateId] = useState(null);
+    const [show2DModelSelector, setShow2DModelSelector] = useState(false);
+    const [initial2DModelIdx, setInitial2DModelIdx] = useState(0);
 
     const { currentUser } = useAuth();
     
@@ -465,8 +468,13 @@ const ProductDetails = () => {
                                                 </button>
                                                 <button 
                                                     onClick={() => requireLogin(() => {
-                                                        setInitialStudioMode('2d');
-                                                        setCustomizingProduct(product);
+                                                        if (product?.twoDModels?.length > 1) {
+                                                            setShow2DModelSelector(true);
+                                                        } else {
+                                                            setInitial2DModelIdx(0);
+                                                            setInitialStudioMode('2d');
+                                                            setCustomizingProduct(product);
+                                                        }
                                                     })} 
                                                     className="w-full h-16 bg-slate-900 text-white rounded-2xl flex flex-col items-center justify-center gap-1 font-black uppercase tracking-widest text-[9px] shadow-lg hover:bg-slate-700 transition-all active:scale-95"
                                                 >
@@ -567,6 +575,35 @@ const ProductDetails = () => {
                 subtitle="Please log into your Agneya account to continue with design studio functionalities."
             />
 
+            {/* 2D Model Pre-Selection Modal */}
+            {show2DModelSelector && (
+                <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[32px] p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Select Base Model</h3>
+                            <button onClick={() => setShow2DModelSelector(false)} className="w-10 h-10 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center hover:bg-rose-100 hover:text-rose-500 transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                            {product.twoDModels.map((model, idx) => (
+                                <div key={idx} onClick={() => {
+                                    setInitial2DModelIdx(idx);
+                                    setShow2DModelSelector(false);
+                                    setInitialStudioMode('2d');
+                                    setCustomizingProduct(product);
+                                }} className="cursor-pointer group">
+                                    <div className="w-full aspect-square bg-slate-50 rounded-2xl border-2 border-slate-100 overflow-hidden group-hover:border-indigo-500 transition-all duration-300 p-4 mb-3">
+                                        <img src={model.mainModelUrl} alt={model.modelName || `Model ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                                    </div>
+                                    <p className="font-black text-sm text-center text-slate-700 group-hover:text-indigo-600 transition-colors">{model.modelName || `Model ${idx + 1}`}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Custom Studio Overlay restores all legacy rendering, UI layout, & missing features requested by user */}
             <StudioOverlay 
                 isOpen={!!customizingProduct} 
@@ -575,6 +612,7 @@ const ProductDetails = () => {
                 requireLogin={requireLogin}
                 initialMode={initialStudioMode}
                 activeTemplateId={activeTemplateId}
+                initial2DModelIdx={initial2DModelIdx}
             />
         </div>
     );
