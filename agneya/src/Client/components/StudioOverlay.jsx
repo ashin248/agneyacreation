@@ -16,403 +16,40 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { calculateWholesalePriceTotal, calculateSavings } from '../utils/pricingUtils';
-import { MODELS } from './Three/ProductLibrary';
 import { TWOD_TEMPLATES } from './TwoD/TwoDTemplateLibrary';
 import { phoneBrands } from '../data/MobileCasesDB';
+import { StudioProvider, useStudio } from './Studio/context/StudioContext';
+import TopNavigation from './Studio/components/TopNavigation';
+import CheckoutPanel from './Studio/components/CheckoutPanel';
+import ToolSidebar from './Studio/components/ToolSidebar';
+import PropertyDock from './Studio/components/PropertyDock';
+import ToolModals from './Studio/components/ToolModals';
+import Workspace3D from './Studio/components/Workspace3D';
+import Workspace2D from './Studio/components/Workspace2D';
 
-const dummyDecal = new THREE.Object3D();
+// Extracted to Workspace3D.jsx;
 
-function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, active, zIndex }) {
-    const texture = useTexture(dataUrl);
-
-    // Safety: Do not render the decal until the texture is fully loaded
-    // This prevents the "white patches" (default material color) from appearing
-    if (!texture) return null;
-
-    texture.anisotropy = 16;
-    texture.needsUpdate = true;
-
-    return (
-        <Decal
-            mesh={mesh}
-            position={position}
-            rotation={rotation}
-            scale={scale}
-            debug={false}
-        >
-            <meshStandardMaterial
-                map={texture}
-                transparent={true}
-                alphaTest={0.01}
-                depthTest={true}
-                depthWrite={true} // Decals SHOULD write depth to prevent multiple decals from flickering against each other
-                polygonOffset={true}
-                polygonOffsetFactor={-10} // Reduced from -100 to be less aggressive now that background depthWrite is false
-                polygonOffsetUnits={-10}
-                side={THREE.DoubleSide}
-                color={'#ffffff'}
-                opacity={1}
-                emissive={active ? '#4f46e5' : '#000000'}
-                emissiveIntensity={active ? 0.3 : 0}
-            />
-        </Decal>
-    );
-}
-
-// 2. Main 3D Model Component (Hoisted helper)
-function Model3D({
-    baseModelId, url, canvasObjects, objectAnchors, onAnchorUpdate, onPartSelect,
-    activeObjectId, previewRotation = 0
-}) {
-    const modelGroupRef = useRef();
-    const modelKey = baseModelId?.toString().toUpperCase();
-    const modelConfig = modelKey ? MODELS[modelKey] : null;
-    const modelUrl = modelConfig ? modelConfig.path : url;
-
-    // 1. Initial Logic & Asset Discovery
-    let rawUrl = (modelUrl && typeof modelUrl === 'string' && modelUrl.length > 5) ? modelUrl : '/models/mug/mug.glb';
-    if (rawUrl.includes('t-shirt.glb') && !rawUrl.includes('oversized')) {
-        rawUrl = '/models/Tshirt/oversized_t-shirt.glb'; // legacy interceptor
-    }
-    const safeModelUrl = rawUrl;
-
-    // 2. Resource Initialization (Hook must come before effects that use its output)
-    const { scene } = useGLTF(safeModelUrl);
-    const [defaultAnchor, setDefaultAnchor] = useState(null);
-
-    // 3. Effects & Post-Processing
-    // CLEANUP LOGIC: Remove default textures from Photoframe models to provide a clean canvas
-    useLayoutEffect(() => {
-        if (!scene || !modelConfig) return;
-
-        const isPhotoframe = modelConfig.category === 'Photoframe';
-        const clonedMaterials = [];
-
-        scene.traverse((node) => {
-            if (node.isMesh) {
-                const lowerName = node.name.toLowerCase();
-
-                // GLASS PASS-THROUGH: Prevent glass from intercepting clicks meant for photos
-                if (lowerName.includes('glass')) {
-                    node.raycast = () => null; // Make invisible to Raycaster
-                    if (node.material) {
-                        node.material = node.material.clone();
-                        clonedMaterials.push(node.material);
-                        node.material.transparent = true;
-                        node.material.opacity = 0.4;
-                        node.material.needsUpdate = true;
-                    }
-                }
-
-                // Photoframes: Proactive "Blank Canvas" logic
-                // Strip ALL maps from photo areas or anything that isn't clearly the wall
-                const isWallOrBase = lowerName.includes('wall') || lowerName.includes('base') || lowerName.includes('ground');
-                
-                // For photoframes, we want to clear the canvas completely to allow decals to dominate
-                const shouldStrip = isPhotoframe && !isWallOrBase;
-
-                if (shouldStrip) {
-                    node.material = node.material.clone();
-                    clonedMaterials.push(node.material);
-                    // Strip ALL maps to ensure a completely blank canvas
-                    node.material.map = null;
-                    node.material.lightMap = null;
-                    node.material.aoMap = null;
-                    node.material.emissiveMap = null;
-                    node.material.metalnessMap = null;
-                    node.material.roughnessMap = null;
-
-                    // User requested: rgba(17, 17, 17, 0) - Rich Matte Black with transparency
-                    node.material.color.set('#111111');
-                    node.material.transparent = true;
-                    node.material.opacity = 0.1; // Nearly invisible but still has subtle presence
-                    
-                    node.material.roughness = 1.0;
-                    node.material.metalness = 0.0;
-                    
-                    // CRITICAL: Disable depthWrite. This ensures that Decals projected 
-                    // on this surface always win the depth test even if they are very close.
-                    node.material.depthWrite = false; 
-                    
-                    node.material.needsUpdate = true;
-                } else if (node.material && node.material.roughness !== undefined) {
-                    node.material.roughness = 0.6;
-                }
-            }
-        });
-
-        return () => {
-            clonedMaterials.forEach(mat => mat.dispose());
-        };
-    }, [scene, modelConfig]);
-
-
-    useEffect(() => {
-        let bestTarget = null;
-        let largestArea = 0;
-        const priorityNamesFromLibrary = modelConfig?.printableMeshes || [];
-        const genericPriorityNames = [
-            'mug_again', '191,191,191',
-            'printable_area', 'design_area', 'main_body', 'body', 'shirt', 'front', 'surface'
-        ];
-
-        scene.traverse((child) => {
-            if (child.isMesh) {
-                const name = child.name || '';
-                const lowerName = name.toLowerCase();
-                const isPhotoframe = modelConfig?.category === 'Photoframe';
-
-                if (priorityNamesFromLibrary?.includes(name)) {
-                    bestTarget = child;
-                    return;
-                }
-                const isGenericPriority = genericPriorityNames.some(p => lowerName.includes(p));
-                let isAuxiliary = lowerName.includes('handle') ||
-                    lowerName.includes('bottom') || lowerName.includes('sole') ||
-                    lowerName.includes('lace') || lowerName.includes('decal') ||
-                    lowerName.includes('shadow');
-
-                // Exception for photoframes: 'inside' meshes ARE printable areas
-                if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
-
-                if (isGenericPriority && !isAuxiliary && !bestTarget) {
-                    bestTarget = child;
-                }
-                if (!isAuxiliary && !bestTarget) {
-                    child.geometry.computeBoundingBox();
-                    const box = child.geometry.boundingBox;
-                    const area = (box.max.x - box.min.x) * (box.max.y - box.min.y);
-                    if (area > largestArea) {
-                        largestArea = area;
-                        bestTarget = child;
-                    }
-                }
-            }
-        });
-
-        if (bestTarget) {
-            bestTarget.geometry.computeBoundingBox();
-            const box = bestTarget.geometry.boundingBox;
-
-            const w = (box.max.x - box.min.x);
-            const h = (box.max.y - box.min.y);
-            const d = (box.max.z - box.min.z);
-
-            // Smarter default anchor: Look for the 'Front' face by inspecting normals if possible
-            // or default to a safe standard for the given model category
-            const isPlanar = modelConfig?.projectionType === 'planar' ||
-                modelConfig?.projectionType === 'decal' ||
-                modelConfig?.category === 'Photoframe' ||
-                !modelConfig?.projectionType;
-
-            const defaultPos = isPlanar ?
-                [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : // Center Top for flat items
-                [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  // Center Front for mugs
-
-            const defaultRot = isPlanar ? [-Math.PI / 2, 0, 0] : [0, 0, 0];
-
-            setDefaultAnchor({
-                meshId: bestTarget.uuid,
-                meshName: bestTarget.name,
-                pos: defaultPos,
-                rot: defaultRot,
-                dim: [w, h, d]
-            });
-        }
-    }, [scene, modelConfig]);
-
-    const handleMeshClick = (e) => {
-        e.stopPropagation();
-        const clickedMesh = e.object;
-        if (!clickedMesh.isMesh) return;
-
-        const lowerName = clickedMesh.name.toLowerCase();
-        console.log("3D Selection Clicked:", lowerName, clickedMesh.uuid); // CRITICAL DEBUG LOG
-
-        // Strict Model Selection Guard: Prevent selecting non-printable parts (like handles)
-        // For Photoframes, we want to be much more permissive as almost every part is a frame
-        const isPhotoframe = modelConfig?.category === 'Photoframe';
-
-        if (modelConfig?.printableMeshes && modelConfig.printableMeshes.length > 0) {
-            if (!modelConfig.printableMeshes.some(p => lowerName.includes(p.toLowerCase()) || p.toLowerCase().includes(lowerName))) {
-                if (!isPhotoframe) return; // Ignore clicks on non-printable areas ONLY if not a photoframe
-            }
-        } else {
-            // Fallback generic guard
-            let isAuxiliary = lowerName.includes('handle') ||
-                lowerName.includes('bottom') || lowerName.includes('sole') ||
-                lowerName.includes('shadow') || lowerName.includes('decal');
-
-            // Note: 'inside' is usually auxiliary for mugs/boxes, but for photo frames it is the photo area!
-            if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
-
-            if (isAuxiliary) return;
-        }
-
-        const localPos = clickedMesh.worldToLocal(e.point.clone());
-        const localNormal = e.face ? e.face.normal.clone() : new THREE.Vector3(0, 0, 1);
-
-        // Robust orientation logic: Handles vertical normals (horizontal surfaces)
-        const dummyNode = new THREE.Object3D();
-        dummyNode.position.copy(localPos);
-
-        // Use a different 'Up' vector if the normal is nearly vertical to avoid Gimbal lock
-        const upVector = Math.abs(localNormal.y) > 0.99 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
-
-        const targetPoint = localPos.clone().sub(localNormal); // MIRROR FIX: Look IN to the mesh
-        const m4 = new THREE.Matrix4();
-        m4.lookAt(localPos, targetPoint, upVector);
-        dummyNode.quaternion.setFromRotationMatrix(m4);
-
-        const rot = [dummyNode.rotation.x, dummyNode.rotation.y, dummyNode.rotation.z];
-
-        const scale = new THREE.Vector3();
-        clickedMesh.getWorldScale(scale);
-
-        // Push the position minimally outward along the normal to prevent Z-fighting without missing the surface
-        const pushedPos = localPos.clone().add(localNormal.clone().multiplyScalar(0.001));
-
-        clickedMesh.geometry.computeBoundingBox();
-        const box = clickedMesh.geometry.boundingBox;
-        const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(e.point.clone()) : pushedPos;
-
-        const newAnchor = {
-            meshId: clickedMesh.uuid,
-            meshName: clickedMesh.name,
-            pos: [pushedPos.x, pushedPos.y, pushedPos.z],
-            groupPos: [groupPosVec.x, groupPosVec.y, groupPosVec.z], // Needed for scene-wide projection
-            rot,
-            dim: [
-                (box.max.x - box.min.x),
-                (box.max.y - box.min.y),
-                (box.max.z - box.min.z)
-            ]
-        };
-
-        if (onAnchorUpdate) onAnchorUpdate(newAnchor);
-        if (onPartSelect) onPartSelect(clickedMesh.name);
-    };
-
-    return (
-        <group>
-            <group ref={modelGroupRef}
-                rotation={[0, (previewRotation * Math.PI) / 180, 0]}
-            >
-                {scene && (
-                    <primitive
-                        object={scene}
-                        scale={modelConfig?.defaultScale || 1.5}
-                        rotation={modelConfig?.defaultRotation || [0, 0, 0]}
-                        position={modelConfig?.defaultPosition || [0, 0, 0]}
-                        onPointerDown={handleMeshClick}
-                    />
-                )}
-            </group>
-            {canvasObjects && canvasObjects.map((obj, index) => {
-                if (!obj || !obj.dataUrl) return null;
-                const active = activeObjectId === obj.uid;
-                const anchor = objectAnchors[obj.uid] || defaultAnchor;
-                if (!anchor) return null;
-                let targetMesh = null;
-                if (modelGroupRef.current) {
-                    if (anchor.meshName) targetMesh = modelGroupRef.current.getObjectByName(anchor.meshName);
-                    if (!targetMesh) targetMesh = modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
-                }
-                if (!targetMesh) return null;
-
-                const isPlanar = modelConfig?.projectionType === 'planar' ||
-                    modelConfig?.projectionType === 'decal' ||
-                    modelConfig?.category === 'Photoframe' ||
-                    !modelConfig?.projectionType;
-
-                let finalPos = [...anchor.pos];
-                let finalRotation = [anchor.rot[0], anchor.rot[1], anchor.rot[2]];
-
-                // Use the largest mesh dimension for stable unit scaling on flat surfaces
-                const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
-                const pixelsPerUnitUniform = obj.canvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
-                const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
-                const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
-                // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
-                let decalDepth = isPlanar ?
-                    (modelConfig?.category === 'Tshirt' ? 0.15 :
-                        modelConfig?.category === 'Plate' ? 0.015 :
-                            modelConfig?.category === 'Photoframe' ? 0.5 : 0.02)
-                    : 1;
-
-                if (isPlanar) {
-                    // PLANAR MAPPING (For Books, Sheets, etc.)
-                    // Use a lookAt dummy to find the specific local axes of the clicked surface
-                    dummyDecal.position.set(0, 0, 0);
-                    dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummyDecal.updateMatrixWorld();
-
-                    const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummyDecal.quaternion);
-                    const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
-
-                    // Map canvas offsets to the surface geometry
-                    const xShift = obj.offsetX * (maxDim * (obj.canvasWidth / obj.canvasHeight));
-                    const yShift = -obj.offsetY * (maxDim);
-
-                    finalPos[0] += localX.x * xShift + localY.x * yShift;
-                    finalPos[1] += localX.y * xShift + localY.y * yShift;
-                    finalPos[2] += localX.z * xShift + localY.z * yShift;
-
-                    dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
-                }
-                else {
-                    // CYLINDRICAL WRAPPING (For Mugs)
-                    const trueDiameter = Math.min(anchor.dim[0], anchor.dim[2]);
-                    const radius = trueDiameter * 0.5;
-                    const wrapAngle = -obj.offsetX * (Math.PI / 1.5);
-                    const yOffset = -obj.offsetY * (anchor.dim[1] * 0.5);
-
-                    finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
-                    finalPos[1] = anchor.pos[1] + yOffset;
-                    finalPos[2] = anchor.pos[2] - radius * (1 - Math.cos(wrapAngle));
-
-                    dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummyDecal.rotateY(-wrapAngle);
-                    dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
-                    decalDepth = radius * 1.5;
-                }
-
-                const decalProps = {
-                    key: obj.uid,
-                    dataUrl: obj.dataUrl,
-                    position: finalPos,
-                    rotation: finalRotation,
-                    scale: [decalWidth, decalHeight, decalDepth],
-                    active: active,
-                    zIndex: index * 2
-                };
-
-                return (
-                    <group key={`portal-${obj.uid}`} renderOrder={10 + index}>
-                        {createPortal(
-                            <React.Suspense fallback={null}>
-                                <ProjectedDecalWrapper
-                                    mesh={targetMesh}
-                                    {...decalProps}
-                                />
-                            </React.Suspense>,
-                            targetMesh
-                        )}
-                    </group>
-                );
-            })}
-        </group>
-    );
-};
-
-const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) => {
+const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) => {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
-    const [activeStudioTab, setActiveStudioTab] = useState('3D_STUDIO');
-    const [designMode, setDesignMode] = useState(initialMode); // Track if user is designing or company
+
+    const {
+        product,
+        activeStudioTab, setActiveStudioTab,
+        designMode, setDesignMode,
+        activeTab, setActiveTab,
+        isMobileUiMinimized, setIsMobileUiMinimized,
+        activeObject, setActiveObject,
+        canvasObjects, setCanvasObjects,
+        historyStep, setHistoryStep,
+        twoDModels, active2DModelIdx, setActive2DModelIdx,
+        activeSupportSide, setActiveSupportSide,
+        viewSide, setViewSide,
+        current2DImageUrl,
+        isSubmitting, setIsSubmitting
+    } = useStudio();
+
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
     // const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
@@ -420,38 +57,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const effectiveMockupProfile = product?.mockupProfile;
     const effectiveCanvasConfig = product?.canvasConfig;
     const effectiveShapeConfig = product?.shapeConfig;
-    const [isMobileUiMinimized, setIsMobileUiMinimized] = useState(false);
     const [contextKey, setContextKey] = useState(0);
 
     // Dynamic Initialization handled in main reset useEffect
 
-
-
-
-
-    const [activeTab, setActiveTab] = useState('uploads');
-    const [viewSide, setViewSide] = useState(product?.twoDModels?.length > 0 ? `model_${initial2DModelIdx}_main` : 'front'); // 'front' or 'back' for 2D mode
     const [previewRotation] = useState(0);
     const [brushSize, setBrushSize] = useState(10);
     const [brushColor, setBrushColor] = useState('#0c0c2a');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRemovingBg, setIsRemovingBg] = useState(false);
-
-    const twoDModels = product?.twoDModels || [];
-    const [active2DModelIdx, setActive2DModelIdx] = useState(initial2DModelIdx);
-    const [activeSupportSide, setActiveSupportSide] = useState('Main'); // 'Main' or side name
-
-    // Compute active 2D image
-    let current2DImageUrl = product?.blankFrontImage || product?.images?.[0];
-    if (twoDModels.length > 0 && twoDModels[active2DModelIdx]) {
-        const activeModel = twoDModels[active2DModelIdx];
-        if (activeSupportSide === 'Main') {
-             current2DImageUrl = activeModel.mainModelUrl || current2DImageUrl;
-        } else {
-             const support = activeModel.supportModels?.find(s => s.side === activeSupportSide);
-             if (support) current2DImageUrl = support.url;
-        }
-    }
 
     const [variations, setVariations] = useState([{
         id: Date.now(), name: 'Item 1',
@@ -461,22 +74,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const [activeVariationId, setActiveVariationId] = useState(variations[0].id);
 
     const historyRef = useRef([]);
-    const [historyStep, setHistoryStep] = useState(-1);
     const isHistoryRecording = useRef(false);
 
-    const [canvasObjects, setCanvasObjects] = useState([]);
     const [objectAnchors, setObjectAnchors] = useState({});
     const [pendingAnchor, setPendingAnchor] = useState(null); // Stores click target if no asset is selected
-    const [activeObject, setActiveObject] = useState(null);
     const [uploadedAssets, setUploadedAssets] = useState([]);
 
+    const workspace2DRef = useRef(null);
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
     const fileRef = useRef(null);
     const viewportRef = useRef(null);
     const resizeRef = useRef(null);
-    const [canvasScale, setCanvasScale] = useState(1);
-    const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
 
     const premiumFonts = [
         'Inter', 'Montserrat', 'Bebas Neue', 'Playfair Display', 'Pacifico', 'Oswald', 'Dancing Script', 'Righteous',
@@ -531,346 +140,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
         }
     }, []);
 
-    const syncPositionalOffsets = useCallback(() => {
-        const canvas = fabricRef.current;
-        if (!canvas || !canvas.contextContainer) return;
-        const snapshots = canvas.getObjects().filter(o => !o.excludeFromExport).map(obj => ({
-            uid: obj.uid,
-            type: obj.type,
-            dataUrl: obj._cachedDataUrl || obj.toDataURL({ format: 'png', quality: 0.1 }), // Low-res fallback
-            offsetX: ((obj.getCenterPoint ? obj.getCenterPoint().x : obj.left) - canvas.width / 2) / (canvas.width / 2),
-            offsetY: ((obj.getCenterPoint ? obj.getCenterPoint().y : obj.top) - canvas.height / 2) / (canvas.height / 2),
-            rotation: obj.angle || 0,
-            scaleX: obj.scaleX || 1,
-            scaleY: obj.scaleY || 1,
-            width: obj.width,
-            height: obj.height,
-            canvasWidth: canvas.width,
-            canvasHeight: canvas.height
-        }));
-        setCanvasObjects(snapshots);
-    }, []);
-
     const fastSync = useCallback(() => {
-        const canvas = fabricRef.current;
-        if (!canvas || !canvas.contextContainer) return;
-        setCanvasObjects(prev => prev.map(snap => {
-            const obj = canvas.getObjects().find(o => o.uid === snap.uid);
-            if (!obj) return null;
-            return {
-                ...snap,
-                offsetX: ((obj.getCenterPoint ? obj.getCenterPoint().x : obj.left) - canvas.width / 2) / (canvas.width / 2),
-                offsetY: ((obj.getCenterPoint ? obj.getCenterPoint().y : obj.top) - canvas.height / 2) / (canvas.height / 2),
-                rotation: obj.angle || 0,
-                scaleX: obj.scaleX || 1,
-                scaleY: obj.scaleY || 1
-            };
-        }).filter(Boolean));
+        workspace2DRef.current?.fastSync();
     }, []);
 
     const updateTexture = useCallback((isFullUpdate = true) => {
-        const canvas = fabricRef.current;
-        if (!canvas || !canvas.contextContainer) return;
-
-        try {
-            // Full update generates DataURLs, Fast sync only updates matrices
-            const snapshots = canvas.getObjects().filter(o => !o.excludeFromExport).map(obj => {
-                if (isFullUpdate || !obj._cachedDataUrl) {
-                    // Reduced multiplier to 1.2 to balance quality and GPU memory
-                    obj._cachedDataUrl = obj.toDataURL({ format: 'png', quality: 0.9, multiplier: 1.2 });
-                }
-                return {
-                    uid: obj.uid,
-                    type: obj.type,
-                    dataUrl: obj._cachedDataUrl,
-                    offsetX: ((obj.getCenterPoint ? obj.getCenterPoint().x : obj.left) - canvas.width / 2) / (canvas.width / 2),
-                    offsetY: ((obj.getCenterPoint ? obj.getCenterPoint().y : obj.top) - canvas.height / 2) / (canvas.height / 2),
-                    rotation: obj.angle || 0,
-                    scaleX: obj.scaleX || 1,
-                    scaleY: obj.scaleY || 1,
-                    width: obj.width,
-                    height: obj.height,
-                    canvasWidth: canvas.width,
-                    canvasHeight: canvas.height
-                };
-            });
-            setCanvasObjects(snapshots);
-        } catch (err) {
-            console.warn("Studio Texture Update Failure:", err);
-        }
+        workspace2DRef.current?.updateTexture(isFullUpdate);
     }, []);
 
-    useEffect(() => {
-        if (!isOpen || !canvasRef.current || !viewportRef.current) return;
-
-        // const activeTemplate = activeTemplateId ? TWOD_TEMPLATES[activeTemplateId] : null;
-        const effectiveCanvasConfig = product?.canvasConfig;
-        const effectiveShapeConfig = product?.shapeConfig;
-
-        const baseWidth = effectiveCanvasConfig?.width || 500;
-        const baseHeight = effectiveCanvasConfig?.height || 600;
-
-        const canvas = new fabric.Canvas(canvasRef.current, {
-            width: baseWidth,
-            height: baseHeight,
-            backgroundColor: 'transparent',
-            preserveObjectStacking: true
-        });
-        
-        // --- 2D TEMPLATE ENGINE LOGIC CLEARED FOR RESET ---
-        // (Previously handled clipping shapes, backdrops, and image slots)
-        
-        fabricRef.current = canvas;
-
-        const handleResize = () => {
-            if (!viewportRef.current || !fabricRef.current) return;
-            const { clientWidth: width, clientHeight: height } = viewportRef.current;
-            
-            const currentWidth = fabricRef.current.width || baseWidth;
-            const currentHeight = fabricRef.current.height || baseHeight;
-
-            const scaleX = width / currentWidth;
-            const scaleY = height / currentHeight;
-            const newScale = Math.min(scaleX, scaleY, 1.2) * 0.95;
-
-            setCanvasScale(newScale);
-
-            fabricRef.current.setDimensions({
-                width: currentWidth * newScale,
-                height: currentHeight * newScale
-            }, { cssOnly: true });
-
-            fabricRef.current.setZoom(newScale);
-        };
-
-        // Resize Observer for Dynamic Scaling
-        const resizeObserver = new ResizeObserver(() => {
-            handleResize();
-        });
-
-        resizeObserver.observe(viewportRef.current);
-        
-        // Expose handleResize to the outer scope via ref if needed, 
-        // or just rely on the effect dependencies. 
-        // We'll add handleResize to a ref so we can call it from other effects.
-        resizeRef.current = handleResize;
-
-        fabric.Object.prototype.set({
-            cornerColor: '#0c0c2a', cornerStrokeColor: '#ffffff', cornerStyle: 'circle',
-            transparentCorners: false, cornerSize: 10, borderColor: '#0c0c2a', borderScaleFactor: 2, padding: 10
-        });
-
-        const saveHistory = () => {
-            if (isHistoryRecording.current) return;
-            const json = canvas.toJSON(['uid', 'excludeFromExport']);
-            const newHistory = historyRef.current.slice(0, historyStep + 1);
-            newHistory.push(json);
-            historyRef.current = newHistory;
-            setHistoryStep(newHistory.length - 1);
-        };
-
-        const handleSelection = () => {
-            const active = canvas.getActiveObject();
-            if (!active) { setActiveObject(null); return; }
-            setActiveObject({
-                uid: active.uid, type: active.type, text: active.text || '',
-                fill: active.fill || '#000000', scaleX: active.scaleX || 1, scaleY: active.scaleY || 1,
-                angle: active.angle || 0, opacity: active.opacity || 1, fontFamily: active.fontFamily || 'Inter',
-                left: active.left, top: active.top, text: active.text || ''
-            });
-            setIsMobileUiMinimized(false);
-        };
-
-        let debounceTimer;
-        const debouncedUpdateAndSave = () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updateTexture(true);
-                saveHistory();
-            }, 300); // 300ms debounce prevents UI freezing during rapid changes
-        };
-
-        canvas.on('selection:created', handleSelection);
-        canvas.on('selection:updated', handleSelection);
-        canvas.on('selection:cleared', () => setActiveObject(null));
-        canvas.on('object:moving', fastSync);
-        canvas.on('object:scaling', fastSync);
-        canvas.on('object:rotating', fastSync);
-        canvas.on('object:modified', debouncedUpdateAndSave);
-        canvas.on('object:added', debouncedUpdateAndSave);
-        canvas.on('object:removed', debouncedUpdateAndSave);
-        canvas.on('path:created', debouncedUpdateAndSave);
-
-        return () => {
-            clearTimeout(debounceTimer);
-            resizeObserver.disconnect();
-            if (fabricRef.current) {
-                const c = fabricRef.current;
-                fabricRef.current = null;
-                try {
-                    c.off('selection:created');
-                    c.off('selection:updated');
-                    c.off('selection:cleared');
-                    c.off('object:moving', fastSync);
-                    c.off('object:scaling', fastSync);
-                    c.off('object:rotating', fastSync);
-                    c.off('object:modified');
-                    c.off('object:added');
-                    c.off('object:removed');
-                    c.off('path:created');
-                    c.dispose();
-                } catch (e) {
-                    console.error("Studio Canvas Dispose Error:", e);
-                }
-            }
-        };
-    }, [isOpen, product?.customizationType, fastSync, updateTexture]);
-
-    const enforceLayering = useCallback(() => {
-        if (!fabricRef.current) return;
-        const canvas = fabricRef.current;
-        const objects = canvas.getObjects();
-        
-        const photos = [];
-        const models = [];
-        const topLayers = [];
-
-        objects.forEach(obj => {
-            if (obj.id === '2d_model_mask') {
-                models.push(obj);
-            } else if (obj.uid?.startsWith('upload_') || obj.type === 'image' || obj.type === 'FabricImage' || obj.isPhoto) {
-                photos.push(obj);
-            } else {
-                topLayers.push(obj);
-            }
-        });
-
-        const sortedObjects = [...photos, ...models, ...topLayers];
-        canvas._objects = sortedObjects;
-        
-        canvas.requestRenderAll();
-    }, []);
-
-    useEffect(() => {
-        if (!fabricRef.current || !current2DImageUrl) return;
-        const canvas = fabricRef.current;
-        
-        if (product?.phoneMask) return; // Phone cases handled differently via CSS mask
-
-        const existing = canvas.getObjects().find(o => o.id === '2d_model_mask');
-
-        const ImgClass = fabric.FabricImage || fabric.Image;
-        const imgElement = new Image();
-        imgElement.crossOrigin = 'anonymous';
-        imgElement.onload = () => {
-            if (existing) canvas.remove(existing);
-            
-            const img = new ImgClass(imgElement, {
-                id: '2d_model_mask',
-                selectable: false,
-                evented: false,
-                excludeFromExport: true,
-                originX: 'left',
-                originY: 'top',
-            });
-            
-            // Automatic Bounding Box Detection: Crop away transparent padding from the PNG!
-            // Using a Web Worker to prevent main thread freeze on large images
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
-            tempCanvas.width = img.width;
-            tempCanvas.height = img.height;
-            tempCtx.drawImage(img.getElement(), 0, 0);
-            
-            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
-            
-            const workerCode = `
-                self.onmessage = function(e) {
-                    const data = e.data.imageData;
-                    const width = e.data.width;
-                    const height = e.data.height;
-                    
-                    let minX = width, minY = height, maxX = 0, maxY = 0;
-                    let found = false;
-
-                    for (let y = 0; y < height; y++) {
-                        for (let x = 0; x < width; x++) {
-                            const alpha = data[(y * width + x) * 4 + 3];
-                            if (alpha > 10) { // Threshold for non-transparent pixels
-                                if (x < minX) minX = x;
-                                if (y < minY) minY = y;
-                                if (x > maxX) maxX = x;
-                                if (y > maxY) maxY = y;
-                                found = true;
-                            }
-                        }
-                    }
-                    self.postMessage({ found, minX, minY, maxX, maxY });
-                };
-            `;
-            
-            const blob = new Blob([workerCode], { type: 'application/javascript' });
-            const workerUrl = URL.createObjectURL(blob);
-            const worker = new Worker(workerUrl);
-            
-            worker.postMessage({ imageData, width: tempCanvas.width, height: tempCanvas.height });
-            
-            worker.onmessage = (e) => {
-                const { found, minX, minY, maxX, maxY } = e.data;
-                
-                // Fallback to full image size if no pixels found or detection fails
-                const contentWidth = found ? (maxX - minX + 1) : img.width;
-                const contentHeight = found ? (maxY - minY + 1) : img.height;
-                const offsetX = found ? minX : 0;
-                const offsetY = found ? minY : 0;
-
-                // Set canvas and box to the detected visible content size
-                canvas.setDimensions({ width: contentWidth, height: contentHeight });
-                setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
-                
-                // 2D Model Auto-Crop Engine v2.0
-                // Align the image so the visible part (minX, minY) starts at (0, 0) of the new canvas
-                img.set({ 
-                    scaleX: 1, 
-                    scaleY: 1, 
-                    left: -offsetX, 
-                    top: -offsetY
-                });
-                canvas.add(img);
-                
-                // Trigger scaling calculation immediately
-                if (resizeRef.current) resizeRef.current();
-                
-                enforceLayering();
-                
-                worker.terminate();
-                URL.revokeObjectURL(workerUrl);
-            };
-            
-            worker.onerror = (err) => {
-                console.error("Auto-crop worker failed, falling back to original size", err);
-                canvas.setDimensions({ width: img.width, height: img.height });
-                setCanvasIntrinsicDimensions({ width: img.width, height: img.height });
-                img.set({ scaleX: 1, scaleY: 1, left: 0, top: 0 });
-                canvas.add(img);
-                if (resizeRef.current) resizeRef.current();
-                enforceLayering();
-                worker.terminate();
-                URL.revokeObjectURL(workerUrl);
-            };
-        };
-        imgElement.src = current2DImageUrl;
-    }, [current2DImageUrl, product?.phoneMask, enforceLayering, viewSide]);
-
-    useEffect(() => {
-        if (historyStep === -1 || isHistoryRecording.current || !fabricRef.current) return;
-        isHistoryRecording.current = true;
-        fabricRef.current.loadFromJSON(historyRef.current[historyStep]).then(() => {
-            fabricRef.current.renderAll();
-            updateTexture(true);
-            isHistoryRecording.current = false;
-        });
-    }, [historyStep, updateTexture]);
 
     const lastOpenedProductId = useRef(null);
 
@@ -1385,162 +662,18 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                         </div>
 
                         {/* Left Panel: High-Contrast Desktop Designer Tools */}
-                        <div className="hidden xl:flex w-[320px] flex-col gap-6">
-                            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
-                                <div className="space-y-2 mb-2">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <button onClick={() => addText()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
-                                            <FiType size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Text</span>
-                                        </button>
-                                        <button onClick={() => document.getElementById('desktop-image-upload')?.click()} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
-                                            <FiImage size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Image</span>
-                                        </button>
-                                        <input id="desktop-image-upload" type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
-                                        <button onClick={() => setActiveTab('stickers')} className="h-20 bg-slate-50 border border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:bg-[#0c0c2a] hover:text-white transition-all group active:scale-95 shadow-sm">
-                                            <FiSmile size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Add Art</span>
-                                        </button>
-                                        <button onClick={() => setIsDrawing(!isDrawing)} className={`h-20 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all group shadow-sm ${isDrawing ? 'bg-[#4f46e5] text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
-                                            <FiZap size={20} className={isDrawing ? 'text-white' : 'text-slate-400 group-hover:text-[#0c0c2a]'} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">{isDrawing ? 'Stop Ink' : 'Ink Mode'}</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="h-px bg-slate-100 w-full" />
-
-                                <div className="space-y-2">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Designer Tools</h4>
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-1 w-8 bg-[#0c0c2a] rounded-full"></div>
-                                        <span className="text-[11px] font-black uppercase text-[#0c0c2a]">{activeObject ? activeObject.type : 'Master Studio'}</span>
-                                    </div>
-                                </div>
-
-                                {/* Theme Palette (Visible for both global and selected) */}
-                                <div className="space-y-4">
-                                    <div className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Theme Palette</div>
-                                    <div className="grid grid-cols-5 gap-3">
-                                        {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
-                                            <button key={i} onClick={() => {
-                                                const active = fabricRef.current?.getActiveObject();
-                                                if (active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fill: color }); }
-                                                setBrushColor(color);
-                                            }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#4f46e5] scale-110 shadow-md' : 'border-slate-100 hover:border-[#4f46e5]/20'}`} style={{ backgroundColor: color }}></button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {activeObject ? (
-                                    <div className="space-y-10 animate-in fade-in slide-in-from-left-4 duration-500">
-                                        {/* Property Matrix */}
-                                        <div className="grid gap-8">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Scale Matrix</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
-                                                <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
-                                                    const val = parseFloat(e.target.value);
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set({ scaleX: val, scaleY: val }).setCoords();
-                                                    fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, scaleX: val }));
-                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Angular Rotation</span><span>{Math.round(activeObject.angle)}°</span></div>
-                                                <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
-                                                    const val = parseInt(e.target.value);
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, angle: val }));
-                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-6">
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos X</span><span>{Math.round(activeObject.left)}</span></div>
-                                                    <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
-                                                        const val = parseInt(e.target.value);
-                                                        const active = fabricRef.current.getActiveObject();
-                                                        active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, left: val }));
-                                                    }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                                </div>
-                                                <div className="space-y-4">
-                                                    <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Pos Y</span><span>{Math.round(activeObject.top)}</span></div>
-                                                    <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
-                                                        const val = parseInt(e.target.value);
-                                                        const active = fabricRef.current.getActiveObject();
-                                                        active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, top: val }));
-                                                    }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                                </div>
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Layer Opacity</span><span>{Math.round(activeObject.opacity * 100)}%</span></div>
-                                                <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
-                                                    const val = parseFloat(e.target.value);
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, opacity: val }));
-                                                }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                            </div>
-                                        </div>
-
-                                        {/* Typography Suite */}
-                                        {(activeObject.type === 'i-text' || activeObject.type === 'text') && (
-                                            <div className="space-y-6">
-                                                <div className="space-y-4">
-                                                    <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest">Update Design Text</h4>
-                                                    <textarea value={activeObject.text} onChange={(e) => {
-                                                        const val = e.target.value;
-                                                        const active = fabricRef.current.getActiveObject();
-                                                        active.set('text', val);
-                                                        fabricRef.current.renderAll();
-                                                        fastSync();
-                                                        setActiveObject(prev => ({ ...prev, text: val }));
-                                                        if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
-                                                        window.textSyncTimer = setTimeout(() => {
-                                                            updateTexture(true);
-                                                        }, 300);
-                                                    }} className="w-full h-28 bg-slate-50 border border-slate-100 rounded-3xl p-6 text-[14px] font-bold text-[#0c0c2a] focus:bg-white focus:border-[#0c0c2a]/20 transition-all outline-none resize-none" placeholder="Type here..." />
-                                                </div>
-
-                                                <div className="space-y-4">
-                                                    <h4 className="text-[10px] font-black text-[#0c0c2a]/60 uppercase tracking-widest leading-relaxed">Studio Fonts</h4>
-                                                    <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2 no-scrollbar">
-                                                        {premiumFonts.map(font => (
-                                                            <button key={font} onClick={() => {
-                                                                const active = fabricRef.current.getActiveObject();
-                                                                active.set('fontFamily', font); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fontFamily: font });
-                                                            }} className={`h-11 rounded-[14px] text-[10px] border transition-all font-black uppercase tracking-tighter ${activeObject.fontFamily === font ? 'bg-[#0c0c2a] text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-[#0c0c2a]/10'}`} style={{ fontFamily: font }}>{font}</button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div className="space-y-3 pt-4 border-t border-slate-50">
-                                            <button onClick={() => setActiveTab('layers')} className="w-full h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95">
-                                                <FiLayers size={16} /> Manage Layers ({canvasObjects.length})
-                                            </button>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiMove size={14} /> Center Obj</button>
-                                                <button onClick={() => {
-                                                    const active = fabricRef.current.getActiveObject();
-                                                    active.clone().then(cloned => {
-                                                        cloned.set({ left: active.left + 20, top: active.top + 20, uid: `clone_${Date.now()}` });
-                                                        fabricRef.current.add(cloned); fabricRef.current.setActiveObject(cloned); fabricRef.current.renderAll(); updateTexture();
-                                                    });
-                                                }} className="h-14 bg-slate-50 text-[#0c0c2a] rounded-2xl flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest border border-slate-100 hover:bg-slate-100 transition-all active:scale-95"><FiRepeat size={14} /> Clone</button>
-                                            </div>
-                                            <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest border border-rose-100 hover:bg-rose-100 transition-all active:scale-95"><FiTrash2 size={16} /> Delete Layer</button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-slate-50/50 rounded-[48px] border-2 border-dashed border-slate-100">
-                                        <FiBox size={40} className="text-slate-200 mb-6 animate-pulse" />
-                                        <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] leading-relaxed">Select Layer<br />to Configure</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        <ToolSidebar 
+                            addText={addText} 
+                            handleFileUpload={handleFileUpload} 
+                            isDrawing={isDrawing} 
+                            setIsDrawing={setIsDrawing} 
+                            fabricRef={fabricRef} 
+                            brushColor={brushColor} 
+                            setBrushColor={setBrushColor} 
+                            updateTexture={updateTexture} 
+                            fastSync={fastSync} 
+                            premiumFonts={premiumFonts} 
+                        />
                         {/* Center Viewport */}
                         <div className="flex-1 flex flex-col relative h-full">
 
@@ -1555,293 +688,31 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             <div className="flex-1 flex items-center justify-center relative">
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
                                     {/* View Multiplexer: Concurrent DOM mounting for persistence */}
-                                    <div className="absolute inset-0 transition-opacity duration-300" style={{ 
-                                        opacity: activeStudioTab === '2D_STUDIO' ? 1 : 0, 
-                                        pointerEvents: activeStudioTab === '2D_STUDIO' ? 'auto' : 'none', 
-                                        zIndex: activeStudioTab === '2D_STUDIO' ? 10 : -10,
-                                        visibility: activeStudioTab === '2D_STUDIO' ? 'visible' : 'hidden'
-                                    }}>
-                                        <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
-                                            {/* Blueprint Background */}                                                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                                                <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
-                                                    
-                                                    {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
-                                                    {product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-80 transition-opacity">
-                                                            <img 
-                                                                src={product.phoneMask.bodyImage || phoneBrands.find(b => b.id === product.phoneMask.brand)?.mockup || "https://i.ibb.co/L5hY5M0/samsung-mockup.png"} 
-                                                                alt="Phone Body"
-                                                                className="w-full h-full object-contain"
-                                                            />
-                                                        </div>
-                                                    )}
-
-                                                    {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
-                                                    {!product?.phoneMask && current2DImageUrl && (
-                                                        <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
-                                                            <img 
-                                                                src={current2DImageUrl} 
-                                                                alt="Product Backdrop"
-                                                                className="w-full h-full object-contain"
-                                                            />
-                                                        </div>
-                                                    )}
-
-                                                    {/* Layer 10: Fabric.js Canvas Overlay */}
-                                                    <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
-                                                        <div className="pointer-events-auto" style={{ 
-                                                            width: `${(product?.phoneMask ? 400 : (canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
-                                                            height: `${(product?.phoneMask ? 800 : (canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
-                                                            marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
-                                                            marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
-                                                            transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
-                                                            transformOrigin: 'center' 
-                                                        }}>
-                                                            <canvas ref={canvasRef} />
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-20 pointer-events-none">
-                                                            {/* We use a path to create an inverted mask (white outside, transparent inside phone bounds) */}
-                                                            <svg width="100%" height="100%" viewBox={`0 0 400 800`} preserveAspectRatio="xMidYMid meet" className="drop-shadow-2xl">
-                                                                <defs>
-                                                                    <mask id="phone-mask-inverted">
-                                                                        {/* Everything white is visible (will show the page background color) */}
-                                                                        <rect width="100%" height="100%" fill="white" />
-                                                                        {/* Subtract phone body (black means invisible in mask, showing design behind) */}
-                                                                        <rect 
-                                                                            x={200 - (product.phoneMask.shape.width/2)} 
-                                                                            y={400 - (product.phoneMask.shape.height/2)} 
-                                                                            width={product.phoneMask.shape.width} 
-                                                                            height={product.phoneMask.shape.height} 
-                                                                            rx={product.phoneMask.shape.rx} 
-                                                                            fill="black" 
-                                                                        />
-                                                                        {/* Re-add Camera holes to mask (white = visible dashboard color) */}
-                                                                        {product.phoneMask.camera.type === 'rounded-rect' && (
-                                                                            <rect 
-                                                                                x={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.x} 
-                                                                                y={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.y} 
-                                                                                width={product.phoneMask.camera.width} 
-                                                                                height={product.phoneMask.camera.height} 
-                                                                                rx={product.phoneMask.camera.rx} 
-                                                                                fill="white" 
-                                                                            />
-                                                                        )}
-                                                                        {product.phoneMask.camera.type === 'circle' && (
-                                                                            <circle 
-                                                                                cx={(200 - product.phoneMask.shape.width/2) + product.phoneMask.camera.cx} 
-                                                                                cy={(400 - product.phoneMask.shape.height/2) + product.phoneMask.camera.cy} 
-                                                                                r={product.phoneMask.camera.r} 
-                                                                                fill="white" 
-                                                                            />
-                                                                        )}
-                                                                        {product.phoneMask.camera.type === 'lenses' && product.phoneMask.camera.lenses.map((lens, i) => (
-                                                                            <circle 
-                                                                                key={i}
-                                                                                cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
-                                                                                cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
-                                                                                r={lens.r} 
-                                                                                fill="white" 
-                                                                            />
-                                                                        ))}
-                                                                    </mask>
-                                                                </defs>
-                                                                {/* Solid background covering EVERYTHING outside the phone hole AND in the camera hole */}
-                                                                <rect width="100%" height="100%" fill="#fafafa" mask="url(#phone-mask-inverted)" />
-                                                                
-                                                                {/* Thin outer stroke for definition */}
-                                                                <rect 
-                                                                    x={200 - (product.phoneMask.shape.width/2)} 
-                                                                    y={400 - (product.phoneMask.shape.height/2)} 
-                                                                    width={product.phoneMask.shape.width} 
-                                                                    height={product.phoneMask.shape.height} 
-                                                                    rx={product.phoneMask.shape.rx} 
-                                                                    fill="none" 
-                                                                    stroke="#e2e8f0"
-                                                                    strokeWidth="1"
-                                                                />
-                                                            </svg>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Layer 25: Case Reflection Overlay (Above the design) */}
-                                                    {product?.phoneMask && (
-                                                        <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-40 mix-blend-screen transition-opacity">
-                                                            <img 
-                                                                src={phoneBrands.find(b => b.id === product.phoneMask.brand)?.caseOverlay || "https://i.ibb.co/nbWvC7M/case-overlay.png"} 
-                                                                alt="Case Texture"
-                                                                className="w-full h-full object-contain"
-                                                            />
-                                                        </div>
-                                                    )}
-
-                                                    {/* Layer: Code-Driven 2D Template Viewport (Universal) */}
-                                                    {product?.shapeConfig && !product?.phoneMask && (!current2DImageUrl || product?.mockupProfile === 'mug-wrap') && (
-                                                        <div className={`absolute inset-0 z-20 pointer-events-none flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'visible' : 'overflow-hidden'}`}>
-                                                            <div className="relative" style={{ 
-                                                                width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
-                                                                height: `${(product?.canvasConfig?.height || 600) * canvasScale}px`,
-                                                                marginLeft: `${(product?.canvasConfig?.offsetX || 0) * canvasScale}px`, 
-                                                                marginTop: `${(product?.canvasConfig?.offsetY || 0) * canvasScale}px`
-                                                            }}>
-                                                                {/* Optional CSS Mug Handle (Protruding Left) */}
-                                                                {product?.mockupProfile === 'mug-wrap' && (
-                                                                    <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
-                                                                        left: `-${Math.max(40, 80 * canvasScale)}px`,
-                                                                        width: `${Math.max(40, 80 * canvasScale)}px`,
-                                                                        borderWidth: `${Math.max(12, 24 * canvasScale)}px`,
-                                                                        borderColor: '#fcfdfd',
-                                                                        background: 'linear-gradient(to right, #ffffff, #f1f5f9)',
-                                                                        zIndex: -1
-                                                                    }}></div>
-                                                                )}
-                                                                
-                                                                {/* The Workspace Canvas Backdrop (The actual 'Product' surface) */}
-                                                                <div className={`absolute inset-0 shadow-inner flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'rounded-[16px] shadow-[inset_10px_0_20px_rgba(0,0,0,0.03)]' : 'bg-white'}`} style={{
-                                                                    background: product?.mockupProfile === 'mug-wrap' ? 'linear-gradient(to right, #fcfdfd 0%, #ffffff 50%, #fcfdfd 100%)' : 'white'
-                                                                }}>
-                                                                     {/* Optional Texture/Grid for help */}
-                                                                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-                                                                </div>
-
-                                                                {/* Dynamic SVG Frame / Mask / Border */}
-                                                                <svg 
-                                                                    width="100%" 
-                                                                    height="100%" 
-                                                                    viewBox={`0 0 ${product.canvasConfig?.width || 500} ${product.canvasConfig?.height || 600}`} 
-                                                                    className="absolute inset-0 z-30"
-                                                                >
-                                                                    <defs>
-                                                                        <mask id={`shape-mask-${product._id || 'new'}`}>
-                                                                            <rect width="100%" height="100%" fill="white" />
-                                                                            {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} fill="black" />}
-                                                                            {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
-                                                                            {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
-                                                                            {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} fill="black" />}
-                                                                        </mask>
-                                                                    </defs>
-                                                                    
-                                                                    {/* Inverted Mask for background cutout */}
-                                                                    <rect width="100%" height="100%" fill="#fafafa" mask={`url(#shape-mask-${product._id || 'new'})`} />
-                                                                    
-                                                                    {/* Subtle Border and Inner Shadow Logic */}
-                                                                    <g 
-                                                                        fill={`rgba(255,255,255,${product.shapeConfig.overlayOpacity || 0.05})`} 
-                                                                        stroke={product.shapeConfig.borderColor || '#e2e8f0'} 
-                                                                        strokeWidth={product.shapeConfig.strokeWidth || 1}
-                                                                    >
-                                                                        {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} />}
-                                                                        {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} />}
-                                                                        {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} />}
-                                                                        {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} />}
-                                                                    </g>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Legacy 2D Mask/Overlay (Keep only as secondary fallback if shapeConfig is missing) */}
-                                                    {!product?.phoneMask && !product?.shapeConfig && (product?.frontMaskImage || product?.frontOverlayImage) && (
-                                                        <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
-                                                            {product.frontMaskImage && (
-                                                                <img 
-                                                                    src={product.frontMaskImage} 
-                                                                    alt="Model Mask"
-                                                                    className="absolute inset-0 w-full h-full object-contain mix-blend-multiply opacity-50"
-                                                                />
-                                                            )}
-                                                            {product.frontOverlayImage && (
-                                                                <img 
-                                                                    src={product.frontOverlayImage} 
-                                                                    alt="Model Overlay"
-                                                                    className="absolute inset-0 w-full h-full object-contain mix-blend-screen opacity-40"
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    {/* Quick Side Toggle */}
-                                                    {(product.blankFrontImage && product.blankBackImage && twoDModels.length === 0) && (
-                                                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
-                                                            <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
-                                                            <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Dynamic 2D Models Navigation */}
-                                                    {twoDModels.length > 0 && twoDModels[active2DModelIdx] && (
-                                                        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex flex-row items-center gap-4 bg-white/90 backdrop-blur-md p-3 rounded-[32px] shadow-2xl z-30 border border-slate-100/50 max-w-[80%] overflow-x-auto no-scrollbar pointer-events-auto">
-                                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2 border-r border-slate-100 hidden md:block">Views</div>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    handleSwitchSide(`model_${active2DModelIdx}_main`);
-                                                                    setActiveSupportSide('Main');
-                                                                }}
-                                                                className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 shrink-0 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-                                                            >
-                                                                <img src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
-                                                                <span className="text-[8px] font-black uppercase">Main</span>
-                                                            </button>
-                                                            
-                                                            {twoDModels[active2DModelIdx].supportModels?.map((sm, smIdx) => (
-                                                                <button 
-                                                                    key={smIdx}
-                                                                    onClick={() => {
-                                                                        handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`);
-                                                                        setActiveSupportSide(sm.side);
-                                                                    }}
-                                                                    className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 shrink-0 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-                                                                >
-                                                                    <img src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
-                                                                    <span className="text-[8px] font-black uppercase">{sm.side}</span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <Workspace2D 
+                                        ref={workspace2DRef}
+                                        isOpen={isOpen}
+                                        canvasRef={canvasRef}
+                                        viewportRef={viewportRef}
+                                        fabricRef={fabricRef}
+                                        resizeRef={resizeRef}
+                                        historyRef={historyRef}
+                                        isHistoryRecording={isHistoryRecording}
+                                        product={product}
+                                        activeTemplateId={activeTemplateId}
+                                        initialMode={initialMode}
+                                        handleSwitchSide={handleSwitchSide}
+                                    />
 
                                     {/* 3D DESIGN MODE: Interactive Three.js Studio with Calibrated Viewport */}
-                                    <div className="absolute inset-0 transition-opacity duration-300" style={{
-                                        opacity: activeStudioTab === '3D_STUDIO' ? 1 : 0, 
-                                        pointerEvents: activeStudioTab === '3D_STUDIO' ? 'auto' : 'none', 
-                                        zIndex: activeStudioTab === '3D_STUDIO' ? 10 : -10,
-                                        visibility: activeStudioTab === '3D_STUDIO' ? 'visible' : 'hidden'
-                                    }}>
-                                        <div id="studio-3d-canvas" className="w-full h-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out">
-
-                                            <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
-                                                <Canvas
-                                                    shadows
-                                                    camera={{ position: [0, 0, 5], fov: 45 }}
-                                                    gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
-                                                    dpr={[1, 2]}
-                                                    onCreated={({ gl }) => {
-                                                        gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                                            console.warn("3D Canvas WebGL Context Lost. Recovering...");
-                                                            e.preventDefault();
-                                                            // Force remount of 3D Canvas
-                                                            setTimeout(() => setContextKey(prev => prev + 1), 500);
-                                                            setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
-                                                        }, false);
-                                                    }}
-                                                    onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
-                                                    key={contextKey}
-                                                >
-                                                    <ambientLight intensity={1.8} />
-                                                    <spotLight position={[10, 20, 10]} intensity={3} />
-                                                    <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
-                                                        <Model3D baseModelId={product?.baseModelId} url={product?.model3d || product?.base3DModelUrl} canvasObjects={canvasObjects} objectAnchors={objectAnchors} onAnchorUpdate={handleAnchorUpdate} activeObjectId={activeObject?.uid} />
-                                                    </Stage>
-                                                    <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
-                                                </Canvas>
-                                            </React.Suspense>
-                                        </div>
-                                    </div>
+                                    <Workspace3D 
+                                        product={product} 
+                                        objectAnchors={objectAnchors} 
+                                        handleAnchorUpdate={handleAnchorUpdate} 
+                                        contextKey={contextKey} 
+                                        setContextKey={setContextKey} 
+                                        fabricRef={fabricRef} 
+                                        updateTexture={updateTexture} 
+                                    />
 
                                     {/* Vertical Floating Designer Rail (Desktop & Large Screens) - Global for 2D/3D */}
                                     <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
@@ -1865,10 +736,13 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                                     
                                 </div>
                             </div>
-                            <div className="absolute top-4 left-4 flex gap-3">
-                                <button onClick={handleUndo} disabled={historyStep <= 0} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpLeft size={18} /></button>
-                                <button onClick={handleRedo} disabled={historyStep >= historyRef.current.length - 1} className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-slate-800 disabled:opacity-20 hover:scale-110 active:scale-95 transition-all"><FiCornerUpRight size={18} /></button>
-                            </div>
+                            <TopNavigation 
+                                handleUndo={handleUndo} 
+                                handleRedo={handleRedo} 
+                                canUndo={historyStep > 0} 
+                                canRedo={historyStep < historyRef.current.length - 1} 
+                                handleSwitchSide={handleSwitchSide} 
+                            />
                             {/* Mockup Redesign: Floating Commerce Pill (Responsive) */}
                             {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
                                 <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
@@ -1882,64 +756,11 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             )}
                         </div>
 
-                        {/* Right Panel: Transaction Suite */}
-                        <div className="hidden xl:flex w-[320px] flex-col gap-6">
-                            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Order Summary</h4>
-                                </div>
-
-                                <div className="p-6 bg-slate-50/80 rounded-[32px] space-y-4">
-                                    <div className="flex justify-between items-center text-[11px] font-bold">
-                                        <span className="text-slate-400 uppercase">Per Unit Cost</span>
-                                        <span className="text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm text-sm">₹ {(product.discountPrice || product.basePrice || 0).toLocaleString()}</span>
-                                    </div>
-                                    <div className="h-px bg-slate-200/50 w-full"></div>
-                                    <p className="text-[9px] text-slate-500 uppercase tracking-widest text-center">Quantity & Sizes apply in cart</p>
-                                </div>
-
-                                {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Wholesale Ready</h4>
-                                        </div>
-                                        <div className="overflow-hidden border border-slate-50 rounded-2xl">
-                                            <table className="w-full text-[9px] font-bold">
-                                                <thead className="bg-slate-50 text-slate-400">
-                                                    <tr>
-                                                        <th className="px-3 py-2 text-left">BATCH RANGE</th>
-                                                        <th className="px-3 py-2 text-right">UNIT OFF</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-50">
-                                                    {product.bulkRules.sort((a, b) => a.minQty - b.minQty).map((rule, idx) => (
-                                                        <tr key={idx} className="text-slate-500">
-                                                            <td className="px-3 py-2">ABOVE {rule.minQty}</td>
-                                                            <td className="px-3 py-2 text-right">₹{rule.pricePerUnit}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="mt-auto space-y-4">
-                                    <div className="flex justify-between items-end pb-2">
-                                        <span className="text-[11px] font-bold text-slate-400 uppercase">Subtotal</span>
-                                        <span className="text-2xl font-black text-[#0c0c2a]">₹ {((product.discountPrice || product.basePrice || 0) * variations.length).toLocaleString()}</span>
-                                    </div>
-                                    <button onClick={() => handleFinalSubmit(true)} className="w-full h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm">
-                                        <FiArrowRight size={18} /> Buy Now
-                                    </button>
-                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] flex items-center justify-center gap-4 font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:-translate-y-1 transition-all disabled:opacity-50">
-                                        {isSubmitting ? <span className="animate-pulse">Syncing...</span> : <><FiShoppingCart size={18} /> Add to Cart</>}
-                                    </button>
-
-                                    <button onClick={handleDiscardDraft} className="w-full text-[9px] font-black text-slate-300 uppercase tracking-widest hover:text-rose-500 transition-colors">Abort Custom Design</button>
-                                </div>
-                            </div>
-                        </div>
+                        <CheckoutPanel 
+                            variations={variations} 
+                            handleFinalSubmit={handleFinalSubmit} 
+                            handleDiscardDraft={handleDiscardDraft} 
+                        />
                     </>
                 ) : (
                     /* Mode 2: Company Design (Instructions Only) */
@@ -2026,270 +847,55 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
 
             {/* NEW: PREMIUM MOBILE DASHBOARD (HIGH-CONTRAST LIGHT FOR PERFECT VISIBILITY) */}
             {designMode === 'self' && (
-                <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-slate-100 ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[40%]'}`}>
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-200 rounded-full" />
-
-                    <div className="flex justify-between items-center shrink-0 pt-2 text-[#0c0c2a]">
-                        <div className="flex flex-col" onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)}>
-                            <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 cursor-pointer">
-                                {activeStudioTab === '2D' ? '2D STUDIO' : '3D STUDIO'} {isMobileUiMinimized ? <FiArrowUp size={14} className="animate-bounce" /> : <FiArrowDown size={14} />}
-                            </h3>
-                            <span className="text-[8px] font-bold text-slate-400 uppercase">{activeObject ? activeObject.type : 'Designer Canvas'}</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            {activeObject && (
-                                <button onClick={() => { fabricRef.current.discardActiveObject(); fabricRef.current.renderAll(); setActiveObject(null); }} className="px-5 py-2 bg-[#0c0c2a]/10 text-[#0c0c2a] rounded-full text-[9px] font-black uppercase tracking-tight active:scale-95 transition-all">Deselect</button>
-                            )}
-                            <button onClick={() => setIsMobileUiMinimized(!isMobileUiMinimized)} className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-[#0c0c2a] shadow-sm">
-                                {isMobileUiMinimized ? <FiMaximize2 size={16} /> : <FiMinimize2 size={16} />}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="flex-1 flex gap-6 overflow-hidden">
-                        {/* Middle Section: Tool Hierarchy (Sliders -> Input -> Colors) */}
-                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-8 pb-10">
-
-                            {activeObject ? (
-                                <div className="space-y-8 pt-2">
-                                    {/* 1. SLIDERS (Size, Rotate, Pos X, Pos Y, Opacity) */}
-                                    <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Size</span><span>{Math.round(activeObject.scaleX * 100)}%</span></div>
-                                            <input type="range" min="0.1" max="5" step="0.1" value={activeObject.scaleX} onChange={(e) => {
-                                                const val = parseFloat(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set({ scaleX: val, scaleY: val }).setCoords();
-                                                fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, scaleX: val }));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Rotate</span><span>{Math.round(activeObject.angle)}°</span></div>
-                                            <input type="range" min="0" max="360" value={activeObject.angle} onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('angle', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, angle: val }));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Position X</span><span>{Math.round(activeObject.left)}</span></div>
-                                            <input type="range" min="0" max="500" value={activeObject.left} onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('left', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, left: val }));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="space-y-3">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Position Y</span><span>{Math.round(activeObject.top)}</span></div>
-                                            <input type="range" min="0" max="600" value={activeObject.top} onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('top', val).setCoords(); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, top: val }));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                        <div className="space-y-3 col-span-2">
-                                            <div className="flex justify-between text-[10px] font-black text-[#0c0c2a] uppercase tracking-tighter"><span>Transparency</span><span>{Math.round(activeObject.opacity * 100)}%</span></div>
-                                            <input type="range" min="0" max="1" step="0.01" value={activeObject.opacity} onChange={(e) => {
-                                                const val = parseFloat(e.target.value);
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('opacity', val); fabricRef.current.renderAll(); fastSync(); setActiveObject(prev => ({ ...prev, opacity: val }));
-                                            }} onMouseUp={() => updateTexture(true)} className="w-full accent-[#0c0c2a]" />
-                                        </div>
-                                    </div>
-
-                                    {/* 2. TEXT INPUT (Middle) - Visible only for text layers */}
-                                    {(activeObject.type === 'i-text' || activeObject.type === 'text') && (
-                                        <div className="space-y-4 px-1">
-                                            <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Edit Text Content</div>
-                                            <textarea rows="2" value={activeObject.text} onChange={(e) => {
-                                                const val = e.target.value;
-                                                const active = fabricRef.current.getActiveObject();
-                                                active.set('text', val);
-                                                fabricRef.current.renderAll();
-                                                // Immediate projection sync (fast), but debounced texture sync (slow)
-                                                fastSync();
-                                                setActiveObject(prev => ({ ...prev, text: val }));
-
-                                                // Clear existing timer
-                                                if (window.textSyncTimer) clearTimeout(window.textSyncTimer);
-                                                window.textSyncTimer = setTimeout(() => {
-                                                    updateTexture(true);
-                                                }, 300);
-                                            }} className="w-full p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl text-[14px] font-bold text-[#0c0c2a] focus:border-[#0c0c2a]/20 transition-all outline-none" placeholder="Enter your text..."></textarea>
-                                        </div>
-                                    )}
-
-                                    {/* 3. COLORS (Bottom) */}
-                                    <div className="space-y-4 px-1">
-                                        <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Theme Palette</div>
-                                        <div className="grid grid-cols-5 gap-3">
-                                            {['#0c0c2a', '#3b82f6', '#ec4899', '#fbbf24', '#ffffff', '#ef4444', '#10b981', '#6366f1', '#f97316', '#000000'].map((color, i) => (
-                                                <button key={i} onClick={() => {
-                                                    const active = fabricRef.current?.getActiveObject();
-                                                    if (active) { active.set('fill', color); active.set('stroke', color); fabricRef.current.renderAll(); updateTexture(); setActiveObject({ ...active, fill: color }); }
-                                                    setBrushColor(color);
-                                                }} className={`aspect-square rounded-full border-2 transition-all ${brushColor === color ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-slate-100'}`} style={{ backgroundColor: color }}></button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Quick Actions */}
-                                    <div className="flex gap-3 pt-4">
-                                        <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-14 bg-slate-50 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-slate-100"><FiMove size={14} /> Center Object</button>
-                                        <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-14 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm active:bg-rose-100"><FiTrash2 size={14} /> Remove Layer</button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-center py-10 opacity-30">
-                                    <FiBox size={48} className="text-[#0c0c2a] mb-6 animate-pulse" />
-                                    <p className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-[0.3em] leading-relaxed">No Selection<br />Active</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Right Section: Integrated Navigation Dock */}
-                        <div className="w-16 h-full bg-slate-50 rounded-[32px] p-2 flex flex-col gap-2 border border-slate-100 shrink-0 shadow-sm">
-                            {[
-                                { id: 'uploads', icon: <FiImage size={20} /> },
-                                { id: 'text', icon: <FiType size={20} /> },
-                                { id: 'stickers', icon: <FiSmile size={20} /> },
-                                { id: 'draw', icon: <FiEdit3 size={20} /> },
-                                { id: 'layers', icon: <FiLayers size={20} /> }
-                            ].map(tab => (
-                                <button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 rounded-[24px] flex items-center justify-center transition-all ${activeTab === tab.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-105' : 'text-slate-400 hover:text-[#0c0c2a]'}`}>
-                                    {tab.icon}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                        <PropertyDock 
+                            fabricRef={fabricRef} 
+                            brushColor={brushColor} 
+                            setBrushColor={setBrushColor} 
+                            updateTexture={updateTexture} 
+                            fastSync={fastSync} 
+                            isDrawing={isDrawing} 
+                            setIsDrawing={setIsDrawing} 
+                        />
             )}
 
-            {/* Tool Modals (Sub-panels) - Restored for functionality */}
-            {activeTab === 'uploads' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Assets</h4>
-                        <div className="flex items-center gap-4">
-                            {uploadedAssets.length > 0 && <button onClick={handlePurgeGallery} className="text-[9px] font-bold text-rose-500 uppercase tracking-widest hover:underline">Purge All</button>}
-                            <button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100"><FiX size={18} /></button>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-5 mb-8">
-                        <div className="relative h-32 border-2 border-dashed border-slate-100 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
-                            <input type="file" ref={fileRef} onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
-                            <FiArrowUp size={24} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Import File</span>
-                        </div>
-                        <button onClick={handleRemoveBg} disabled={isRemovingBg} className="h-32 bg-slate-50 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:bg-[#0c0c2a] hover:text-white transition-all group">
-                            {isRemovingBg ? <div className="w-6 h-6 border-2 border-[#0c0c2a] border-t-transparent rounded-full animate-spin"></div> : <FiZap size={24} className="group-hover:animate-pulse" />}
-                            <span className="text-[9px] font-black uppercase tracking-widest">Remove Background</span>
-                        </button>
-                    </div>
-                    {uploadedAssets.length > 0 && (
-                        <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4">
-                            {uploadedAssets.map(a => (
-                                <div key={a.id} className="group relative aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                                    <img src={a.url} onClick={() => {
-                                        const imgElement = new Image();
-                                        imgElement.crossOrigin = 'anonymous';
-                                        imgElement.onload = () => {
-                                            try {
-                                                const ImgClass = fabric.FabricImage || fabric.Image;
-                                                const img = new ImgClass(imgElement, {
-                                                    width: imgElement.naturalWidth || imgElement.width || 100,
-                                                    height: imgElement.naturalHeight || imgElement.height || 100
-                                                });
-                                                img.scaleToWidth(180);
-                                                img.set({ left: 250, top: 300, originX: 'center', originY: 'center', uid: `up_${Date.now()}` });
-                                                if (fabricRef.current) {
-                                                    fabricRef.current.add(img);
-                                                    fabricRef.current.setActiveObject(img);
-                                                    fabricRef.current.renderAll();
-                                                    updateTexture(true);
-                                                    setIsMobileUiMinimized(false);
-                                                }
-                                            } catch (err) {
-                                                console.error("Fabric Gallery Error:", err);
-                                            }
-                                        };
-                                        imgElement.src = a.url;
-                                    }} className="w-full h-full object-contain p-2 cursor-pointer group-hover:scale-110 transition-transform" />
-                                    <button onClick={(e) => { e.stopPropagation(); removeAsset(a.id); }} className="absolute top-2 right-2 w-7 h-7 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-rose-600">
-                                        <FiX size={14} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {activeTab === 'draw' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX /></button></div>
-                    <div className="space-y-10">
-                        <div className="space-y-6">
-                            <div className="flex justify-between text-[11px] font-bold text-slate-400 uppercase"><span>Brush Diameter</span><span>{brushSize}px</span></div>
-                            <input type="range" min="1" max="50" value={brushSize} onChange={(e) => setBrushSize(parseInt(e.target.value))} className="w-full" />
-                        </div>
-                        <div className="grid grid-cols-5 gap-3">
-                            {['#000000', '#ffffff', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b', '#2dd4bf'].map(c => (
-                                <button key={c} onClick={() => setBrushColor(c)} className={`aspect-square rounded-full border-2 ${brushColor === c ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-transparent'}`} style={{ backgroundColor: c }} />
-                            ))}
-                        </div>
-                        <button onClick={() => { setIsDrawing(true); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] font-black uppercase tracking-widest text-[10px]">Initialize Drawing</button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'text' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Text</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
-                    <div className="flex flex-col gap-4">
-                        <button onClick={() => { addText('heading'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
-                        <button onClick={() => { addText('body'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Sub-headline <FiPlus size={18} /></button>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'stickers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
-                    <div className="grid grid-cols-4 gap-5">
-                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{ __html: s.svg }} />)}
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'layers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[450px] xl:h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
-                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Layers</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
-                    <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-2">
-                        {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24} /><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> :
-                            canvasObjects.map((obj, i) => (
-                                <div key={i} onClick={() => {
-                                    const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid);
-                                    if (real) { fabricRef.current.setActiveObject(real); fabricRef.current.renderAll(); setActiveObject({ ...real, uid: real.uid, type: real.type }); }
-                                }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'bg-[#0c0c2a] text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`}>
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[10px] font-black">{i + 1}</div>
-                                        <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.bringToFront(real); fabricRef.current.renderAll(); updateTexture(); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20"><FiArrowUp size={14} /></button>
-                                        <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.remove(real); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); } }} className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-rose-500"><FiTrash2 size={14} /></button>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                </div>
-            )}
+            <ToolModals 
+                uploadedAssets={uploadedAssets}
+                handlePurgeGallery={handlePurgeGallery}
+                fileRef={fileRef}
+                handleFileUpload={handleFileUpload}
+                handleRemoveBg={handleRemoveBg}
+                isRemovingBg={isRemovingBg}
+                removeAsset={removeAsset}
+                fabricRef={fabricRef}
+                updateTexture={updateTexture}
+                brushSize={brushSize}
+                setBrushSize={setBrushSize}
+                brushColor={brushColor}
+                setBrushColor={setBrushColor}
+                setIsDrawing={setIsDrawing}
+                addText={addText}
+                stickerLibrary={stickerLibrary}
+                addSticker={addSticker}
+            />
 
             <footer className="hidden xl:flex h-8 bg-white/50 backdrop-blur-sm border-t border-slate-100 items-center px-10 justify-center shrink-0 font-sans text-[8px] uppercase tracking-widest text-slate-300">
                 <div className="flex gap-6"><span>©2026 Agneya Design Studio</span></div>
             </footer>
         </div>
+    );
+};
+
+const StudioOverlay = (props) => {
+    if (!props.isOpen) return null; 
+
+    return (
+        <StudioProvider 
+            product={props.product} 
+            initialMode={props.initialMode} 
+            initial2DModelIdx={props.initial2DModelIdx}
+        >
+            <StudioOverlayInner {...props} />
+        </StudioProvider>
     );
 };
 
