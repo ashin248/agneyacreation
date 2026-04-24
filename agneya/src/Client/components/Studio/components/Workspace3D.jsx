@@ -407,23 +407,29 @@ const Workspace3D = ({
             visibility: activeStudioTab === '3D_STUDIO' ? 'visible' : 'hidden'
         }}>
             <div id="studio-3d-canvas" className="w-full h-full relative cursor-grab active:cursor-grabbing transition-all duration-700 ease-in-out">
-                <React.Suspense fallback={<div className="w-full h-full flex items-center justify-center text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Initializing 3D Engine...</div>}>
-                    <Canvas
-                        shadows
-                        camera={{ position: [0, 0, 5], fov: 45 }}
-                        gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
-                        dpr={[1, 2]}
-                        onCreated={({ gl }) => {
-                            gl.domElement.addEventListener('webglcontextlost', (e) => {
-                                console.warn("3D Canvas WebGL Context Lost. Recovering...");
-                                e.preventDefault();
-                                setTimeout(() => setContextKey(prev => prev + 1), 500);
-                                setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
-                            }, false);
-                        }}
-                        onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
-                        key={contextKey}
-                    >
+                {/* Loader Overlay (Optional, drawn over the canvas) */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-50">
+                    <div className="text-slate-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse" style={{ display: 'none' }} id="three-loader">
+                        Initializing 3D Engine...
+                    </div>
+                </div>
+                <Canvas
+                    shadows
+                    camera={{ position: [0, 0, 5], fov: 45 }}
+                    gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
+                    dpr={[1, 2]}
+                    onCreated={({ gl }) => {
+                        gl.domElement.addEventListener('webglcontextlost', (e) => {
+                            console.warn("3D Canvas WebGL Context Lost. Recovering...");
+                            e.preventDefault();
+                            setTimeout(() => setContextKey(prev => prev + 1), 500);
+                            setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
+                        }, false);
+                    }}
+                    onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
+                    key={contextKey}
+                >
+                    <React.Suspense fallback={null}>
                         <ambientLight intensity={1.8} />
                         <spotLight position={[10, 20, 10]} intensity={3} />
                         <Stage intensity={0.6} environment={null} adjustCamera={1.2}>
@@ -437,8 +443,8 @@ const Workspace3D = ({
                             />
                         </Stage>
                         <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
-                    </Canvas>
-                </React.Suspense>
+                    </React.Suspense>
+                </Canvas>
             </div>
         </div>
     );
