@@ -1042,6 +1042,24 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                             top: canvas.height ? canvas.height / 2 : 300, 
                             uid 
                         });
+                        
+                        if (product?.canvasConfig) {
+                            const cw = product.canvasConfig.width || 500;
+                            const ch = product.canvasConfig.height || 600;
+                            const cx = canvas.width / 2 + (product.canvasConfig.offsetX || 0);
+                            const cy = canvas.height / 2 + (product.canvasConfig.offsetY || 0);
+                            
+                            const clipPath = new fabric.Rect({
+                                left: cx,
+                                top: cy,
+                                width: cw,
+                                height: ch,
+                                originX: 'center',
+                                originY: 'center',
+                                absolutePositioned: true
+                            });
+                            img.set({ clipPath });
+                        }
                     }
 
                     if (pendingAnchor) {
