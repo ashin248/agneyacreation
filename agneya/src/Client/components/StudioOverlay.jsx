@@ -757,24 +757,20 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 originY: 'center',
             });
             
-            // Adjust canvas to match the admin-defined canvasConfig (Printable Area),
-            // or fallback to intrinsic size. This crops away transparent padding in the PNG!
-            const targetWidth = product?.canvasConfig?.width || img.width;
-            const targetHeight = product?.canvasConfig?.height || img.height;
+            // Always use the intrinsic size of the uploaded model mask for the canvas.
+            // This ensures the editing box perfectly matches the uploaded PNG file.
+            const targetWidth = img.width;
+            const targetHeight = img.height;
             
             canvas.setDimensions({ width: targetWidth, height: targetHeight });
             setCanvasIntrinsicDimensions({ width: targetWidth, height: targetHeight });
             
-            // To ensure the full mockup remains centered on the screen despite the Canvas wrapper 
-            // being shifted by canvasConfig offsets, apply an inverse shift to the image inside the Canvas.
-            const inverseOffsetX = -(product?.canvasConfig?.offsetX || 0);
-            const inverseOffsetY = -(product?.canvasConfig?.offsetY || 0);
-
+            // Place the mask exactly at the center of the canvas
             img.set({ 
                 scaleX: 1, 
                 scaleY: 1, 
-                left: (targetWidth / 2) + inverseOffsetX, 
-                top: (targetHeight / 2) + inverseOffsetY 
+                left: targetWidth / 2, 
+                top: targetHeight / 2 
             });
             canvas.add(img);
             
