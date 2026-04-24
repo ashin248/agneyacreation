@@ -791,12 +791,14 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
             canvas.setDimensions({ width: contentWidth, height: contentHeight });
             setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
             
-            // Align the image so the visible part fits perfectly in the new canvas
+            // Correct Alignment Math: 
+            // We want the visible 'content' to be centered in the new 'contentWidth' canvas.
+            // Since Fabric's 'left' is the center of the image, we place it at (img.width/2 - offsetX).
             img.set({ 
                 scaleX: 1, 
                 scaleY: 1, 
-                left: (contentWidth / 2) - (img.width / 2 - offsetX), 
-                top: (contentHeight / 2) - (img.height / 2 - offsetY)
+                left: (img.width / 2) - offsetX, 
+                top: (img.height / 2) - offsetY
             });
             canvas.add(img);
             
