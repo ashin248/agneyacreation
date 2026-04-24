@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import { calculateWholesalePriceTotal, calculateSavings } from '../utils/pricingUtils';
 import { MODELS } from './Three/ProductLibrary';
 import { TWOD_TEMPLATES } from './TwoD/TwoDTemplateLibrary';
+import { phoneBrands } from '../data/MobileCasesDB';
 
 const dummyDecal = new THREE.Object3D();
 
@@ -466,6 +467,7 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
     const fabricRef = useRef(null);
     const fileRef = useRef(null);
     const viewportRef = useRef(null);
+    const resizeRef = useRef(null);
     const [canvasScale, setCanvasScale] = useState(1);
 
     const premiumFonts = [
