@@ -757,20 +757,46 @@ const StudioOverlay = ({ isOpen, onClose, product, requireLogin, initialMode = '
                 originY: 'center',
             });
             
-            // Always use the intrinsic size of the uploaded model mask for the canvas.
-            // This ensures the editing box perfectly matches the uploaded PNG file.
-            const targetWidth = img.width;
-            const targetHeight = img.height;
+            // Automatic Bounding Box Detection: Crop away transparent padding from the PNG!
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+            tempCtx.drawImage(img.getElement(), 0, 0);
             
-            canvas.setDimensions({ width: targetWidth, height: targetHeight });
-            setCanvasIntrinsicDimensions({ width: targetWidth, height: targetHeight });
+            const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+            let minX = tempCanvas.width, minY = tempCanvas.height, maxX = 0, maxY = 0;
+            let found = false;
+
+            for (let y = 0; y < tempCanvas.height; y++) {
+                for (let x = 0; x < tempCanvas.width; x++) {
+                    const alpha = imageData[(y * tempCanvas.width + x) * 4 + 3];
+                    if (alpha > 10) { // Threshold for non-transparent pixels
+                        if (x < minX) minX = x;
+                        if (y < minY) minY = y;
+                        if (x > maxX) maxX = x;
+                        if (y > maxY) maxY = y;
+                        found = true;
+                    }
+                }
+            }
+
+            // Fallback to full image size if no pixels found or detection fails
+            const contentWidth = found ? (maxX - minX + 1) : img.width;
+            const contentHeight = found ? (maxY - minY + 1) : img.height;
+            const offsetX = found ? minX : 0;
+            const offsetY = found ? minY : 0;
+
+            // Set canvas and box to the detected visible content size
+            canvas.setDimensions({ width: contentWidth, height: contentHeight });
+            setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
             
-            // Place the mask exactly at the center of the canvas
+            // Align the image so the visible part fits perfectly in the new canvas
             img.set({ 
                 scaleX: 1, 
                 scaleY: 1, 
-                left: targetWidth / 2, 
-                top: targetHeight / 2 
+                left: (contentWidth / 2) - (img.width / 2 - offsetX), 
+                top: (contentHeight / 2) - (img.height / 2 - offsetY)
             });
             canvas.add(img);
             
