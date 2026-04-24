@@ -100,6 +100,31 @@ const Workspace2D = forwardRef(({
         }
     }, []);
 
+    const enforceLayering = useCallback(() => {
+        if (!fabricRef.current) return;
+        const canvas = fabricRef.current;
+        const objects = canvas.getObjects();
+        
+        const photos = [];
+        const models = [];
+        const topLayers = [];
+
+        objects.forEach(obj => {
+            if (obj.id === '2d_model_mask') {
+                models.push(obj);
+            } else if (obj.uid?.startsWith('upload_') || obj.type === 'image' || obj.type === 'FabricImage' || obj.isPhoto) {
+                photos.push(obj);
+            } else {
+                topLayers.push(obj);
+            }
+        });
+
+        const sortedObjects = [...photos, ...models, ...topLayers];
+        canvas._objects = sortedObjects;
+        
+        canvas.requestRenderAll();
+    }, []);
+
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
@@ -225,30 +250,7 @@ const Workspace2D = forwardRef(({
         };
     }, [isOpen, product?.customizationType, fastSync, updateTexture, enforceLayering]);
 
-    const enforceLayering = useCallback(() => {
-        if (!fabricRef.current) return;
-        const canvas = fabricRef.current;
-        const objects = canvas.getObjects();
-        
-        const photos = [];
-        const models = [];
-        const topLayers = [];
-
-        objects.forEach(obj => {
-            if (obj.id === '2d_model_mask') {
-                models.push(obj);
-            } else if (obj.uid?.startsWith('upload_') || obj.type === 'image' || obj.type === 'FabricImage' || obj.isPhoto) {
-                photos.push(obj);
-            } else {
-                topLayers.push(obj);
-            }
-        });
-
-        const sortedObjects = [...photos, ...models, ...topLayers];
-        canvas._objects = sortedObjects;
-        
-        canvas.requestRenderAll();
-    }, []);
+    
 
     useEffect(() => {
         if (!fabricRef.current || !current2DImageUrl) return;
