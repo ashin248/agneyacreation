@@ -21,7 +21,8 @@ const Workspace2D = forwardRef(({
         current2DImageUrl, viewSide, 
         setActiveObject, setCanvasObjects, canvasObjects,
         historyStep, setHistoryStep, 
-        setIsMobileUiMinimized 
+        setIsMobileUiMinimized,
+        twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide
     } = useStudio();
 
     const [canvasScale, setCanvasScale] = useState(1);
@@ -452,6 +453,7 @@ const Workspace2D = forwardRef(({
                 <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
                     <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
                         
+                        {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-80 transition-opacity">
                                 <img 
@@ -462,16 +464,32 @@ const Workspace2D = forwardRef(({
                             </div>
                         )}
 
+                        {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
+                        {!product?.phoneMask && current2DImageUrl && (
+                            <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
+                                <img 
+                                    src={current2DImageUrl} 
+                                    alt="Product Backdrop"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )}
+
+                        {/* Layer 10: Fabric.js Canvas Overlay */}
                         <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                             <div className="pointer-events-auto" style={{ 
                                 width: `${(product?.phoneMask ? 400 : (canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
                                 height: `${(product?.phoneMask ? 800 : (canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
+                                marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
+                                marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
+                                transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
                                 transformOrigin: 'center' 
                             }}>
                                 <canvas ref={canvasRef} />
                             </div>
                         </div>
                         
+                        {/* Phone Masking Logic */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-20 pointer-events-none">
                                 <svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid meet" className="drop-shadow-2xl">
@@ -504,10 +522,162 @@ const Workspace2D = forwardRef(({
                                                     fill="white" 
                                                 />
                                             )}
+                                            {product.phoneMask.camera.type === 'lenses' && product.phoneMask.camera.lenses.map((lens, i) => (
+                                                <circle 
+                                                    key={i}
+                                                    cx={(200 - product.phoneMask.shape.width/2) + lens.cx} 
+                                                    cy={(400 - product.phoneMask.shape.height/2) + lens.cy} 
+                                                    r={lens.r} 
+                                                    fill="white" 
+                                                />
+                                            ))}
                                         </mask>
                                     </defs>
                                     <rect width="100%" height="100%" fill="#f8fafc" mask="url(#phone-mask-inverted)" />
+                                    
+                                    <rect 
+                                        x={200 - (product.phoneMask.shape.width/2)} 
+                                        y={400 - (product.phoneMask.shape.height/2)} 
+                                        width={product.phoneMask.shape.width} 
+                                        height={product.phoneMask.shape.height} 
+                                        rx={product.phoneMask.shape.rx} 
+                                        fill="none" 
+                                        stroke="#e2e8f0"
+                                        strokeWidth="1"
+                                    />
                                 </svg>
+                            </div>
+                        )}
+
+                        {/* Layer 25: Case Reflection Overlay (Above the design) */}
+                        {product?.phoneMask && (
+                            <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-40 mix-blend-screen transition-opacity">
+                                <img 
+                                    src={phoneBrands.find(b => b.id === product.phoneMask.brand)?.caseOverlay || "https://i.ibb.co/nbWvC7M/case-overlay.png"} 
+                                    alt="Case Texture"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        )}
+
+                        {/* Layer: Code-Driven 2D Template Viewport (Universal) */}
+                        {product?.shapeConfig && !product?.phoneMask && (!current2DImageUrl || product?.mockupProfile === 'mug-wrap') && (
+                            <div className={`absolute inset-0 z-20 pointer-events-none flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'visible' : 'overflow-hidden'}`}>
+                                <div className="relative" style={{ 
+                                    width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
+                                    height: `${(product?.canvasConfig?.height || 600) * canvasScale}px`,
+                                    marginLeft: `${(product?.canvasConfig?.offsetX || 0) * canvasScale}px`, 
+                                    marginTop: `${(product?.canvasConfig?.offsetY || 0) * canvasScale}px`
+                                }}>
+                                    {/* Optional CSS Mug Handle (Protruding Left) */}
+                                    {product?.mockupProfile === 'mug-wrap' && (
+                                        <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
+                                            left: `-${Math.max(40, 80 * canvasScale)}px`,
+                                            width: `${Math.max(40, 80 * canvasScale)}px`,
+                                            borderWidth: `${Math.max(12, 24 * canvasScale)}px`,
+                                            borderColor: '#fcfdfd',
+                                            background: 'linear-gradient(to right, #ffffff, #f1f5f9)',
+                                            zIndex: -1
+                                        }}></div>
+                                    )}
+                                    
+                                    {/* The Workspace Canvas Backdrop */}
+                                    <div className={`absolute inset-0 shadow-inner flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'rounded-[16px] shadow-[inset_10px_0_20px_rgba(0,0,0,0.03)]' : 'bg-white'}`} style={{
+                                        background: product?.mockupProfile === 'mug-wrap' ? 'linear-gradient(to right, #fcfdfd 0%, #ffffff 50%, #fcfdfd 100%)' : 'white'
+                                    }}>
+                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+                                    </div>
+
+                                    {/* Dynamic SVG Frame / Mask / Border */}
+                                    <svg 
+                                        width="100%" 
+                                        height="100%" 
+                                        viewBox={`0 0 ${product.canvasConfig?.width || 500} ${product.canvasConfig?.height || 600}`} 
+                                        className="absolute inset-0 z-30"
+                                    >
+                                        <defs>
+                                            <mask id={`shape-mask-${product._id || 'new'}`}>
+                                                <rect width="100%" height="100%" fill="white" />
+                                                {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} fill="black" />}
+                                                {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} fill="black" />}
+                                                {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} fill="black" />}
+                                            </mask>
+                                        </defs>
+                                        
+                                        <rect width="100%" height="100%" fill="#fafafa" mask={`url(#shape-mask-${product._id || 'new'})`} />
+                                        
+                                        <g 
+                                            fill={`rgba(255,255,255,${product.shapeConfig.overlayOpacity || 0.05})`} 
+                                            stroke={product.shapeConfig.borderColor || '#e2e8f0'} 
+                                            strokeWidth={product.shapeConfig.strokeWidth || 1}
+                                        >
+                                            {product.shapeConfig.type === 'circle' && <circle cx="50%" cy="50%" r={product.shapeConfig.radius} />}
+                                            {product.shapeConfig.type === 'rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                            {product.shapeConfig.type === 'rounded-rectangle' && <rect x="50%" y="50%" width={product.shapeConfig.width} height={product.shapeConfig.height} rx={product.shapeConfig.rx} style={{ transform: 'translate(-50%, -50%)' }} />}
+                                            {product.shapeConfig.type === 'polygon' && <polygon points={product.shapeConfig.points} />}
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Legacy 2D Mask/Overlay */}
+                        {!product?.phoneMask && !product?.shapeConfig && (product?.frontMaskImage || product?.frontOverlayImage) && (
+                            <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
+                                {product.frontMaskImage && (
+                                    <img 
+                                        src={product.frontMaskImage} 
+                                        alt="Model Mask"
+                                        className="absolute inset-0 w-full h-full object-contain mix-blend-multiply opacity-50"
+                                    />
+                                )}
+                                {product.frontOverlayImage && (
+                                    <img 
+                                        src={product.frontOverlayImage} 
+                                        alt="Model Overlay"
+                                        className="absolute inset-0 w-full h-full object-contain mix-blend-screen opacity-40"
+                                    />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Quick Side Toggle */}
+                        {(product?.blankFrontImage && product?.blankBackImage && twoDModels.length === 0) && (
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
+                                <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
+                                <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
+                            </div>
+                        )}
+
+                        {/* Dynamic 2D Models Navigation */}
+                        {twoDModels.length > 0 && twoDModels[active2DModelIdx] && (
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 bg-white/90 backdrop-blur-md p-3 rounded-3xl shadow-2xl z-30 border border-slate-100/50 max-h-[80%] overflow-y-auto no-scrollbar pointer-events-auto">
+                                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center pb-2 border-b border-slate-100">Views</div>
+                                <button 
+                                    onClick={() => {
+                                        handleSwitchSide(`model_${active2DModelIdx}_main`);
+                                        setActiveSupportSide('Main');
+                                    }}
+                                    className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                >
+                                    <img src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
+                                    <span className="text-[8px] font-black uppercase">Main</span>
+                                </button>
+                                
+                                {twoDModels[active2DModelIdx].supportModels?.map((sm, smIdx) => (
+                                    <button 
+                                        key={smIdx}
+                                        onClick={() => {
+                                            handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`);
+                                            setActiveSupportSide(sm.side);
+                                        }}
+                                        className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
+                                    >
+                                        <img src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
+                                        <span className="text-[8px] font-black uppercase">{sm.side}</span>
+                                    </button>
+                                ))}
                             </div>
                         )}
                     </div>
