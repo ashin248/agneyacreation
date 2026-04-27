@@ -127,8 +127,13 @@ const Workspace2D = forwardRef(({
         
         // Re-order without breaking internal Fabric state
         sortedObjects.forEach((obj, idx) => {
-            if (canvas.getObjects().indexOf(obj) !== idx) {
-                canvas.moveObjectTo(obj, idx);
+            const currentIdx = canvas.getObjects().indexOf(obj);
+            if (currentIdx !== -1 && currentIdx !== idx) {
+                if (obj.moveTo) {
+                    obj.moveTo(idx);
+                } else {
+                    canvas.moveObjectTo?.(obj, idx);
+                }
             }
         });
         
@@ -177,10 +182,13 @@ const Workspace2D = forwardRef(({
         resizeObserver.observe(viewportRef.current);
         resizeRef.current = handleResize;
 
-        fabric.Object.prototype.set({
-            cornerColor: '#0c0c2a', cornerStrokeColor: '#ffffff', cornerStyle: 'circle',
-            transparentCorners: false, cornerSize: 10, borderColor: '#0c0c2a', borderScaleFactor: 2, padding: 10
-        });
+        const ObjectClass = fabric.FabricObject || fabric.Object;
+        if (ObjectClass && ObjectClass.prototype) {
+            ObjectClass.prototype.set({
+                cornerColor: '#0c0c2a', cornerStrokeColor: '#ffffff', cornerStyle: 'circle',
+                transparentCorners: false, cornerSize: 10, borderColor: '#0c0c2a', borderScaleFactor: 2, padding: 10
+            });
+        }
 
         const saveHistory = () => {
             if (isHistoryRecording.current) return;
@@ -254,10 +262,10 @@ const Workspace2D = forwardRef(({
         if (!fabricRef.current || !activeTemplateId) return;
         const canvas = fabricRef.current;
 
-        // Clear existing slots/templates but keep user uploads
-        canvas.getObjects().filter(o => o.isSlot).forEach(o => canvas.remove(o));
+        // Clear existing slots AND their labels
+        canvas.getObjects().filter(o => o.isSlot || o.isSlotLabel).forEach(o => canvas.remove(o));
 
-        import('../TwoD/TwoDTemplateLibrary').then(lib => {
+        import('../../TwoD/TwoDTemplateLibrary').then(lib => {
             const template = lib.getTemplateById?.(activeTemplateId) || lib.TWOD_TEMPLATES[activeTemplateId];
             if (!template || !template.objects) return;
 
@@ -302,7 +310,8 @@ const Workspace2D = forwardRef(({
                         originY: 'center',
                         selectable: false,
                         evented: false,
-                        excludeFromExport: true
+                        excludeFromExport: true,
+                        isSlotLabel: true
                     });
                     canvas.add(label);
                 }
@@ -311,7 +320,7 @@ const Workspace2D = forwardRef(({
             enforceLayering();
             updateTexture(true);
         });
-    }, [activeTemplateId, enforceLayering, updateTexture]);
+    }, [activeTemplateId, viewSide, enforceLayering, updateTexture]);
 
     useEffect(() => {
         if (!fabricRef.current || !current2DImageUrl) return;

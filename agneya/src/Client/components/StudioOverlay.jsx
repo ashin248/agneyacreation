@@ -400,7 +400,7 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
                         // Remove the Slot and its label from canvas
                         const objectsToRemove = canvas.getObjects().filter(o => 
                             (o.isSlot && o.slotId === activeObj.slotId) || 
-                            (o.type === 'textbox' && o.text === 'ADD PHOTO' && Math.abs(o.left - (slotX + slotW/2)) < 5)
+                            o.isSlotLabel
                         );
                         objectsToRemove.forEach(o => canvas.remove(o));
                     } else {
