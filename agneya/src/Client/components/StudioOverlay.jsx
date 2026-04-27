@@ -52,8 +52,7 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
 
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
-    // const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
-    const activeTemplate = null; // Cleared for reset
+    const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
     const effectiveMockupProfile = product?.mockupProfile;
     const effectiveCanvasConfig = product?.canvasConfig;
     const effectiveShapeConfig = product?.shapeConfig;
@@ -146,6 +145,10 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
 
     const updateTexture = useCallback((isFullUpdate = true) => {
         workspace2DRef.current?.updateTexture(isFullUpdate);
+    }, []);
+
+    const enforceLayering = useCallback(() => {
+        workspace2DRef.current?.enforceLayering();
     }, []);
 
 

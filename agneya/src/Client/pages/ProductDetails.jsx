@@ -27,9 +27,8 @@ import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
 import StudioOverlay from '../components/StudioOverlay';
-// import TWOD_TEMPLATES_LIB, { TWOD_TEMPLATES as NAMED_TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
-// const TWOD_TEMPLATES = TWOD_TEMPLATES_LIB || NAMED_TWOD_TEMPLATES;
-// import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
+import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
+import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
 import { Grid, Check, ChevronRight as FiChevronRight } from 'lucide-react';
 
 const ProductDetails = () => {
@@ -77,12 +76,12 @@ const ProductDetails = () => {
                         setSelectedSize(first.size);
                     }
 
-                    // 2D Template initialization cleared for reset
-                    // if (res.data.linkedTemplates?.length > 0) {
-                    //     const first = res.data.linkedTemplates[0];
-                    //     const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
-                    //     setActiveTemplateId(tid);
-                    // }
+                    // 2D Template initialization
+                    if (res.data.linkedTemplates?.length > 0) {
+                        const first = res.data.linkedTemplates[0];
+                        const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
+                        setActiveTemplateId(tid);
+                    }
                     
                     // Fetch related products
                     if (res.data.category) {
@@ -395,6 +394,42 @@ const ProductDetails = () => {
                                                     {size}
                                                 </button>
                                             ))}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Choose Your Theme Section */}
+                                {product.linkedTemplates?.length > 0 && (
+                                    <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-4">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Choose Your Theme</label>
+                                            <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">{product.linkedTemplates.length} Designs</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 no-scrollbar overflow-x-auto">
+                                            {product.linkedTemplates.map((templateItem, idx) => {
+                                                const tid = typeof templateItem === 'string' ? templateItem : (templateItem.templateId || templateItem.id);
+                                                const template = TWOD_TEMPLATES[tid];
+                                                if (!template) return null;
+                                                
+                                                return (
+                                                    <button 
+                                                        key={idx}
+                                                        onClick={() => setActiveTemplateId(tid)}
+                                                        className={`group relative aspect-[4/3] min-w-[140px] rounded-2xl overflow-hidden border-2 transition-all duration-300 ${activeTemplateId === tid ? 'border-indigo-600 shadow-xl scale-105' : 'border-slate-100 hover:border-indigo-400'}`}
+                                                    >
+                                                        <TemplateThumbnail template={template} />
+                                                        <div className={`absolute inset-0 bg-indigo-600/10 transition-opacity ${activeTemplateId === tid ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+                                                        {activeTemplateId === tid && (
+                                                            <div className="absolute top-2 right-2 w-5 h-5 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in">
+                                                                <Check size={12} strokeWidth={4} />
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                                                            <p className="text-[8px] font-black text-white uppercase tracking-widest truncate">{template.name}</p>
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}

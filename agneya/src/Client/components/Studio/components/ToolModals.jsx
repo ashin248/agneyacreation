@@ -55,7 +55,7 @@ const ToolModals = ({
                                                     height: imgElement.naturalHeight || imgElement.height || 100
                                                 });
                                                 img.scaleToWidth(180);
-                                                img.set({ left: 250, top: 300, originX: 'center', originY: 'center', uid: `up_${Date.now()}` });
+                                                img.set({ left: 250, top: 300, originX: 'center', originY: 'center', uid: `upload_${Date.now()}` });
                                                 if (fabricRef.current) {
                                                     fabricRef.current.add(img);
                                                     fabricRef.current.setActiveObject(img);
