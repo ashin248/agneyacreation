@@ -329,8 +329,7 @@ function Model3D({
                 {/* DYNAMIC PROJECTIONS */}
                 {canvasObjects.map((obj) => {
                     // Only use defaultAnchor if product is strictly 3D, OR if we are explicitly using 3D mode without templates
-                    const useDefault = !obj.isTemplateObject && (product?.customizationType === '3D' || !product?.twoDModels?.length);
-                    const anchor = objectAnchors[obj.uid] || (useDefault ? defaultAnchor : null);
+                    const anchor = objectAnchors[obj.uid] || defaultAnchor;
                     
                     if (!anchor) return null;
                     return (

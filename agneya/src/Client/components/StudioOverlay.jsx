@@ -394,13 +394,15 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
                             clipPath,
                             stroke: '#000000',
                             strokeWidth: 2,
-                            strokeUniform: true
+                            strokeUniform: true,
+                            isPhoto: true
                         });
 
                         // Remove the Slot and its label from canvas
+                        const targetSlotId = activeObj.slotId;
                         const objectsToRemove = canvas.getObjects().filter(o => 
-                            (o.isSlot && o.slotId === activeObj.slotId) || 
-                            o.isSlotLabel
+                            (o.isSlot && o.slotId === targetSlotId) || 
+                            (o.isSlotLabel && o.slotId === targetSlotId)
                         );
                         objectsToRemove.forEach(o => canvas.remove(o));
                     } else {
@@ -540,7 +542,9 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
     const handleFinalSubmit = async (isBuyNow = false) => {
         if (!userData) return requireLogin(() => handleFinalSubmit(isBuyNow), "finalize your order");
 
-        if (designMode === 'company' && !companyInstructions.trim() && companyReferences.length === 0) {
+        const isCompanyMode = activeStudioTab === 'DESIGN_ASSISTANCE';
+
+        if (isCompanyMode && !companyInstructions.trim() && companyReferences.length === 0) {
             return toast.error("Please provide instructions or reference images.");
         }
 
@@ -554,7 +558,7 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
 
-                const designPayload = designMode === 'self'
+                const designPayload = !isCompanyMode
                     ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData }
                     : { mode: 'company', instructions: companyInstructions, references: companyReferences };
 
@@ -776,7 +780,7 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
                                 </div>
                             </div>
 
-                            <button onClick={() => setDesignMode('self')} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to 3D Creator Mode</button>
+                            <button onClick={() => setActiveStudioTab((product?.customizationType === 'Both' || product?.customizationType === '3D') ? '3D_STUDIO' : '2D_STUDIO')} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to Creator Mode</button>
                         </div>
 
                         {/* Order Summary floating bar for company design */}

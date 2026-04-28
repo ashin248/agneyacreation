@@ -30,6 +30,7 @@ const Workspace2D = forwardRef(({
     useEffect(() => {
         historyStepRef.current = historyStep;
     }, [historyStep]);
+    const lastSavedHistoryStep = React.useRef(-1);
 
     const [canvasScale, setCanvasScale] = useState(1);
     const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
@@ -206,11 +207,17 @@ const Workspace2D = forwardRef(({
         const saveHistory = () => {
             if (isHistoryRecording.current) return;
             const json = canvas.toJSON(['uid', 'id', 'isPhoto', 'isSlot', 'slotId', 'excludeFromExport', 'selectable', 'evented']);
+            
+            // Prevent excluded items from bloating or duplicating in history
+            json.objects = json.objects.filter(obj => !obj.excludeFromExport);
+            
             const currentStep = historyStepRef.current;
             const newHistory = historyRef.current.slice(0, currentStep + 1);
             newHistory.push(json);
             historyRef.current = newHistory;
-            setHistoryStep(newHistory.length - 1);
+            const newStep = newHistory.length - 1;
+            lastSavedHistoryStep.current = newStep;
+            setHistoryStep(newStep);
         };
 
         const handleSelection = () => {
@@ -294,7 +301,8 @@ const Workspace2D = forwardRef(({
         const template = lib.getTemplateById?.(activeTemplateId) || lib.TWOD_TEMPLATES[activeTemplateId];
         if (!template || !template.objects) return;
 
-        template.objects.forEach(objDef => {
+        template.objects.forEach((objDef, idx) => {
+            const currentSlotId = objDef.slotId || `slot_${idx}`;
             let fabricObj;
             if (objDef.type === 'rect') {
                 fabricObj = new fabric.Rect({
@@ -305,7 +313,8 @@ const Workspace2D = forwardRef(({
                     strokeDashArray: [5, 5],
                     selectable: true,
                     evented: true,
-                    isSlot: true
+                    isSlot: true,
+                    slotId: currentSlotId
                 });
             } else if (objDef.type === 'path') {
                 fabricObj = new fabric.Path(objDef.path, {
@@ -316,7 +325,8 @@ const Workspace2D = forwardRef(({
                     strokeDashArray: [5, 5],
                     selectable: true,
                     evented: true,
-                    isSlot: true
+                    isSlot: true,
+                    slotId: currentSlotId
                 });
             }
 
@@ -336,7 +346,8 @@ const Workspace2D = forwardRef(({
                     selectable: false,
                     evented: false,
                     excludeFromExport: true,
-                    isSlotLabel: true
+                    isSlotLabel: true,
+                    slotId: currentSlotId
                 });
                 canvas.add(label);
             }
@@ -449,9 +460,15 @@ const Workspace2D = forwardRef(({
     }, [current2DImageUrl, product?.phoneMask, viewSide, enforceLayering]);
 
     useEffect(() => {
-        if (historyStep === -1 || isHistoryRecording.current || !fabricRef.current) return;
+        if (historyStep === -1 || historyStep === lastSavedHistoryStep.current || isHistoryRecording.current || !fabricRef.current) return;
+        lastSavedHistoryStep.current = historyStep;
         isHistoryRecording.current = true;
+        
+        // Preserve excluded objects (like model masks) that are not saved in history
+        const excludedObjects = fabricRef.current.getObjects().filter(o => o.excludeFromExport);
+        
         fabricRef.current.loadFromJSON(historyRef.current[historyStep]).then(() => {
+            excludedObjects.forEach(obj => fabricRef.current.add(obj));
             enforceLayering();
             fabricRef.current.renderAll();
             updateTexture(true);
