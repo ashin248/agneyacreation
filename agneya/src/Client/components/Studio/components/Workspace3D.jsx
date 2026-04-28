@@ -8,8 +8,23 @@ import { useStudio } from '../context/StudioContext';
 const dummyDecal = new THREE.Object3D();
 
 // 1. Dynamic Texture Projector
-const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
+const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
     const [texture, setTexture] = useState(null);
+    const [targetMesh, setTargetMesh] = useState(null);
+    const targetRef = useRef(null);
+
+    useEffect(() => {
+        if (scene && anchor?.meshId) {
+            let found = null;
+            scene.traverse((node) => {
+                if (node.uuid === anchor.meshId) {
+                    found = node;
+                }
+            });
+            targetRef.current = found;
+            setTargetMesh(found);
+        }
+    }, [scene, anchor?.meshId]);
 
     useEffect(() => {
         if (!obj.dataUrl) return;
@@ -38,7 +53,7 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
         };
     }, [obj.dataUrl]);
 
-    if (!anchor || !texture) return null;
+    if (!anchor || !texture || !targetMesh) return null;
 
     const scaleBase = Math.min(anchor.dim[0], anchor.dim[1]);
     const w = scaleBase * (obj.scaleX || 1) * (obj.width / obj.canvasWidth);
@@ -59,6 +74,7 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
 
     return (
         <Decal
+            mesh={targetRef}
             position={[dummyDecal.position.x, dummyDecal.position.y, dummyDecal.position.z]}
             rotation={[dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z]}
             scale={[w, h, anchor.dim[2] * 2]} // Depth scale must exceed bounding box to ensure projection
@@ -344,6 +360,7 @@ function Model3D({
                             obj={obj}
                             anchor={anchor}
                             isActive={activeObjectId === obj.uid}
+                            scene={scene}
                         />
                     );
                 })}
