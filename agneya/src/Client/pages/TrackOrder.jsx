@@ -245,7 +245,7 @@ const TrackOrder = () => {
   const [searchForm, setSearchForm] = useState({ orderId: '', phone: '' });
   const [searchError, setSearchError] = useState('');
 
-  const fetchAll = async () => {
+  const fetchAll = React.useCallback(async () => {
     try {
         setHydrating(true);
         const storedOrders = JSON.parse(localStorage.getItem('myGuestOrders') || '[]');
@@ -323,7 +323,7 @@ const TrackOrder = () => {
     } finally {
         setHydrating(false);
     }
-  };
+  }, [currentUser, userData]);
 
   useEffect(() => {
     fetchAll();

@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useStat
 import * as fabric from 'fabric';
 import { useStudio } from '../context/StudioContext';
 import { phoneBrands } from '../../../data/MobileCasesDB';
+import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 
 const Workspace2D = forwardRef(({
     isOpen,
@@ -281,61 +282,60 @@ const Workspace2D = forwardRef(({
         // Clear existing slots AND their labels
         canvas.getObjects().filter(o => o.isSlot || o.isSlotLabel).forEach(o => canvas.remove(o));
 
-        import('../../TwoD/TwoDTemplateLibrary').then(lib => {
-            const template = lib.getTemplateById?.(activeTemplateId) || lib.TWOD_TEMPLATES[activeTemplateId];
-            if (!template || !template.objects) return;
+        const lib = templateLib;
+        const template = lib.getTemplateById?.(activeTemplateId) || lib.TWOD_TEMPLATES[activeTemplateId];
+        if (!template || !template.objects) return;
 
-            template.objects.forEach(objDef => {
-                let fabricObj;
-                if (objDef.type === 'rect') {
-                    fabricObj = new fabric.Rect({
-                        ...objDef,
-                        fill: 'rgba(0,0,0,0.05)',
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        strokeDashArray: [5, 5],
-                        selectable: true,
-                        evented: true,
-                        isSlot: true
-                    });
-                } else if (objDef.type === 'path') {
-                    fabricObj = new fabric.Path(objDef.path, {
-                        ...objDef,
-                        fill: 'rgba(0,0,0,0.05)',
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        strokeDashArray: [5, 5],
-                        selectable: true,
-                        evented: true,
-                        isSlot: true
-                    });
-                }
+        template.objects.forEach(objDef => {
+            let fabricObj;
+            if (objDef.type === 'rect') {
+                fabricObj = new fabric.Rect({
+                    ...objDef,
+                    fill: 'rgba(0,0,0,0.05)',
+                    stroke: '#000000',
+                    strokeWidth: 1,
+                    strokeDashArray: [5, 5],
+                    selectable: true,
+                    evented: true,
+                    isSlot: true
+                });
+            } else if (objDef.type === 'path') {
+                fabricObj = new fabric.Path(objDef.path, {
+                    ...objDef,
+                    fill: 'rgba(0,0,0,0.05)',
+                    stroke: '#000000',
+                    strokeWidth: 1,
+                    strokeDashArray: [5, 5],
+                    selectable: true,
+                    evented: true,
+                    isSlot: true
+                });
+            }
 
-                if (fabricObj) {
-                    canvas.add(fabricObj);
-                    
-                    // Add "ADD PHOTO" Label
-                    const label = new fabric.IText('ADD PHOTO', {
-                        left: fabricObj.left + (fabricObj.width * fabricObj.scaleX / 2),
-                        top: fabricObj.top + (fabricObj.height * fabricObj.scaleY / 2),
-                        fontSize: 12,
-                        fontFamily: 'Inter',
-                        fontWeight: '900',
-                        fill: '#000000',
-                        originX: 'center',
-                        originY: 'center',
-                        selectable: false,
-                        evented: false,
-                        excludeFromExport: true,
-                        isSlotLabel: true
-                    });
-                    canvas.add(label);
-                }
-            });
-
-            enforceLayering();
-            updateTexture(true);
+            if (fabricObj) {
+                canvas.add(fabricObj);
+                
+                // Add "ADD PHOTO" Label
+                const label = new fabric.IText('ADD PHOTO', {
+                    left: fabricObj.left + (fabricObj.width * fabricObj.scaleX / 2),
+                    top: fabricObj.top + (fabricObj.height * fabricObj.scaleY / 2),
+                    fontSize: 12,
+                    fontFamily: 'Inter',
+                    fontWeight: '900',
+                    fill: '#000000',
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: false,
+                    evented: false,
+                    excludeFromExport: true,
+                    isSlotLabel: true
+                });
+                canvas.add(label);
+            }
         });
+
+        enforceLayering();
+        updateTexture(true);
     }, [activeTemplateId, viewSide, enforceLayering, updateTexture]);
 
     useEffect(() => {

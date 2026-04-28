@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import './utils/axiosConfig'; 
@@ -7,83 +7,90 @@ import { Toaster } from 'react-hot-toast';
 // Layouts and Security Guards
 import AdminLayout from './layout/adminLayout';
 import ProtectedRoute from './Admin/components/ProtectedRoute';
-import AdminLogin from './Admin/page/AdminLogin';
-
-// admin page 
-import Dashboard from './Admin/page/Dashboard';
-import Products from './Admin/page/Products';
-import Orders from './Admin/page/Orders';
-import CustomDesigns from './Admin/page/CustomDesigns';
-import BulkOrders from './Admin/page/BulkOrders';
-import Customers from './Admin/page/Customers';
-import Marketing from './Admin/page/Marketing';
-import Settings from './Admin/page/Settings';
-import DesignAssistance from './Admin/page/DesignAssistance';
-
-// Error Page
+import ClientLayout from './Client/components/ClientLayout';
 import NotAvailable from './SorryPage/SorryPage';
 
-import ClientLayout from './Client/components/ClientLayout';
-import Home from './Client/pages/Home';
-import Shop from './Client/pages/Shop';
-import ProductDetails from './Client/pages/ProductDetails';
-import Cart from './Client/pages/Cart'; // Still keep for compatibility if needed, but route to BulkMaster
-import BulkOrderMaster from './Client/pages/BulkOrderMaster';
-import Checkout from './Client/pages/Checkout';
-import TrackOrder from './Client/pages/TrackOrder';
-import UserDashboard from './Client/pages/UserDashboard';
-import BulkInquiry from './Client/pages/BulkInquiry';
-import Wishlist from './Client/pages/Wishlist';
-import CustomRequest from './Client/pages/CustomRequest';
-import CustomMobileCases from './Client/pages/CustomMobileCases';
+// Lazy Load Admin Pages
+const AdminLogin = lazy(() => import('./Admin/page/AdminLogin'));
+const Dashboard = lazy(() => import('./Admin/page/Dashboard'));
+const Products = lazy(() => import('./Admin/page/Products'));
+const Orders = lazy(() => import('./Admin/page/Orders'));
+const CustomDesigns = lazy(() => import('./Admin/page/CustomDesigns'));
+const BulkOrders = lazy(() => import('./Admin/page/BulkOrders'));
+const Customers = lazy(() => import('./Admin/page/Customers'));
+const Marketing = lazy(() => import('./Admin/page/Marketing'));
+const Settings = lazy(() => import('./Admin/page/Settings'));
+const DesignAssistance = lazy(() => import('./Admin/page/DesignAssistance'));
+
+// Lazy Load Client Pages
+const Home = lazy(() => import('./Client/pages/Home'));
+const Shop = lazy(() => import('./Client/pages/Shop'));
+const ProductDetails = lazy(() => import('./Client/pages/ProductDetails'));
+const BulkOrderMaster = lazy(() => import('./Client/pages/BulkOrderMaster'));
+const Checkout = lazy(() => import('./Client/pages/Checkout'));
+const TrackOrder = lazy(() => import('./Client/pages/TrackOrder'));
+const UserDashboard = lazy(() => import('./Client/pages/UserDashboard'));
+const BulkInquiry = lazy(() => import('./Client/pages/BulkInquiry'));
+const Wishlist = lazy(() => import('./Client/pages/Wishlist'));
+const CustomRequest = lazy(() => import('./Client/pages/CustomRequest'));
+const CustomMobileCases = lazy(() => import('./Client/pages/CustomMobileCases'));
+
+// Loader for Suspense
+const PageLoader = () => (
+  <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 gap-4">
+    <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">Loading Application...</p>
+  </div>
+);
 
 function App() {
   return (
     <div className="mainPage">
       <Toaster position="top-right" reverseOrder={false} />
-      <Routes>
-        {/* === Public Client Storefront === */}
-        <Route path="/" element={<ClientLayout />}>
-          <Route index element={<Shop />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="custom-mobile-cases" element={<CustomMobileCases />} />
-          <Route path="product/:productId" element={<ProductDetails />} />
-          <Route path="cart" element={<BulkOrderMaster />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="bulk-order" element={<BulkOrderMaster />} />
-          <Route path="bulk-inquiry" element={<BulkInquiry />} />
-          <Route path="track-order" element={<TrackOrder />} />
-          <Route path="manual-custom/:productId" element={<CustomRequest />} />
-          <Route path="wishlist" element={<Wishlist />} />
-          {/* Future client routes (product details, etc.) go here */}
-        </Route>
-
-        {/* Open Authentication Portal explicitly passing root barriers */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-
-        {/* === Secure Administrative Pipelines gracefully locked natively === */}
-        <Route path="/admin" element={<ProtectedRoute />}>
-          <Route element={<AdminLayout />}>
-            {/* Redirect /admin to dashboard purely */}
-            <Route index element={<Navigate to="dashboard" />} />
-            <Route path="dashboard/*" element={<Dashboard />} />
-            <Route path="products/*" element={<Products />} />
-            <Route path="orders/*" element={<Orders />} />
-            <Route path="design-assistance/*" element={<DesignAssistance />} />
-            <Route path="custom-designs/*" element={<CustomDesigns />} />
-            <Route path="bulk-orders/*" element={<BulkOrders />} />
-            <Route path="gst-manager/*" element={<Customers />} />
-            <Route path="marketing/*" element={<Marketing />} />
-            <Route path="settings/*" element={<Settings />} />
-
-            {/* Catch-all for undefined admin routes */}
-            <Route path="*" element={<Navigate to="dashboard" replace />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* === Public Client Storefront === */}
+          <Route path="/" element={<ClientLayout />}>
+            <Route index element={<Shop />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="custom-mobile-cases" element={<CustomMobileCases />} />
+            <Route path="product/:productId" element={<ProductDetails />} />
+            <Route path="cart" element={<BulkOrderMaster />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="bulk-order" element={<BulkOrderMaster />} />
+            <Route path="bulk-inquiry" element={<BulkInquiry />} />
+            <Route path="track-order" element={<TrackOrder />} />
+            <Route path="manual-custom/:productId" element={<CustomRequest />} />
+            <Route path="wishlist" element={<Wishlist />} />
           </Route>
-        </Route>
 
-        <Route path="*" element={<NotAvailable />} />
-      </Routes>
+          {/* Open Authentication Portal explicitly passing root barriers */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* === Secure Administrative Pipelines gracefully locked natively === */}
+          <Route path="/admin" element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              {/* Redirect /admin to dashboard purely */}
+              <Route index element={<Navigate to="dashboard" />} />
+              <Route path="dashboard/*" element={<Dashboard />} />
+              <Route path="products/*" element={<Products />} />
+              <Route path="orders/*" element={<Orders />} />
+              <Route path="design-assistance/*" element={<DesignAssistance />} />
+              <Route path="custom-designs/*" element={<CustomDesigns />} />
+              <Route path="bulk-orders/*" element={<BulkOrders />} />
+              <Route path="gst-manager/*" element={<Customers />} />
+              <Route path="marketing/*" element={<Marketing />} />
+              <Route path="settings/*" element={<Settings />} />
+
+              {/* Catch-all for undefined admin routes */}
+              <Route path="*" element={<Navigate to="dashboard" replace />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotAvailable />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

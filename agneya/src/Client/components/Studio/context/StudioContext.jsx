@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 const StudioContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useStudio = () => useContext(StudioContext);
 
 export const StudioProvider = ({ children, product, initialMode = 'self', initial2DModelIdx = 0 }) => {
