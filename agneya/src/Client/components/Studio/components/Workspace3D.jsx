@@ -9,13 +9,36 @@ const dummyDecal = new THREE.Object3D();
 
 // 1. Dynamic Texture Projector
 const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
-    const texture = useTexture(obj.dataUrl);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 16;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
+    const [texture, setTexture] = useState(null);
 
-    if (!anchor) return null;
+    useEffect(() => {
+        if (!obj.dataUrl) return;
+        
+        let isMounted = true;
+        let createdTex = null;
+
+        const img = new Image();
+        img.onload = () => {
+            if (!isMounted) return;
+            createdTex = new THREE.Texture(img);
+            createdTex.colorSpace = THREE.SRGBColorSpace;
+            createdTex.anisotropy = 16;
+            createdTex.minFilter = THREE.LinearFilter;
+            createdTex.magFilter = THREE.LinearFilter;
+            createdTex.needsUpdate = true;
+            setTexture(createdTex);
+        };
+        img.src = obj.dataUrl;
+
+        return () => {
+            isMounted = false;
+            if (createdTex) {
+                createdTex.dispose();
+            }
+        };
+    }, [obj.dataUrl]);
+
+    if (!anchor || !texture) return null;
 
     const scaleBase = Math.min(anchor.dim[0], anchor.dim[1]);
     const w = scaleBase * (obj.scaleX || 1) * (obj.width / obj.canvasWidth);
