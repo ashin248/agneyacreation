@@ -23,7 +23,8 @@ const ProductListTable = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.data.success) {
-        setProducts(Array.isArray(response.data.products) ? response.data.products : []);
+        const productData = response.data.products || response.data.data || [];
+        setProducts(Array.isArray(productData) ? productData : []);
       }
     } catch (err) {
       console.error('Error fetching products:', err);
