@@ -7,9 +7,55 @@ import { useStudio } from '../context/StudioContext';
 
 const dummyDecal = new THREE.Object3D();
 
+// 1. Dynamic Texture Projector
+const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
+    const texture = useTexture(obj.dataUrl);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 16;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
 
+    if (!anchor) return null;
 
-// 2. Main 3D Model Component (Hoisted helper)
+    const scaleBase = Math.min(anchor.dim[0], anchor.dim[1]);
+    const w = scaleBase * (obj.scaleX || 1) * (obj.width / obj.canvasWidth);
+    const h = scaleBase * (obj.scaleY || 1) * (obj.height / obj.canvasHeight);
+
+    // Precise placement algorithm ensuring Decal hits the anchor surface exactly
+    dummyDecal.position.set(
+        anchor.groupPos[0] + (obj.offsetX * anchor.dim[0] / 2),
+        anchor.groupPos[1] - (obj.offsetY * anchor.dim[1] / 2),
+        anchor.groupPos[2]
+    );
+
+    dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
+    
+    // Convert 2D rotation to 3D Z-axis rotation for the decal projection
+    const rad = (-(obj.rotation || 0) * Math.PI) / 180;
+    dummyDecal.rotateZ(rad);
+
+    return (
+        <Decal
+            position={[dummyDecal.position.x, dummyDecal.position.y, dummyDecal.position.z]}
+            rotation={[dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z]}
+            scale={[w, h, anchor.dim[2] * 2]} // Depth scale must exceed bounding box to ensure projection
+            map={texture}
+            depthTest={true}
+            depthWrite={false}
+            polygonOffset={true}
+            polygonOffsetFactor={-1}
+        >
+            <meshStandardMaterial 
+                map={texture} 
+                transparent 
+                polygonOffset={true} 
+                polygonOffsetFactor={isActive ? -2 : -1} 
+                depthTest={true}
+                depthWrite={false}
+            />
+        </Decal>
+    );
+});// 2. Main 3D Model Component (Hoisted helper)
 function Model3D({
     baseModelId, url, canvasObjects, objectAnchors, onAnchorUpdate, onPartSelect,
     activeObjectId, previewRotation = 0
@@ -257,6 +303,22 @@ function Model3D({
                         onPointerDown={handleMeshClick}
                     />
                 )}
+                {/* DYNAMIC PROJECTIONS */}
+                {canvasObjects.map((obj) => {
+                    // Only use defaultAnchor if product is strictly 3D, OR if we are explicitly using 3D mode without templates
+                    const useDefault = !obj.isTemplateObject && (product?.customizationType === '3D' || !product?.twoDModels?.length);
+                    const anchor = objectAnchors[obj.uid] || (useDefault ? defaultAnchor : null);
+                    
+                    if (!anchor) return null;
+                    return (
+                        <CanvasObjectProjector
+                            key={`${obj.uid}-${obj.dataUrl.length}`}
+                            obj={obj}
+                            anchor={anchor}
+                            isActive={activeObjectId === obj.uid}
+                        />
+                    );
+                })}
             </group>
         </group>
     );

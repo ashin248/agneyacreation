@@ -44,6 +44,9 @@ const Workspace2D = forwardRef(({
         const snapshots = canvas.getObjects().filter(o => !o.excludeFromExport).map(obj => ({
             uid: obj.uid,
             type: obj.type,
+            isSlot: obj.isSlot,
+            isPhoto: obj.isPhoto,
+            isTemplateObject: obj.isSlot || obj.isPhoto,
             dataUrl: obj._cachedDataUrl || obj.toDataURL({ format: 'png', quality: 0.1 }), // Low-res fallback
             offsetX: ((obj.getCenterPoint ? obj.getCenterPoint().x : obj.left) - canvas.width / 2) / (canvas.width / 2),
             offsetY: ((obj.getCenterPoint ? obj.getCenterPoint().y : obj.top) - canvas.height / 2) / (canvas.height / 2),
@@ -89,7 +92,10 @@ const Workspace2D = forwardRef(({
                 return {
                     uid: obj.uid,
                     type: obj.type,
-                    dataUrl: obj._cachedDataUrl,
+                    isSlot: obj.isSlot,
+                    isPhoto: obj.isPhoto,
+                    isTemplateObject: obj.isSlot || obj.isPhoto,
+                    dataUrl: obj._cachedDataUrl || obj.toDataURL({ format: 'png', quality: 0.1 }),
                     offsetX: ((obj.getCenterPoint ? obj.getCenterPoint().x : obj.left) - canvas.width / 2) / (canvas.width / 2),
                     offsetY: ((obj.getCenterPoint ? obj.getCenterPoint().y : obj.top) - canvas.height / 2) / (canvas.height / 2),
                     rotation: obj.angle || 0,
