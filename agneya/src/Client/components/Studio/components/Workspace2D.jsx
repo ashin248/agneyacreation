@@ -221,8 +221,10 @@ const Workspace2D = forwardRef(({
 
         let debounceTimer;
         const debouncedUpdateAndSave = () => {
+            if (isHistoryRecording.current) return;
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
+                if (isHistoryRecording.current) return;
                 enforceLayering();
                 updateTexture(true);
                 saveHistory();
