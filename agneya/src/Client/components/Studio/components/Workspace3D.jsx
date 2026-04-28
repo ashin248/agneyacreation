@@ -56,8 +56,10 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
     if (!anchor || !texture || !targetMesh) return null;
 
     const scaleBase = Math.min(anchor.dim[0], anchor.dim[1]);
-    const w = scaleBase * (obj.scaleX || 1) * (obj.width / obj.canvasWidth);
-    const h = scaleBase * (obj.scaleY || 1) * (obj.height / obj.canvasHeight);
+    const safeCanvasWidth = obj.canvasWidth || 500;
+    const safeCanvasHeight = obj.canvasHeight || 600;
+    const w = Math.max(scaleBase * (obj.scaleX || 1) * (obj.width / safeCanvasWidth), 0.001);
+    const h = Math.max(scaleBase * (obj.scaleY || 1) * (obj.height / safeCanvasHeight), 0.001);
 
     // Apply offsets strictly in local space
     dummyDecal.position.set(
@@ -112,8 +114,12 @@ function Model3D({
     }
     const safeModelUrl = rawUrl;
 
-    // 2. Resource Initialization (Hook must come before effects that use its output)
-    const { scene } = useGLTF(safeModelUrl);
+    // 2. Resource Initialization
+    const { scene: originalScene } = useGLTF(safeModelUrl);
+    
+    // CRITICAL FIX: Clone the scene graph to prevent mutating and disposing the global cached materials
+    const scene = React.useMemo(() => originalScene ? originalScene.clone() : null, [originalScene]);
+    
     const [defaultAnchor, setDefaultAnchor] = useState(null);
 
     // 3. Effects & Post-Processing
