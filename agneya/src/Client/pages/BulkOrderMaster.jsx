@@ -114,24 +114,7 @@ const BulkOrderMaster = () => {
         }
     };
 
-    const toggleSelection = (product) => {
-        // Find total product qty. If > 0, clear it. If 0, add min.
-        const totalProductQty = cart.reduce((acc, curr) => (curr.productId === product._id ? acc + curr.quantity : acc), 0);
-        
-        if (totalProductQty > 0) {
-            // Remove all variations of this product
-            const toRemove = cart.filter(c => c.productId === product._id);
-            toRemove.forEach(c => removeFromCart(product._id, c.selectedVariation?.sku || 'STD-ASSET'));
-        } else {
-            const wholesaleMinQty = (product.isBulkEnabled && product.bulkRules?.length > 0) 
-                ? Math.min(...product.bulkRules.map(r => r.minQty)) 
-                : product.minOrder;
-                
-            // Apply min to first variation
-            const firstVar = product.variations?.[0] || { sku: 'STD-ASSET' };
-            handleQuantityChange(product, firstVar, wholesaleMinQty || 1);
-        }
-    };
+
 
     const getItemQuantity = (itemId, sku) => {
         const found = cart.find(c => c.productId === itemId && (c.selectedVariation?.sku || 'STD-ASSET') === sku);

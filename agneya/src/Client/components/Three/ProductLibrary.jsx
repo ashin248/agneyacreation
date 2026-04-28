@@ -43,9 +43,10 @@ useGLTF.preload('/models/TrophyModel/trophy_model.glb');
 
 // Generic GLB Loader Factory
 export function MasterProductModel({ url, onClick, ...props }) {
-  if (!url) return null;
-  const { scene } = useGLTF(url);
+  const safeUrl = url || '/models/mug/mug.glb';
+  const { scene } = useGLTF(safeUrl);
   const clonedScene = useMemo(() => {
+    if (!scene) return null;
     const cloned = scene.clone();
     // Normalise material colors and transforms for printable areas
     cloned.traverse((child) => {
@@ -67,6 +68,8 @@ export function MasterProductModel({ url, onClick, ...props }) {
     });
     return cloned;
   }, [scene, props.printableMeshes]);
+
+  if (!url || !clonedScene) return null;
 
   return (
     <primitive

@@ -10,13 +10,17 @@ import { saveAs } from 'file-saver';
 import { LibraryProduct, MODELS } from '../../../Client/components/Three/ProductLibrary';
 
 // Helper for Decal Projection (Ported from Studio)
-// Helper for Decal Projection (Ported from Studio)
 function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale }) {
     const texture = useTexture(dataUrl);
-    if (texture) {
-        texture.anisotropy = 16;
-        texture.needsUpdate = true;
-    }
+
+    useEffect(() => {
+        if (texture) {
+            texture.anisotropy = 16;
+            texture.needsUpdate = true;
+        }
+    }, [texture]);
+
+    if (!texture) return null;
 
     return (
         <Decal
@@ -34,6 +38,86 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale }) {
                 side={THREE.DoubleSide}
             />
         </Decal>
+    );
+}
+
+function CanvasObjectProjector({ obj, objectAnchors, defaultAnchor, modelGroupRef, modelConfig }) {
+    const [targetMesh, setTargetMesh] = useState(null);
+
+    useEffect(() => {
+        const anchor = objectAnchors[obj.uid] || defaultAnchor;
+        if (!anchor || !modelGroupRef.current) return;
+        
+        let mesh = modelGroupRef.current.getObjectByName(anchor.meshName);
+        if (!mesh) mesh = modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
+        
+        setTargetMesh(mesh);
+    }, [obj.uid, objectAnchors, defaultAnchor, modelGroupRef]);
+
+    if (!targetMesh) return null;
+
+    const anchor = objectAnchors[obj.uid] || defaultAnchor;
+    if (!anchor) return null;
+
+    const isPlanar = modelConfig.projectionType === 'planar' || 
+                     modelConfig.projectionType === 'decal' ||
+                     modelConfig.category === 'Photoframe';
+    let finalPos = [...anchor.pos];
+    let finalRotation = [...anchor.rot];
+    const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
+    
+    // Use source canvas height (600) for uniform pixels-per-unit scaling
+    const sourceCanvasHeight = obj.canvasHeight || 600;
+    const sourceCanvasWidth = obj.canvasWidth || 500;
+    
+    const pixelsPerUnitUniform = sourceCanvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
+    const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
+    const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
+    let decalDepth = isPlanar ? (modelConfig.category === 'Photoframe' ? 0.02 : 0.05) : 1; // Slight depth for planar to prevent z-fighting
+
+    if (isPlanar) {
+        const dummy = new THREE.Object3D();
+        dummy.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
+        dummy.updateMatrixWorld();
+        
+        const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummy.quaternion);
+        const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummy.quaternion);
+        
+        // Normalize offsets based on 500x600 original canvas
+        const xShift = obj.offsetX * (maxDim * (sourceCanvasWidth / sourceCanvasHeight));
+        const yShift = -obj.offsetY * (maxDim);
+        
+        finalPos[0] += localX.x * xShift + localY.x * yShift;
+        finalPos[1] += localX.y * xShift + localY.y * yShift;
+        finalPos[2] += localX.z * xShift + localY.z * yShift;
+        
+        dummy.rotateZ(obj.rotation * Math.PI / 180);
+        finalRotation = [dummy.rotation.x, dummy.rotation.y, dummy.rotation.z];
+    } else {
+        const radius = Math.min(anchor.dim[0], anchor.dim[2]) * 0.5;
+        // Improved wrapping math for cylindrical models
+        const wrapAngle = -obj.offsetX * (Math.PI / (sourceCanvasWidth/sourceCanvasHeight * 0.8));
+        finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
+        finalPos[1] = anchor.pos[1] + (-obj.offsetY * (anchor.dim[1] * 0.5));
+        finalPos[2] = anchor.pos[2] + radius * (Math.cos(wrapAngle) - 1);
+        
+        const dummy = new THREE.Object3D();
+        dummy.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
+        dummy.rotateY(-wrapAngle);
+        dummy.rotateZ(obj.rotation * Math.PI / 180);
+        finalRotation = [dummy.rotation.x, dummy.rotation.y, dummy.rotation.z];
+        decalDepth = radius * 2;
+    }
+
+    return createPortal(
+        <ProjectedDecalWrapper
+            key={obj.uid}
+            dataUrl={obj.dataUrl}
+            position={finalPos}
+            rotation={finalRotation}
+            scale={[decalWidth, decalHeight, decalDepth]}
+        />,
+        targetMesh
     );
 }
 
@@ -82,77 +166,16 @@ function ModelInspector({ productType, canvasObjects, objectAnchors }) {
                     rotation={modelConfig.defaultRotation || [0, 0, 0]}
                 />
             </group>
-            {canvasObjects.map((obj) => {
-                const anchor = objectAnchors[obj.uid] || defaultAnchor;
-                if (!anchor) return null;
-                
-                let targetMesh = null;
-                if (modelGroupRef.current) {
-                    targetMesh = modelGroupRef.current.getObjectByName(anchor.meshName) || modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
-                }
-                if (!targetMesh) return null;
-
-                const isPlanar = modelConfig.projectionType === 'planar' || 
-                                 modelConfig.projectionType === 'decal' ||
-                                 modelConfig.category === 'Photoframe';
-                let finalPos = [...anchor.pos];
-                let finalRotation = [...anchor.rot];
-                const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
-                
-                // Use source canvas height (600) for uniform pixels-per-unit scaling
-                const sourceCanvasHeight = obj.canvasHeight || 600;
-                const sourceCanvasWidth = obj.canvasWidth || 500;
-                
-                const pixelsPerUnitUniform = sourceCanvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
-                const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
-                const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
-                let decalDepth = isPlanar ? (modelConfig.category === 'Photoframe' ? 0.02 : 0.05) : 1; // Slight depth for planar to prevent z-fighting
-
-                if (isPlanar) {
-                    const dummy = new THREE.Object3D();
-                    dummy.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummy.updateMatrixWorld();
-                    
-                    const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummy.quaternion);
-                    const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummy.quaternion);
-                    
-                    // Normalize offsets based on 500x600 original canvas
-                    const xShift = obj.offsetX * (maxDim * (sourceCanvasWidth / sourceCanvasHeight));
-                    const yShift = -obj.offsetY * (maxDim);
-                    
-                    finalPos[0] += localX.x * xShift + localY.x * yShift;
-                    finalPos[1] += localX.y * xShift + localY.y * yShift;
-                    finalPos[2] += localX.z * xShift + localY.z * yShift;
-                    
-                    dummy.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummy.rotation.x, dummy.rotation.y, dummy.rotation.z];
-                } else {
-                    const radius = Math.min(anchor.dim[0], anchor.dim[2]) * 0.5;
-                    // Improved wrapping math for cylindrical models
-                    const wrapAngle = -obj.offsetX * (Math.PI / (sourceCanvasWidth/sourceCanvasHeight * 0.8));
-                    finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
-                    finalPos[1] = anchor.pos[1] + (-obj.offsetY * (anchor.dim[1] * 0.5));
-                    finalPos[2] = anchor.pos[2] + radius * (Math.cos(wrapAngle) - 1);
-                    
-                    const dummy = new THREE.Object3D();
-                    dummy.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummy.rotateY(-wrapAngle);
-                    dummy.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummy.rotation.x, dummy.rotation.y, dummy.rotation.z];
-                    decalDepth = radius * 2;
-                }
-
-                return createPortal(
-                    <ProjectedDecalWrapper
-                        key={obj.uid}
-                        dataUrl={obj.dataUrl}
-                        position={finalPos}
-                        rotation={finalRotation}
-                        scale={[decalWidth, decalHeight, decalDepth]}
-                    />,
-                    targetMesh
-                );
-            })}
+            {canvasObjects.map((obj) => (
+                <CanvasObjectProjector 
+                    key={obj.uid} 
+                    obj={obj} 
+                    objectAnchors={objectAnchors} 
+                    defaultAnchor={defaultAnchor} 
+                    modelGroupRef={modelGroupRef} 
+                    modelConfig={modelConfig} 
+                />
+            ))}
         </group>
     );
 }

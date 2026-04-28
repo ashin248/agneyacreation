@@ -2,7 +2,7 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
 const logoImg = '/logo.png';
 
 
-const adminLayout = () => {
+const AdminLayout = () => {
   const location = useLocation();
 
   const navigation = [
@@ -69,5 +69,5 @@ const adminLayout = () => {
   );
 };
 
-export default adminLayout;
+export default AdminLayout;
 

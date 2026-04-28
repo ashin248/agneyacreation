@@ -35,7 +35,7 @@ const ProductDetails = () => {
     const { productId } = useParams();
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState('All Designs');
+
     const [loading, setLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
@@ -523,7 +523,6 @@ const ProductDetails = () => {
                                 <div className="space-y-4">
                                     <button 
                                         onClick={() => {
-                                            const minBulkQty = product.bulkRules?.[0]?.minQty || 10;
                                             // Logic for bulk add to cart
                                             navigate('/cart');
                                         }}

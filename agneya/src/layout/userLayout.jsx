@@ -3,7 +3,7 @@ import './userLayout.css';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
-function UserLayout({ children, userName = "User" }) {
+function UserLayout({ children }) {
   const [branding, setBranding] = useState({
     storeName: 'Agneya',
     logoUrl: '/logo.png'

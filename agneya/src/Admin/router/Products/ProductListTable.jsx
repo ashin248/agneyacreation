@@ -24,7 +24,6 @@ const ProductListTable = () => {
       });
       if (response.data.success) {
         setProducts(Array.isArray(response.data.products) ? response.data.products : []);
-        setCategories(Array.isArray(response.data.categories) ? response.data.categories : []);
       }
     } catch (err) {
       console.error('Error fetching products:', err);

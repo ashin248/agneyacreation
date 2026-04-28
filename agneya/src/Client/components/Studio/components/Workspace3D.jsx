@@ -10,12 +10,16 @@ const dummyDecal = new THREE.Object3D();
 function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, active, zIndex }) {
     const texture = useTexture(dataUrl);
 
+    useEffect(() => {
+        if (texture) {
+            texture.anisotropy = 16;
+            texture.needsUpdate = true;
+        }
+    }, [texture]);
+
     // Safety: Do not render the decal until the texture is fully loaded
     // This prevents the "white patches" (default material color) from appearing
     if (!texture) return null;
-
-    texture.anisotropy = 16;
-    texture.needsUpdate = true;
 
     return (
         <Decal
@@ -41,6 +45,103 @@ function ProjectedDecalWrapper({ mesh, dataUrl, position, rotation, scale, activ
                 emissiveIntensity={active ? 0.3 : 0}
             />
         </Decal>
+    );
+}
+
+function CanvasObjectProjector({ obj, index, activeObjectId, objectAnchors, defaultAnchor, modelGroupRef, modelConfig }) {
+    const [targetMesh, setTargetMesh] = useState(null);
+
+    useEffect(() => {
+        const anchor = objectAnchors[obj.uid] || defaultAnchor;
+        if (!anchor || !modelGroupRef.current) return;
+        
+        let mesh = null;
+        if (anchor.meshName) mesh = modelGroupRef.current.getObjectByName(anchor.meshName);
+        if (!mesh) mesh = modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
+        
+        setTargetMesh(mesh);
+    }, [obj.uid, objectAnchors, defaultAnchor, modelGroupRef]);
+
+    if (!targetMesh) return null;
+
+    const anchor = objectAnchors[obj.uid] || defaultAnchor;
+    if (!anchor) return null;
+
+    const active = activeObjectId === obj.uid;
+    const isPlanar = modelConfig?.projectionType === 'planar' ||
+        modelConfig?.projectionType === 'decal' ||
+        modelConfig?.category === 'Photoframe' ||
+        !modelConfig?.projectionType;
+
+    let finalPos = [...anchor.pos];
+    let finalRotation = [anchor.rot[0], anchor.rot[1], anchor.rot[2]];
+
+    const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
+    const pixelsPerUnitUniform = obj.canvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
+    const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
+    const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
+    let decalDepth = isPlanar ?
+        (modelConfig?.category === 'Tshirt' ? 0.15 :
+            modelConfig?.category === 'Plate' ? 0.015 :
+                modelConfig?.category === 'Photoframe' ? 0.5 : 0.02)
+        : 1;
+
+    if (isPlanar) {
+        dummyDecal.position.set(0, 0, 0);
+        dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
+        dummyDecal.updateMatrixWorld();
+
+        const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummyDecal.quaternion);
+        const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
+
+        const xShift = obj.offsetX * (maxDim * (obj.canvasWidth / obj.canvasHeight));
+        const yShift = -obj.offsetY * (maxDim);
+
+        finalPos[0] += localX.x * xShift + localY.x * yShift;
+        finalPos[1] += localX.y * xShift + localY.y * yShift;
+        finalPos[2] += localX.z * xShift + localY.z * yShift;
+
+        dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
+        finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
+    } else {
+        const trueDiameter = Math.min(anchor.dim[0], anchor.dim[2]);
+        const radius = trueDiameter * 0.5;
+        const wrapAngle = -obj.offsetX * (Math.PI / 1.5);
+        const yOffset = -obj.offsetY * (anchor.dim[1] * 0.5);
+
+        finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
+        finalPos[1] = anchor.pos[1] + yOffset;
+        finalPos[2] = anchor.pos[2] - radius * (1 - Math.cos(wrapAngle));
+
+        dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
+        dummyDecal.rotateY(-wrapAngle);
+        dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
+        finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
+        decalDepth = radius * 1.5;
+    }
+
+    const decalProps = {
+        key: obj.uid,
+        dataUrl: obj.dataUrl,
+        position: finalPos,
+        rotation: finalRotation,
+        scale: [decalWidth, decalHeight, decalDepth],
+        active: active,
+        zIndex: index * 2
+    };
+
+    return (
+        <group key={`portal-${obj.uid}`} renderOrder={10 + index}>
+            {createPortal(
+                <React.Suspense fallback={null}>
+                    <ProjectedDecalWrapper
+                        mesh={targetMesh}
+                        {...decalProps}
+                    />
+                </React.Suspense>,
+                targetMesh
+            )}
+        </group>
     );
 }
 
@@ -295,97 +396,17 @@ function Model3D({
             </group>
             {canvasObjects && canvasObjects.map((obj, index) => {
                 if (!obj || !obj.dataUrl) return null;
-                const active = activeObjectId === obj.uid;
-                const anchor = objectAnchors[obj.uid] || defaultAnchor;
-                if (!anchor) return null;
-                let targetMesh = null;
-                if (modelGroupRef.current) {
-                    if (anchor.meshName) targetMesh = modelGroupRef.current.getObjectByName(anchor.meshName);
-                    if (!targetMesh) targetMesh = modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
-                }
-                if (!targetMesh) return null;
-
-                const isPlanar = modelConfig?.projectionType === 'planar' ||
-                    modelConfig?.projectionType === 'decal' ||
-                    modelConfig?.category === 'Photoframe' ||
-                    !modelConfig?.projectionType;
-
-                let finalPos = [...anchor.pos];
-                let finalRotation = [anchor.rot[0], anchor.rot[1], anchor.rot[2]];
-
-                // Use the largest mesh dimension for stable unit scaling on flat surfaces
-                const maxDim = Math.max(anchor.dim[0], anchor.dim[1], anchor.dim[2]);
-                const pixelsPerUnitUniform = obj.canvasHeight / (isPlanar ? maxDim : anchor.dim[1]);
-                const decalWidth = (obj.width * Math.abs(obj.scaleX || 1)) / pixelsPerUnitUniform;
-                const decalHeight = (obj.height * Math.abs(obj.scaleY || 1)) / pixelsPerUnitUniform;
-                // Robust depth logic: Apparel needs deep projection for wrinkles, flat goods need shallow depth
-                let decalDepth = isPlanar ?
-                    (modelConfig?.category === 'Tshirt' ? 0.15 :
-                        modelConfig?.category === 'Plate' ? 0.015 :
-                            modelConfig?.category === 'Photoframe' ? 0.5 : 0.02)
-                    : 1;
-
-                if (isPlanar) {
-                    // PLANAR MAPPING (For Books, Sheets, etc.)
-                    // Use a lookAt dummy to find the specific local axes of the clicked surface
-                    dummyDecal.position.set(0, 0, 0);
-                    dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummyDecal.updateMatrixWorld();
-
-                    const localX = new THREE.Vector3(1, 0, 0).applyQuaternion(dummyDecal.quaternion);
-                    const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummyDecal.quaternion);
-
-                    // Map canvas offsets to the surface geometry
-                    const xShift = obj.offsetX * (maxDim * (obj.canvasWidth / obj.canvasHeight));
-                    const yShift = -obj.offsetY * (maxDim);
-
-                    finalPos[0] += localX.x * xShift + localY.x * yShift;
-                    finalPos[1] += localX.y * xShift + localY.y * yShift;
-                    finalPos[2] += localX.z * xShift + localY.z * yShift;
-
-                    dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
-                }
-                else {
-                    // CYLINDRICAL WRAPPING (For Mugs)
-                    const trueDiameter = Math.min(anchor.dim[0], anchor.dim[2]);
-                    const radius = trueDiameter * 0.5;
-                    const wrapAngle = -obj.offsetX * (Math.PI / 1.5);
-                    const yOffset = -obj.offsetY * (anchor.dim[1] * 0.5);
-
-                    finalPos[0] = anchor.pos[0] + radius * Math.sin(wrapAngle);
-                    finalPos[1] = anchor.pos[1] + yOffset;
-                    finalPos[2] = anchor.pos[2] - radius * (1 - Math.cos(wrapAngle));
-
-                    dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-                    dummyDecal.rotateY(-wrapAngle);
-                    dummyDecal.rotateZ(obj.rotation * Math.PI / 180);
-                    finalRotation = [dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z];
-                    decalDepth = radius * 1.5;
-                }
-
-                const decalProps = {
-                    key: obj.uid,
-                    dataUrl: obj.dataUrl,
-                    position: finalPos,
-                    rotation: finalRotation,
-                    scale: [decalWidth, decalHeight, decalDepth],
-                    active: active,
-                    zIndex: index * 2
-                };
-
                 return (
-                    <group key={`portal-${obj.uid}`} renderOrder={10 + index}>
-                        {createPortal(
-                            <React.Suspense fallback={null}>
-                                <ProjectedDecalWrapper
-                                    mesh={targetMesh}
-                                    {...decalProps}
-                                />
-                            </React.Suspense>,
-                            targetMesh
-                        )}
-                    </group>
+                    <CanvasObjectProjector 
+                        key={obj.uid} 
+                        obj={obj} 
+                        index={index} 
+                        activeObjectId={activeObjectId} 
+                        objectAnchors={objectAnchors} 
+                        defaultAnchor={defaultAnchor} 
+                        modelGroupRef={modelGroupRef} 
+                        modelConfig={modelConfig} 
+                    />
                 );
             })}
         </group>

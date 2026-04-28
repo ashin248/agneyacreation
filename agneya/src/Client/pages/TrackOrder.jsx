@@ -304,7 +304,7 @@ const TrackOrder = () => {
                     ];
                 }
             } catch (e) {
-                console.error("Failed to sync customer orders");
+                console.error("Failed to sync customer orders", e);
             }
         }
 
@@ -327,7 +327,7 @@ const TrackOrder = () => {
 
   useEffect(() => {
     fetchAll();
-  }, [userData]);
+  }, [userData, fetchAll]);
 
   const handleManualSearch = async (e) => {
     e.preventDefault();
@@ -356,6 +356,7 @@ const TrackOrder = () => {
             fetchAll();
         }
     } catch (error) {
+        console.error(error);
         setSearchError('Logistics mismatch: Order ID or Phone number not recognized in our database.');
     } finally {
         setHydrating(false);

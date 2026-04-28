@@ -1,6 +1,6 @@
 import React from 'react';
 import { MODELS } from '../../../Client/components/Three/ProductLibrary';
-// import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
+import { TWOD_TEMPLATES } from '../../../Client/components/TwoD/TwoDTemplateLibrary';
 // import TemplateThumbnail from '../../../Client/components/TwoD/TemplateThumbnail';
 import { FiCheckCircle, FiGrid, FiImage, FiPlus, FiTrash2, FiBox, FiPackage, FiAlertCircle, FiCheck } from 'react-icons/fi';
 

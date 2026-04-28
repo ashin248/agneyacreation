@@ -13,12 +13,14 @@ import {
   Plus
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const CustomRequest = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const { currentUser } = useAuth();
     const product = location.state?.product;
 
     const [files, setFiles] = useState([]);

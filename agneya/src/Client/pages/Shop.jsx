@@ -26,11 +26,11 @@ import { MODELS } from '../components/Three/ProductLibrary';
 const Shop = () => {
     const navigate = useNavigate();
     const { addToCart } = useCart();
-    const { currentUser } = useAuth();
+    const { currentUser, userData } = useAuth();
     
     const [products, setProducts] = useState([]);
     const [banners, setBanners] = useState([]);
-    const [offers, setOffers] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
@@ -59,7 +59,7 @@ const Shop = () => {
             }
             if (pulseRes.data.success) {
                 setBanners(pulseRes.data.data.banners || []);
-                setOffers(pulseRes.data.data.offers || []);
+
             }
             if (categoriesRes.data.success) {
                 const dbCats = categoriesRes.data.data;

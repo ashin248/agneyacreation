@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { calculateWholesalePriceTotal, calculateSavings, calculateDetailedFinancials } from '../utils/pricingUtils';
+import { calculateDetailedFinancials } from '../utils/pricingUtils';
 
 const CartContext = createContext();
 

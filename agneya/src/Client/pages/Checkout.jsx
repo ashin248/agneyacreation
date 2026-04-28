@@ -242,6 +242,7 @@ const Checkout = () => {
                 }
             }
         } catch (error) {
+            console.error("Order error:", error);
             alert('Failed to place order.');
         } finally {
             setIsSubmitting(false);

@@ -25,6 +25,11 @@ const Workspace2D = forwardRef(({
         twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide
     } = useStudio();
 
+    const historyStepRef = React.useRef(historyStep);
+    useEffect(() => {
+        historyStepRef.current = historyStep;
+    }, [historyStep]);
+
     const [canvasScale, setCanvasScale] = useState(1);
     const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
 
@@ -50,7 +55,7 @@ const Workspace2D = forwardRef(({
             canvasHeight: canvas.height
         }));
         setCanvasObjects(snapshots);
-    }, []);
+    }, [setCanvasObjects]);
 
     const fastSync = useCallback(() => {
         const canvas = fabricRef.current;
@@ -67,7 +72,7 @@ const Workspace2D = forwardRef(({
                 scaleY: obj.scaleY || 1
             };
         }).filter(Boolean));
-    }, []);
+    }, [setCanvasObjects]);
 
     const updateTexture = useCallback((isFullUpdate = true) => {
         const canvas = fabricRef.current;
@@ -99,7 +104,7 @@ const Workspace2D = forwardRef(({
         } catch (err) {
             console.warn("Studio Texture Update Failure:", err);
         }
-    }, []);
+    }, [setCanvasObjects]);
 
     const enforceLayering = useCallback(() => {
         if (!fabricRef.current) return;
@@ -194,7 +199,8 @@ const Workspace2D = forwardRef(({
         const saveHistory = () => {
             if (isHistoryRecording.current) return;
             const json = canvas.toJSON(['uid', 'id', 'isPhoto', 'isSlot', 'slotId', 'excludeFromExport', 'selectable', 'evented']);
-            const newHistory = historyRef.current.slice(0, historyStep + 1);
+            const currentStep = historyStepRef.current;
+            const newHistory = historyRef.current.slice(0, currentStep + 1);
             newHistory.push(json);
             historyRef.current = newHistory;
             setHistoryStep(newHistory.length - 1);
@@ -256,7 +262,16 @@ const Workspace2D = forwardRef(({
                 }
             }
         };
-    }, [isOpen, product?.customizationType, fastSync, updateTexture, enforceLayering]);
+    }, [
+        isOpen, 
+        product?.customizationType, 
+        fastSync, 
+        updateTexture, 
+        enforceLayering,
+        setActiveObject,
+        setIsMobileUiMinimized,
+        setHistoryStep
+    ]);
 
     // Handle Template Loading
     useEffect(() => {
@@ -423,7 +438,7 @@ const Workspace2D = forwardRef(({
             };
         };
         imgElement.src = current2DImageUrl;
-    }, [current2DImageUrl, product?.phoneMask, viewSide]);
+    }, [current2DImageUrl, product?.phoneMask, viewSide, enforceLayering]);
 
     useEffect(() => {
         if (historyStep === -1 || isHistoryRecording.current || !fabricRef.current) return;
@@ -434,7 +449,7 @@ const Workspace2D = forwardRef(({
             updateTexture(true);
             isHistoryRecording.current = false;
         });
-    }, [historyStep, updateTexture]);
+    }, [historyStep, updateTexture, enforceLayering]);
 
     useImperativeHandle(ref, () => ({
         updateTexture,

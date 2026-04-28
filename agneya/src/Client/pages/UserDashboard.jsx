@@ -239,6 +239,7 @@ const UserDashboard = () => {
                                             });
                                         }
                                     } catch (err) {
+                                        console.error(err);
                                         toast.error("Failed to sync archives.", {
                                             style: { background: '#1e293b', color: '#fff', fontSize: '12px', fontWeight: '900', textTransform: 'uppercase' }
                                         });
