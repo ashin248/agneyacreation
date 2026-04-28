@@ -59,30 +59,30 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
     const w = scaleBase * (obj.scaleX || 1) * (obj.width / obj.canvasWidth);
     const h = scaleBase * (obj.scaleY || 1) * (obj.height / obj.canvasHeight);
 
-    // Precise placement algorithm ensuring Decal hits the anchor surface exactly
+    // Apply offsets strictly in local space
     dummyDecal.position.set(
-        anchor.groupPos[0] + (obj.offsetX * anchor.dim[0] / 2),
-        anchor.groupPos[1] - (obj.offsetY * anchor.dim[1] / 2),
-        anchor.groupPos[2]
+        anchor.pos[0] + (obj.offsetX * anchor.dim[0] / 2),
+        anchor.pos[1] - (obj.offsetY * anchor.dim[1] / 2),
+        anchor.pos[2]
     );
 
     dummyDecal.rotation.set(anchor.rot[0], anchor.rot[1], anchor.rot[2]);
-    
-    // Convert 2D rotation to 3D Z-axis rotation for the decal projection
     const rad = (-(obj.rotation || 0) * Math.PI) / 180;
     dummyDecal.rotateZ(rad);
 
-    return (
+    // Enforce a minimum depth so flat items don't result in a 0-thickness projector
+    const depth = Math.max(anchor.dim[2] * 2, 0.5);
+
+    return createPortal(
         <Decal
-            mesh={targetRef}
             position={[dummyDecal.position.x, dummyDecal.position.y, dummyDecal.position.z]}
             rotation={[dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z]}
-            scale={[w, h, anchor.dim[2] * 2]} // Depth scale must exceed bounding box to ensure projection
+            scale={[w, h, depth]} // Depth scale must exceed bounding box to ensure projection
             map={texture}
             depthTest={true}
             depthWrite={false}
             polygonOffset={true}
-            polygonOffsetFactor={-1}
+            polygonOffsetFactor={isActive ? -2 : -1}
         >
             <meshStandardMaterial 
                 map={texture} 
@@ -92,7 +92,8 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
                 depthTest={true}
                 depthWrite={false}
             />
-        </Decal>
+        </Decal>,
+        targetMesh
     );
 });// 2. Main 3D Model Component (Hoisted helper)
 function Model3D({
@@ -240,11 +241,13 @@ function Model3D({
                 modelConfig?.category === 'Photoframe' ||
                 !modelConfig?.projectionType;
 
+            // Center Front for mugs
             const defaultPos = isPlanar ?
-                [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : // Center Top for flat items
-                [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  // Center Front for mugs
+                [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : 
+                [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  
 
-            const defaultRot = isPlanar ? [-Math.PI / 2, 0, 0] : [0, 0, 0];
+            // Ensure Z-axis points INWARD toward the mesh
+            const defaultRot = isPlanar ? [Math.PI / 2, 0, 0] : [0, Math.PI, 0];
 
             // Compute groupPos by converting local position to world, then to group space
             const localPoint = new THREE.Vector3(defaultPos[0], defaultPos[1], defaultPos[2]);
