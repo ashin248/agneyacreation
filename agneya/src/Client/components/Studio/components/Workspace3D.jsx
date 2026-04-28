@@ -230,10 +230,16 @@ function Model3D({
 
             const defaultRot = isPlanar ? [-Math.PI / 2, 0, 0] : [0, 0, 0];
 
+            // Compute groupPos by converting local position to world, then to group space
+            const localPoint = new THREE.Vector3(defaultPos[0], defaultPos[1], defaultPos[2]);
+            const worldPoint = bestTarget.localToWorld(localPoint.clone());
+            const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(worldPoint.clone()) : localPoint;
+
             setDefaultAnchor({
                 meshId: bestTarget.uuid,
                 meshName: bestTarget.name,
                 pos: defaultPos,
+                groupPos: [groupPosVec.x, groupPosVec.y, groupPosVec.z],
                 rot: defaultRot,
                 dim: [w, h, d]
             });
