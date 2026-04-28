@@ -230,7 +230,7 @@ const CreateProduct = () => {
            }
            return { side: sm.side };
         });
-
+      
         return {
            id: model.id,
            supportModels: supportModelsMeta
