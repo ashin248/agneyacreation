@@ -646,23 +646,6 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
             <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {activeStudioTab !== 'DESIGN_ASSISTANCE' ? (
                     <>
-                        {/* Variation Selector - Floating at top */}
-                        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full border border-slate-100 shadow-2xl z-[100] max-w-[90%] overflow-x-auto no-scrollbar">
-                            {variations.map((v, i) => (
-                                <div key={v.id} className="flex items-center">
-                                    <button onClick={() => switchVariation(v.id)} className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeVariationId === v.id ? 'bg-[#4f46e5] text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}>
-                                        <span>{v.name}</span>
-                                        {variations.length > 1 && (
-                                            <FiX onClick={(e) => { e.stopPropagation(); removeVariation(v.id); }} className="hover:text-rose-500 cursor-pointer" />
-                                        )}
-                                    </button>
-                                    {i < variations.length - 1 && <div className="w-[1px] h-4 bg-slate-100 mx-1" />}
-                                </div>
-                            ))}
-                            <button onClick={addVariation} className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all ml-2 shadow-sm">
-                                <FiPlus size={14} />
-                            </button>
-                        </div>
 
                         {/* Left Panel: High-Contrast Desktop Designer Tools */}
                         <ToolSidebar 
@@ -717,26 +700,6 @@ const StudioOverlayInner = ({ isOpen, onClose, requireLogin, initialMode = 'self
                                         updateTexture={updateTexture} 
                                     />
 
-                                    {/* Vertical Floating Designer Rail (Desktop & Large Screens) - Global for 2D/3D */}
-                                    <div className="hidden xl:flex absolute top-1/2 -translate-y-1/2 right-6 flex-col gap-4 bg-white/90 backdrop-blur-3xl p-3 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 z-50 animate-in fade-in slide-in-from-right-4 duration-700">
-                                        {[
-                                            { id: 'uploads', icon: <FiImage size={20} />, label: 'Images' },
-                                            { id: 'text', icon: <FiType size={20} />, label: 'Text' },
-                                            { id: 'stickers', icon: <FiSmile size={20} />, label: 'Emotes' },
-                                            { id: 'draw', icon: <FiEdit3 size={20} />, label: 'Ink' },
-                                            { id: 'layers', icon: <FiLayers size={21} />, label: 'Nodes' }
-                                        ].map(item => (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => { setActiveTab(item.id); if (item.id !== 'draw') setIsDrawing(false); }}
-                                                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all group relative ${activeTab === item.id ? 'bg-[#0c0c2a] text-white shadow-xl scale-110' : 'text-slate-400 hover:bg-slate-50 hover:text-[#0c0c2a]'}`}
-                                            >
-                                                {item.icon}
-                                                <span className="absolute right-full mr-4 px-3 py-1 bg-[#0c0c2a] text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">{item.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                    
                                 </div>
                             </div>
                             <TopNavigation 
