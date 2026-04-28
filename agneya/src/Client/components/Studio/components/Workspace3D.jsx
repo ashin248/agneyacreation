@@ -72,14 +72,14 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
     const rad = (-(obj.rotation || 0) * Math.PI) / 180;
     dummyDecal.rotateZ(rad);
 
-    // Enforce a minimum depth so flat items don't result in a 0-thickness projector
-    const depth = Math.max(anchor.dim[2] * 2, 0.5);
+    // Use half the model's depth to prevent projecting onto the back wall
+    const depth = Math.max(anchor.dim[2], 0.1);
 
     return createPortal(
         <Decal
             position={[dummyDecal.position.x, dummyDecal.position.y, dummyDecal.position.z]}
             rotation={[dummyDecal.rotation.x, dummyDecal.rotation.y, dummyDecal.rotation.z]}
-            scale={[w, h, depth]} // Depth scale must exceed bounding box to ensure projection
+            scale={[w, h, depth]} // Limit depth to prevent double-projection
             map={texture}
             depthTest={true}
             depthWrite={false}
