@@ -81,7 +81,7 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive }) => {
 });// 2. Main 3D Model Component (Hoisted helper)
 function Model3D({
     baseModelId, url, canvasObjects, objectAnchors, onAnchorUpdate, onPartSelect,
-    activeObjectId, previewRotation = 0
+    activeObjectId, previewRotation = 0, product
 }) {
     const modelGroupRef = useRef();
     const modelKey = baseModelId?.toString().toUpperCase();
@@ -393,7 +393,8 @@ const Workspace3D = ({
                                 canvasObjects={canvasObjects} 
                                 objectAnchors={objectAnchors} 
                                 onAnchorUpdate={handleAnchorUpdate} 
-                                activeObjectId={activeObject?.uid} 
+                                activeObjectId={activeObject?.uid}
+                                product={product} 
                             />
                         </Stage>
                         <OrbitControls makeDefault enablePan={false} maxDistance={10} minDistance={0.1} />
