@@ -18,14 +18,24 @@ const ProductListTable = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem('adminToken');
       const response = await axios.get('/api/admin/products', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (response.data.success) {
-        const productData = response.data.products || response.data.data || [];
-        setProducts(Array.isArray(productData) ? productData : []);
+      
+      let productData = [];
+      if (Array.isArray(response.data)) {
+         productData = response.data;
+      } else if (response.data?.success) {
+         productData = response.data.products || response.data.data || [];
+      } else if (response.data?.products) {
+         productData = response.data.products;
+      } else if (response.data?.data) {
+         productData = response.data.data;
       }
+      
+      setProducts(Array.isArray(productData) ? productData : []);
     } catch (err) {
       console.error('Error fetching products:', err);
       setError('Connection with central catalog failed.');
@@ -70,6 +80,16 @@ const ProductListTable = () => {
       <div className="flex flex-col items-center justify-center h-64 gap-4 bg-white/70 backdrop-blur-xl rounded-[32px] border border-gray-100">
         <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-500 rounded-full animate-spin"></div>
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Accessing Catalog Archives...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4 bg-white/70 backdrop-blur-xl rounded-[32px] border border-red-100">
+        <FiAlertTriangle size={32} className="text-red-400" />
+        <p className="text-[12px] font-black text-red-500 uppercase tracking-widest">{error}</p>
+        <button onClick={fetchProducts} className="mt-4 px-6 py-2 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">Retry Connection</button>
       </div>
     );
   }

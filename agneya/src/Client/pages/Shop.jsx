@@ -55,7 +55,11 @@ const Shop = () => {
             ]);
 
             if (productsRes.data.success) {
-                setProducts(productsRes.data.data);
+                setProducts(productsRes.data.products || productsRes.data.data || []);
+            } else if (Array.isArray(productsRes.data)) {
+                setProducts(productsRes.data);
+            } else if (productsRes.data.products) {
+                setProducts(productsRes.data.products);
             }
             if (pulseRes.data.success) {
                 setBanners(pulseRes.data.data.banners || []);

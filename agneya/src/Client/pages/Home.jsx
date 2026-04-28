@@ -38,8 +38,16 @@ const Home = () => {
         const bannersRes = results[0].status === 'fulfilled' ? results[0].value : null;
         const productsRes = results[1].status === 'fulfilled' ? results[1].value : null;
 
-        if (bannersRes && bannersRes.data.success) setBanners(bannersRes.data.data);
-        if (productsRes && productsRes.data.success) setProducts(productsRes.data.data);
+        if (bannersRes && bannersRes.data.success) {
+          setBanners(bannersRes.data.data || bannersRes.data.banners || []);
+        }
+        if (productsRes && productsRes.data.success) {
+          setProducts(productsRes.data.products || productsRes.data.data || []);
+        } else if (productsRes && Array.isArray(productsRes.data)) {
+          setProducts(productsRes.data);
+        } else if (productsRes && productsRes.data.products) {
+          setProducts(productsRes.data.products);
+        }
       } catch (err) {
         console.error('Failed to fetch storefront data:', err);
       } finally {
