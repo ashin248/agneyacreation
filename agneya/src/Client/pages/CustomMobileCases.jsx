@@ -104,12 +104,9 @@ const CustomMobileCases = () => {
                                     <button
                                         key={brand.id}
                                         onClick={() => setSelectedBrand(brand.id)}
-                                        className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center gap-3 px-5 py-3 rounded-2xl transition-all border ${selectedBrand === brand.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-indigo-200'}`}
+                                        className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center justify-center lg:justify-start px-5 py-3 rounded-2xl transition-all border ${selectedBrand === brand.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-indigo-200'}`}
                                         style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
                                     >
-                                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center p-0.5 border border-slate-100 overflow-hidden shrink-0">
-                                            <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
-                                        </div>
                                         <span className="text-[10px] font-black uppercase tracking-widest">{brand.name}</span>
                                     </button>
                                 ))}
@@ -145,35 +142,21 @@ const CustomMobileCases = () => {
                                 {filteredModels.map(model => (
                                     <div 
                                         key={model.id} 
-                                        className="bg-white rounded-[2rem] p-5 lg:p-6 border border-slate-100 shadow-sm hover:shadow-2xl hover:border-indigo-200 hover:-translate-y-1 transition-all group flex flex-col cursor-pointer relative overflow-hidden" 
+                                        className="bg-white rounded-3xl p-5 lg:p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-200 hover:-translate-y-1 transition-all group flex flex-col justify-center items-center cursor-pointer relative overflow-hidden min-h-[140px]" 
                                         onClick={() => handleCustomize(model)}
                                     >
-                                        <div className="mb-6 flex justify-between items-start">
-                                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-indigo-500 transition-colors group-hover:bg-indigo-50">
-                                                <FiSmartphone size={24} />
-                                            </div>
-                                            <div className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                                START
-                                            </div>
+                                        <div className="absolute top-4 right-4 text-[9px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                                            DESIGN
                                         </div>
                                         
-                                        <div className="mt-auto">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                                <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">Ready to Edit</span>
-                                            </div>
-                                            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-900 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+                                        <div className="text-center w-full mt-2">
+                                            <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 leading-tight mb-3 group-hover:text-indigo-600 transition-colors break-words">
                                                 {model.name}
                                             </h4>
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">SOFT CASE</span>
-                                                <p className="text-[11px] font-black text-slate-900">₹{model.price}</p>
+                                            <div className="flex items-center justify-center gap-3">
+                                                <span className="text-[9px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">SOFT CASE</span>
+                                                <p className="text-[11px] font-black text-indigo-600">₹{model.price}</p>
                                             </div>
-                                        </div>
-
-                                        {/* Subtle pattern background on hover */}
-                                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity translate-x-4 -translate-y-4">
-                                            <FiSmartphone size={100} />
                                         </div>
                                     </div>
                                 ))}

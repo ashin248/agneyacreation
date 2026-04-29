@@ -496,11 +496,7 @@ const Workspace2D = forwardRef(({
                         {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-80 transition-opacity">
-                                <img 
-                                    src={product.phoneMask.bodyImage || phoneBrands.find(b => b.id === product.phoneMask.brand)?.mockup || "https://i.ibb.co/L5hY5M0/samsung-mockup.png"} 
-                                    alt="Phone Body"
-                                    className="w-full h-full object-contain"
-                                />
+                                {/* Removed broken mockup image. The SVG mask handles the phone shape accurately. */}
                             </div>
                         )}
 
@@ -592,11 +588,7 @@ const Workspace2D = forwardRef(({
                         {/* Layer 25: Case Reflection Overlay (Above the design) */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-40 mix-blend-screen transition-opacity">
-                                <img 
-                                    src={phoneBrands.find(b => b.id === product.phoneMask.brand)?.caseOverlay || "https://i.ibb.co/nbWvC7M/case-overlay.png"} 
-                                    alt="Case Texture"
-                                    className="w-full h-full object-contain"
-                                />
+                                {/* Removed broken overlay image. Keep clean vector mask. */}
                             </div>
                         )}
 
