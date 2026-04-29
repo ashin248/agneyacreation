@@ -158,8 +158,8 @@ const Workspace2D = forwardRef(({
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
         const effectiveCanvasConfig = product?.canvasConfig;
-        const baseWidth = effectiveCanvasConfig?.width || 500;
-        const baseHeight = effectiveCanvasConfig?.height || 600;
+        const baseWidth = product?.phoneMask ? 400 : (effectiveCanvasConfig?.width || 500);
+        const baseHeight = product?.phoneMask ? 800 : (effectiveCanvasConfig?.height || 600);
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: baseWidth,
@@ -183,10 +183,17 @@ const Workspace2D = forwardRef(({
 
             setCanvasScale(newScale);
 
-            fabricRef.current.setDimensions({
-                width: currentWidth * newScale,
-                height: currentHeight * newScale
-            }, { cssOnly: true });
+            if (product?.phoneMask) {
+                fabricRef.current.setDimensions({
+                    width: '100%',
+                    height: '100%'
+                }, { cssOnly: true });
+            } else {
+                fabricRef.current.setDimensions({
+                    width: currentWidth * newScale,
+                    height: currentHeight * newScale
+                }, { cssOnly: true });
+            }
         };
 
         const resizeObserver = new ResizeObserver(() => {
@@ -491,7 +498,7 @@ const Workspace2D = forwardRef(({
         }}>
             <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
                 <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                    <div className={`relative ${product?.phoneMask ? 'w-full max-w-[400px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
+                    <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
                         
                         {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
@@ -514,11 +521,11 @@ const Workspace2D = forwardRef(({
                         {/* Layer 10: Fabric.js Canvas Overlay */}
                         <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                             <div className="pointer-events-auto" style={{ 
-                                width: `${(product?.phoneMask ? 400 : (canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500)) * canvasScale}px`, 
-                                height: `${(product?.phoneMask ? 800 : (canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600)) * canvasScale}px`,
+                                width: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500) * canvasScale}px`, 
+                                height: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600) * canvasScale}px`,
                                 marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
                                 marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
-                                transform: `scale(${product?.phoneMask ? (canvasScale * 0.7) : 1})`, 
+                                transform: product?.phoneMask ? 'none' : `scale(1)`, 
                                 transformOrigin: 'center' 
                             }}>
                                 <canvas ref={canvasRef} />
