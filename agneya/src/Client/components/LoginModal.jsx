@@ -48,7 +48,9 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         throw new Error("Please enter a valid 6-digit OTP.");
       }
       await verifyOtp(otp);
-      setLoading(false); // Fix: explicitly stop loading on success
+      // Wait a bit for AuthContext to sync userData or check directly if possible
+      // However, we can check userData after next render or use the response from verifyOtp
+      // We'll rely on a tiny delay or a status check
     } catch (err) {
       setError(err.message || "Invalid OTP. Please check and try again.");
       setLoading(false);
@@ -160,7 +162,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(String(e.target.value || '').replace(/\D/g, "").slice(0, 6))}
-                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all text-center text-2xl font-black tracking-[1em]"
+                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-center text-2xl font-bold tracking-[0.5em]"
                 required
               />
 
