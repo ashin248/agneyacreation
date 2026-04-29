@@ -48,7 +48,7 @@ const Navbar = () => {
             {/* 3. CORE NAVIGATION (TACTICAL) */}
             <div className="hidden md:flex items-center bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
               {[
-                { name: 'Shop All', path: '/', icon: ShoppingBag },
+                { name: 'Shop Products', path: '/shop', icon: ShoppingBag, highlight: true },
                 { name: 'Wishlist', path: '/wishlist', icon: Heart },
                 { name: 'My Cart', path: '/cart', icon: ClipboardList },
                 { name: 'Orders', path: '/track-order', icon: Package },
@@ -57,12 +57,14 @@ const Navbar = () => {
                   key={item.name}
                   to={item.path} 
                   className={({ isActive }) => `flex items-center gap-2.5 px-6 py-2.5 rounded-xl transition-all duration-500 ${
-                    isActive 
-                      ? 'bg-slate-950 text-white shadow-2xl scale-105' 
-                      : 'text-slate-400 hover:text-slate-950 hover:bg-white'
+                    item.highlight 
+                      ? 'bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 hover:shadow-xl hover:-translate-y-0.5'
+                      : isActive 
+                        ? 'bg-slate-950 text-white shadow-2xl scale-105' 
+                        : 'text-slate-500 hover:text-slate-950 hover:bg-white'
                   }`}
                 >
-                  <item.icon size={14} />
+                  <item.icon size={14} className={item.highlight ? 'animate-pulse' : ''} />
                   <span className="text-[9px] font-black uppercase tracking-widest">{item.name}</span>
                 </NavLink>
               ))}
@@ -109,7 +111,7 @@ const Navbar = () => {
         }`}>
             <div className="p-8 space-y-6">
               {[
-                { name: 'All Products', path: '/', icon: ShoppingBag, desc: 'Browse catalog' },
+                { name: 'Shop Products', path: '/shop', icon: ShoppingBag, desc: 'Browse full catalog' },
                 { name: 'My Wishlist', path: '/wishlist', icon: Heart, desc: 'View your library' },
                 { name: 'Shopping Cart', path: '/cart', icon: ClipboardList, desc: 'Review & Buy Now' },
                 { name: 'Track Orders', path: '/track-order', icon: Package, desc: 'View order history' },
