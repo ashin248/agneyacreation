@@ -7,7 +7,10 @@ import {
   FiArrowRight,
   FiZap,
   FiStar,
-  FiX
+  FiX,
+  FiSmartphone,
+  FiBox,
+  FiShield
 } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
@@ -56,7 +59,6 @@ const Home = () => {
     };
     fetchStorefrontData();
 
-    // Wishlist sync
     const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
     setWishlist(savedWishlist);
   }, []);
@@ -79,9 +81,12 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center bg-white gap-6">
-        <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">Loading Collections...</p>
+      <div className="h-screen flex flex-col items-center justify-center bg-[#FBFCFE] gap-6">
+        <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
+            <div className="absolute inset-3 rounded-full border-4 border-indigo-100 border-b-indigo-400 animate-spin-reverse"></div>
+        </div>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 animate-pulse">Initializing Interface</p>
       </div>
     );
   }
@@ -89,7 +94,7 @@ const Home = () => {
   const heroBanner = banners.length > 0 ? banners[0] : null;
 
   return (
-    <div className="bg-white pb-20 font-sans selection:bg-indigo-600 selection:text-white">
+    <div className="bg-[#FBFCFE] pb-32 font-sans selection:bg-indigo-600 selection:text-white">
       
       <LoginModal 
           isOpen={isLoginModalOpen} 
@@ -97,75 +102,81 @@ const Home = () => {
           onLoginSuccess={() => setIsLoginModalOpen(false)} 
       />
 
-      {/* QUICK VIEW MODAL */}
+      {/* QUICK VIEW MODAL - GLASSMORPHIC */}
       {quickViewProduct && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-xl animate-in fade-in duration-300">
-              <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+              <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative animate-in slide-in-from-bottom-8">
                   <button 
                       onClick={() => setQuickViewProduct(null)}
-                      className="absolute top-6 right-6 z-10 p-4 bg-white/80 backdrop-blur-md rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                      className="absolute top-6 right-6 z-10 w-12 h-12 flex items-center justify-center bg-slate-50 rounded-full hover:bg-rose-50 hover:text-rose-600 transition-colors text-slate-400 shadow-sm"
                   >
-                      <FiX size={20} />
+                      <FiX size={24} />
                   </button>
                   
-                  <div className="md:w-1/2 bg-gray-50 flex items-center justify-center p-12 overflow-hidden">
+                  <div className="md:w-1/2 bg-slate-50 flex items-center justify-center p-12 overflow-hidden relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 pointer-events-none"></div>
                         <img 
                           src={quickViewProduct.images?.[0] || quickViewProduct.galleryImages?.[0]} 
-                          className="w-full h-full object-contain animate-in zoom-in-95 duration-500" 
-                          alt="" 
+                          className="w-full h-full object-contain hover:scale-110 transition-transform duration-700 ease-out z-10" 
+                          alt={quickViewProduct.name} 
                         />
                   </div>
                   
-                  <div className="md:w-1/2 p-10 flex flex-col justify-center space-y-8 overflow-y-auto">
+                  <div className="md:w-1/2 p-12 flex flex-col justify-center space-y-8 overflow-y-auto bg-white">
                       <div className="space-y-4">
-                          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600">{quickViewProduct.category}</span>
-                          <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter leading-none">{quickViewProduct.name}</h2>
-                          <p className="text-sm text-gray-500 font-medium leading-relaxed">{quickViewProduct.description}</p>
+                          <span className="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase tracking-[0.2em] rounded-full border border-indigo-100">
+                              {quickViewProduct.category || 'Premium'}
+                          </span>
+                          <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-[1.1]">{quickViewProduct.name}</h2>
+                          <p className="text-sm text-slate-500 font-bold leading-relaxed line-clamp-3">{quickViewProduct.description}</p>
                       </div>
                       
                       <div className="flex items-baseline gap-4">
-                          <span className="text-3xl font-black text-gray-900 tracking-tighter">
+                          <span className="text-4xl font-black text-indigo-600 tracking-tight">
                               ₹{(quickViewProduct.discountPrice || quickViewProduct.basePrice || 0).toLocaleString('en-IN')}
                           </span>
                           {(quickViewProduct.originalPrice || quickViewProduct.basePrice || 0) > (quickViewProduct.discountPrice || quickViewProduct.basePrice || 0) && (
-                              <span className="text-lg text-gray-300 font-bold line-through">
+                              <span className="text-lg text-slate-300 font-bold line-through">
                                   ₹{(quickViewProduct.originalPrice || quickViewProduct.basePrice || 0).toLocaleString('en-IN')}
                               </span>
                           )}
                       </div>
 
-                      <div className="flex flex-col gap-3 pt-4">
-                          <button 
-                              onClick={() => {
-                                  requireLogin(() => {
-                                      const buyNowItem = {
-                                          productId: quickViewProduct._id,
-                                          name: quickViewProduct.name,
-                                          unitPrice: (quickViewProduct.discountPrice || quickViewProduct.basePrice || 0),
-                                          selectedVariation: (quickViewProduct.variations?.length > 0 ? quickViewProduct.variations[0] : null),
-                                          image: (quickViewProduct.images?.[0] || quickViewProduct.galleryImages?.[0]),
-                                          itemType: 'Ready',
-                                          quantity: 1,
-                                          originalPrice: (quickViewProduct.originalPrice || quickViewProduct.basePrice || 0),
-                                          category: quickViewProduct.category
-                                      };
+                      <div className="flex flex-col gap-4 pt-4 border-t border-slate-100">
+                          <div className="grid grid-cols-2 gap-4">
+                              <button 
+                                  onClick={() => {
+                                      requireLogin(() => {
+                                          const buyNowItem = {
+                                              productId: quickViewProduct._id,
+                                              name: quickViewProduct.name,
+                                              unitPrice: (quickViewProduct.discountPrice || quickViewProduct.basePrice || 0),
+                                              selectedVariation: (quickViewProduct.variations?.length > 0 ? quickViewProduct.variations[0] : null),
+                                              image: (quickViewProduct.images?.[0] || quickViewProduct.galleryImages?.[0]),
+                                              itemType: 'Ready',
+                                              quantity: 1,
+                                              originalPrice: (quickViewProduct.originalPrice || quickViewProduct.basePrice || 0),
+                                              category: quickViewProduct.category
+                                          };
+                                          setQuickViewProduct(null);
+                                          navigate('/checkout', { state: { buyNowItem } });
+                                      });
+                                  }}
+                                  className="py-4 bg-slate-900 text-white rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl hover:shadow-indigo-600/30 active:scale-95"
+                              >
+                                  Buy Now
+                              </button>
+                              <button 
+                                  onClick={() => {
                                       setQuickViewProduct(null);
-                                      navigate('/checkout', { state: { buyNowItem } });
-                                  });
-                              }}
-                              className="w-full py-4 bg-[#2D3436] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl"
-                          >
-                              Buy Now
-                          </button>
-                          <button 
-                              onClick={() => {
-                                  setQuickViewProduct(null);
-                                  navigate(`/product/${quickViewProduct._id}`);
-                              }}
-                              className="w-full py-4 bg-gray-50 border border-gray-100 text-gray-900 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100 transition-all"
-                          >
-                              View Full Details
-                          </button>
+                                      navigate(`/product/${quickViewProduct._id}`);
+                                  }}
+                                  className="py-4 bg-white border-2 border-slate-100 text-slate-600 rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 transition-all active:scale-95"
+                              >
+                                  Full Details
+                              </button>
+                          </div>
+                          
                           {quickViewProduct.isCustomizable && (
                               <button 
                                   onClick={() => {
@@ -173,7 +184,7 @@ const Home = () => {
                                       const target = quickViewProduct.customizationType === '3D' ? '3d' : '2d';
                                       navigate(`/studio/${target}/${quickViewProduct._id}`);
                                   }}
-                                  className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
+                                  className="w-full py-4 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-inner active:scale-95"
                               >
                                   Personalize Design
                               </button>
@@ -184,152 +195,143 @@ const Home = () => {
           </div>
       )}
 
-      {/* 1. HERO HUB */}
-      <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden bg-gray-900 px-4">
+      {/* 1. HERO HUB - MODERN, CLEAN & DYNAMIC */}
+      <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 px-4 md:px-8">
         {heroBanner ? (
            <img 
              src={heroBanner.imageUrl || ''} 
              alt="Agneya Printing" 
-             className="absolute inset-0 w-full h-full object-cover opacity-50 scale-105"
+             className="absolute inset-0 w-full h-full object-cover opacity-40 scale-105 pointer-events-none"
            />
         ) : (
-           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-900 via-indigo-950 to-black opacity-90"></div>
+           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-950 via-indigo-950/80 to-slate-900 opacity-90"></div>
         )}
         
         {/* Dynamic Orbs for Premium feel */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] animate-pulse-slow delay-1000"></div>
+        <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
+        <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse delay-1000 pointer-events-none"></div>
 
-        <div className="relative z-10 text-center max-w-5xl mx-auto space-y-10">
-          <div className="flex items-center justify-center gap-4 mb-4">
-             <div className="h-px w-8 bg-indigo-500"></div>
-             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Premium Printing Solutions</span>
-             <div className="h-px w-8 bg-indigo-500"></div>
+        <div className="relative z-10 text-center max-w-6xl mx-auto space-y-12">
+          <div className="inline-flex items-center gap-4 bg-white/5 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
+             <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
+             <span className="text-[10px] font-black text-indigo-100 uppercase tracking-widest">Premium Manufacturing Hub</span>
           </div>
           
-          <h1 className="text-3xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter uppercase leading-[0.9] drop-shadow-2xl">
-            {heroBanner?.title || 'Precision Printing for Your Vision'}
+          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter uppercase leading-[0.85] drop-shadow-2xl">
+            {heroBanner?.title || 'Precision Meets Imagination'}
           </h1>
           
-          <p className="hidden md:block text-lg md:text-xl text-indigo-100/70 max-w-2xl mx-auto font-bold tracking-tight leading-relaxed">
-            From high-fidelity 3D modeling to bespoke bulk production, we synchronize logic and creativity for elite commercial printing.
+          <p className="hidden md:block text-lg md:text-xl text-indigo-100/60 max-w-2xl mx-auto font-bold tracking-widest leading-relaxed">
+            Elevating your ideas with high-fidelity production. Design bespoke products or explore our curated collections.
           </p>
           
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-10">
-              <button onClick={() => navigate('/shop')} className="group px-12 py-5 bg-white text-gray-900 font-black text-[11px] uppercase tracking-[0.3em] rounded-full hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20 flex items-center gap-4 active:scale-95">
-                  Design Studio <FiEdit3 className="transition-transform group-hover:rotate-12" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
+              <button onClick={() => navigate('/shop')} className="group w-full sm:w-auto px-10 py-5 bg-white text-slate-900 font-black text-[12px] uppercase tracking-widest rounded-full hover:bg-indigo-600 hover:text-white transition-all duration-300 shadow-2xl hover:shadow-indigo-600/30 flex items-center justify-center gap-4 active:scale-95">
+                  Explore Catalog <FiArrowRight className="transition-transform group-hover:translate-x-1" />
               </button>
-              <a href="#three-pillars" className="group px-12 py-5 bg-white/5 backdrop-blur-xl text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-full border border-white/10 hover:bg-white/10 transition-all flex items-center gap-4 active:scale-95">
-                  Explore Collections <FiArrowRight className="transition-transform group-hover:translate-x-1" />
-              </a>
+              <button onClick={() => navigate('/custom-mobile-cases')} className="group w-full sm:w-auto px-10 py-5 bg-indigo-600/20 backdrop-blur-xl text-white font-black text-[12px] uppercase tracking-widest rounded-full border border-indigo-500/30 hover:bg-indigo-600 transition-all duration-300 flex items-center justify-center gap-4 active:scale-95">
+                  Design Cases <FiSmartphone className="transition-transform group-hover:-rotate-12" />
+              </button>
           </div>
+        </div>
+        
+        {/* Subtle scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+            <span className="text-[8px] font-black text-white uppercase tracking-widest">Scroll</span>
+            <div className="w-px h-8 bg-gradient-to-b from-white to-transparent"></div>
         </div>
       </section>
 
-      {/* 2. THE THREE PILLARS (STRATEGY ENTRY) */}
-      <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-16 md:mt-32">
-        <div className="text-center mb-10 md:mb-16 space-y-2">
-            <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase">Our Services</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Choose Your Way</p>
+      {/* 2. THE THREE PILLARS (SERVICES) */}
+      <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-32 md:mt-40">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="space-y-3">
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">Our Capabilities</h2>
+                <p className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">Choose Your Production Path</p>
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {/* PILLAR 1: CREATE YOUR OWN */}
-            <div className="group bg-white rounded-[60px] p-10 border border-gray-100 hover:border-indigo-600/30 shadow-2xl shadow-gray-200/50 transition-all hover:bg-indigo-50/30 flex flex-col justify-between h-[500px] overflow-hidden relative">
-                <div className="absolute top-0 right-0 p-12 opacity-5 text-gray-900 transition-all group-hover:scale-125 group-hover:opacity-10">
-                    <FiEdit3 size={180} />
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* PILLAR 1: CUSTOM STUDIO */}
+            <div onClick={() => navigate('/shop')} className="group cursor-pointer bg-white rounded-[40px] p-10 border-2 border-slate-100 hover:border-indigo-600 shadow-sm hover:shadow-2xl hover:shadow-indigo-600/10 transition-all duration-500 flex flex-col justify-between h-[450px] relative overflow-hidden hover:-translate-y-2">
+                <div className="absolute -right-10 -top-10 w-48 h-48 bg-indigo-50 rounded-full blur-3xl group-hover:bg-indigo-100 transition-colors duration-500"></div>
                 <div className="relative z-10">
-                    <div className="w-16 h-16 bg-indigo-600 rounded-[28px] flex items-center justify-center text-white shadow-xl shadow-indigo-200 mb-8">
+                    <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl mb-8 group-hover:scale-110 transition-transform duration-500">
                         <FiEdit3 size={24} />
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">Design Studio</h3>
-                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Upload your bespoke artwork and place it on our premium blank canvases using our 3D design studio.</p>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none mb-4">Design Studio</h3>
+                    <p className="text-slate-500 font-bold text-sm leading-relaxed max-w-[250px]">Upload your bespoke artwork onto our premium 3D and 2D customizable blank canvases.</p>
                 </div>
-                <div className="relative z-10">
-                    <ul className="text-[10px] font-black uppercase text-gray-400 tracking-widest space-y-3 mb-10">
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> Premium Blank Canvases</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> High-Res Vector Support</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-indigo-600" /> Neural Background Removal</li>
-                    </ul>
-                    <Link to="/shop" className="inline-flex items-center gap-3 text-indigo-600 font-black text-xs uppercase tracking-widest group/btn">
-                        Start Designing <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
-                    </Link>
+                <div className="relative z-10 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-indigo-600 transition-colors">Start Creating</span>
+                    <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600 transition-all">
+                        <FiArrowRight size={16} />
+                    </div>
                 </div>
             </div>
 
-            {/* PILLAR 2: OUR COLLECTION */}
-            <div className="group bg-gray-900 rounded-[60px] p-10 shadow-2xl shadow-indigo-900/20 flex flex-col justify-between h-[500px] overflow-hidden relative border border-white/5 transition-all hover:-translate-y-2">
-                <div className="absolute top-0 right-0 p-12 opacity-5 text-white transition-all group-hover:scale-125 group-hover:opacity-10">
-                    <FiShoppingBag size={180} />
-                </div>
+            {/* PILLAR 2: COLLECTIONS */}
+            <div onClick={() => navigate('/shop')} className="group cursor-pointer bg-slate-900 rounded-[40px] p-10 border-2 border-slate-800 hover:border-indigo-500 shadow-2xl transition-all duration-500 flex flex-col justify-between h-[450px] relative overflow-hidden hover:-translate-y-2">
+                <div className="absolute -right-10 -top-10 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl group-hover:bg-indigo-600/40 transition-colors duration-500"></div>
                 <div className="relative z-10">
-                    <div className="w-16 h-16 bg-white rounded-[28px] flex items-center justify-center text-gray-900 shadow-xl mb-8">
+                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-slate-900 shadow-xl mb-8 group-hover:scale-110 transition-transform duration-500">
                         <FiShoppingBag size={24} />
                     </div>
-                    <h3 className="text-xl font-black text-white tracking-tight uppercase leading-none mb-4">Ready-made Collections</h3>
-                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Explore our curated pre-designed templates tailored for a modern look.</p>
+                    <h3 className="text-2xl font-black text-white tracking-tight uppercase leading-none mb-4">Live Collections</h3>
+                    <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-[250px]">Explore our curated pre-designed inventory. Ready to ship, meticulously crafted.</p>
                 </div>
-                <div className="relative z-10">
-                    <ul className="text-[10px] font-black uppercase text-gray-500 tracking-widest space-y-3 mb-10">
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-white" /> Trending Graphic Sets</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-white" /> Editable Components</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-white" /> Ready-to-Ship Designs</li>
-                    </ul>
-                    <Link to="/shop" className="inline-flex items-center gap-3 text-white font-black text-xs uppercase tracking-widest group/btn">
-                        Shop Collection <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
-                    </Link>
+                <div className="relative z-10 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">Explore Shop</span>
+                    <div className="w-10 h-10 rounded-full border border-slate-700 text-white flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 group-hover:border-white transition-all">
+                        <FiArrowRight size={16} />
+                    </div>
                 </div>
             </div>
 
-            {/* PILLAR 3: BULK HUB */}
-            <div className="group bg-white rounded-[60px] p-10 border border-gray-100 hover:border-orange-600/30 shadow-2xl shadow-gray-200/50 transition-all hover:bg-orange-50/30 flex flex-col justify-between h-[500px] overflow-hidden relative">
-                <div className="absolute top-0 right-0 p-12 opacity-5 text-gray-900 transition-all group-hover:scale-125 group-hover:opacity-10">
-                    <i className="bi bi-box-seam text-[180px]"></i>
-                </div>
+            {/* PILLAR 3: B2B BULK */}
+            <div onClick={() => navigate('/bulk-order')} className="group cursor-pointer bg-white rounded-[40px] p-10 border-2 border-slate-100 hover:border-orange-500 shadow-sm hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 flex flex-col justify-between h-[450px] relative overflow-hidden hover:-translate-y-2">
+                <div className="absolute -right-10 -top-10 w-48 h-48 bg-orange-50 rounded-full blur-3xl group-hover:bg-orange-100 transition-colors duration-500"></div>
                 <div className="relative z-10">
-                    <div className="w-16 h-16 bg-orange-500 rounded-[28px] flex items-center justify-center text-white shadow-xl shadow-orange-200 mb-8">
-                        <i className="bi bi-box-seam text-2xl"></i>
+                    <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-500/30 mb-8 group-hover:scale-110 transition-transform duration-500">
+                        <FiBox size={24} />
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 tracking-tight uppercase leading-none mb-4">B2B Portal</h3>
-                    <p className="hidden md:block text-gray-400 font-bold text-sm leading-relaxed max-w-xs">Strategic volume printing for businesses and teams requiring professional fulfillment.</p>
+                    <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none mb-4">B2B Portal</h3>
+                    <p className="text-slate-500 font-bold text-sm leading-relaxed max-w-[250px]">Strategic volume printing and wholesale fulfillment for businesses and organizations.</p>
                 </div>
-                <div className="relative z-10">
-                    <ul className="text-[10px] font-black uppercase text-gray-400 tracking-widest space-y-3 mb-10">
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-orange-600" /> Tiered Bulk Pricing</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-orange-600" /> GST Verified Invoicing</li>
-                        <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-orange-600" /> B2B Activity Tracking</li>
-                    </ul>
-                    <Link to="/bulk-order" className="inline-flex items-center gap-3 text-orange-600 font-black text-xs uppercase tracking-widest group/btn">
-                        Enter B2B Portal <i className="bi bi-chevron-right transition-transform group-hover/btn:translate-x-1"></i>
-                    </Link>
+                <div className="relative z-10 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-orange-500 transition-colors">Order Wholesale</span>
+                    <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white group-hover:border-orange-500 transition-all">
+                        <FiArrowRight size={16} />
+                    </div>
                 </div>
             </div>
         </div>
       </section>
 
       {/* 3. TRENDING OVERLAY */}
-      <section className="max-w-7xl mx-auto px-6 mt-20 md:mt-40">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-                <FiStar className="text-indigo-600" />
-                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em]">Commercial Spotlight</span>
+      <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-48">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+                <FiStar className="text-indigo-600 animate-pulse" />
+                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Spotlight</span>
             </div>
-            <h2 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Trending Assets</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">Trending Assets</h2>
           </div>
-          <Link to="/shop" className="px-10 py-4 bg-gray-50 text-gray-900 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-gray-900 hover:text-white transition-all shadow-sm">
-            View Full Catalog
+          <Link to="/shop" className="group flex items-center gap-3 px-8 py-4 bg-white border-2 border-slate-100 text-slate-900 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
+            View All Inventory
+            <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-20 bg-gray-50 rounded-[40px] border border-gray-100 flex flex-col items-center">
-             <FiZap className="w-10 h-10 text-gray-200 mb-4 animate-pulse" />
-             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Updating Inventory...</p>
+          <div className="text-center py-32 bg-white rounded-[40px] border border-slate-100 shadow-sm flex flex-col items-center">
+             <FiZap className="w-12 h-12 text-slate-200 mb-6 animate-bounce" />
+             <h3 className="text-lg font-black text-slate-900 uppercase tracking-widest mb-2">Syncing Data</h3>
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Updating the latest inventory...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             {products.map(product => (
                 <ProductCard 
                     key={product._id}
@@ -345,22 +347,38 @@ const Home = () => {
         )}
       </section>
 
-      {/* 4. STATISTICS HUD */}
-      <section className="max-w-7xl mx-auto px-6 mt-40">
-          <div className="bg-indigo-600 rounded-[80px] p-12 md:p-24 flex flex-col md:flex-row items-center justify-around gap-12 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-[80px]"></div>
+      {/* 4. STATISTICS HUD - HIGH DEFINITION */}
+      <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-48 mb-10">
+          <div className="bg-indigo-600 rounded-[40px] md:rounded-[60px] p-12 md:p-24 flex flex-col md:flex-row items-center justify-around gap-16 relative overflow-hidden shadow-2xl shadow-indigo-600/20">
+              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-[80px] pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-black/10 rounded-full translate-y-1/3 -translate-x-1/4 blur-[60px] pointer-events-none"></div>
               
-              <div className="text-center space-y-2 relative z-10">
-                  <h4 className="text-6xl font-black text-white tracking-tighter">48H</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Fast Shipping</p>
+              <div className="text-center space-y-4 relative z-10 flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white mb-2 backdrop-blur-sm border border-white/20">
+                      <FiZap size={24} />
+                  </div>
+                  <h4 className="text-5xl md:text-6xl font-black text-white tracking-tighter">48H</h4>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em]">Fast Fulfillment</p>
               </div>
-              <div className="text-center space-y-2 relative z-10">
-                  <h4 className="text-6xl font-black text-white tracking-tighter">10K+</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Successful Designs</p>
+              
+              <div className="hidden md:block w-px h-32 bg-white/20 relative z-10"></div>
+              
+              <div className="text-center space-y-4 relative z-10 flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white mb-2 backdrop-blur-sm border border-white/20">
+                      <FiEdit3 size={24} />
+                  </div>
+                  <h4 className="text-5xl md:text-6xl font-black text-white tracking-tighter">10K+</h4>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em]">Custom Designs</p>
               </div>
-              <div className="text-center space-y-2 relative z-10">
-                  <h4 className="text-6xl font-black text-white tracking-tighter">99.9%</h4>
-                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.4em]">Print Quality</p>
+              
+              <div className="hidden md:block w-px h-32 bg-white/20 relative z-10"></div>
+              
+              <div className="text-center space-y-4 relative z-10 flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-white mb-2 backdrop-blur-sm border border-white/20">
+                      <FiShield size={24} />
+                  </div>
+                  <h4 className="text-5xl md:text-6xl font-black text-white tracking-tighter">99%</h4>
+                  <p className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.3em]">Quality Assured</p>
               </div>
           </div>
       </section>
@@ -370,4 +388,3 @@ const Home = () => {
 };
 
 export default Home;
-
