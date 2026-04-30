@@ -11,7 +11,8 @@ import {
   FiChevronRight,
   FiCheck,
   FiRotateCcw,
-  FiSmartphone
+  FiSmartphone,
+  FiArrowRight
 } from 'react-icons/fi';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
@@ -263,23 +264,46 @@ const Shop = () => {
                     </div>
                 </div>
 
-                {/* PROMINENT MOBILE COVER CTA - MOVED HERE */}
-                <div className="w-full py-3 px-6 md:py-4 md:px-8 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 rounded-[24px] shadow-lg shadow-indigo-600/10 flex flex-col md:flex-row items-center justify-between gap-4 transform transition-all hover:scale-[1.01] mt-2">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white border border-white/30 shadow-inner">
-                            <FiSmartphone size={24} />
-                        </div>
-                        <div className="text-white space-y-0.5 text-center md:text-left">
-                            <h2 className="text-lg md:text-xl font-black uppercase tracking-tight">Design Custom Mobile Cases</h2>
-                            <p className="text-[9px] md:text-[10px] font-bold text-indigo-100 tracking-widest uppercase opacity-80">Over 300+ models supported</p>
+                {/* PREMIUM MOBILE COVER CTA */}
+                <div 
+                    onClick={() => navigate('/custom-mobile-cases')}
+                    className="w-full relative group cursor-pointer overflow-hidden rounded-[32px] bg-slate-900 shadow-2xl transition-all duration-500 hover:scale-[1.01] mt-2 mb-4 h-[200px] md:h-[280px]"
+                >
+                    {/* Background Image/Mockup */}
+                    <img 
+                        src="/phone-case-banner.png" 
+                        alt="Custom Mobile Cases" 
+                        className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                    />
+                    
+                    {/* Glassmorphic Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/40 to-transparent z-10 flex items-center px-8 md:px-16">
+                        <div className="max-w-md space-y-4">
+                            <div className="inline-flex items-center gap-2 bg-indigo-600 px-4 py-1.5 rounded-full border border-indigo-400/30 shadow-lg shadow-indigo-600/20">
+                                <FiSmartphone className="text-white" size={14} />
+                                <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Premium Studio</span>
+                            </div>
+                            
+                            <div className="space-y-1">
+                                <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter leading-[0.9]">
+                                    Design Your <br />
+                                    <span className="text-indigo-400">Masterpiece</span>
+                                </h2>
+                                <p className="text-[10px] md:text-xs font-bold text-slate-300 uppercase tracking-widest max-w-[200px] md:max-w-none">
+                                    Over 300+ models supported. High-fidelity prints.
+                                </p>
+                            </div>
+                            
+                            <div className="pt-2">
+                                <div className="inline-flex items-center gap-3 px-8 py-3 bg-white text-slate-950 rounded-xl font-black uppercase tracking-widest text-[10px] group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-xl">
+                                    Customize Now <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => navigate('/custom-mobile-cases')} 
-                        className="w-full md:w-auto px-6 py-3 bg-white text-indigo-600 rounded-xl font-black uppercase tracking-widest text-[10px] hover:shadow-xl hover:bg-indigo-50 transition-all active:scale-95 shadow-sm"
-                    >
-                        Customize Now
-                    </button>
+                    
+                    {/* Floating accent elements */}
+                    <div className="absolute top-10 right-10 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl animate-pulse pointer-events-none"></div>
                 </div>
 
                 {/* PRODUCT GRID HEADER - MORE COMPACT */}
