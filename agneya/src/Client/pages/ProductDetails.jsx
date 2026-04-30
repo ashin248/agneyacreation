@@ -494,44 +494,118 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* Highly Active Related Products Section */}
+                {/* ── RELATED PRODUCTS ── Premium Section */}
                 {relatedProducts.length > 0 && (
-                    <div className="mt-40 mb-20 border-t border-slate-100 pt-20">
-                        <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-6">
-                            <div className="space-y-3">
-                                <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">Related Products</h3>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Products you might love</p>
+                    <div className="mt-24 mb-16">
+                        {/* Section Header */}
+                        <div className="relative mb-14">
+                            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent" />
+                            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                                <div className="bg-[#FBFCFE] pr-8 space-y-2">
+                                    <p className="text-[9px] font-black uppercase tracking-[0.35em] text-indigo-400">You might also like</p>
+                                    <h3 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">
+                                        <span className="text-slate-900">Related </span>
+                                        <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Products</span>
+                                    </h3>
+                                </div>
+                                <button
+                                    onClick={() => navigate('/shop')}
+                                    className="bg-[#FBFCFE] pl-8 group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors whitespace-nowrap"
+                                >
+                                    View All
+                                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                </button>
                             </div>
-                            <button onClick={() => navigate('/shop')} className="group flex items-center gap-3 px-6 py-4 bg-white border-2 border-slate-100 text-slate-900 rounded-[20px] font-black text-[10px] uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 hover:shadow-lg transition-all">
-                                View Full Catalog
+                        </div>
+
+                        {/* Product Cards Grid */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+                            {relatedProducts.map((rel, idx) => {
+                                const relPrice = Number(rel.discountPrice || rel.basePrice || 0);
+                                const relOriginal = Number(rel.originalPrice || rel.basePrice || 0);
+                                const relDiscount = relOriginal > 0 ? Math.round(((relOriginal - relPrice) / relOriginal) * 100) : 0;
+                                const relImg = rel.galleryImages?.[0] || rel.images?.[0] || '';
+
+                                return (
+                                    <div
+                                        key={rel._id || idx}
+                                        onClick={() => { navigate(`/product/${rel._id}`); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                                        className="group cursor-pointer bg-white rounded-[28px] border border-slate-100 overflow-hidden flex flex-col transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1.5 hover:border-indigo-100"
+                                        style={{ animationDelay: `${idx * 80}ms` }}
+                                    >
+                                        {/* Image Container */}
+                                        <div className="relative aspect-square bg-slate-50 overflow-hidden">
+                                            {relImg ? (
+                                                <img
+                                                    src={relImg}
+                                                    alt={rel.name}
+                                                    loading="lazy"
+                                                    className="w-full h-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
+                                                    <Box size={40} />
+                                                </div>
+                                            )}
+
+                                            {/* Overlay on hover */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                                            {/* Badges */}
+                                            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                                                {relDiscount > 0 && (
+                                                    <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-1 rounded-lg shadow-lg">
+                                                        -{relDiscount}%
+                                                    </span>
+                                                )}
+                                                {rel.isCustomizable && (
+                                                    <span className="bg-indigo-600 text-white text-[8px] font-black px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1">
+                                                        <Sparkles size={8} /> Custom
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* "View Product" pill on hover */}
+                                            <div className="absolute bottom-3 left-3 right-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 z-10">
+                                                <div className="bg-white/90 backdrop-blur-md rounded-xl py-2 text-center text-[9px] font-black uppercase tracking-widest text-indigo-600 shadow-sm border border-white/50">
+                                                    View Product →
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Info */}
+                                        <div className="p-4 flex flex-col gap-1.5 flex-1">
+                                            {rel.category && (
+                                                <span className="text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400">{rel.category}</span>
+                                            )}
+                                            <h4 className="text-[13px] font-black uppercase tracking-tight text-slate-900 leading-tight line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                                                {rel.name}
+                                            </h4>
+                                            <div className="flex items-baseline gap-2 mt-auto pt-2">
+                                                <span className="text-base font-black text-slate-900">
+                                                    ₹{relPrice.toLocaleString('en-IN')}
+                                                </span>
+                                                {relDiscount > 0 && (
+                                                    <span className="text-[10px] text-slate-400 line-through font-bold">
+                                                        ₹{relOriginal.toLocaleString('en-IN')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Full-width CTA */}
+                        <div className="mt-10">
+                            <button
+                                onClick={() => navigate('/shop')}
+                                className="group w-full py-5 rounded-[24px] border-2 border-dashed border-slate-200 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-300"
+                            >
+                                <span>Explore Full Catalog</span>
                                 <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </button>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {relatedProducts.map((rel, idx) => (
-                                <div 
-                                    key={idx} 
-                                    onClick={() => {
-                                      navigate(`/product/${rel._id}`);
-                                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }}
-                                    className="group cursor-pointer flex flex-col"
-                                >
-                                    <div className="relative aspect-[4/5] bg-white rounded-[32px] overflow-hidden border border-slate-100 mb-6 transition-all duration-500 group-hover:shadow-2xl group-hover:shadow-indigo-600/10 group-hover:-translate-y-2">
-                                        <div className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-multiply pointer-events-none" />
-                                        <img 
-                                            src={rel.galleryImages?.[0] || rel.images?.[0] || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80'} 
-                                            className="w-full h-full object-contain p-10 transition-transform duration-700 ease-out group-hover:scale-110" 
-                                            alt={rel.name} 
-                                        />
-                                    </div>
-                                    <div className="flex flex-col flex-1 justify-between gap-2 px-2">
-                                        <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 line-clamp-2 group-hover:text-indigo-600 transition-colors">{rel.name}</h4>
-                                        <p className="text-lg font-black text-indigo-600">₹{rel.basePrice?.toLocaleString('en-IN')}</p>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 )}
