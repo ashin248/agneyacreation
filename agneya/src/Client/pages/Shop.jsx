@@ -52,16 +52,22 @@ const Shop = () => {
             ]);
 
             if (productsRes.data.success) {
-                setProducts(productsRes.data.products || productsRes.data.data || []);
-            } else if (Array.isArray(productsRes.data)) {
-                setProducts(productsRes.data);
-            } else if (productsRes.data.products) {
-                setProducts(productsRes.data.products);
+                const fetchedProducts = productsRes.data.products || productsRes.data.data || [];
+                setProducts(fetchedProducts);
+                
+                // If categories API returns nothing, extract from products
+                if (!categoriesRes.data.success || !categoriesRes.data.data || categoriesRes.data.data.length === 0) {
+                    const productCats = fetchedProducts.map(p => p.category).filter(Boolean);
+                    const uniqueCats = [...new Set(productCats)];
+                    const allCat = { name: 'All', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081986.png', _id: 'all' };
+                    setCategories([allCat, ...uniqueCats.map(c => ({ name: c, _id: c }))]);
+                }
             }
+
             if (pulseRes.data.success) {
                 setBanners(pulseRes.data.data.banners || []);
             }
-            if (categoriesRes.data.success) {
+            if (categoriesRes.data.success && categoriesRes.data.data?.length > 0) {
                 const dbCats = categoriesRes.data.data;
                 const allCat = { name: 'All', imageUrl: 'https://cdn-icons-png.flaticon.com/512/3081/3081986.png', _id: 'all' };
                 setCategories([allCat, ...dbCats]);
@@ -167,10 +173,10 @@ const Shop = () => {
     return (
         <div className="bg-[#FBFCFE] min-h-screen font-sans selection:bg-indigo-600 selection:text-white pb-24 text-slate-950">
             
-            <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col gap-8 relative z-10">
+            <main className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col gap-4 md:gap-6 relative z-10">
                 
-                {/* HERO BANNER SECTION */}
-                <section className="relative w-full h-[200px] md:h-[320px] flex-shrink-0 group overflow-hidden rounded-[32px] shadow-2xl shadow-indigo-900/5">
+                {/* HERO BANNER SECTION - REDUCED HEIGHT */}
+                <section className="relative w-full h-[140px] md:h-[220px] flex-shrink-0 group overflow-hidden rounded-[24px] md:rounded-[32px] shadow-xl shadow-indigo-900/5">
                     <div className="absolute inset-0 bg-slate-900 rounded-[32px]"></div>
                     <div 
                         className="flex h-full w-full items-center transition-transform duration-[1000ms] ease-[cubic-bezier(0.25,1,0.5,1)]"
@@ -211,53 +217,36 @@ const Shop = () => {
                     )}
                 </section>
 
-                {/* PROMINENT MOBILE COVER CTA */}
-                <div className="w-full py-4 px-6 md:py-6 md:px-10 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-[32px] shadow-xl shadow-indigo-600/20 flex flex-col md:flex-row items-center justify-between gap-6 transform transition-transform hover:-translate-y-1">
-                    <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/30 shadow-inner">
-                            <FiSmartphone size={32} />
-                        </div>
-                        <div className="text-white space-y-1">
-                            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight">Design Custom Mobile Cases</h2>
-                            <p className="text-[11px] md:text-[13px] font-bold text-indigo-100 tracking-widest uppercase">Over 300+ models supported</p>
-                        </div>
-                    </div>
-                    <button 
-                        onClick={() => navigate('/custom-mobile-cases')} 
-                        className="w-full md:w-auto px-8 py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase tracking-widest text-[11px] hover:shadow-2xl hover:bg-indigo-50 transition-all active:scale-95"
-                    >
-                        Customize Now
-                    </button>
-                </div>
 
-                {/* FILTER CONTROLS */}
-                <div className="sticky top-24 z-[60] flex flex-col gap-4 pointer-events-none mt-4">
-                    <div className="w-full bg-white/70 backdrop-blur-xl shadow-xl shadow-slate-200/40 rounded-[24px] border border-white p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-4 pointer-events-auto">
+
+                {/* FILTER CONTROLS - COMPACTED */}
+                <div className="sticky top-24 z-[60] flex flex-col gap-3 pointer-events-none -mt-4">
+                    <div className="w-full bg-white/80 backdrop-blur-2xl shadow-xl shadow-slate-200/30 rounded-[24px] border border-white p-2 md:p-3 flex items-center justify-between gap-3 pointer-events-auto">
                         
-                        {/* Search Input */}
-                        <div className="relative w-full md:flex-1 group">
-                            <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={20} />
+                        {/* Search Input - Compact */}
+                        <div className="relative flex-1 group">
+                            <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                             <input 
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search products..."
-                                className="w-full h-14 bg-slate-50 border-none rounded-2xl pl-14 pr-6 text-sm font-bold text-slate-900 placeholder:text-slate-400 outline-none focus:ring-4 focus:ring-indigo-500/20 transition-all"
+                                className="w-full h-12 bg-slate-50 border-none rounded-xl pl-12 pr-4 text-xs font-bold text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"
                             />
                         </div>
 
-                        {/* Master Filter Button */}
+                        {/* Master Filter Button - Compact */}
                         <button 
                             onClick={() => setIsFilterOpen(true)}
-                            className="w-full md:w-auto flex-shrink-0 flex items-center justify-center gap-3 px-8 h-14 bg-slate-900 text-white rounded-2xl shadow-lg hover:bg-indigo-600 transition-all hover:-translate-y-1 active:scale-95"
+                            className="flex-shrink-0 flex items-center justify-center gap-2 px-6 h-12 bg-slate-900 text-white rounded-xl shadow-lg hover:bg-indigo-600 transition-all hover:-translate-y-0.5 active:scale-95"
                         >
-                            <FiSliders size={18}/>
-                            <span className="text-[11px] font-black uppercase tracking-widest">Filters</span>
+                            <FiSliders size={16}/>
+                            <span className="hidden md:inline text-[10px] font-black uppercase tracking-widest">Filters</span>
                         </button>
                     </div>
 
-                    {/* Category Carousel */}
-                    <div className="w-full bg-white/60 backdrop-blur-xl rounded-[24px] border border-white px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar pointer-events-auto shadow-sm">
+                    {/* Category Carousel - Sleeker */}
+                    <div className="w-full bg-white/60 backdrop-blur-xl rounded-[20px] border border-white/50 px-3 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar pointer-events-auto shadow-sm">
                         {categories.map((cat) => {
                             const catName = typeof cat === 'string' ? cat : cat.name;
                             const isActive = activeCategory === catName;
@@ -265,7 +254,7 @@ const Shop = () => {
                                 <button
                                     key={catName}
                                     onClick={() => setActiveCategory(catName)}
-                                    className={`px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all flex-shrink-0 border-2 ${isActive ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105' : 'bg-white text-slate-500 border-slate-100 hover:border-indigo-200 hover:text-indigo-600'}`}
+                                    className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex-shrink-0 border ${isActive ? 'bg-slate-900 text-white border-slate-900 shadow-sm scale-105' : 'bg-white/80 text-slate-500 border-slate-100 hover:border-indigo-200 hover:text-indigo-600'}`}
                                 >
                                     {catName}
                                 </button>
@@ -274,15 +263,34 @@ const Shop = () => {
                     </div>
                 </div>
 
-                {/* PRODUCT GRID HEADER */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-8 mb-4">
+                {/* PROMINENT MOBILE COVER CTA - MOVED HERE */}
+                <div className="w-full py-3 px-6 md:py-4 md:px-8 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 rounded-[24px] shadow-lg shadow-indigo-600/10 flex flex-col md:flex-row items-center justify-between gap-4 transform transition-all hover:scale-[1.01] mt-2">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-indigo-50 rounded-[16px] flex items-center justify-center text-indigo-600 shadow-inner">
-                            <FiGrid size={24}/>
+                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white border border-white/30 shadow-inner">
+                            <FiSmartphone size={24} />
+                        </div>
+                        <div className="text-white space-y-0.5 text-center md:text-left">
+                            <h2 className="text-lg md:text-xl font-black uppercase tracking-tight">Design Custom Mobile Cases</h2>
+                            <p className="text-[9px] md:text-[10px] font-bold text-indigo-100 tracking-widest uppercase opacity-80">Over 300+ models supported</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => navigate('/custom-mobile-cases')} 
+                        className="w-full md:w-auto px-6 py-3 bg-white text-indigo-600 rounded-xl font-black uppercase tracking-widest text-[10px] hover:shadow-xl hover:bg-indigo-50 transition-all active:scale-95 shadow-sm"
+                    >
+                        Customize Now
+                    </button>
+                </div>
+
+                {/* PRODUCT GRID HEADER - MORE COMPACT */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-4 mb-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-indigo-50 rounded-[12px] flex items-center justify-center text-indigo-600 shadow-inner">
+                            <FiGrid size={20}/>
                         </div>
                         <div>
-                            <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Collections</h3>
-                            <p className="text-[11px] font-bold text-indigo-500 uppercase tracking-[0.2em] mt-1">{filteredProducts.length} Items Available</p>
+                            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Collections</h3>
+                            <p className="text-[9px] font-bold text-indigo-500 uppercase tracking-[0.2em]">{filteredProducts.length} Items Available</p>
                         </div>
                     </div>
                 </div>
