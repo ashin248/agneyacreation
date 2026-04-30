@@ -84,6 +84,23 @@ const ProductDetails = () => {
                           setRelatedProducts(relatedRes.data.filter(p => p._id !== productId).slice(0, 4));
                         }
                     }
+
+                    // Save to Recently Viewed
+                    try {
+                        const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                        const updatedViewed = viewed.filter(p => p._id !== res.data._id);
+                        updatedViewed.unshift({
+                            _id: res.data._id,
+                            name: res.data.name,
+                            image: res.data.galleryImages?.[0] || res.data.images?.[0] || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80',
+                            basePrice: res.data.basePrice || 0,
+                            discountPrice: res.data.discountPrice || 0,
+                            category: res.data.category || ''
+                        });
+                        localStorage.setItem('recentlyViewed', JSON.stringify(updatedViewed.slice(0, 8))); // Keep last 8 items
+                    } catch(e) {
+                        console.error("Failed to save recently viewed", e);
+                    }
                 }
             } catch (err) {
                 console.error("Failed to fetch product details:", err);
@@ -472,8 +489,8 @@ const ProductDetails = () => {
                     <div className="mt-40 mb-20 border-t border-slate-100 pt-20">
                         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-6">
                             <div className="space-y-3">
-                                <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">More to Explore</h3>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Related products you might love</p>
+                                <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">Related Products</h3>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Products you might love</p>
                             </div>
                             <button onClick={() => navigate('/shop')} className="group flex items-center gap-3 px-6 py-4 bg-white border-2 border-slate-100 text-slate-900 rounded-[20px] font-black text-[10px] uppercase tracking-widest hover:border-indigo-600 hover:text-indigo-600 hover:shadow-lg transition-all">
                                 View Full Catalog

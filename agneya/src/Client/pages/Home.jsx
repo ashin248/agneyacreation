@@ -28,6 +28,8 @@ const Home = () => {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const [popularProducts, setPopularProducts] = useState([]);
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
 
   useEffect(() => {
     const fetchStorefrontData = async () => {
@@ -35,11 +37,13 @@ const Home = () => {
         setLoading(true);
         const results = await Promise.allSettled([
           axios.get('/api/public/banners'),
-          axios.get('/api/public/products?limit=8')
+          axios.get('/api/public/products?limit=8'),
+          axios.get('/api/public/products?limit=4')
         ]);
         
         const bannersRes = results[0].status === 'fulfilled' ? results[0].value : null;
         const productsRes = results[1].status === 'fulfilled' ? results[1].value : null;
+        const popularRes = results[2].status === 'fulfilled' ? results[2].value : null;
 
         if (bannersRes && bannersRes.data.success) {
           setBanners(bannersRes.data.data || bannersRes.data.banners || []);
@@ -51,6 +55,14 @@ const Home = () => {
         } else if (productsRes && productsRes.data.products) {
           setProducts(productsRes.data.products);
         }
+
+        if (popularRes && popularRes.data.success) {
+          setPopularProducts(popularRes.data.products || popularRes.data.data || []);
+        } else if (popularRes && Array.isArray(popularRes.data)) {
+          setPopularProducts(popularRes.data);
+        } else if (popularRes && popularRes.data.products) {
+          setPopularProducts(popularRes.data.products);
+        }
       } catch (err) {
         console.error('Failed to fetch storefront data:', err);
       } finally {
@@ -61,6 +73,13 @@ const Home = () => {
 
     const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
     setWishlist(savedWishlist);
+
+    try {
+        const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+        setRecentlyViewed(viewed);
+    } catch(e) {
+        console.error('Failed to parse recently viewed', e);
+    }
   }, []);
 
   const toggleWishlist = (id) => {
@@ -242,6 +261,59 @@ const Home = () => {
         </div>
       </section>
 
+      {/* NEW: CATEGORIES GRID */}
+      <section className="max-w-7xl mx-auto px-6 mt-16 md:mt-24">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+            <div className="space-y-3">
+                <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase">Explore Categories</h2>
+                <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Find exactly what you need</p>
+            </div>
+            <Link to="/shop" className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-colors">
+                All Categories <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {[
+                { name: "Custom Mobile Cases", icon: <FiSmartphone size={24} />, path: "/custom-mobile-cases", color: "text-indigo-600", bg: "bg-indigo-50" },
+                { name: "Apparel & T-Shirts", icon: <FiStar size={24} />, path: "/shop?category=Apparel", color: "text-rose-600", bg: "bg-rose-50" },
+                { name: "Corporate Gifts", icon: <FiBox size={24} />, path: "/bulk-order", color: "text-orange-600", bg: "bg-orange-50" },
+                { name: "Marketing Material", icon: <FiEdit3 size={24} />, path: "/shop?category=Marketing", color: "text-emerald-600", bg: "bg-emerald-50" },
+            ].map((cat, i) => (
+                <div key={i} onClick={() => navigate(cat.path)} className="group cursor-pointer bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 hover:border-indigo-600 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center gap-4 hover:-translate-y-1">
+                    <div className={`w-16 h-16 rounded-full ${cat.bg} ${cat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        {cat.icon}
+                    </div>
+                    <span className="font-black text-xs md:text-sm text-slate-900 uppercase tracking-tight">{cat.name}</span>
+                </div>
+            ))}
+        </div>
+      </section>
+
+      {/* NEW: HOW IT WORKS */}
+      <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-40">
+        <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">How It Works</h2>
+            <p className="text-[11px] font-black text-indigo-500 uppercase tracking-widest">3 Simple Steps to Custom Printing</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-[40px] p-10 text-center border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform">1</div>
+                <h3 className="text-xl font-black text-slate-900 uppercase mb-4">Choose Product</h3>
+                <p className="text-slate-500 font-bold text-sm leading-relaxed">Select from our wide range of premium blank products and materials.</p>
+            </div>
+            <div className="bg-white rounded-[40px] p-10 text-center border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                <div className="w-20 h-20 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform">2</div>
+                <h3 className="text-xl font-black text-slate-900 uppercase mb-4">Customize Design</h3>
+                <p className="text-slate-500 font-bold text-sm leading-relaxed">Upload your art, add text, or use our studio to create your masterpiece.</p>
+            </div>
+            <div className="bg-white rounded-[40px] p-10 text-center border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black group-hover:scale-110 transition-transform">3</div>
+                <h3 className="text-xl font-black text-slate-900 uppercase mb-4">Fast Delivery</h3>
+                <p className="text-slate-500 font-bold text-sm leading-relaxed">We print with high fidelity and ship it right to your doorstep quickly.</p>
+            </div>
+        </div>
+      </section>
+
       {/* 2. THE THREE PILLARS (SERVICES) */}
       <section id="three-pillars" className="max-w-7xl mx-auto px-6 mt-32 md:mt-40">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -308,6 +380,31 @@ const Home = () => {
         </div>
       </section>
 
+      {/* NEW: POPULAR PRODUCTS */}
+      {popularProducts.length > 0 && (
+          <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-40">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div className="space-y-3">
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase">Most Popular</h2>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Bestsellers this week</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+              {popularProducts.map(product => (
+                  <ProductCard 
+                      key={`pop-${product._id}`}
+                      product={product}
+                      wishlist={wishlist}
+                      toggleWishlist={toggleWishlist}
+                      addToCart={addToCart}
+                      onQuickView={setQuickViewProduct}
+                      requireLogin={requireLogin}
+                  />
+              ))}
+            </div>
+          </section>
+      )}
+
       {/* 3. TRENDING OVERLAY */}
       <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-48">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -346,6 +443,33 @@ const Home = () => {
           </div>
         )}
       </section>
+
+      {/* NEW: RECENTLY VIEWED */}
+      {recentlyViewed.length > 0 && (
+          <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-40">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                  <div className="space-y-3">
+                      <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase">Recently Viewed</h2>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Pick up where you left off</p>
+                  </div>
+              </div>
+              <div className="flex overflow-x-auto gap-6 pb-8 no-scrollbar snap-x">
+                  {recentlyViewed.map((item, idx) => (
+                      <div 
+                          key={idx} 
+                          onClick={() => navigate(`/product/${item._id}`)}
+                          className="min-w-[200px] md:min-w-[250px] snap-start group cursor-pointer"
+                      >
+                          <div className="relative aspect-[4/5] bg-white rounded-[24px] overflow-hidden border border-slate-100 mb-4 transition-all duration-300 group-hover:shadow-xl group-hover:border-indigo-600">
+                              <img src={item.image} alt={item.name} className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110" />
+                          </div>
+                          <h4 className="text-xs font-black uppercase tracking-tight text-slate-900 line-clamp-2 mb-1 group-hover:text-indigo-600">{item.name}</h4>
+                          <p className="text-sm font-black text-slate-500">₹{(item.discountPrice || item.basePrice || 0).toLocaleString('en-IN')}</p>
+                      </div>
+                  ))}
+              </div>
+          </section>
+      )}
 
       {/* 4. STATISTICS HUD - HIGH DEFINITION */}
       <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-48 mb-10">
