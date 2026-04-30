@@ -92,10 +92,14 @@ const ProductDetails = () => {
                         updatedViewed.unshift({
                             _id: res.data._id,
                             name: res.data.name,
-                            image: res.data.galleryImages?.[0] || res.data.images?.[0] || 'https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80',
+                            images: res.data.galleryImages?.length > 0 ? res.data.galleryImages : (res.data.images || []),
+                            galleryImages: res.data.galleryImages || [],
                             basePrice: res.data.basePrice || 0,
                             discountPrice: res.data.discountPrice || 0,
-                            category: res.data.category || ''
+                            category: res.data.category || '',
+                            isCustomizable: res.data.isCustomizable,
+                            customizationType: res.data.customizationType,
+                            rating: res.data.rating || 5
                         });
                         localStorage.setItem('recentlyViewed', JSON.stringify(updatedViewed.slice(0, 8))); // Keep last 8 items
                     } catch(e) {

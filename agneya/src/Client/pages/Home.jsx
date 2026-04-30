@@ -398,6 +398,7 @@ const Home = () => {
                       toggleWishlist={toggleWishlist}
                       addToCart={addToCart}
                       onQuickView={setQuickViewProduct}
+                      onCustomize={(p) => navigate(`/product/${p._id}`)}
                       requireLogin={requireLogin}
                   />
               ))}
@@ -437,6 +438,7 @@ const Home = () => {
                     toggleWishlist={toggleWishlist}
                     addToCart={addToCart}
                     onQuickView={setQuickViewProduct}
+                    onCustomize={(p) => navigate(`/product/${p._id}`)}
                     requireLogin={requireLogin}
                 />
             ))}
@@ -453,18 +455,18 @@ const Home = () => {
                       <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Pick up where you left off</p>
                   </div>
               </div>
-              <div className="flex overflow-x-auto gap-6 pb-8 no-scrollbar snap-x">
+              <div className="flex overflow-x-auto gap-8 pb-10 no-scrollbar snap-x scroll-smooth">
                   {recentlyViewed.map((item, idx) => (
-                      <div 
-                          key={idx} 
-                          onClick={() => navigate(`/product/${item._id}`)}
-                          className="min-w-[200px] md:min-w-[250px] snap-start group cursor-pointer"
-                      >
-                          <div className="relative aspect-[4/5] bg-white rounded-[24px] overflow-hidden border border-slate-100 mb-4 transition-all duration-300 group-hover:shadow-xl group-hover:border-indigo-600">
-                              <img src={item.image} alt={item.name} className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110" />
-                          </div>
-                          <h4 className="text-xs font-black uppercase tracking-tight text-slate-900 line-clamp-2 mb-1 group-hover:text-indigo-600">{item.name}</h4>
-                          <p className="text-sm font-black text-slate-500">₹{(item.discountPrice || item.basePrice || 0).toLocaleString('en-IN')}</p>
+                      <div key={`rv-${idx}`} className="min-w-[280px] md:min-w-[320px] snap-start flex-shrink-0">
+                          <ProductCard 
+                              product={item}
+                              wishlist={wishlist}
+                              toggleWishlist={toggleWishlist}
+                              addToCart={addToCart}
+                              onQuickView={setQuickViewProduct}
+                              onCustomize={(p) => navigate(`/product/${p._id}`)}
+                              requireLogin={requireLogin}
+                          />
                       </div>
                   ))}
               </div>

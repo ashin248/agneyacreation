@@ -6,11 +6,11 @@ import { Link } from 'react-router-dom';
 
 import StarRating from './StarRating';
 
-const ProductCard = ({ product, onCustomize, wishlist, toggleWishlist, addToCart, requireLogin }) => {
+const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishlist, addToCart, requireLogin }) => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const isWished = wishlist.includes(product._id);
-  const images = product.galleryImages || product.images || [];
+  const images = product.galleryImages || product.images || (product.image ? [product.image] : []);
   const img1 = images[0] || '';
   const img2 = images[1];
   const displayImg = hovered && img2 ? img2 : img1;
@@ -123,9 +123,27 @@ const ProductCard = ({ product, onCustomize, wishlist, toggleWishlist, addToCart
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">In Stock</span>
             </div>
             <div className="flex gap-1">
+                {onQuickView && (
+                  <button 
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(product); }}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-900 hover:text-white transition-all"
+                      aria-label="Quick View"
+                  >
+                      <Eye size={14} />
+                  </button>
+                )}
+                {product.isCustomizable && onCustomize && (
+                  <button 
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
+                      className="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
+                      aria-label="Customize"
+                  >
+                      <Palette size={14} />
+                  </button>
+                )}
                 <button 
                     onClick={handleAddToCart}
-                    className="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
+                    className="w-8 h-8 flex items-center justify-center bg-slate-900 rounded-xl text-white hover:bg-indigo-600 transition-all"
                     aria-label="Add to Transaction"
                 >
                     <ShoppingCart size={14} />

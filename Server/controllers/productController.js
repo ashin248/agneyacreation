@@ -60,7 +60,19 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const { category, limit } = req.query;
+    let query = {};
+    if (category && category !== 'All') {
+      query.category = category;
+    }
+
+    let productsQuery = Product.find(query).sort({ createdAt: -1 });
+    
+    if (limit) {
+      productsQuery = productsQuery.limit(parseInt(limit));
+    }
+
+    const products = await productsQuery;
     return res.status(200).json(products);
   } catch (error) {
     console.error('Error fetching products:', error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { 
   FiSearch, 
@@ -25,13 +25,15 @@ const Shop = () => {
     const navigate = useNavigate();
     const { addToCart } = useCart();
     const { currentUser, userData } = useAuth();
+    const [searchParams] = useSearchParams();
+    const initialCategory = searchParams.get('category') || 'All';
     
     const [products, setProducts] = useState([]);
     const [banners, setBanners] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeCategory, setActiveCategory] = useState('All');
+    const [activeCategory, setActiveCategory] = useState(initialCategory);
     const [categories, setCategories] = useState(['All']);
     const [currentBanner, setCurrentBanner] = useState(0);
     
@@ -79,6 +81,13 @@ const Shop = () => {
             if (!isSilent) setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const catFromUrl = searchParams.get('category');
+        if (catFromUrl) {
+            setActiveCategory(catFromUrl);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         fetchData(); 
@@ -149,7 +158,8 @@ const Shop = () => {
     const filteredProducts = products.filter(p => {
         const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                              (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
+        const matchesCategory = activeCategory === 'All' || 
+                               (p.category && p.category.toLowerCase() === activeCategory.toLowerCase());
         const matchesPrice = (p.discountPrice || p.basePrice || 0) <= priceRange[1];
         return matchesSearch && matchesCategory && matchesPrice;
     }).sort((a, b) => {
