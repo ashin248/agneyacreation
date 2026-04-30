@@ -33,6 +33,7 @@ const EditProduct = () => {
   });
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
+  const [twoDModels, setTwoDModels] = useState([]);
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
@@ -48,7 +49,7 @@ const EditProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Validation function wrapper for child forms
-  const validatePayload = () => {
+  const validatePayload = (varsToValidate = variations) => {
     // Basic Info validation
     if (!String(basicInfo.name || '').trim()) return "Product Identity is required.";
     if (!String(basicInfo.description || '').trim()) return "Asset description is required.";
@@ -56,20 +57,21 @@ const EditProduct = () => {
     if (basicInfo.basePrice === '' || Number(basicInfo.basePrice) < 0) return "Valid base value is required.";
     if (basicInfo.isCustomizable) {
       if (!basicInfo.customizationType || basicInfo.customizationType === 'None') return "Design framework type is required.";
-      if (basicInfo.customizationType === '2D' && !basicInfo.base2DTemplateId) return "Select a 2D template from library.";
+      if (basicInfo.customizationType === '2D' && !basicInfo.base2DTemplateId && twoDModels.length === 0) return "Select a 2D template from library or configure 2D Models.";
       if (basicInfo.customizationType === '3D' && !base3DModelFile && !basicInfo.baseModelId) return "3D geometry file or library model selection is required.";
       if (basicInfo.customizationType === 'Both') {
         const hasGallery = basicInfo.linkedTemplates?.length > 0;
-        if (!basicInfo.base2DTemplateId && !hasGallery) {
-           return "2D Template selection or Design Gallery items are required for Dual-Mode.";
+        const hasTwoDModels = twoDModels.length > 0;
+        if (!basicInfo.base2DTemplateId && !hasGallery && !hasTwoDModels) {
+           return "2D Template selection, Design Gallery items, or 2D Models are required for Dual-Mode.";
         }
         if (!base3DModelFile && !basicInfo.baseModelId) return "3D Model selection is required for Dual-Mode.";
       }
     }
 
     // Variations validation
-    if (variations.length === 0) return "At least one SKU variation must be defined.";
-    for (const v of variations) {
+    if (varsToValidate.length === 0) return "At least one SKU variation must be defined.";
+    for (const v of varsToValidate) {
       if (!String(v.sku || '').trim()) return "SKU marker is missing for variation.";
       if (v.stock === '' || isNaN(v.stock) || Number(v.stock) < 0) return "Inventory count is required for all variations.";
     }
@@ -130,6 +132,16 @@ const EditProduct = () => {
            previewUrl: v.imageUrl
         })));
 
+        setTwoDModels((product.twoDModels || []).map(m => ({
+           ...m,
+           mainModelPreview: m.mainModelUrl,
+           activeTab: 'main',
+           supportModels: (m.supportModels || []).map(sm => ({
+              ...sm,
+              preview: sm.url
+           }))
+        })));
+
         setIsBulkEnabled(product.isBulkEnabled);
         setBulkRules((product.bulkRules || []).map(r => ({
            ...r,
@@ -152,9 +164,35 @@ const EditProduct = () => {
     e.preventDefault();
     setGlobalError(null);
 
-    const errorMessage = validatePayload();
-    if (errorMessage) {
+    // Auto-fix variations before validation
+    let currentVars = [...variations];
+    if (currentVars.length === 0) {
+      currentVars = [{
+        id: 'base-variation-' + Date.now(),
+        sku: basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) + "-BASE" : 'BASE-SKU',
+        size: 'Standard',
+        color: 'White',
+        stock: 10,
+        priceModifier: 0,
+        imageFile: null,
+        previewUrl: '',
+      }];
+      setVariations(currentVars);
+    } else {
+      // Auto-fill missing SKUs
+      let modified = false;
+      currentVars = currentVars.map((v, i) => {
+        if (!String(v.sku || '').trim()) {
+          modified = true;
+          return { ...v, sku: (basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) : 'PROD') + `-VAR-${i+1}` };
+        }
+        return v;
+      });
+      if (modified) setVariations(currentVars);
+    }
 
+    const errorMessage = validatePayload(currentVars);
+    if (errorMessage) {
       setGlobalError(errorMessage);
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -197,6 +235,31 @@ const EditProduct = () => {
             }
         });
       }
+
+      // Add 2D Models Data
+      const twoDModelsMetadata = twoDModels.map((model, idx) => {
+        if (model.mainModelFile) {
+           formData.append(`twoDModel_main_${idx}`, model.mainModelFile);
+        } else if (model.mainModelUrl) {
+           // If no new file, we still want to keep the old URL reference in metadata if needed
+           // but the server usually keeps it if not updated. 
+           // However, let's include it so the metadata reflects current state.
+        }
+        
+        const supportModelsMeta = model.supportModels.map((sm, sIdx) => {
+           if (sm.file) {
+              formData.append(`twoDModel_support_${idx}_${sIdx}`, sm.file);
+           }
+           return { side: sm.side, url: sm.url || null }; // Include existing URL if no new file
+        });
+      
+        return {
+           id: model.id,
+           mainModelUrl: model.mainModelUrl || null,
+           supportModels: supportModelsMeta
+        };
+      });
+      formData.append('twoDModels', JSON.stringify(twoDModelsMetadata));
 
 
       const finalVariations = variations.map(({ id, previewUrl, ...rest }) => ({
@@ -308,6 +371,8 @@ const EditProduct = () => {
               setImagePreviews={setGalleryImagePreviews}
               base3DModelFile={base3DModelFile}
               setBase3DModelFile={setBase3DModelFile}
+              twoDModels={twoDModels}
+              setTwoDModels={setTwoDModels}
             />
           </section>
 
