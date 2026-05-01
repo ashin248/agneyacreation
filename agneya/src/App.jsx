@@ -23,7 +23,6 @@ const Settings = lazy(() => import('./Admin/page/Settings'));
 const DesignAssistance = lazy(() => import('./Admin/page/DesignAssistance'));
 
 // Lazy Load Client Pages
-const Home = lazy(() => import('./Client/pages/Home'));
 const Shop = lazy(() => import('./Client/pages/Shop'));
 const ProductDetails = lazy(() => import('./Client/pages/ProductDetails'));
 const BulkOrderMaster = lazy(() => import('./Client/pages/BulkOrderMaster'));
