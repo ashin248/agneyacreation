@@ -16,6 +16,7 @@ import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from '../components/LoginModal';
+import StudioOverlay from '../components/StudioOverlay';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -30,6 +31,9 @@ const Home = () => {
   const [wishlist, setWishlist] = useState([]);
   const [popularProducts, setPopularProducts] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [storeCategories, setStoreCategories] = useState([]);
+  const [customizingProduct, setCustomizingProduct] = useState(null);
+  const [initialStudioMode, setInitialStudioMode] = useState('self');
 
   useEffect(() => {
     const fetchStorefrontData = async () => {
@@ -37,13 +41,19 @@ const Home = () => {
         setLoading(true);
         const results = await Promise.allSettled([
           axios.get('/api/public/banners'),
-          axios.get('/api/public/products?limit=8'),
-          axios.get('/api/public/products?limit=4')
+          axios.get('/api/public/products?limit=8&sort=trending'),
+          axios.get('/api/public/products?limit=4&sort=popular'),
+          axios.get('/api/public/categories')
         ]);
         
         const bannersRes = results[0].status === 'fulfilled' ? results[0].value : null;
         const productsRes = results[1].status === 'fulfilled' ? results[1].value : null;
         const popularRes = results[2].status === 'fulfilled' ? results[2].value : null;
+        const categoriesRes = results[3].status === 'fulfilled' ? results[3].value : null;
+
+        if (categoriesRes && categoriesRes.data.success) {
+          setStoreCategories(categoriesRes.data.data || []);
+        }
 
         if (bannersRes && bannersRes.data.success) {
           setBanners(bannersRes.data.data || bannersRes.data.banners || []);
@@ -196,17 +206,35 @@ const Home = () => {
                               </button>
                           </div>
                           
-                          {quickViewProduct.isCustomizable && (
-                              <button 
-                                  onClick={() => {
-                                      setQuickViewProduct(null);
-                                      const target = quickViewProduct.customizationType === '3D' ? '3d' : '2d';
-                                      navigate(`/studio/${target}/${quickViewProduct._id}`);
-                                  }}
-                                  className="w-full py-4 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-inner active:scale-95"
-                              >
-                                  Personalize Design
-                              </button>
+                          {quickViewProduct.isCustomizable && quickViewProduct.customizationType !== 'None' && (
+                              <div className={`grid gap-2 pt-2 ${
+                                  (quickViewProduct.customizationType === 'Both') ? 'grid-cols-2' : 'grid-cols-1'
+                              }`}>
+                                  {(quickViewProduct.customizationType === '3D' || quickViewProduct.customizationType === 'Both') && (
+                                      <button 
+                                          onClick={() => requireLogin(() => {
+                                              setInitialStudioMode('3d');
+                                              setCustomizingProduct(quickViewProduct);
+                                              setQuickViewProduct(null);
+                                          })} 
+                                          className="w-full py-4 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-inner active:scale-95"
+                                      >
+                                          3D Studio
+                                      </button>
+                                  )}
+                                  {(quickViewProduct.customizationType === '2D' || quickViewProduct.customizationType === 'Both') && (
+                                      <button 
+                                          onClick={() => requireLogin(() => {
+                                              setInitialStudioMode('2d');
+                                              setCustomizingProduct(quickViewProduct);
+                                              setQuickViewProduct(null);
+                                          })} 
+                                          className="w-full py-4 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] font-black text-[11px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-inner active:scale-95"
+                                      >
+                                          2D Canvas
+                                      </button>
+                                  )}
+                              </div>
                           )}
                       </div>
                   </div>
@@ -273,19 +301,32 @@ const Home = () => {
             </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {[
-                { name: "Custom Mobile Cases", icon: <FiSmartphone size={24} />, path: "/custom-mobile-cases", color: "text-indigo-600", bg: "bg-indigo-50" },
-                { name: "Apparel & T-Shirts", icon: <FiStar size={24} />, path: "/shop?category=Apparel", color: "text-rose-600", bg: "bg-rose-50" },
-                { name: "Corporate Gifts", icon: <FiBox size={24} />, path: "/bulk-order", color: "text-orange-600", bg: "bg-orange-50" },
-                { name: "Marketing Material", icon: <FiEdit3 size={24} />, path: "/shop?category=Marketing", color: "text-emerald-600", bg: "bg-emerald-50" },
-            ].map((cat, i) => (
-                <div key={i} onClick={() => navigate(cat.path)} className="group cursor-pointer bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 hover:border-indigo-600 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center gap-4 hover:-translate-y-1">
-                    <div className={`w-16 h-16 rounded-full ${cat.bg} ${cat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                        {cat.icon}
+            {storeCategories.map((cat, i) => {
+                const colors = [
+                    { color: "text-indigo-600", bg: "bg-indigo-50", hover: "hover:border-indigo-600" },
+                    { color: "text-rose-600", bg: "bg-rose-50", hover: "hover:border-rose-600" },
+                    { color: "text-orange-600", bg: "bg-orange-50", hover: "hover:border-orange-600" },
+                    { color: "text-emerald-600", bg: "bg-emerald-50", hover: "hover:border-emerald-600" }
+                ];
+                const theme = colors[i % colors.length];
+                
+                return (
+                <div key={cat._id || i} onClick={() => navigate(`/shop?category=${encodeURIComponent(cat.name)}`)} className={`group cursor-pointer bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 ${theme.hover} shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center gap-4 hover:-translate-y-1`}>
+                    <div className={`w-16 h-16 rounded-full ${theme.bg} ${theme.color} flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform`}>
+                        {cat.imageUrl ? (
+                            <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <FiStar size={24} />
+                        )}
                     </div>
                     <span className="font-black text-xs md:text-sm text-slate-900 uppercase tracking-tight">{cat.name}</span>
                 </div>
-            ))}
+            )})}
+            {storeCategories.length === 0 && (
+                <div className="col-span-2 md:col-span-4 text-center py-10 text-slate-500 font-bold uppercase tracking-widest text-xs">
+                    No categories found.
+                </div>
+            )}
         </div>
       </section>
 
@@ -398,7 +439,10 @@ const Home = () => {
                       toggleWishlist={toggleWishlist}
                       addToCart={addToCart}
                       onQuickView={setQuickViewProduct}
-                      onCustomize={(p) => navigate(`/product/${p._id}`)}
+                      onCustomize={(p) => requireLogin(() => {
+                          setInitialStudioMode(p.customizationType === '3D' ? '3d' : '2d');
+                          setCustomizingProduct(p);
+                      })}
                       requireLogin={requireLogin}
                   />
               ))}
@@ -438,7 +482,10 @@ const Home = () => {
                     toggleWishlist={toggleWishlist}
                     addToCart={addToCart}
                     onQuickView={setQuickViewProduct}
-                    onCustomize={(p) => navigate(`/product/${p._id}`)}
+                    onCustomize={(p) => requireLogin(() => {
+                        setInitialStudioMode(p.customizationType === '3D' ? '3d' : '2d');
+                        setCustomizingProduct(p);
+                    })}
                     requireLogin={requireLogin}
                 />
             ))}
@@ -464,7 +511,10 @@ const Home = () => {
                               toggleWishlist={toggleWishlist}
                               addToCart={addToCart}
                               onQuickView={setQuickViewProduct}
-                              onCustomize={(p) => navigate(`/product/${p._id}`)}
+                              onCustomize={(p) => requireLogin(() => {
+                                  setInitialStudioMode(p.customizationType === '3D' ? '3d' : '2d');
+                                  setCustomizingProduct(p);
+                              })}
                               requireLogin={requireLogin}
                           />
                       </div>
@@ -472,6 +522,14 @@ const Home = () => {
               </div>
           </section>
       )}
+
+      <StudioOverlay 
+          isOpen={!!customizingProduct} 
+          onClose={() => setCustomizingProduct(null)} 
+          product={customizingProduct} 
+          requireLogin={requireLogin}
+          initialMode={initialStudioMode}
+      />
 
       {/* 4. STATISTICS HUD - HIGH DEFINITION */}
       <section className="max-w-7xl mx-auto px-6 mt-32 md:mt-48 mb-10">

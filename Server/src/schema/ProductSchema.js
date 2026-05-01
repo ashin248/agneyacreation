@@ -182,6 +182,18 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed, 
       default: null 
     },
+    viewCount: {
+      type: Number,
+      default: 0
+    },
+    salesCount: {
+      type: Number,
+      default: 0
+    },
+    isTrending: {
+      type: Boolean,
+      default: false
+    },
     isActive: { 
       type: Boolean, 
       default: true 

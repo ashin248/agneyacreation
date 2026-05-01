@@ -93,7 +93,16 @@ const getPublicCompanyProfile = async (req, res) => {
 const getPublicProducts = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit, 10);
-    let query = Product.find({ isActive: true }).sort({ createdAt: -1 });
+    const sort = req.query.sort;
+    let sortObj = { createdAt: -1 }; // default newest
+
+    if (sort === 'popular') {
+      sortObj = { salesCount: -1, viewCount: -1, createdAt: -1 };
+    } else if (sort === 'trending') {
+      sortObj = { isTrending: -1, createdAt: -1 }; // Trending first, then newest
+    }
+
+    let query = Product.find({ isActive: true }).sort(sortObj);
 
     if (limit && limit > 0) {
       query = query.limit(limit);
@@ -112,7 +121,11 @@ const getPublicProducts = async (req, res) => {
 // @access  Public
 const getPublicProductById = async (req, res) => {
   try {
-    const product = await Product.findOne({ _id: req.params.id, isActive: true });
+    const product = await Product.findOneAndUpdate(
+      { _id: req.params.id, isActive: true },
+      { $inc: { viewCount: 1 } },
+      { new: true }
+    );
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found.' });
     }
@@ -623,7 +636,7 @@ const createPublicOrder = async (req, res) => {
 
         const result = await Product.updateOne(
           query,
-          { $inc: { 'variations.$.stock': -item.quantity } }
+          { $inc: { 'variations.$.stock': -item.quantity, salesCount: item.quantity } }
         );
 
         if (result.modifiedCount === 0 && !isBulk) {

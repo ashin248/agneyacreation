@@ -38,6 +38,7 @@ const Shop = () => {
     const [currentBanner, setCurrentBanner] = useState(0);
     
     // UI States
+    const [maxPriceLimit, setMaxPriceLimit] = useState(10000);
     const [priceRange, setPriceRange] = useState([0, 10000]);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [wishlist, setWishlist] = useState([]);
@@ -57,6 +58,12 @@ const Shop = () => {
             if (productsRes.data.success) {
                 const fetchedProducts = productsRes.data.products || productsRes.data.data || [];
                 setProducts(fetchedProducts);
+                
+                if (fetchedProducts.length > 0) {
+                    const highestPrice = Math.max(...fetchedProducts.map(p => p.discountPrice || p.basePrice || 0), 100);
+                    setMaxPriceLimit(highestPrice);
+                    setPriceRange(prev => [prev[0], prev[1] === 10000 && !isSilent ? highestPrice : prev[1]]);
+                }
                 
                 // If categories API returns nothing, extract from products
                 if (!categoriesRes.data.success || !categoriesRes.data.data || categoriesRes.data.data.length === 0) {
@@ -384,10 +391,10 @@ const Shop = () => {
                                 <p className="text-[11px] font-black uppercase tracking-widest text-slate-900">Price Range</p>
                                 <span className="text-[12px] font-black text-indigo-600 bg-indigo-50 px-4 py-2 rounded-xl">Up to ₹{priceRange[1].toLocaleString()}</span>
                             </div>
-                            <input type="range" min="0" max="10000" value={priceRange[1]} onChange={(e) => setPriceRange([0, e.target.value])} className="w-full h-3 bg-slate-100 rounded-full appearance-none cursor-pointer accent-indigo-600" />
+                            <input type="range" min="0" max={maxPriceLimit} value={priceRange[1]} onChange={(e) => setPriceRange([0, Number(e.target.value)])} className="w-full h-3 bg-slate-100 rounded-full appearance-none cursor-pointer accent-indigo-600" />
                             <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                 <span>₹0</span>
-                                <span>₹10,000+</span>
+                                <span>₹{maxPriceLimit.toLocaleString()}+</span>
                             </div>
                         </div>
 
@@ -416,7 +423,7 @@ const Shop = () => {
                         <button onClick={() => setIsFilterOpen(false)} className="w-full py-5 bg-indigo-600 text-white text-[11px] font-black uppercase tracking-widest rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 active:scale-95">
                             Apply Filters
                         </button>
-                        <button onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, 10000]); setSortBy('Newest'); setIsFilterOpen(false); }} className="w-full py-5 flex items-center justify-center gap-2 bg-white text-rose-500 border-2 border-slate-100 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:border-rose-200 hover:bg-rose-50 transition-all active:scale-95">
+                        <button onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); setSortBy('Newest'); setIsFilterOpen(false); }} className="w-full py-5 flex items-center justify-center gap-2 bg-white text-rose-500 border-2 border-slate-100 text-[11px] font-black uppercase tracking-widest rounded-2xl hover:border-rose-200 hover:bg-rose-50 transition-all active:scale-95">
                             <FiRotateCcw size={16} /> Reset All
                         </button>
                     </div>
