@@ -5,7 +5,7 @@ import './utils/axiosConfig';
 import { Toaster } from 'react-hot-toast';
 
 // Layouts and Security Guards
-import AdminLayout from './layout/AdminLayout';
+import AdminLayout from './layout/adminLayout';
 import ProtectedRoute from './Admin/components/ProtectedRoute';
 import ClientLayout from './Client/components/ClientLayout';
 import NotAvailable from './SorryPage/SorryPage';
