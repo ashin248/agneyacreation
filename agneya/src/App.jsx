@@ -33,6 +33,7 @@ const BulkInquiry = lazy(() => import('./Client/pages/BulkInquiry'));
 const Wishlist = lazy(() => import('./Client/pages/Wishlist'));
 const CustomRequest = lazy(() => import('./Client/pages/CustomRequest'));
 const CustomMobileCases = lazy(() => import('./Client/pages/CustomMobileCases'));
+const Cart = lazy(() => import('./Client/pages/Cart'));
 
 // Loader for Suspense
 const PageLoader = () => (
