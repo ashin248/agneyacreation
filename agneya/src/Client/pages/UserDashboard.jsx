@@ -6,7 +6,7 @@ import {
   Package, MapPin, Trash2, Clock, CheckCircle, ChevronRight,
   User, LogOut, ShoppingBag, Activity, Box, AlertCircle,
   Settings, Heart, CreditCard, Layout, Gift, Plus, Edit2
-} from 'react-feather';
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import AddressForm from '../components/AddressForm';
 

@@ -116,7 +116,7 @@ const CustomRequest = () => {
           printAssets: imageUrls,
           status: 'Pending'
         });
-        toast.success('Brief submitted! We'll contact you shortly.', { id: tid });
+      toast.success("Brief submitted! We'll contact you shortly.", { id: tid });
         navigate('/dashboard');
       }
     } catch (err) {
