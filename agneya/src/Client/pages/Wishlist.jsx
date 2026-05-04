@@ -6,7 +6,7 @@ import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
-import StudioOverlay from '../components/StudioOverlay';
+const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
 
 const Wishlist = () => {
   const [wishlistProducts, setWishlistProducts] = useState([]);
@@ -156,12 +156,14 @@ const Wishlist = () => {
         )}
       </div>
 
-      <StudioOverlay
-        isOpen={!!customizingProduct}
-        onClose={() => setCustomizingProduct(null)}
-        product={customizingProduct}
-        requireLogin={requireLogin}
-      />
+      <React.Suspense fallback={null}>
+        <StudioOverlay
+          isOpen={!!customizingProduct}
+          onClose={() => setCustomizingProduct(null)}
+          product={customizingProduct}
+          requireLogin={requireLogin}
+        />
+      </React.Suspense>
     </div>
   );
 };

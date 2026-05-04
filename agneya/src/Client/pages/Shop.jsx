@@ -9,7 +9,7 @@ import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from '../components/LoginModal';
-import StudioOverlay from '../components/StudioOverlay';
+const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
 import toast from 'react-hot-toast';
 
 const Shop = () => {
@@ -362,7 +362,9 @@ const Shop = () => {
         </div>
       </aside>
 
-      <StudioOverlay isOpen={!!customizingProduct} onClose={() => setCustomizingProduct(null)} product={customizingProduct} requireLogin={requireLogin} />
+      <React.Suspense fallback={null}>
+        <StudioOverlay isOpen={!!customizingProduct} onClose={() => setCustomizingProduct(null)} product={customizingProduct} requireLogin={requireLogin} />
+      </React.Suspense>
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} onLoginSuccess={() => setIsLoginModalOpen(false)} />
     </div>
   );

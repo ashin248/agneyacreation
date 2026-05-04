@@ -21,7 +21,7 @@ import {
 import LoginModal from '../components/LoginModal';
 import SEO from '../components/SEO/SEO';
 import ProductSchema from '../components/SEO/ProductSchema';
-import StudioOverlay from '../components/StudioOverlay';
+const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
 import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
 import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
 
@@ -640,15 +640,17 @@ const ProductDetails = () => {
                 </div>
             )}
 
-            <StudioOverlay 
-                isOpen={!!customizingProduct} 
-                onClose={() => setCustomizingProduct(null)} 
-                product={customizingProduct} 
-                requireLogin={requireLogin}
-                initialMode={initialStudioMode}
-                activeTemplateId={activeTemplateId}
-                initial2DModelIdx={initial2DModelIdx}
-            />
+            <React.Suspense fallback={null}>
+                <StudioOverlay 
+                    isOpen={!!customizingProduct} 
+                    onClose={() => setCustomizingProduct(null)} 
+                    product={customizingProduct} 
+                    requireLogin={requireLogin}
+                    initialMode={initialStudioMode}
+                    activeTemplateId={activeTemplateId}
+                    initial2DModelIdx={initial2DModelIdx}
+                />
+            </React.Suspense>
         </div>
     );
 };

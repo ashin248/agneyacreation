@@ -4,7 +4,7 @@ import { phoneBrands, phoneModels } from '../data/MobileCasesDB';
 import { Smartphone, ArrowLeft, Grid3X3, Search } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
 import LoginModal from '../components/LoginModal';
-import StudioOverlay from '../components/StudioOverlay';
+const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
 import { useAuth } from '../context/AuthContext';
 
 const CustomMobileCases = () => {
@@ -159,13 +159,15 @@ const CustomMobileCases = () => {
         </div>
       </div>
 
-      <StudioOverlay
-        isOpen={!!customizingProduct}
-        onClose={() => setCustomizingProduct(null)}
-        product={customizingProduct}
-        requireLogin={requireLogin}
-        initialMode="self"
-      />
+      <React.Suspense fallback={null}>
+        <StudioOverlay
+          isOpen={!!customizingProduct}
+          onClose={() => setCustomizingProduct(null)}
+          product={customizingProduct}
+          requireLogin={requireLogin}
+          initialMode="self"
+        />
+      </React.Suspense>
     </div>
   );
 };
