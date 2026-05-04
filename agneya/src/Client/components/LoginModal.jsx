@@ -18,8 +18,20 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
       setPhoneNumber("");
       setOtp("");
       setError("");
+      setShowOnboarding(false);
+      setIsSuccess(false);
     }
   }, [isOpen]);
+
+  // If modal is opened and user is already logged in but incomplete, skip to onboarding
+  useEffect(() => {
+    if (isOpen && userData && !showOnboarding && !isSuccess) {
+      const isIncomplete = !userData.name || !userData.email || !userData.addresses || userData.addresses.length === 0;
+      if (isIncomplete) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [isOpen, userData, showOnboarding, isSuccess]);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -48,9 +60,9 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         throw new Error("Please enter a valid 6-digit OTP.");
       }
       await verifyOtp(otp);
-      // Wait a bit for AuthContext to sync userData or check directly if possible
-      // However, we can check userData after next render or use the response from verifyOtp
-      // We'll rely on a tiny delay or a status check
+      // After verification succeeds, we wait for AuthContext to sync userData
+      // We set loading to false so the useEffect can trigger
+      setLoading(false);
     } catch (err) {
       setError(err.message || "Invalid OTP. Please check and try again.");
       setLoading(false);

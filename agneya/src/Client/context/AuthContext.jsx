@@ -18,10 +18,13 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
       if (user) {
+        setCurrentUser(user);
+        // We set loading to false immediately so the app can render
+        // userData will sync in the background
+        setLoading(false);
+        
         try {
-          // Sync with backend using Firebase ID Token
           const idToken = await user.getIdToken();
           const response = await fetch('/api/public/sync-user', {
             method: 'POST',
@@ -31,6 +34,9 @@ export function AuthProvider({ children }) {
             },
             body: JSON.stringify({ phone: user.phoneNumber })
           });
+          
+          if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+          
           const result = await response.json();
           if (result.success) {
             setUserData(result.data);
@@ -39,14 +45,17 @@ export function AuthProvider({ children }) {
             } else {
               toast.success("Welcome Back! ✋", { duration: 3000 });
             }
+          } else {
+            console.error("Backend sync failed:", result.message);
           }
         } catch (error) {
           console.error("Error syncing user with backend:", error);
         }
       } else {
+        setCurrentUser(null);
         setUserData(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);
