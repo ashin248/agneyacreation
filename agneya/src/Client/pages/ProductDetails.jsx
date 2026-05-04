@@ -150,7 +150,7 @@ const ProductDetails = () => {
     const originalPrice = Number(product.originalPrice || product.basePrice || 0) || 0;
     const discount = originalPrice > 0 ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0;
     const currentVariation = product.variations?.find(v => v.color === selectedColor && v.size === selectedSize) || product.variations?.[0];
-    const baseFinalPrice = currentVariation ? (currentPrice + Number(currentVariation.priceModifier || 0)) : currentPrice;
+    const baseFinalPrice = (product.discountPrice || product.basePrice || 0) + (currentVariation?.priceModifier || 0);
 
     // INCREMENTAL PRICING ENGINE
     const getIncrementalTotal = (qty) => {
@@ -398,7 +398,7 @@ const ProductDetails = () => {
                                             productId: product._id,
                                             name: product.name,
                                             unitPrice: baseFinalPrice,
-                                            selectedVariation: `Color: ${selectedColor || '-'}, Size: ${selectedSize || '-'}`,
+                                            selectedVariation: currentVariation,
                                             image: images[0],
                                             itemType: 'Ready',
                                             quantity: quantity,

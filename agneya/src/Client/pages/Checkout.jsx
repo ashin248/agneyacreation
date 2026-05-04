@@ -9,6 +9,7 @@ import {
   MapPin, CheckCircle2, ShoppingBag, CreditCard,
   ShieldCheck, Plus, Trash2, Truck, ArrowRight, Lock, ChevronLeft
 } from 'lucide-react';
+import { calculateDetailedFinancials } from '../utils/pricingUtils';
 
 const Checkout = () => {
   const { cart, cartTotal, clearCart } = useCart();
@@ -21,13 +22,20 @@ const Checkout = () => {
   const checkoutItems = buyNowItems ? buyNowItems : (buyNowItem ? [buyNowItem] : cart);
   const isBuyNow = !!(buyNowItem || buyNowItems);
 
-  const checkoutTotal = isBuyNow
-    ? checkoutItems.reduce((acc, item) => acc + (item.unitPrice * (item.quantity || 1)), 0)
-    : cartTotal;
+  const checkoutFinancials = checkoutItems.map(item => {
+    return calculateDetailedFinancials(
+      item.quantity || 1,
+      item.unitPrice,
+      item.bulkRules,
+      item.isBulkEnabled,
+      item.gstRate || 0
+    );
+  });
 
+  const checkoutTotal = checkoutFinancials.reduce((acc, f) => acc + f.finalTotal, 0);
+  const totalMRP = checkoutFinancials.reduce((acc, f) => acc + f.itemBaseTotal, 0);
+  const totalDiscount = checkoutFinancials.reduce((acc, f) => acc + f.savings, 0);
   const checkoutTotalCount = checkoutItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
-  const totalMRP = checkoutItems.reduce((acc, item) => acc + ((item.originalPrice || item.unitPrice) * (item.quantity || 1)), 0);
-  const totalDiscount = totalMRP - checkoutTotal;
   const isCheckoutBulkOrder = checkoutTotalCount >= 20;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -229,7 +237,7 @@ const Checkout = () => {
       <LoginModal isOpen={isLoginModalOpen} onClose={() => { setIsLoginModalOpen(false); navigate(-1); }} onLoginSuccess={() => setIsLoginModalOpen(false)} />
 
       {/* ── PROGRESS HEADER ── */}
-      <div className="sticky top-[70px] z-40 bg-white border-b border-slate-100 shadow-sm">
+      <div className="sticky top-16 md:top-[70px] z-40 bg-white border-b border-slate-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 transition-colors">
             <ChevronLeft size={18} />
@@ -389,7 +397,7 @@ const Checkout = () => {
 
           {/* ── RIGHT: SUMMARY ── */}
           <div className="lg:col-span-5">
-            <aside className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-[130px]">
+            <aside className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-24 md:top-[130px]">
               <h2 className="text-base font-bold text-slate-900 mb-5">Order Summary</h2>
 
               {/* Items */}

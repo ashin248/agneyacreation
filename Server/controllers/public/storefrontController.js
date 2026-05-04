@@ -540,8 +540,11 @@ const createPublicOrder = async (req, res) => {
 
       // Final Unit Price calculation
       const finalUnitPrice = unitPriceToUse + variationModifier;
-      itemSubtotal += variationModifier * item.quantity; // Apply modifier flat atop pool
-      calculatedSubtotal += itemSubtotal;
+      const gstRate = dbProduct.gstRate || 0;
+      const itemTaxableAmount = itemSubtotal + (variationModifier * item.quantity);
+      const itemGstAmount = (itemTaxableAmount * gstRate) / 100;
+      
+      calculatedSubtotal += itemTaxableAmount + itemGstAmount;
 
       if (item.itemType === 'Ready') hasReady = true;
       if (item.itemType === 'Custom') hasCustom = true;
@@ -553,7 +556,9 @@ const createPublicOrder = async (req, res) => {
               : dbProduct.name,
         itemType: item.itemType,
         quantity: item.quantity,
-        unitPrice: finalUnitPrice, // Saved validated price
+        unitPrice: finalUnitPrice, // Saved validated base price
+        gstRate: gstRate,
+        gstAmount: itemGstAmount,
         // Use custom preview if available, fallback to product gallery
         image: item.itemType === 'Custom' && item.customData?.appliedFrontDesign 
                ? item.customData.appliedFrontDesign 
@@ -591,7 +596,7 @@ const createPublicOrder = async (req, res) => {
     const netAmountForShipping = calculatedSubtotal - discountAmount;
     const shippingFee = netAmountForShipping >= 1000 ? 0 : 50;
 
-    const finalTotalAmount = netAmountForShipping + shippingFee;
+    const finalTotalAmount = Math.round(netAmountForShipping + shippingFee);
 
     // 4. Create the Order document
     const newOrder = new Order({

@@ -65,14 +65,14 @@ const BulkOrderMaster = () => {
   const totalUnits = cart.reduce((acc, c) => acc + c.quantity, 0);
 
   const getQty = (productId, sku) => {
-    const found = cart.find(c => c.productId === productId && (c.selectedVariation?.sku || 'STD') === sku);
+    const found = cart.find(c => c.productId === productId && (c.selectedVariation?.sku || 'standard') === sku);
     return found ? found.quantity : 0;
   };
 
   const handleQtyChange = (product, variation, newQty) => {
     const qty = Math.max(0, parseInt(newQty) || 0);
-    const sku = variation?.sku || 'STD';
-    const existing = cart.find(c => c.productId === product._id && (c.selectedVariation?.sku || 'STD') === sku);
+    const sku = variation?.sku || 'standard';
+    const existing = cart.find(c => c.productId === product._id && (c.selectedVariation?.sku || 'standard') === sku);
     if (qty <= 0) { if (existing) removeFromCart(product._id, sku); return; }
     if (existing) {
       updateQuantity(product._id, qty, sku, product.basePrice || 0);
@@ -81,7 +81,7 @@ const BulkOrderMaster = () => {
         productId: product._id,
         name: product.name,
         unitPrice: product.basePrice || 0,
-        selectedVariation: sku !== 'STD' ? { sku: variation.sku, size: variation.size, color: variation.color, priceModifier: variation.priceModifier } : null,
+        selectedVariation: sku !== 'standard' ? { sku: variation.sku, size: variation.size, color: variation.color, priceModifier: variation.priceModifier } : null,
         image: product.galleryImages?.[0] || product.images?.[0] || '',
         itemType: 'Ready',
         quantity: qty,
@@ -131,7 +131,7 @@ const BulkOrderMaster = () => {
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} onLoginSuccess={() => navigate('/checkout')} />
 
       {/* ── TOP BAR ── */}
-      <div className="sticky top-[70px] z-40 bg-white border-b border-slate-200 shadow-sm">
+      <div className="sticky top-16 md:top-[70px] z-40 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center gap-3">
           <div className="flex items-center gap-3 mr-auto">
             <h1 className="text-base font-bold text-slate-900">Bulk Order</h1>
@@ -356,7 +356,7 @@ const BulkOrderMaster = () => {
 
           {/* ── SUMMARY PANEL ── */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl sticky top-[130px]">
+            <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl sticky top-[130px] md:top-[150px]">
               <div className="flex items-center gap-2 mb-5">
                 <ShoppingCart size={16} className="text-indigo-400" />
                 <h2 className="text-sm font-bold">Order Summary</h2>

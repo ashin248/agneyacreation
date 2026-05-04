@@ -119,7 +119,8 @@ const Shop = () => {
     const q = searchQuery.toLowerCase();
     const matchSearch = p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q);
     const matchCat = activeCategory === 'All' || p.category?.toLowerCase() === activeCategory.toLowerCase();
-    const matchPrice = (p.discountPrice || p.basePrice || 0) <= priceRange[1];
+    const effectivePrice = p.discountPrice || p.basePrice || 0;
+    const matchPrice = effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
     return matchSearch && matchCat && matchPrice;
   }).sort((a, b) => {
     if (sortBy === 'Price: Low to High') return (a.discountPrice || a.basePrice) - (b.discountPrice || b.basePrice);
@@ -183,7 +184,7 @@ const Shop = () => {
 
       {/* ── FILTER / SEARCH BAR ── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <div className="sticky top-[70px] z-50 bg-slate-50/90 backdrop-blur-sm pt-2 pb-3">
+        <div className="sticky top-16 md:top-[70px] z-50 bg-slate-50/90 backdrop-blur-sm pt-2 pb-3">
           <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm">
 
             {/* Search */}

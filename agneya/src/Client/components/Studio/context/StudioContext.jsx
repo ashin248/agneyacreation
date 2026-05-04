@@ -28,7 +28,8 @@ export const StudioProvider = ({ children, product, initialMode = 'self', initia
     const [viewSide, setViewSide] = useState(twoDModels.length > 0 ? `model_${initial2DModelIdx}_main` : 'front');
 
     // Derived Logic: Calculate the exact backdrop image URL based on current view
-    let current2DImageUrl = product?.blankFrontImage || product?.images?.[0];
+    let current2DImageUrl = product?.blankFrontImage || product?.images?.[0] || product?.phoneMask?.bodyImage;
+    
     if (twoDModels.length > 0 && twoDModels[active2DModelIdx]) {
         const activeModel = twoDModels[active2DModelIdx];
         if (activeSupportSide === 'Main') {
