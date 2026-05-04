@@ -1,13 +1,11 @@
 import React from 'react';
 import { FiCornerUpLeft, FiCornerUpRight } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContextInstance';
 
-function TopNavigation({ handleUndo, handleRedo, canUndo, canRedo, handleSwitchSide }) {
-    const { 
-        twoDModels, active2DModelIdx, 
-        activeSupportSide, setActiveSupportSide
-    } = useStudio();
-    
+function TopNavigation({ 
+    handleUndo, handleRedo, canUndo, canRedo, handleSwitchSide,
+    twoDModels, active2DModelIdx, 
+    activeSupportSide, setActiveSupportSide
+}) {
     return (
         <>
             <div className="absolute top-4 left-4 flex gap-3 z-50">
@@ -29,6 +27,7 @@ function TopNavigation({ handleUndo, handleRedo, canUndo, canRedo, handleSwitchS
 
         </>
     );
-};
+}
 
 export default TopNavigation;
+

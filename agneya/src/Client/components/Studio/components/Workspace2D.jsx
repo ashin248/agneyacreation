@@ -1,10 +1,9 @@
 import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useState } from 'react';
 import * as fabric from 'fabric';
-import { useStudio } from '../context/StudioContextInstance';
 import { phoneBrands } from '../../../data/MobileCasesDB';
 import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 
-function Workspace2D({
+const Workspace2D = forwardRef(({
     isOpen,
     canvasRef,
     viewportRef,
@@ -15,17 +14,14 @@ function Workspace2D({
     product,
     activeTemplateId,
     initialMode,
-    handleSwitchSide
-}, ref) {
-    const { 
-        activeStudioTab, setActiveStudioTab,
-        current2DImageUrl, viewSide, 
-        setActiveObject, setCanvasObjects, canvasObjects,
-        historyStep, setHistoryStep, 
-        setIsMobileUiMinimized,
-        twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide
-    } = useStudio();
-
+    handleSwitchSide,
+    activeStudioTab, setActiveStudioTab,
+    current2DImageUrl, viewSide, 
+    setActiveObject, setCanvasObjects, canvasObjects,
+    historyStep, setHistoryStep, 
+    setIsMobileUiMinimized,
+    twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide
+}, ref) => {
     const historyStepRef = React.useRef(historyStep);
     useEffect(() => {
         historyStepRef.current = historyStep;
@@ -157,7 +153,6 @@ function Workspace2D({
     useEffect(() => {
         if (!isOpen || !canvasRef.current || !viewportRef.current) return;
 
-        const effectiveCanvasConfig = product?.canvasConfig;
         const baseWidth = product?.phoneMask ? 400 : (effectiveCanvasConfig?.width || 500);
         const baseHeight = product?.phoneMask ? 800 : (effectiveCanvasConfig?.height || 600);
 
@@ -403,7 +398,6 @@ function Workspace2D({
                     
                     let minX = width, minY = height, maxX = 0, maxY = 0;
                     let found = false;
-
                     for (let y = 0; y < height; y++) {
                         for (let x = 0; x < width; x++) {
                             const alpha = data[(y * width + x) * 4 + 3];
@@ -432,7 +426,6 @@ function Workspace2D({
                 const contentHeight = found ? (maxY - minY + 1) : img.height;
                 const offsetX = found ? minX : 0;
                 const offsetY = found ? minY : 0;
-
                 canvas.setDimensions({ width: contentWidth, height: contentHeight });
                 setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
                 
@@ -503,7 +496,6 @@ function Workspace2D({
                         {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-80 transition-opacity">
-                                {/* Removed broken mockup image. The SVG mask handles the phone shape accurately. */}
                             </div>
                         )}
 
@@ -595,7 +587,6 @@ function Workspace2D({
                         {/* Layer 25: Case Reflection Overlay (Above the design) */}
                         {product?.phoneMask && (
                             <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-6 lg:p-12 opacity-40 mix-blend-screen transition-opacity">
-                                {/* Removed broken overlay image. Keep clean vector mask. */}
                             </div>
                         )}
 
@@ -724,6 +715,6 @@ function Workspace2D({
             </div>
         </div>
     );
-}
+});
 
-export default forwardRef(Workspace2D);
+export default Workspace2D;

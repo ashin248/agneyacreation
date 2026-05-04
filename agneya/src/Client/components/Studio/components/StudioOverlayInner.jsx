@@ -21,7 +21,7 @@ import ToolModals from './ToolModals';
 import Workspace3D from './Workspace3D';
 import Workspace2D from './Workspace2D';
 
-function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
+export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -457,7 +457,23 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
             <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {activeStudioTab !== 'DESIGN_ASSISTANCE' ? (
                     <>
-                        <ToolSidebar addText={addText} handleFileUpload={handleFileUpload} isDrawing={isDrawing} setIsDrawing={setIsDrawing} fabricRef={fabricRef} brushColor={brushColor} setBrushColor={setBrushColor} updateTexture={updateTexture} fastSync={fastSync} premiumFonts={premiumFonts} />
+                        <ToolSidebar 
+                            addText={addText} 
+                            handleFileUpload={handleFileUpload} 
+                            isDrawing={isDrawing} 
+                            setIsDrawing={setIsDrawing} 
+                            fabricRef={fabricRef} 
+                            brushColor={brushColor} 
+                            setBrushColor={setBrushColor} 
+                            updateTexture={updateTexture} 
+                            fastSync={fastSync} 
+                            premiumFonts={premiumFonts}
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                            activeObject={activeObject}
+                            setActiveObject={setActiveObject}
+                            canvasObjects={canvasObjects}
+                        />
                         <div className="flex-1 flex flex-col relative h-full">
                             {isDrawing && (
                                 <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[200]">
@@ -468,11 +484,59 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                             )}
                             <div className="flex-1 flex items-center justify-center relative">
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                    <Workspace2D ref={workspace2DRef} isOpen={isOpen} canvasRef={canvasRef} viewportRef={viewportRef} fabricRef={fabricRef} resizeRef={resizeRef} historyRef={historyRef} isHistoryRecording={isHistoryRecording} product={product} activeTemplateId={activeTemplateId} initialMode={initialMode} handleSwitchSide={handleSwitchSide} />
-                                    <Workspace3D product={product} objectAnchors={objectAnchors} handleAnchorUpdate={handleAnchorUpdate} contextKey={contextKey} setContextKey={setContextKey} fabricRef={fabricRef} updateTexture={updateTexture} />
+                                    <Workspace2D 
+                                        ref={workspace2DRef} 
+                                        isOpen={isOpen} 
+                                        canvasRef={canvasRef} 
+                                        viewportRef={viewportRef} 
+                                        fabricRef={fabricRef} 
+                                        resizeRef={resizeRef} 
+                                        historyRef={historyRef} 
+                                        isHistoryRecording={isHistoryRecording} 
+                                        product={product} 
+                                        activeTemplateId={activeTemplateId} 
+                                        initialMode={initialMode} 
+                                        handleSwitchSide={handleSwitchSide}
+                                        activeStudioTab={activeStudioTab}
+                                        setActiveStudioTab={setActiveStudioTab}
+                                        current2DImageUrl={current2DImageUrl}
+                                        viewSide={viewSide}
+                                        setActiveObject={setActiveObject}
+                                        setCanvasObjects={setCanvasObjects}
+                                        canvasObjects={canvasObjects}
+                                        historyStep={historyStep}
+                                        setHistoryStep={setHistoryStep}
+                                        setIsMobileUiMinimized={setIsMobileUiMinimized}
+                                        twoDModels={twoDModels}
+                                        active2DModelIdx={active2DModelIdx}
+                                        activeSupportSide={activeSupportSide}
+                                        setActiveSupportSide={setActiveSupportSide}
+                                    />
+                                    <Workspace3D 
+                            product={product} 
+                            objectAnchors={objectAnchors} 
+                            handleAnchorUpdate={handleAnchorUpdate} 
+                            contextKey={contextKey} 
+                            setContextKey={setContextKey} 
+                            fabricRef={fabricRef} 
+                            updateTexture={updateTexture} 
+                            activeStudioTab={activeStudioTab}
+                            activeObject={activeObject}
+                            canvasObjects={canvasObjects}
+                        />
                                 </div>
                             </div>
-                            <TopNavigation handleUndo={handleUndo} handleRedo={handleRedo} canUndo={historyStep > 0} canRedo={historyStep < historyRef.current.length - 1} handleSwitchSide={handleSwitchSide} />
+                            <TopNavigation 
+                                handleUndo={handleUndo} 
+                                handleRedo={handleRedo} 
+                                canUndo={historyStep > 0} 
+                                canRedo={historyStep < historyRef.current.length - 1} 
+                                handleSwitchSide={handleSwitchSide}
+                                twoDModels={twoDModels}
+                                active2DModelIdx={active2DModelIdx}
+                                activeSupportSide={activeSupportSide}
+                                setActiveSupportSide={setActiveSupportSide}
+                            />
                             {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
                                 <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
                                     <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
@@ -484,7 +548,13 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                                 </div>
                             )}
                         </div>
-                        <CheckoutPanel variations={variations} handleFinalSubmit={handleFinalSubmit} handleDiscardDraft={handleDiscardDraft} />
+                        <CheckoutPanel 
+                            variations={variations} 
+                            handleFinalSubmit={handleFinalSubmit} 
+                            handleDiscardDraft={handleDiscardDraft}
+                            product={product}
+                            isSubmitting={isSubmitting}
+                        />
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full animate-in fade-in slide-in-from-bottom-8">
@@ -531,10 +601,46 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                 )}
             </main>
 
-            <PropertyDock fabricRef={fabricRef} brushColor={brushColor} setBrushColor={setBrushColor} updateTexture={updateTexture} fastSync={fastSync} isDrawing={isDrawing} setIsDrawing={setIsDrawing} />
-            <ToolModals uploadedAssets={uploadedAssets} handlePurgeGallery={handlePurgeGallery} fileRef={fileRef} handleFileUpload={handleFileUpload} handleRemoveBg={handleRemoveBg} isRemovingBg={isRemovingBg} removeAsset={removeAsset} fabricRef={fabricRef} updateTexture={updateTexture} brushSize={brushSize} setBrushSize={setBrushSize} brushColor={brushColor} setBrushColor={setBrushColor} setIsDrawing={setIsDrawing} addText={addText} stickerLibrary={stickerLibrary} addSticker={addSticker} />
+            <PropertyDock 
+                fabricRef={fabricRef} 
+                brushColor={brushColor} 
+                setBrushColor={setBrushColor} 
+                updateTexture={updateTexture} 
+                fastSync={fastSync} 
+                isDrawing={isDrawing} 
+                setIsDrawing={setIsDrawing}
+                activeObject={activeObject}
+                setActiveObject={setActiveObject}
+                canvasObjects={canvasObjects}
+                premiumFonts={premiumFonts}
+            />
+            <ToolModals 
+                uploadedAssets={uploadedAssets} 
+                handlePurgeGallery={handlePurgeGallery} 
+                fileRef={fileRef} 
+                handleFileUpload={handleFileUpload} 
+                handleRemoveBg={handleRemoveBg} 
+                isRemovingBg={isRemovingBg} 
+                removeAsset={removeAsset} 
+                fabricRef={fabricRef} 
+                updateTexture={updateTexture} 
+                brushSize={brushSize} 
+                setBrushSize={setBrushSize} 
+                brushColor={brushColor} 
+                setBrushColor={setBrushColor} 
+                setIsDrawing={setIsDrawing} 
+                addText={addText} 
+                stickerLibrary={stickerLibrary} 
+                addSticker={addSticker}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                setIsMobileUiMinimized={setIsMobileUiMinimized}
+                canvasObjects={canvasObjects}
+                activeObject={activeObject}
+                setActiveObject={setActiveObject}
+            />
         </div>
     );
 }
  
-export default StudioOverlayInner;
+

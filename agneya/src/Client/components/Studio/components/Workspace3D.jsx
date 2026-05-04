@@ -3,7 +3,6 @@ import { Canvas, createPortal } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Stage, Decal, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { MODELS } from '../../Three/ProductLibrary';
-import { useStudio } from '../context/StudioContextInstance';
 
 const dummyDecal = new THREE.Object3D();
 
@@ -97,7 +96,9 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
         </Decal>,
         targetMesh
     );
-});// 2. Main 3D Model Component (Hoisted helper)
+});
+
+// 2. Main 3D Model Component (Hoisted helper)
 function Model3D({
     baseModelId, url, canvasObjects, objectAnchors, onAnchorUpdate, onPartSelect,
     activeObjectId, previewRotation = 0, product
@@ -376,14 +377,13 @@ function Model3D({
             </group>
         </group>
     );
-};
+}
 
-function Workspace3D({ 
+export default function Workspace3D({ 
     product, objectAnchors, handleAnchorUpdate, 
-    contextKey, setContextKey, fabricRef, updateTexture 
+    contextKey, setContextKey, fabricRef, updateTexture,
+    activeStudioTab, activeObject, canvasObjects
 }) {
-    const { activeStudioTab, activeObject, canvasObjects } = useStudio();
-
     return (
         <div className="absolute inset-0 transition-opacity duration-300" style={{
             opacity: activeStudioTab === '3D_STUDIO' ? 1 : 0, 
@@ -434,6 +434,5 @@ function Workspace3D({
             </div>
         </div>
     );
-};
+}
 
-export default Workspace3D;

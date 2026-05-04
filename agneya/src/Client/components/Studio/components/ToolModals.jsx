@@ -1,23 +1,19 @@
 import React from 'react';
 import * as fabric from 'fabric';
 import { FiX, FiArrowUp, FiZap, FiPlus, FiMaximize, FiGrid, FiTrash2 } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContextInstance';
 
-function ToolModals({
+export default function ToolModals({
     uploadedAssets, handlePurgeGallery, fileRef, handleFileUpload,
     handleRemoveBg, isRemovingBg, removeAsset,
     fabricRef, updateTexture,
     brushSize, setBrushSize, brushColor, setBrushColor,
     setIsDrawing, addText,
-    stickerLibrary, addSticker
+    stickerLibrary, addSticker,
+    activeTab, setActiveTab,
+    setIsMobileUiMinimized,
+    canvasObjects,
+    activeObject, setActiveObject
 }) {
-    const { 
-        activeTab, setActiveTab,
-        setIsMobileUiMinimized,
-        canvasObjects,
-        activeObject, setActiveObject
-    } = useStudio();
-
     return (
         <>
             {activeTab === 'uploads' && (
@@ -141,6 +137,5 @@ function ToolModals({
             )}
         </>
     );
-};
+}
 
-export default ToolModals;

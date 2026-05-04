@@ -1,17 +1,14 @@
 import React from 'react';
 import { FiMaximize2, FiMinimize2, FiArrowUp, FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContextInstance';
 
-function PropertyDock({ 
-    fabricRef, brushColor, setBrushColor, updateTexture, fastSync, isDrawing, setIsDrawing 
+export default function PropertyDock({ 
+    fabricRef, brushColor, setBrushColor, updateTexture, fastSync, isDrawing, setIsDrawing,
+    activeStudioTab, 
+    activeTab, setActiveTab, 
+    isMobileUiMinimized, setIsMobileUiMinimized, 
+    activeObject, setActiveObject,
+    premiumFonts
 }) {
-    const { 
-        activeStudioTab, 
-        activeTab, setActiveTab, 
-        isMobileUiMinimized, setIsMobileUiMinimized, 
-        activeObject, setActiveObject 
-    } = useStudio();
-
     return (
         <div className={`xl:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl rounded-t-[48px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] p-6 pb-12 flex flex-col gap-6 z-[600] transition-all duration-700 ease-out border-t border-slate-100 ${isMobileUiMinimized ? 'translate-y-[85%]' : 'translate-y-0 h-[40%]'}`}>
             <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-1 bg-slate-200 rounded-full" />
@@ -148,6 +145,5 @@ function PropertyDock({
             </div>
         </div>
     );
-};
+}
 
-export default PropertyDock;

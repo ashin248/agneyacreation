@@ -1,10 +1,10 @@
 import React from 'react';
 import { FiArrowRight, FiShoppingCart } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContextInstance';
 
-function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
-    const { product, isSubmitting } = useStudio();
-    
+export default function CheckoutPanel({ 
+    variations, handleFinalSubmit, handleDiscardDraft,
+    product, isSubmitting
+}) {
     return (
         <div className="hidden xl:flex w-[320px] flex-col gap-6">
             <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
@@ -15,13 +15,13 @@ function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
                 <div className="p-6 bg-slate-50/80 rounded-[32px] space-y-4">
                     <div className="flex justify-between items-center text-[11px] font-bold">
                         <span className="text-slate-400 uppercase">Per Unit Cost</span>
-                        <span className="text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm text-sm">₹ {(product.discountPrice || product.basePrice || 0).toLocaleString()}</span>
+                        <span className="text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm text-sm">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span>
                     </div>
                     <div className="h-px bg-slate-200/50 w-full"></div>
                     <p className="text-[9px] text-slate-500 uppercase tracking-widest text-center">Quantity & Sizes apply in cart</p>
                 </div>
 
-                {product.isBulkEnabled && product.bulkRules?.length > 0 && (
+                {product?.isBulkEnabled && product.bulkRules?.length > 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-2">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Wholesale Ready</h4>
@@ -50,7 +50,7 @@ function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
                 <div className="mt-auto space-y-4">
                     <div className="flex justify-between items-end pb-2">
                         <span className="text-[11px] font-bold text-slate-400 uppercase">Subtotal</span>
-                        <span className="text-2xl font-black text-[#0c0c2a]">₹ {((product.discountPrice || product.basePrice || 0) * variations.length).toLocaleString()}</span>
+                        <span className="text-2xl font-black text-[#0c0c2a]">₹ {((product?.discountPrice || product?.basePrice || 0) * (variations?.length || 0)).toLocaleString()}</span>
                     </div>
                     <button onClick={() => handleFinalSubmit(true)} className="w-full h-14 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-[24px] font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm">
                         <FiArrowRight size={18} /> Buy Now
@@ -64,6 +64,5 @@ function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
             </div>
         </div>
     );
-};
+}
 
-export default CheckoutPanel;
