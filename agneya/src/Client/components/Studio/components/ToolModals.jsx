@@ -3,14 +3,14 @@ import * as fabric from 'fabric';
 import { FiX, FiArrowUp, FiZap, FiPlus, FiMaximize, FiGrid, FiTrash2 } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContext';
 
-const ToolModals = ({
+function ToolModals({
     uploadedAssets, handlePurgeGallery, fileRef, handleFileUpload,
     handleRemoveBg, isRemovingBg, removeAsset,
     fabricRef, updateTexture,
     brushSize, setBrushSize, brushColor, setBrushColor,
     setIsDrawing, addText,
     stickerLibrary, addSticker
-}) => {
+}) {
     const { 
         activeTab, setActiveTab,
         setIsMobileUiMinimized,

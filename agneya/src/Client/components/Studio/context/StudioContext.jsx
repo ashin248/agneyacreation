@@ -5,7 +5,7 @@ const StudioContext = createContext();
 // eslint-disable-next-line react-refresh/only-export-components
 export const useStudio = () => useContext(StudioContext);
 
-export const StudioProvider = ({ children, product, initialMode = 'self', initial2DModelIdx = 0 }) => {
+export function StudioProvider({ children, product, initialMode = 'self', initial2DModelIdx = 0 }) {
     // 1. Core Config & Layout States
     const [activeStudioTab, setActiveStudioTab] = useState('3D_STUDIO');
     const [designMode, setDesignMode] = useState(initialMode);

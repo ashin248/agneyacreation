@@ -2,7 +2,7 @@ import React from 'react';
 import { FiCornerUpLeft, FiCornerUpRight } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContext';
 
-const TopNavigation = ({ handleUndo, handleRedo, canUndo, canRedo, handleSwitchSide }) => {
+function TopNavigation({ handleUndo, handleRedo, canUndo, canRedo, handleSwitchSide }) {
     const { 
         twoDModels, active2DModelIdx, 
         activeSupportSide, setActiveSupportSide

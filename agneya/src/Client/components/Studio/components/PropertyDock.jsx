@@ -2,9 +2,9 @@ import React from 'react';
 import { FiMaximize2, FiMinimize2, FiArrowUp, FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContext';
 
-const PropertyDock = ({ 
+function PropertyDock({ 
     fabricRef, brushColor, setBrushColor, updateTexture, fastSync, isDrawing, setIsDrawing 
-}) => {
+}) {
     const { 
         activeStudioTab, 
         activeTab, setActiveTab, 

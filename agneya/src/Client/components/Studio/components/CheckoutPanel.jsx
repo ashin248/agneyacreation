@@ -2,7 +2,7 @@ import React from 'react';
 import { FiArrowRight, FiShoppingCart } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContext';
 
-const CheckoutPanel = ({ variations, handleFinalSubmit, handleDiscardDraft }) => {
+function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
     const { product, isSubmitting } = useStudio();
     
     return (

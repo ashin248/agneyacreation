@@ -378,10 +378,10 @@ function Model3D({
     );
 };
 
-const Workspace3D = ({ 
+function Workspace3D({ 
     product, objectAnchors, handleAnchorUpdate, 
     contextKey, setContextKey, fabricRef, updateTexture 
-}) => {
+}) {
     const { activeStudioTab, activeObject, canvasObjects } = useStudio();
 
     return (

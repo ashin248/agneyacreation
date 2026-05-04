@@ -2,10 +2,10 @@ import React from 'react';
 import { FiType, FiImage, FiSmile, FiZap, FiLayers, FiMove, FiRepeat, FiTrash2, FiBox } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContext';
 
-const ToolSidebar = ({ 
+function ToolSidebar({ 
     addText, handleFileUpload, isDrawing, setIsDrawing, 
     fabricRef, brushColor, setBrushColor, updateTexture, fastSync, premiumFonts 
-}) => {
+}) {
     const { 
         activeTab, setActiveTab, 
         activeObject, setActiveObject, 

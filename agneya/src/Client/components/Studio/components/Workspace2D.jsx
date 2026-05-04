@@ -4,7 +4,7 @@ import { useStudio } from '../context/StudioContext';
 import { phoneBrands } from '../../../data/MobileCasesDB';
 import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 
-const Workspace2D = forwardRef(({
+const Workspace2D = forwardRef(function Workspace2D({
     isOpen,
     canvasRef,
     viewportRef,
@@ -16,7 +16,7 @@ const Workspace2D = forwardRef(({
     activeTemplateId,
     initialMode,
     handleSwitchSide
-}, ref) => {
+}, ref) {
     const { 
         activeStudioTab, setActiveStudioTab,
         current2DImageUrl, viewSide, 
