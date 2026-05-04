@@ -1,3 +1,4 @@
+console.log('TRACE: ToolSidebar.jsx');
 import React from 'react';
 import { FiType, FiImage, FiSmile, FiZap, FiLayers, FiMove, FiRepeat, FiTrash2, FiBox } from 'react-icons/fi';
 import { useStudio } from '../context/StudioContextInstance';

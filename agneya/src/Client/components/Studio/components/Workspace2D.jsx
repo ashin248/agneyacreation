@@ -1,10 +1,11 @@
+console.log('TRACE: Workspace2D.jsx');
 import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { useStudio } from '../context/StudioContextInstance';
 import { phoneBrands } from '../../../data/MobileCasesDB';
 import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 
-const Workspace2D = forwardRef(function Workspace2D({
+function Workspace2D({
     isOpen,
     canvasRef,
     viewportRef,
@@ -724,6 +725,6 @@ const Workspace2D = forwardRef(function Workspace2D({
             </div>
         </div>
     );
-});
+}
 
-export default Workspace2D;
+export default forwardRef(Workspace2D);

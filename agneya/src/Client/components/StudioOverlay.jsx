@@ -1,3 +1,4 @@
+console.log('TRACE: StudioOverlay.jsx');
 import React from 'react';
 import { StudioProvider } from './Studio/context/StudioContext';
 import StudioOverlayInner from './Studio/components/StudioOverlayInner';

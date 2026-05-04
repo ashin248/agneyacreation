@@ -1,3 +1,4 @@
+console.log('TRACE: StudioOverlayInner.jsx');
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as fabric from 'fabric';
 import axios from 'axios';
@@ -21,7 +22,7 @@ import ToolModals from './ToolModals';
 import Workspace3D from './Workspace3D';
 import Workspace2D from './Workspace2D';
 
-export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
+function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -44,7 +45,10 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
 
     const [companyInstructions, setCompanyInstructions] = useState('');
     const [companyReferences, setCompanyReferences] = useState([]);
-    const activeTemplate = activeTemplateId ? (TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase())) : null;
+    const activeTemplate = React.useMemo(() => {
+        if (!activeTemplateId) return null;
+        return TWOD_TEMPLATES[activeTemplateId] || Object.values(TWOD_TEMPLATES).find(t => t.id?.toUpperCase() === activeTemplateId?.toUpperCase()) || null;
+    }, [activeTemplateId]);
     const [contextKey, setContextKey] = useState(0);
 
     const [brushSize, setBrushSize] = useState(10);
@@ -533,3 +537,5 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         </div>
     );
 }
+ 
+ export default StudioOverlayInner;

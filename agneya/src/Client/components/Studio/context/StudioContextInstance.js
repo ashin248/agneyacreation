@@ -1,3 +1,4 @@
+console.log('TRACE: StudioContextInstance.js');
 import { createContext, useContext } from 'react';
 
 /**
