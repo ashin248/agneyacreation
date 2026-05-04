@@ -62,22 +62,42 @@ export function AuthProvider({ children }) {
 
   const setupRecaptcha = async (phoneNumber) => {
     try {
+      // Clean up any existing verifier to prevent "reCAPTCHA container already has a verifier" errors
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {
+          console.warn("Error clearing old recaptcha:", e);
+        }
       }
       
       const recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
-        callback: () => {
-          console.log("Recaptcha verified");
+        callback: (response) => {
+          console.log("Recaptcha verified successfully");
+        },
+        'expired-callback': () => {
+          toast.error("Recaptcha expired. Please try again.");
         }
       });
+
       window.recaptchaVerifier = recaptchaVerifier;
+      
+      // Explicitly render to catch initialization/network errors early
+      await recaptchaVerifier.render();
+      
       const result = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
       setConfirmationResult(result);
       return result;
     } catch (error) {
-      console.error("Recaptcha/Phone Sign-in Error:", error);
+      console.error("Detailed Recaptcha/Phone Sign-in Error:", error);
+      if (error.code === 'auth/network-request-failed') {
+        toast.error("Network error: Please check your internet connection and ensure the domain is whitelisted in Firebase.");
+      } else if (error.code === 'auth/too-many-requests') {
+        toast.error("Too many attempts. Please try again later.");
+      } else {
+        toast.error(`Authentication Error: ${error.message}`);
+      }
       throw error;
     }
   };
