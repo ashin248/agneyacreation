@@ -178,7 +178,7 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
             lastOpenedProductId.current = null;
             resetStudio(); 
         }
-    }, [product?._id, isOpen, activeTemplateId, initialMode, setActiveStudioTab, setCanvasObjects, setActiveObject, setHistoryStep]);
+    }, [product?._id, isOpen, activeTemplateId, initialMode, setActiveStudioTab, setCanvasObjects, setActiveObject, setHistoryStep, product?.customizationType, product?.baseModelId, product?.base3DModelUrl, product?.model3d]);
 
     const [isDrawing, setIsDrawing] = useState(false);
 
@@ -394,22 +394,22 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
                 const designPayload = !isCompanyMode ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData } : { mode: 'company', instructions: companyInstructions, references: companyReferences };
-                const wMin = (product.isBulkEnabled && product.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product.minOrder || 1);
+                const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
                 const frontSnapshot = isCurrent && viewSide === 'front' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
                 const backSnapshot = isCurrent && viewSide === 'back' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
                 return {
-                    productId: product._id,
-                    name: `[Custom] ${product.name} - ${v.name}`,
-                    unitPrice: product.discountPrice || product.basePrice,
+                    productId: product?._id,
+                    name: `[Custom] ${product?.name} - ${v.name}`,
+                    unitPrice: product?.discountPrice || product?.basePrice,
                     quantity: itemQty,
                     itemType: 'Custom',
                     selectedVariation: { sku: `custom_${v.id}`, size: 'Custom' },
-                    image: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0],
-                    designImage: frontSnapshot || backSnapshot || product.thumbnail || product.images?.[0],
-                    isBulkEnabled: product.isBulkEnabled,
-                    bulkRules: product.bulkRules,
-                    gstRate: product.gstRate || 0,
+                    image: frontSnapshot || backSnapshot || product?.thumbnail || product?.images?.[0],
+                    designImage: frontSnapshot || backSnapshot || product?.thumbnail || product?.images?.[0],
+                    isBulkEnabled: product?.isBulkEnabled,
+                    bulkRules: product?.bulkRules,
+                    gstRate: product?.gstRate || 0,
                     customData: { design: designPayload, variationName: v.name, appliedFrontDesign: frontSnapshot, appliedBackDesign: backSnapshot }
                 };
             });
@@ -440,11 +440,11 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                 <div className="flex flex-col items-center">
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
                     <div className="flex bg-slate-100 p-1 rounded-full mt-2">
-                        {(product.customizationType === 'Both' || product.customizationType === '3D') && (
+                        {(product?.customizationType === 'Both' || product?.customizationType === '3D') && (
                             <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
-                        {(product.customizationType === 'Both' || product.customizationType === '2D') && (
+                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
+                        {(product?.customizationType === 'Both' || product?.customizationType === '2D') && (
                             <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
                         )}
                     </div>
@@ -518,7 +518,7 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
                         </div>
                         <div className="mt-8 w-full bg-slate-900 rounded-3xl p-6 flex items-center justify-between shadow-2xl animate-in slide-in-from-bottom-4">
                             <div className="flex items-center gap-6">
-                                <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Base Price</span><span className="text-xl font-black text-white">₹ {(product.discountPrice || product.basePrice || 0).toLocaleString()}</span></div>
+                                <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Base Price</span><span className="text-xl font-black text-white">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span></div>
                                 <div className="w-[1px] h-8 bg-white/10" />
                                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
                             </div>
@@ -538,4 +538,4 @@ function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self
     );
 }
  
- export default StudioOverlayInner;
+export default StudioOverlayInner;
