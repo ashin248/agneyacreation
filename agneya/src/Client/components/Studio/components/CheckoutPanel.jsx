@@ -1,6 +1,6 @@
 import React from 'react';
 import { FiArrowRight, FiShoppingCart } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 
 function CheckoutPanel({ variations, handleFinalSubmit, handleDiscardDraft }) {
     const { product, isSubmitting } = useStudio();

@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { TWOD_TEMPLATES } from '../../TwoD/TwoDTemplateLibrary';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 import TopNavigation from './TopNavigation';
 import CheckoutPanel from './CheckoutPanel';
 import ToolSidebar from './ToolSidebar';

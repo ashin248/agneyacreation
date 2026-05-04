@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useState } from 'react';
 import * as fabric from 'fabric';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 import { phoneBrands } from '../../../data/MobileCasesDB';
 import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 

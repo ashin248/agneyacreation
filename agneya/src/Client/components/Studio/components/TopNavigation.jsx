@@ -1,6 +1,6 @@
 import React from 'react';
 import { FiCornerUpLeft, FiCornerUpRight } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 
 function TopNavigation({ handleUndo, handleRedo, canUndo, canRedo, handleSwitchSide }) {
     const { 

@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { StudioContext } from './StudioContextInstance';
 
-const StudioContext = createContext();
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useStudio = () => useContext(StudioContext);
-
+/**
+ * StudioProvider
+ * 
+ * Provides state for the Agneya Studio.
+ * Imports the context instance from StudioContextInstance.js to avoid circular dependencies.
+ */
 export function StudioProvider({ children, product, initialMode = 'self', initial2DModelIdx = 0 }) {
     // 1. Core Config & Layout States
     const [activeStudioTab, setActiveStudioTab] = useState('3D_STUDIO');
@@ -73,4 +75,4 @@ export function StudioProvider({ children, product, initialMode = 'self', initia
             {children}
         </StudioContext.Provider>
     );
-};
+}

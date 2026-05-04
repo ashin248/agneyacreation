@@ -1,7 +1,7 @@
 import React from 'react';
 import * as fabric from 'fabric';
 import { FiX, FiArrowUp, FiZap, FiPlus, FiMaximize, FiGrid, FiTrash2 } from 'react-icons/fi';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 
 function ToolModals({
     uploadedAssets, handlePurgeGallery, fileRef, handleFileUpload,

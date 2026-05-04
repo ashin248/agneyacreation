@@ -3,7 +3,7 @@ import { Canvas, createPortal } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Stage, Decal, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { MODELS } from '../../Three/ProductLibrary';
-import { useStudio } from '../context/StudioContext';
+import { useStudio } from '../context/StudioContextInstance';
 
 const dummyDecal = new THREE.Object3D();
 
