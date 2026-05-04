@@ -1,0 +1,11 @@
+{
+  "name": "agneya-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "cd agneya && npm install",
+    "build": "cd agneya && npm run build && cp -r dist/* ..",
+    "dev": "cd agneya && npm run dev",
+    "lint": "cd agneya && npm run lint"
+  }
+}
