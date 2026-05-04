@@ -1,4 +1,3 @@
-console.log('TRACE: Workspace2D.jsx');
 import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { useStudio } from '../context/StudioContextInstance';

@@ -1,5 +1,6 @@
 /**
  * Agneya 2D Template Engine Library
+ * This file maintains the definition of all 2D layout templates.
  */
 
 export const TICKER_ID_MUG_WRAP = 'MUG_WRAP_11OZ';
@@ -40,9 +41,8 @@ export const mug = {
     }
 };
 
-export const getTemplateById = (id) => mug[id] || null;
-export const getAllTemplates = () => Object.values(mug);
-export const getTemplatesByCategory = (category) => Object.values(mug).filter(t => t.category === category);
-
 export const TWOD_TEMPLATES = mug;
-export default mug;
+
+export const getTemplateById = (id) => TWOD_TEMPLATES[id] || null;
+export const getAllTemplates = () => Object.values(TWOD_TEMPLATES);
+export const getTemplatesByCategory = (category) => Object.values(TWOD_TEMPLATES).filter(t => t.category === category);

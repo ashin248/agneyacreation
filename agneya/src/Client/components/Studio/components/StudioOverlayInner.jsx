@@ -1,4 +1,3 @@
-console.log('TRACE: StudioOverlayInner.jsx');
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as fabric from 'fabric';
 import axios from 'axios';

@@ -13,5 +13,22 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/fabric')) {
+            return 'vendor-fabric';
+          }
+          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
+            return 'vendor-three';
+          }
+          if (id.includes('Studio')) {
+            return 'studio-engine';
+          }
+        }
+      }
+    }
   }
 })

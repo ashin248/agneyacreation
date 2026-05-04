@@ -1,5 +1,4 @@
-console.log('TRACE: StudioContext.jsx');
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StudioContext } from './StudioContextInstance';
 
 /**

@@ -1,4 +1,3 @@
-console.log('TRACE: StudioContextInstance.js');
 import { createContext, useContext } from 'react';
 
 /**
@@ -8,8 +7,9 @@ import { createContext, useContext } from 'react';
  * By isolating the context object, we ensure it is initialized 
  * before any provider or consumer is evaluated.
  */
-export const StudioContext = createContext();
+export const StudioContext = createContext(null);
 
 export function useStudio() {
-    return useContext(StudioContext);
+    const context = useContext(StudioContext);
+    return context;
 }

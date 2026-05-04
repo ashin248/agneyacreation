@@ -1,5 +1,5 @@
-console.log('TRACE: StudioOverlay.jsx');
 import React from 'react';
+import './Studio/context/StudioContextInstance'; // Force early initialization
 import { StudioProvider } from './Studio/context/StudioContext';
 import StudioOverlayInner from './Studio/components/StudioOverlayInner';
 
