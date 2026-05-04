@@ -11,6 +11,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -69,7 +70,6 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
     }
   };
 
-  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (userData && !loading && step === 2 && !isSuccess) {
