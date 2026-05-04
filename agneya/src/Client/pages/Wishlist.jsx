@@ -21,7 +21,7 @@ const Wishlist = () => {
     const fetchWishlist = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || '/api'}/public/products?limit=100`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/public/products?limit=100`);
         const allProducts = res.data.data || [];
 
         let listIds = JSON.parse(localStorage.getItem('wishlist') || '[]');
@@ -30,7 +30,7 @@ const Wishlist = () => {
           const token = await currentUser.getIdToken(true);
           try {
             const dbRes = await axios.get(
-              `${import.meta.env.VITE_API_BASE_URL || '/api'}/public/user/wishlist/${userData.phone}`,
+              `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/user/wishlist/${userData.phone}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
             const dbIds = dbRes.data.data.map(item => item._id || item);
@@ -70,7 +70,7 @@ const Wishlist = () => {
       try {
         const token = await currentUser.getIdToken(true);
         await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || '/api'}/public/user/wishlist/toggle`,
+          `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/user/wishlist/toggle`,
           { phone: userData.phone, productId: id },
           { headers: { Authorization: `Bearer ${token}` } }
         );

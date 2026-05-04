@@ -96,7 +96,7 @@ const Shop = () => {
     if (currentUser && userData?.phone) {
       try {
         const token = await currentUser.getIdToken(true);
-        await axios.post(`${import.meta.env.VITE_API_BASE_URL || '/api'}/public/user/wishlist/toggle`,
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL || ''}/api/public/user/wishlist/toggle`,
           { phone: userData.phone, productId: id },
           { headers: { Authorization: `Bearer ${token}` } }
         );
