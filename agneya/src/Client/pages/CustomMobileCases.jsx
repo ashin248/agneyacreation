@@ -1,180 +1,173 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { phoneBrands, phoneModels } from '../data/MobileCasesDB';
-import { FiSmartphone, FiChevronRight, FiGrid, FiArrowLeft } from 'react-icons/fi';
+import { Smartphone, ArrowLeft, Grid3X3, Search } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
 import LoginModal from '../components/LoginModal';
 import StudioOverlay from '../components/StudioOverlay';
 import { useAuth } from '../context/AuthContext';
 
 const CustomMobileCases = () => {
-    const navigate = useNavigate();
-    const { currentUser } = useAuth();
-    
-    const [selectedBrand, setSelectedBrand] = useState(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    
-    const [customizingProduct, setCustomizingProduct] = useState(null);
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
-    const requireLogin = (callback) => {
-        if (!currentUser) {
-            setIsLoginModalOpen(true);
-        } else {
-            callback();
-        }
-    };
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [customizingProduct, setCustomizingProduct] = useState(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-    // Filter models
-    const filteredModels = phoneModels.filter(model => {
-        const matchesBrand = selectedBrand ? model.brand === selectedBrand : true;
-        const matchesSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesBrand && matchesSearch;
+  const requireLogin = (callback) => {
+    if (!currentUser) {
+      setIsLoginModalOpen(true);
+    } else {
+      callback();
+    }
+  };
+
+  const filteredModels = phoneModels.filter(model => {
+    const matchBrand = selectedBrand ? model.brand === selectedBrand : true;
+    const matchSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchBrand && matchSearch;
+  });
+
+  const handleCustomize = (model) => {
+    requireLogin(() => {
+      setCustomizingProduct({
+        _id: `custom-case-${model.id}`,
+        name: `Custom Mobile Case — ${model.name}`,
+        category: 'Mobile Covers',
+        basePrice: model.price,
+        customizationType: '2D',
+        isCustomizable: true,
+        description: `Design your own premium mobile cover for ${model.name}.`,
+        phoneMask: model
+      });
     });
+  };
 
-    // Handle starting customization
-    const handleCustomize = (model) => {
-        requireLogin(() => {
-            // We create a pseudo-product combining the base mobile case info with this specific model
-            const pseudoProduct = {
-                _id: `custom-case-${model.id}`,
-                name: `Custom Mobile Case - ${model.name}`,
-                category: 'Mobile Covers',
-                basePrice: model.price,
-                customizationType: '2D',
-                isCustomizable: true,
-                description: `Design your own premium mobile cover for ${model.name}.`,
-                phoneMask: model // We pass the mask logic directly
-            };
-            setCustomizingProduct(pseudoProduct);
-        });
-    };
+  return (
+    <div className="min-h-screen bg-slate-50 pb-16">
+      <SEO
+        title="Custom Mobile Cases | Agneya Design"
+        description="Design your own custom mobile cover. Select your brand and model to start printing."
+        type="product"
+      />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => setIsLoginModalOpen(false)}
+      />
 
-    return (
-        <div className="bg-[#FBFCFE] min-h-screen pb-32 font-sans selection:bg-indigo-600 selection:text-white">
-            <SEO 
-                title="Custom Mobile Cases | Agneya Design"
-                description="Design your own custom mobile cover. Select your brand and model to start printing."
-                type="product"
-            />
-            <LoginModal 
-                isOpen={isLoginModalOpen} 
-                onClose={() => setIsLoginModalOpen(false)} 
-                onLoginSuccess={() => setIsLoginModalOpen(false)} 
-            />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-            <div className="max-w-7xl mx-auto px-6 pt-10">
-                {/* Header */}
-                <div className="mb-10">
-                    <button 
-                        onClick={() => navigate('/shop')} 
-                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-indigo-600 transition-all mb-6"
-                    >
-                        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center border border-gray-100">
-                            <FiArrowLeft size={14} />
-                        </div>
-                        Back to Shop
-                    </button>
-                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter uppercase leading-none mb-3">
-                        Custom Mobile Cases
-                    </h1>
-                    <p className="text-sm text-gray-500 font-bold max-w-xl">
-                        Select your device brand and model below to start designing. We use advanced vector masking to ensure your design perfectly fits your camera and edges.
-                    </p>
-                </div>
+        {/* ── HEADER ── */}
+        <div className="mb-7">
+          <button
+            onClick={() => navigate('/shop')}
+            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-5"
+          >
+            <ArrowLeft size={16} /> Back to Shop
+          </button>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Design Your Mobile Case</h1>
+          <p className="text-sm text-slate-500 max-w-xl">
+            Select your brand and model below, then upload or create a design in our studio. We use precise vector masking so your design fits perfectly.
+          </p>
+        </div>
 
-                {/* Main Layout */}
-                <div className="flex flex-col lg:flex-row gap-10">
-                    
-                    {/* Left: Brand Selection Sidebar (Horizontal Scroll on Mobile) */}
-                    <div className="w-full lg:w-72 flex-shrink-0">
-                        <div className="bg-white rounded-3xl lg:rounded-[2rem] p-4 lg:p-6 shadow-xl shadow-gray-200/50 border border-gray-100 sticky top-24">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4 lg:mb-6 flex items-center gap-2">
-                                <FiGrid size={12}/> Brands
-                            </h3>
-                            <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible no-scrollbar gap-2 lg:gap-2 pb-2 lg:pb-0">
-                                <button
-                                    onClick={() => setSelectedBrand(null)}
-                                    className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center gap-3 px-5 py-3 rounded-2xl transition-all ${!selectedBrand ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
-                                >
-                                    <span className="text-[10px] font-black uppercase tracking-widest">All Devices</span>
-                                </button>
-                                
-                                {phoneBrands.map(brand => (
-                                    <button
-                                        key={brand.id}
-                                        onClick={() => setSelectedBrand(brand.id)}
-                                        className={`whitespace-nowrap flex-shrink-0 lg:w-full flex items-center justify-center lg:justify-start px-5 py-3 rounded-2xl transition-all border ${selectedBrand === brand.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white border-slate-100 text-slate-600 hover:bg-slate-50 hover:border-indigo-200'}`}
-                                        style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
-                                    >
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{brand.name}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+        <div className="flex flex-col lg:flex-row gap-6">
 
-                    {/* Right: Models Grid */}
-                    <div className="flex-1">
-                        <div className="mb-6">
-                            <div className="relative group">
-                                <input 
-                                    type="text"
-                                    placeholder="Search for your model..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full h-16 bg-white border-2 border-slate-100 rounded-3xl px-8 text-sm font-bold text-slate-900 focus:ring-8 focus:ring-indigo-500/5 focus:border-indigo-400 transition-all outline-none shadow-sm"
-                                />
-                                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors">
-                                    <FiSmartphone size={20}/>
-                                </div>
-                            </div>
-                        </div>
+          {/* ── BRAND SIDEBAR ── */}
+          <aside className="w-full lg:w-56 flex-shrink-0">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sticky top-24">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <Grid3X3 size={12} /> Brand
+              </p>
+              <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-1 lg:pb-0">
+                <button
+                  onClick={() => setSelectedBrand(null)}
+                  className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
+                    !selectedBrand ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  All Devices
+                </button>
+                {phoneBrands.map(brand => (
+                  <button
+                    key={brand.id}
+                    onClick={() => setSelectedBrand(brand.id)}
+                    className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
+                      selectedBrand === brand.id ? 'text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
+                    }`}
+                    style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
+                  >
+                    {brand.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </aside>
 
-                        {filteredModels.length === 0 ? (
-                            <div className="py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
-                                <FiSmartphone size={48} className="mx-auto text-slate-200 mb-6 animate-pulse" />
-                                <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">No matching devices</h4>
-                                <p className="text-[9px] text-slate-300 mt-2 font-bold uppercase tracking-widest">Try a different name or brand</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
-                                {filteredModels.map(model => (
-                                    <div 
-                                        key={model.id} 
-                                        className="bg-white rounded-3xl p-5 lg:p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-200 hover:-translate-y-1 transition-all group flex flex-col justify-center items-center cursor-pointer relative overflow-hidden min-h-[140px]" 
-                                        onClick={() => handleCustomize(model)}
-                                    >
-                                        <div className="absolute top-4 right-4 text-[9px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                                            DESIGN
-                                        </div>
-                                        
-                                        <div className="text-center w-full mt-2">
-                                            <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 leading-tight mb-3 group-hover:text-indigo-600 transition-colors break-words">
-                                                {model.name}
-                                            </h4>
-                                            <div className="flex items-center justify-center gap-3">
-                                                <span className="text-[9px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">SOFT CASE</span>
-                                                <p className="text-[11px] font-black text-indigo-600">₹{model.price}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
+          {/* ── MODEL GRID ── */}
+          <div className="flex-1 min-w-0">
+            {/* Search */}
+            <div className="relative mb-5">
+              <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search for your model…"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-10 pr-4 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all shadow-sm"
+              />
             </div>
 
-            <StudioOverlay 
-                isOpen={!!customizingProduct} 
-                onClose={() => setCustomizingProduct(null)} 
-                product={customizingProduct} 
-                requireLogin={requireLogin}
-                initialMode="self"
-            />
+            {filteredModels.length === 0 ? (
+              <div className="py-20 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+                <Smartphone size={36} className="mx-auto text-slate-200 mb-4" />
+                <p className="text-sm font-medium text-slate-400">No matching devices found.</p>
+                <p className="text-xs text-slate-400 mt-1">Try a different brand or model name.</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-slate-400 mb-4 font-medium">{filteredModels.length} models available</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {filteredModels.map(model => (
+                    <button
+                      key={model.id}
+                      onClick={() => handleCustomize(model)}
+                      className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5 transition-all group text-center cursor-pointer"
+                    >
+                      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-50 transition-colors">
+                        <Smartphone size={20} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+                        {model.name}
+                      </h4>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">Soft Case</span>
+                        <span className="text-xs font-bold text-indigo-600">₹{model.price}</span>
+                      </div>
+                      <span className="mt-3 inline-block text-[10px] font-semibold text-white bg-indigo-600 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        Design Now
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-    );
+      </div>
+
+      <StudioOverlay
+        isOpen={!!customizingProduct}
+        onClose={() => setCustomizingProduct(null)}
+        product={customizingProduct}
+        requireLogin={requireLogin}
+        initialMode="self"
+      />
+    </div>
+  );
 };
 
 export default CustomMobileCases;
