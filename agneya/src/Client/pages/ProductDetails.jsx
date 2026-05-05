@@ -24,6 +24,9 @@ import ProductSchema from '../components/SEO/ProductSchema';
 const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
 import { TWOD_TEMPLATES } from '../components/TwoD/TwoDTemplateLibrary';
 import TemplateThumbnail from '../components/TwoD/TemplateThumbnail';
+import ProductCard from '../components/ProductCard';
+import { useCart } from '../context/CartContext';
+import toast from 'react-hot-toast';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -46,15 +49,47 @@ const ProductDetails = () => {
     const [show2DModelSelector, setShow2DModelSelector] = useState(false);
     const [initial2DModelIdx, setInitial2DModelIdx] = useState(0);
 
-    const { currentUser } = useAuth();
+    const { currentUser, userData } = useAuth();
+    const { addToCart: addToCartBase } = useCart();
+    const [wishlist, setWishlist] = useState([]);
+
+    const addToCart = (item) => {
+        addToCartBase(item);
+        toast.success(`${item.name} added to cart!`, {
+            icon: '🛍️',
+            style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '13px' }
+        });
+    };
     
-    const requireLogin = (callback) => {
+    const requireLogin = (callback, action = 'interact') => {
         if (!currentUser) {
+            toast.error(`Please login to ${action}.`, {
+                style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '13px' }
+            });
             setIsLoginModalOpen(true);
         } else {
             callback();
         }
     };
+
+    const toggleWishlist = async (id) => {
+        const next = wishlist.includes(id) ? wishlist.filter(i => i !== id) : [...wishlist, id];
+        setWishlist(next);
+        localStorage.setItem('wishlist', JSON.stringify(next));
+        if (currentUser && userData?.phone) {
+            try {
+                const token = await currentUser.getIdToken(true);
+                await axios.post(`/api/public/user/wishlist/toggle`,
+                    { phone: userData.phone, productId: id },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            } catch (e) { console.error('Wishlist sync failed:', e); }
+        }
+    };
+
+    useEffect(() => {
+        setWishlist(JSON.parse(localStorage.getItem('wishlist') || '[]'));
+    }, []);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -77,11 +112,11 @@ const ProductDetails = () => {
                         setActiveTemplateId(tid);
                     }
                     
-                    // Fetch related products
+                    // Fetch related products - fetch more for slider
                     if (res.data.category) {
                         const relatedRes = await axios.get(`/api/public/products?category=${res.data.category}`);
                         if (relatedRes.data && relatedRes.data.success && Array.isArray(relatedRes.data.data)) {
-                          setRelatedProducts(relatedRes.data.data.filter(p => p._id !== productId).slice(0, 4));
+                          setRelatedProducts(relatedRes.data.data.filter(p => p._id !== productId).slice(0, 8));
                         }
                     }
 
@@ -498,99 +533,69 @@ const ProductDetails = () => {
                 {relatedProducts.length > 0 && (
                     <div className="mt-24 mb-16">
                         {/* Section Header */}
-                        <div className="mb-6">
-                            <h3 className="text-2xl font-bold text-slate-900">
-                                You May Also Like
-                            </h3>
+                        <div className="flex items-end justify-between mb-8">
+                            <div>
+                                <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
+                                    You May Also Like
+                                </h3>
+                                <div className="h-1.5 w-12 bg-indigo-600 rounded-full mt-4"></div>
+                            </div>
+                            <button 
+                                onClick={() => navigate('/shop')}
+                                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-all"
+                            >
+                                View All <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                            </button>
                         </div>
 
-                        {/* Product Cards Grid */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-                            {relatedProducts.map((rel, idx) => {
-                                const relPrice = Number(rel.discountPrice || rel.basePrice || 0);
-                                const relOriginal = Number(rel.originalPrice || rel.basePrice || 0);
-                                const relDiscount = relOriginal > 0 ? Math.round(((relOriginal - relPrice) / relOriginal) * 100) : 0;
-                                const relImg = rel.galleryImages?.[0] || rel.images?.[0] || '';
+                        {/* Horizontal Scrollable Slider */}
+                        <div className="relative group">
+                            <div className="flex gap-5 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 snap-x">
+                                {relatedProducts.map((rel) => (
+                                    <div key={rel._id} className="min-w-[240px] md:min-w-[280px] snap-start">
+                                        <ProductCard 
+                                            product={{
+                                                ...rel,
+                                                // Inject model image as second image if it exists for hover effect
+                                                images: (rel.galleryImages || rel.images || []).length > 0
+                                                    ? [
+                                                        (rel.galleryImages || rel.images || [])[0],
+                                                        rel.twoDModels?.[0]?.mainModelUrl || (rel.galleryImages || rel.images || [])[1]
+                                                      ].filter(Boolean)
+                                                    : [rel.twoDModels?.[0]?.mainModelUrl].filter(Boolean)
+                                            }}
+                                            wishlist={wishlist}
+                                            toggleWishlist={toggleWishlist}
+                                            addToCart={addToCart}
+                                            requireLogin={requireLogin}
+                                            onQuickView={(p) => navigate(`/product/${p._id}`)}
+                                            onCustomize={(p) => {
+                                                // Reset template/model selection for the new product
+                                                setActiveTemplateId(null); 
+                                                setInitial2DModelIdx(0);
+                                                
+                                                if (p.linkedTemplates?.length > 0) {
+                                                    const first = p.linkedTemplates[0];
+                                                    const tid = typeof first === 'string' ? first : (first?.templateId || first?.id);
+                                                    setActiveTemplateId(tid);
+                                                }
 
-                                return (
-                                    <div
-                                        key={rel._id || idx}
-                                        onClick={() => { navigate(`/product/${rel._id}`); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                                        className="group cursor-pointer bg-white rounded-[28px] border border-slate-100 overflow-hidden flex flex-col transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1.5 hover:border-indigo-100"
-                                        style={{ animationDelay: `${idx * 80}ms` }}
-                                    >
-                                        {/* Image Container */}
-                                        <div className="relative aspect-square bg-slate-50 overflow-hidden">
-                                            {relImg ? (
-                                                <img
-                                                    src={relImg}
-                                                    alt={rel.name}
-                                                    loading="lazy"
-                                                    className="w-full h-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-110"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                                    <Box size={40} />
-                                                </div>
-                                            )}
-
-                                            {/* Overlay on hover */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                                            {/* Badges */}
-                                            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                                                {relDiscount > 0 && (
-                                                    <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-1 rounded-lg shadow-lg">
-                                                        -{relDiscount}%
-                                                    </span>
-                                                )}
-                                                {rel.isCustomizable && (
-                                                    <span className="bg-indigo-600 text-white text-[8px] font-black px-2.5 py-1 rounded-lg shadow-lg flex items-center gap-1">
-                                                        <Sparkles size={8} /> Custom
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* "View Product" pill on hover */}
-                                            <div className="absolute bottom-3 left-3 right-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400 z-10">
-                                                <div className="bg-white/90 backdrop-blur-md rounded-xl py-2 text-center text-[9px] font-black uppercase tracking-widest text-indigo-600 shadow-sm border border-white/50">
-                                                    View Product →
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Info */}
-                                        <div className="p-4 flex flex-col gap-1.5 flex-1">
-                                            {rel.category && (
-                                                <span className="text-[8px] font-black uppercase tracking-[0.25em] text-indigo-400">{rel.category}</span>
-                                            )}
-                                            <h4 className="text-[13px] font-black uppercase tracking-tight text-slate-900 leading-tight line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                                                {rel.name}
-                                            </h4>
-                                            <div className="flex items-baseline gap-2 mt-auto pt-2">
-                                                <span className="text-base font-black text-slate-900">
-                                                    ₹{relPrice.toLocaleString('en-IN')}
-                                                </span>
-                                                {relDiscount > 0 && (
-                                                    <span className="text-[10px] text-slate-400 line-through font-bold">
-                                                        ₹{relOriginal.toLocaleString('en-IN')}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
+                                                setInitialStudioMode(p.customizationType === '3D' ? '3d' : '2d');
+                                                setCustomizingProduct(p);
+                                            }}
+                                        />
                                     </div>
-                                );
-                            })}
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Full-width CTA */}
-                        <div className="mt-10">
+                        {/* Mobile Explore Catalog */}
+                        <div className="md:hidden mt-4">
                             <button
                                 onClick={() => navigate('/shop')}
-                                className="group w-full py-5 rounded-[24px] border-2 border-dashed border-slate-200 flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all duration-300"
+                                className="w-full py-4 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
                             >
-                                <span>Explore Full Catalog</span>
-                                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                Explore Full Catalog <ChevronRight size={14} />
                             </button>
                         </div>
                     </div>
