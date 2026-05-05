@@ -231,6 +231,7 @@ const Shop = () => {
               <SlidersHorizontal size={14} />
               <span className="hidden sm:inline">Filter</span>
             </button>
+          </div>
         </div>
       </div>
 
