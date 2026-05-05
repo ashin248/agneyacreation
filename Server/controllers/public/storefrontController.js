@@ -218,7 +218,7 @@ const syncUser = async (req, res) => {
     let isNewUser = false;
 
     if (!user) {
-      user = new User({ phone: phone.trim(), name: '', email: '', addresses: [] });
+      user = new User({ phone: phone.trim(), name: '', addresses: [] });
       await user.save();
       isNewUser = true;
     } else if (!user.name || !user.email) {

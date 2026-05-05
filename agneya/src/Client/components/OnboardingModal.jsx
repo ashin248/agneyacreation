@@ -112,7 +112,11 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
                 throw new Error("Failed to sync records.");
             }
         } catch (error) {
-            console.error("Onboarding Error:", error);
+            if (error.response?.status === 400) {
+                console.warn("Validation Warning:", error.response.data.message);
+            } else {
+                console.error("Onboarding Error:", error);
+            }
             const serverMessage = error.response?.data?.message || "System sync failed. Please attempt again.";
             toast.error(serverMessage);
         } finally {
