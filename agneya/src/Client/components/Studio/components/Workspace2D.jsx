@@ -115,7 +115,8 @@ const Workspace2D = forwardRef(({
         const canvas = fabricRef.current;
         const objects = canvas.getObjects();
         
-        const photos = [];
+        const photosBackground = [];
+        const photosForeground = [];
         const models = [];
         const slots = [];
         const topLayers = [];
@@ -126,14 +127,18 @@ const Workspace2D = forwardRef(({
             } else if (obj.isSlot) {
                 slots.push(obj);
             } else if (obj.uid?.startsWith('upload_') || obj.uid?.startsWith('up_') || obj.type === 'image' || obj.type === 'FabricImage' || obj.isPhoto) {
-                photos.push(obj);
+                if (obj.bringToFront) {
+                    photosForeground.push(obj);
+                } else {
+                    photosBackground.push(obj);
+                }
             } else {
                 topLayers.push(obj);
             }
         });
 
-        // Hierarchy: Photos (Bottom) -> Slots (Optional) -> Model Mask -> Top Layers (Text/Stickers)
-        const sortedObjects = [...photos, ...slots, ...models, ...topLayers];
+        // Hierarchy: Photos Background (Bottom) -> Slots -> Model Mask -> Photos Foreground -> Top Layers (Text/Stickers)
+        const sortedObjects = [...photosBackground, ...slots, ...models, ...photosForeground, ...topLayers];
         
         // Re-order without breaking internal Fabric state
         sortedObjects.forEach((obj, idx) => {
@@ -166,7 +171,7 @@ const Workspace2D = forwardRef(({
         fabricRef.current = canvas;
 
         const handleResize = () => {
-            if (!viewportRef.current || !fabricRef.current) return;
+            if (!viewportRef.current || !fabricRef.current || fabricRef.current.disposed) return;
             const { clientWidth: width, clientHeight: height } = viewportRef.current;
             
             const currentWidth = fabricRef.current.width || baseWidth;
@@ -229,7 +234,7 @@ const Workspace2D = forwardRef(({
                 uid: active.uid, type: active.type, text: active.text || '',
                 fill: active.fill || '#000000', scaleX: active.scaleX || 1, scaleY: active.scaleY || 1,
                 angle: active.angle || 0, opacity: active.opacity || 1, fontFamily: active.fontFamily || 'Inter',
-                left: active.left, top: active.top
+                left: active.left, top: active.top, bringToFront: !!active.bringToFront
             });
             setIsMobileUiMinimized(false);
         };
@@ -370,7 +375,13 @@ const Workspace2D = forwardRef(({
         const ImgClass = fabric.FabricImage || fabric.Image;
         const imgElement = new Image();
         imgElement.crossOrigin = 'anonymous';
+
+        let worker = null;
+        let workerUrl = null;
+        let isEffectActive = true;
+
         imgElement.onload = () => {
+            if (!isEffectActive || fabricRef.current !== canvas) return;
             if (existing) canvas.remove(existing);
             
             const img = new ImgClass(imgElement, {
@@ -415,17 +426,25 @@ const Workspace2D = forwardRef(({
             `;
             
             const blob = new Blob([workerCode], { type: 'application/javascript' });
-            const workerUrl = URL.createObjectURL(blob);
-            const worker = new Worker(workerUrl);
+            workerUrl = URL.createObjectURL(blob);
+            worker = new Worker(workerUrl);
             
             worker.postMessage({ imageData, width: tempCanvas.width, height: tempCanvas.height });
             
             worker.onmessage = (e) => {
+                if (!isEffectActive || fabricRef.current !== canvas) {
+                    worker?.terminate();
+                    return;
+                }
                 const { found, minX, minY, maxX, maxY } = e.data;
                 const contentWidth = found ? (maxX - minX + 1) : img.width;
                 const contentHeight = found ? (maxY - minY + 1) : img.height;
                 const offsetX = found ? minX : 0;
                 const offsetY = found ? minY : 0;
+                
+                // Final safety check before canvas operations
+                if (canvas.disposed || !canvas.lowerCanvasEl) return;
+
                 canvas.setDimensions({ width: contentWidth, height: contentHeight });
                 setCanvasIntrinsicDimensions({ width: contentWidth, height: contentHeight });
                 
@@ -441,11 +460,15 @@ const Workspace2D = forwardRef(({
                 enforceLayering();
                 
                 worker.terminate();
-                URL.revokeObjectURL(workerUrl);
+                if (workerUrl) URL.revokeObjectURL(workerUrl);
             };
             
             worker.onerror = (err) => {
                 console.error("Auto-crop worker failed", err);
+                if (!isEffectActive || fabricRef.current !== canvas || canvas.disposed || !canvas.lowerCanvasEl) {
+                    worker?.terminate();
+                    return;
+                }
                 canvas.setDimensions({ width: img.width, height: img.height });
                 setCanvasIntrinsicDimensions({ width: img.width, height: img.height });
                 img.set({ scaleX: 1, scaleY: 1, left: 0, top: 0 });
@@ -453,10 +476,17 @@ const Workspace2D = forwardRef(({
                 if (resizeRef.current) resizeRef.current();
                 enforceLayering();
                 worker.terminate();
-                URL.revokeObjectURL(workerUrl);
+                if (workerUrl) URL.revokeObjectURL(workerUrl);
             };
         };
         imgElement.src = current2DImageUrl;
+
+        return () => {
+            isEffectActive = false;
+            imgElement.onload = null;
+            if (worker) worker.terminate();
+            if (workerUrl) URL.revokeObjectURL(workerUrl);
+        };
     }, [current2DImageUrl, product?.phoneMask, viewSide, enforceLayering]);
 
     useEffect(() => {

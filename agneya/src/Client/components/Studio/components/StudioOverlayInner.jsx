@@ -20,6 +20,7 @@ import PropertyDock from './PropertyDock';
 import ToolModals from './ToolModals';
 import Workspace3D from './Workspace3D';
 import Workspace2D from './Workspace2D';
+import CropModal from './CropModal';
 
 export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
     const { userData } = useAuth();
@@ -74,6 +75,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     const fileRef = useRef(null);
     const viewportRef = useRef(null);
     const resizeRef = useRef(null);
+    const [cropModalData, setCropModalData] = useState(null);
 
     const premiumFonts = [
         'Inter', 'Montserrat', 'Bebas Neue', 'Playfair Display', 'Pacifico', 'Oswald', 'Dancing Script', 'Righteous',
@@ -178,6 +180,50 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             resetStudio(); 
         }
     }, [product?._id, isOpen, activeTemplateId, initialMode, setActiveStudioTab, setCanvasObjects, setActiveObject, setHistoryStep, product?.customizationType, product?.baseModelId, product?.base3DModelUrl, product?.model3d]);
+
+    useEffect(() => {
+        const handleOpenCropper = (e) => {
+            setCropModalData(e.detail);
+        };
+        window.addEventListener('OPEN_CROPPER', handleOpenCropper);
+        return () => window.removeEventListener('OPEN_CROPPER', handleOpenCropper);
+    }, []);
+
+    const handleCropComplete = async (croppedImage) => {
+        if (!cropModalData || !fabricRef.current) return;
+        const canvas = fabricRef.current;
+        const active = canvas.getObjects().find(o => o.uid === cropModalData.uid);
+        
+        if (active) {
+            const imgElement = new Image();
+            imgElement.crossOrigin = 'anonymous';
+            imgElement.onload = () => {
+                const ImgClass = fabric.FabricImage || fabric.Image;
+                const newImg = new ImgClass(imgElement, {
+                    left: active.left,
+                    top: active.top,
+                    scaleX: active.scaleX,
+                    scaleY: active.scaleY,
+                    angle: active.angle,
+                    opacity: active.opacity,
+                    uid: active.uid,
+                    isPhoto: active.isPhoto,
+                    isSlot: active.isSlot,
+                    slotId: active.slotId,
+                    clipPath: active.clipPath,
+                    bringToFront: active.bringToFront
+                });
+                
+                canvas.remove(active);
+                canvas.add(newImg);
+                canvas.setActiveObject(newImg);
+                canvas.renderAll();
+                updateTexture(true);
+                setCropModalData(null);
+            };
+            imgElement.src = croppedImage;
+        }
+    };
 
     const [isDrawing, setIsDrawing] = useState(false);
 
@@ -639,6 +685,13 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 activeObject={activeObject}
                 setActiveObject={setActiveObject}
             />
+            {cropModalData && (
+                <CropModal 
+                    image={cropModalData.image} 
+                    onCropComplete={handleCropComplete} 
+                    onClose={() => setCropModalData(null)} 
+                />
+            )}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiMaximize2, FiMinimize2, FiArrowUp, FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox } from 'react-icons/fi';
+import { FiMaximize2, FiMinimize2, FiArrowUp, FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox, FiCrop, FiRepeat } from 'react-icons/fi';
 
 export default function PropertyDock({ 
     fabricRef, brushColor, setBrushColor, updateTexture, fastSync, isDrawing, setIsDrawing,
@@ -114,10 +114,44 @@ export default function PropertyDock({
                                 </div>
                             </div>
 
-                            {/* Quick Actions */}
-                            <div className="flex gap-3 pt-4">
-                                <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="flex-1 h-14 bg-slate-50 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-slate-100"><FiMove size={14} /> Center Object</button>
-                                <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="flex-1 h-14 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm active:bg-rose-100"><FiTrash2 size={14} /> Remove Layer</button>
+                            {/* 3. QUICK ACTIONS & TOOLS */}
+                            <div className="space-y-4 px-1 pt-2">
+                                <div className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-widest">Selection Tools</div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {(activeObject.type === 'image' || activeObject.type === 'FabricImage' || activeObject.uid?.startsWith('upload_') || activeObject.uid?.startsWith('up_')) && (
+                                        <button 
+                                            onClick={() => {
+                                                const active = fabricRef.current.getActiveObject();
+                                                if (active) {
+                                                    const imgData = active.toDataURL();
+                                                    window.dispatchEvent(new CustomEvent('OPEN_CROPPER', { detail: { image: imgData, uid: active.uid } }));
+                                                }
+                                            }}
+                                            className="h-14 bg-indigo-50 border border-indigo-100 text-indigo-600 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-indigo-100"
+                                        >
+                                            <FiCrop size={14} /> Crop Photo
+                                        </button>
+                                    )}
+
+                                    {activeStudioTab === '2D_STUDIO' && (activeObject.type === 'image' || activeObject.type === 'FabricImage' || activeObject.uid?.startsWith('upload_')) && (
+                                        <button 
+                                            onClick={() => {
+                                                const active = fabricRef.current.getActiveObject();
+                                                if (active) {
+                                                    active.bringToFront = !active.bringToFront;
+                                                    updateTexture(true);
+                                                    setActiveObject(prev => ({ ...prev, bringToFront: active.bringToFront }));
+                                                }
+                                            }}
+                                            className={`h-14 border text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all ${activeObject.bringToFront ? 'bg-amber-50 border-amber-100 text-amber-600' : 'bg-slate-50 border-slate-100 text-[#0c0c2a]'}`}
+                                        >
+                                            <FiLayers size={14} /> {activeObject.bringToFront ? 'Front Layer' : 'Back Layer'}
+                                        </button>
+                                    )}
+                                    
+                                    <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 bg-slate-50 border border-slate-100 text-[#0c0c2a] text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 shadow-sm active:bg-slate-100"><FiMove size={14} /> Center</button>
+                                    <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="h-14 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-[20px] flex items-center justify-center gap-2 border border-rose-100 shadow-sm active:bg-rose-100"><FiTrash2 size={14} /> Remove</button>
+                                </div>
                             </div>
                         </div>
                     ) : (
