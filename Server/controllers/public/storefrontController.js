@@ -94,15 +94,23 @@ const getPublicProducts = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit, 10);
     const sort = req.query.sort;
+    const category = req.query.category;
     let sortObj = { createdAt: -1 }; // default newest
 
     if (sort === 'popular') {
       sortObj = { salesCount: -1, viewCount: -1, createdAt: -1 };
     } else if (sort === 'trending') {
       sortObj = { isTrending: -1, createdAt: -1 }; // Trending first, then newest
+    } else if (sort === 'most_searched') {
+      sortObj = { viewCount: -1, createdAt: -1 };
     }
 
-    let query = Product.find({ isActive: true }).sort(sortObj);
+    const filter = { isActive: true };
+    if (category && category.toLowerCase() !== 'all') {
+      filter.category = new RegExp(`^${category}$`, 'i'); // Case-insensitive exact match
+    }
+
+    let query = Product.find(filter).sort(sortObj);
 
     if (limit && limit > 0) {
       query = query.limit(limit);
