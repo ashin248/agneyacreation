@@ -80,8 +80,8 @@ const ProductDetails = () => {
                     // Fetch related products
                     if (res.data.category) {
                         const relatedRes = await axios.get(`/api/public/products?category=${res.data.category}`);
-                        if (relatedRes.data && Array.isArray(relatedRes.data)) {
-                          setRelatedProducts(relatedRes.data.filter(p => p._id !== productId).slice(0, 4));
+                        if (relatedRes.data && relatedRes.data.success && Array.isArray(relatedRes.data.data)) {
+                          setRelatedProducts(relatedRes.data.data.filter(p => p._id !== productId).slice(0, 4));
                         }
                     }
 
@@ -494,28 +494,14 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                {/* ── RELATED PRODUCTS ── Premium Section */}
+                {/* ── RELATED PRODUCTS ── */}
                 {relatedProducts.length > 0 && (
                     <div className="mt-24 mb-16">
                         {/* Section Header */}
-                        <div className="relative mb-14">
-                            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent" />
-                            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                                <div className="bg-[#FBFCFE] pr-8 space-y-2">
-                                    <p className="text-[9px] font-black uppercase tracking-[0.35em] text-indigo-400">You might also like</p>
-                                    <h3 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">
-                                        <span className="text-slate-900">Related </span>
-                                        <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Products</span>
-                                    </h3>
-                                </div>
-                                <button
-                                    onClick={() => navigate('/shop')}
-                                    className="bg-[#FBFCFE] pl-8 group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors whitespace-nowrap"
-                                >
-                                    View All
-                                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
+                        <div className="mb-6">
+                            <h3 className="text-2xl font-bold text-slate-900">
+                                You May Also Like
+                            </h3>
                         </div>
 
                         {/* Product Cards Grid */}

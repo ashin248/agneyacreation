@@ -236,47 +236,41 @@ const Shop = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {activeCategory === 'All' && !searchQuery && (
-          <div className="pt-6 pb-2 border-b border-slate-100 mb-6 space-y-10">
-            {products.filter(p => p.isTrending).length > 0 && (
+          <div className="pt-6 pb-8 mb-6 space-y-12 border-b border-slate-100">
+            {products.length > 0 && (
               <div>
-                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-4 flex items-center gap-2">
-                  <span className="w-2 h-6 bg-rose-500 rounded-full"></span> Trending Now
+                <h2 className="text-2xl font-bold text-slate-900 mb-5">
+                  Popular Products
                 </h2>
-                <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x">
-                  {products.filter(p => p.isTrending).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 8).map(product => (
-                    <div key={product._id} className="min-w-[200px] md:min-w-[240px] snap-start flex-shrink-0">
-                      <ProductCard product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                  {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 4).map(product => (
+                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
             )}
 
-            {products.some(p => p.salesCount > 0) && (
+            {products.length > 0 && (
               <div>
-                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-4 flex items-center gap-2">
-                  <span className="w-2 h-6 bg-indigo-500 rounded-full"></span> Popular Products
+                <h2 className="text-2xl font-bold text-slate-900 mb-5">
+                  Trending
                 </h2>
-                <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x">
-                  {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 8).map(product => (
-                    <div key={product._id} className="min-w-[200px] md:min-w-[240px] snap-start flex-shrink-0">
-                      <ProductCard product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                  {[...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4).map(product => (
+                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
             )}
 
-            {products.some(p => p.viewCount > 0) && (
+            {products.length > 0 && (
               <div>
-                <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-4 flex items-center gap-2">
-                  <span className="w-2 h-6 bg-emerald-500 rounded-full"></span> Most Searched
+                <h2 className="text-2xl font-bold text-slate-900 mb-5">
+                  Most Searched Products
                 </h2>
-                <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x">
-                  {[...products].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 8).map(product => (
-                    <div key={product._id} className="min-w-[200px] md:min-w-[240px] snap-start flex-shrink-0">
-                      <ProductCard product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                  {[...products].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 4).map(product => (
+                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
