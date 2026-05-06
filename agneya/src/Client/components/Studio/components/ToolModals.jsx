@@ -17,7 +17,7 @@ export default function ToolModals({
     return (
         <>
             {activeTab === 'uploads' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-auto max-h-[75vh] min-h-[40vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Assets</h4>
                         <div className="flex items-center gap-4">
@@ -76,7 +76,7 @@ export default function ToolModals({
             )}
 
             {activeTab === 'draw' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-auto max-h-[70vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-10"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Drawing Tools</h4><button onClick={() => setActiveTab(null)} className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><FiX /></button></div>
                     <div className="space-y-10">
                         <div className="space-y-6">
@@ -94,7 +94,7 @@ export default function ToolModals({
             )}
 
             {activeTab === 'text' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-auto max-h-[70vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Text</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="flex flex-col gap-4">
                         <button onClick={() => { addText('heading'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
@@ -104,7 +104,7 @@ export default function ToolModals({
             )}
 
             {activeTab === 'stickers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-[450px] xl:h-[350px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-auto max-h-[75vh] min-h-[40vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="grid grid-cols-4 gap-5">
                         {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{ __html: s.svg }} />)}
@@ -113,7 +113,7 @@ export default function ToolModals({
             )}
 
             {activeTab === 'layers' && (
-                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-[450px] xl:h-[400px] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-auto max-h-[75vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Layers</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
                     <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar pr-2">
                         {canvasObjects.length === 0 ? <div className="h-40 flex flex-col items-center justify-center text-slate-300 gap-4"><FiGrid size={24} /><span className="text-[9px] font-black uppercase tracking-[0.2em] italic">No Nodes Active</span></div> :

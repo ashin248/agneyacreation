@@ -466,7 +466,7 @@ const ProductDetails = () => {
                             {/* Customization Actions */}
                             {product.isCustomizable && product.customizationType !== 'None' && (
                                 <div className={`grid gap-3 pt-4 ${
-                                    (product.customizationType === 'Both') ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2'
+                                    (product.customizationType === 'Both') ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'
                                 }`}>
                                     {(product.customizationType === '3D' || product.customizationType === 'Both') && (
                                         <button 
@@ -474,7 +474,7 @@ const ProductDetails = () => {
                                                 setInitialStudioMode('3d');
                                                 setCustomizingProduct(product);
                                             })} 
-                                            className="h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
+                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
                                         >
                                             <Box size={18} className="group-hover:scale-110 transition-transform" /> 3D Studio
                                         </button>
@@ -491,7 +491,7 @@ const ProductDetails = () => {
                                                     setCustomizingProduct(product);
                                                 }
                                             })} 
-                                            className="h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
+                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
                                         >
                                             <ImageIcon size={18} className="group-hover:scale-110 transition-transform" /> 2D Canvas
                                         </button>
@@ -502,7 +502,7 @@ const ProductDetails = () => {
                                             setInitialStudioMode('company');
                                             setCustomizingProduct(product);
                                         })} 
-                                        className={`${product.customizationType === 'Both' ? 'col-span-2 md:col-span-1' : ''} h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:bg-indigo-600 hover:text-white transition-all active:scale-95 shadow-inner`}
+                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:bg-indigo-600 hover:text-white transition-all active:scale-95 shadow-inner`}
                                     >
                                         <PenTool size={18} /> Hire Designer
                                     </button>
@@ -532,7 +532,7 @@ const ProductDetails = () => {
 
                 {/* ── RELATED PRODUCTS ── */}
                 {relatedProducts.length > 0 && (
-                    <div className="mt-24 mb-16">
+                    <div className="mt-12 md:mt-24 mb-16">
                         {/* Section Header */}
                         <div className="flex items-end justify-between mb-8">
                             <div>

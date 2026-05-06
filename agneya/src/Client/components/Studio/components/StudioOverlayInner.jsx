@@ -480,7 +480,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
             `}</style>
 
-            <header className="h-[100px] shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b border-slate-100 bg-white/50 backdrop-blur-3xl">
+            <header className="h-16 md:h-20 shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b border-slate-100 bg-white/50 backdrop-blur-3xl">
                 <button onClick={onClose} className="w-12 h-12 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-all active:scale-90"><FiX size={24} /></button>
                 <div className="flex flex-col items-center">
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
