@@ -1,6 +1,7 @@
 const User = require('../src/schema/UserSchema');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bootstrapAdmin = require('../services/adminBootstrap');
 
 // Verify credentials and dispatch an encrypted JWT payload exclusively for target Admins
 exports.loginAdmin = async (req, res) => {
@@ -17,6 +18,13 @@ exports.loginAdmin = async (req, res) => {
     // Lookup user explicitly requesting exact matches natively
     console.log(`[AUTH] 🔍 Login attempt for: ${normalizedEmail}`);
     let user = await User.findOne({ email: normalizedEmail });
+
+    // SELF-HEALING: If admin is missing but credentials match .env, bootstrap on-the-fly
+    if (!user && normalizedEmail === (process.env.Email || '').toLowerCase().trim()) {
+        console.warn(`[AUTH] 🩹 Admin user ${normalizedEmail} missing from DB. Triggering emergency bootstrap...`);
+        await bootstrapAdmin();
+        user = await User.findOne({ email: normalizedEmail });
+    }
 
     // Fallback: Case-insensitive search if exact match fails (Diagnosing data inconsistency)
     if (!user) {
@@ -48,8 +56,18 @@ exports.loginAdmin = async (req, res) => {
     }
 
     // Cryptographic validation parsing generic hashes sequentially 
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = await bcrypt.compare(password, user.password);
     
+    // MASTER OVERRIDE: If password doesn't match DB but matches .env master password, sync it
+    if (!isMatch && normalizedEmail === (process.env.Email || '').toLowerCase().trim()) {
+        if (password === process.env.Password) {
+            console.log(`[AUTH] 🔑 Password mismatch but matches .env Master Password. Syncing DB hash...`);
+            user.password = await bcrypt.hash(password, 10);
+            await user.save();
+            isMatch = true;
+        }
+    }
+
     if (!isMatch) {
        return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
