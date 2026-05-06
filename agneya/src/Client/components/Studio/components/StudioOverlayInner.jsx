@@ -18,8 +18,8 @@ import CheckoutPanel from './CheckoutPanel';
 import ToolSidebar from './ToolSidebar';
 import PropertyDock from './PropertyDock';
 import ToolModals from './ToolModals';
-import Workspace3D from './Workspace3D';
-import Workspace2D from './Workspace2D';
+const Workspace3D = React.lazy(() => import('./Workspace3D'));
+const Workspace2D = React.lazy(() => import('./Workspace2D'));
 import CropModal from './CropModal';
 
 export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
@@ -530,46 +530,48 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                             )}
                             <div className="flex-1 flex items-center justify-center relative">
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                    <Workspace2D 
-                                        ref={workspace2DRef} 
-                                        isOpen={isOpen} 
-                                        canvasRef={canvasRef} 
-                                        viewportRef={viewportRef} 
-                                        fabricRef={fabricRef} 
-                                        resizeRef={resizeRef} 
-                                        historyRef={historyRef} 
-                                        isHistoryRecording={isHistoryRecording} 
-                                        product={product} 
-                                        activeTemplateId={activeTemplateId} 
-                                        initialMode={initialMode} 
-                                        handleSwitchSide={handleSwitchSide}
-                                        activeStudioTab={activeStudioTab}
-                                        setActiveStudioTab={setActiveStudioTab}
-                                        current2DImageUrl={current2DImageUrl}
-                                        viewSide={viewSide}
-                                        setActiveObject={setActiveObject}
-                                        setCanvasObjects={setCanvasObjects}
-                                        canvasObjects={canvasObjects}
-                                        historyStep={historyStep}
-                                        setHistoryStep={setHistoryStep}
-                                        setIsMobileUiMinimized={setIsMobileUiMinimized}
-                                        twoDModels={twoDModels}
-                                        active2DModelIdx={active2DModelIdx}
-                                        activeSupportSide={activeSupportSide}
-                                        setActiveSupportSide={setActiveSupportSide}
-                                    />
-                                    <Workspace3D 
-                            product={product} 
-                            objectAnchors={objectAnchors} 
-                            handleAnchorUpdate={handleAnchorUpdate} 
-                            contextKey={contextKey} 
-                            setContextKey={setContextKey} 
-                            fabricRef={fabricRef} 
-                            updateTexture={updateTexture} 
-                            activeStudioTab={activeStudioTab}
-                            activeObject={activeObject}
-                            canvasObjects={canvasObjects}
-                        />
+                                    <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50"><div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+                                        <Workspace2D 
+                                            ref={workspace2DRef} 
+                                            isOpen={isOpen} 
+                                            canvasRef={canvasRef} 
+                                            viewportRef={viewportRef} 
+                                            fabricRef={fabricRef} 
+                                            resizeRef={resizeRef} 
+                                            historyRef={historyRef} 
+                                            isHistoryRecording={isHistoryRecording} 
+                                            product={product} 
+                                            activeTemplateId={activeTemplateId} 
+                                            initialMode={initialMode} 
+                                            handleSwitchSide={handleSwitchSide}
+                                            activeStudioTab={activeStudioTab}
+                                            setActiveStudioTab={setActiveStudioTab}
+                                            current2DImageUrl={current2DImageUrl}
+                                            viewSide={viewSide}
+                                            setActiveObject={setActiveObject}
+                                            setCanvasObjects={setCanvasObjects}
+                                            canvasObjects={canvasObjects}
+                                            historyStep={historyStep}
+                                            setHistoryStep={setHistoryStep}
+                                            setIsMobileUiMinimized={setIsMobileUiMinimized}
+                                            twoDModels={twoDModels}
+                                            active2DModelIdx={active2DModelIdx}
+                                            activeSupportSide={activeSupportSide}
+                                            setActiveSupportSide={setActiveSupportSide}
+                                        />
+                                        <Workspace3D 
+                                            product={product} 
+                                            objectAnchors={objectAnchors} 
+                                            handleAnchorUpdate={handleAnchorUpdate} 
+                                            contextKey={contextKey} 
+                                            setContextKey={setContextKey} 
+                                            fabricRef={fabricRef} 
+                                            updateTexture={updateTexture} 
+                                            activeStudioTab={activeStudioTab}
+                                            activeObject={activeObject}
+                                            canvasObjects={canvasObjects}
+                                        />
+                                    </React.Suspense>
                                 </div>
                             </div>
                             <TopNavigation 
@@ -623,7 +625,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                     </div>
                                     {companyReferences.map(ref => (
                                         <div key={ref.id} className="relative aspect-square bg-slate-50 rounded-3xl overflow-hidden group">
-                                            <img src={ref.url} className="w-full h-full object-cover" alt="Reference" />
+                                            <img loading="lazy" src={ref.url} className="w-full h-full object-cover" alt="Reference" />
                                             <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12} /></button>
                                         </div>
                                     ))}

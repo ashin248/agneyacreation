@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 
 // Local Thumbnails
-const mugThumb = "/thumbnails/mug.png";
-const bookThumb = "/thumbnails/book.png";
-const cardThumb = "/thumbnails/business_card.png";
-const tshirtThumb = "/thumbnails/tshirt.png";
-const capThumb = "/thumbnails/cap.png";
-const plateThumb = "/thumbnails/plate.png";
+const mugThumb = "/thumbnails/mug.webp";
+const bookThumb = "/thumbnails/book.webp";
+const cardThumb = "/thumbnails/business_card.webp";
+const tshirtThumb = "/thumbnails/tshirt.webp";
+const capThumb = "/thumbnails/cap.webp";
+const plateThumb = "/thumbnails/plate.webp";
 
 // Professional Placeholders for remaining models
 const boxThumb = "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=512&auto=format&fit=crop";

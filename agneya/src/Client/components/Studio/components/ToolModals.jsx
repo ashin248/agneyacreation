@@ -40,7 +40,7 @@ export default function ToolModals({
                         <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4">
                             {uploadedAssets.map(a => (
                                 <div key={a.id} className="group relative aspect-square bg-slate-50 rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                                    <img src={a.url} onClick={() => {
+                                    <img loading="lazy" src={a.url} onClick={() => {
                                         const imgElement = new Image();
                                         imgElement.crossOrigin = 'anonymous';
                                         imgElement.onload = () => {

@@ -148,7 +148,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                 <td className="px-6 py-4">
                   <div className="relative w-14 h-14 rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/50 overflow-hidden flex items-center justify-center hover:border-indigo-400 transition-all cursor-pointer group">
                     {v?.previewUrl ? (
-                      <img src={v.previewUrl} alt="V" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                      <img loading="lazy" src={v.previewUrl} alt="V" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                     ) : (
                       <FiImage className="w-5 h-5 text-gray-300" />
                     )}

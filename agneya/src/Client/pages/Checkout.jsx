@@ -405,7 +405,7 @@ const Checkout = () => {
                 {checkoutItems.map((item, idx) => (
                   <div key={idx} className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <div className="w-14 h-16 bg-white rounded-lg overflow-hidden border border-slate-100 flex-shrink-0">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                      <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold text-slate-900 leading-tight truncate">{item.name}</p>

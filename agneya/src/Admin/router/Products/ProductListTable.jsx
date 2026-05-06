@@ -175,7 +175,7 @@ const ProductListTable = () => {
                                     <td className="py-3 px-6">
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
-                                                {img ? <img src={img} className="h-full w-full object-cover" alt="" /> : <FiBox className="m-auto text-gray-200" />}
+                                                {img ? <img loading="lazy" src={img} className="h-full w-full object-cover" alt="" /> : <FiBox className="m-auto text-gray-200" />}
                                             </div>
                                             <div>
                                                 <div className="font-black text-gray-900 tracking-tight text-[12px] uppercase truncate max-w-[150px]">{p.name}</div>

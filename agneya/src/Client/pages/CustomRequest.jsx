@@ -163,8 +163,7 @@ const CustomRequest = () => {
             {/* Product Card */}
             <div className="bg-white border border-slate-100 rounded-2xl p-5 flex items-center gap-5 shadow-sm">
               <div className="w-20 h-20 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 flex-shrink-0">
-                <img
-                  src={product.galleryImages?.[0] || product.images?.[0]}
+                <img loading="lazy"                   src={product.galleryImages?.[0] || product.images?.[0]}
                   alt={product.name}
                   className="w-full h-full object-contain"
                 />
@@ -209,7 +208,7 @@ const CustomRequest = () => {
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                 {previews.map((src, idx) => (
                   <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-100 bg-slate-50">
-                    <img src={src} className="w-full h-full object-cover" alt="Preview" />
+                    <img loading="lazy" src={src} className="w-full h-full object-cover" alt="Preview" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button onClick={() => removeFile(idx)} className="w-8 h-8 bg-white text-rose-500 rounded-full flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-md">
                         <X size={14} />

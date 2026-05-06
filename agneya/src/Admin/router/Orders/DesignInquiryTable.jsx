@@ -91,7 +91,7 @@ const DesignInquiryTable = () => {
                 {/* Client & Product Info */}
                 <div className="flex gap-6 items-start">
                   <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden flex-shrink-0 border border-gray-100 p-2">
-                    <img 
+                    <img loading="lazy" 
                       src={inquiry.appliedFrontDesign || inquiry.designImage || 'https://via.placeholder.com/150?text=No+Image'} 
                       alt="" 
                       className="w-full h-full object-contain mix-blend-multiply"
@@ -125,7 +125,7 @@ const DesignInquiryTable = () => {
                    <div className="flex gap-2">
                       {inquiry.printAssets?.slice(0, 3).map((asset, idx) => (
                         <div key={idx} className="w-8 h-8 rounded-lg border-2 border-white shadow-sm overflow-hidden bg-white">
-                           <img src={asset} className="w-full h-full object-cover" />
+                           <img loading="lazy" src={asset} className="w-full h-full object-cover" />
                         </div>
                       ))}
                       {inquiry.printAssets?.length > 3 && (
@@ -159,7 +159,7 @@ const DesignInquiryTable = () => {
               <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
                  <div className="flex items-center gap-6">
                     <div className="w-16 h-16 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-2">
-                       <img src={selectedInquiry.appliedFrontDesign || selectedInquiry.designImage} className="w-full h-full object-contain mix-blend-multiply" />
+                       <img loading="lazy" src={selectedInquiry.appliedFrontDesign || selectedInquiry.designImage} className="w-full h-full object-contain mix-blend-multiply" />
                     </div>
                     <div>
                        <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedInquiry.name}</h2>
@@ -219,7 +219,7 @@ const DesignInquiryTable = () => {
                             selectedInquiry.printAssets.map((asset, idx) => (
                               <div key={idx} className="group relative bg-white p-3 rounded-[32px] border border-gray-100 shadow-sm hover:border-indigo-200 transition-all">
                                  <div className="aspect-[4/5] rounded-[24px] overflow-hidden bg-gray-50 border border-gray-50">
-                                    <img src={asset} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={`Reference ${idx+1}`} />
+                                    <img loading="lazy" src={asset} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={`Reference ${idx+1}`} />
                                  </div>
                                  <div className="mt-3 flex items-center justify-between px-2 pb-1">
                                     <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Asset_{idx+1}.png</span>

@@ -434,7 +434,7 @@ const DesignReviewPanel = () => {
                             >
                                 <div className="flex gap-4 items-center relative">
                                     <div className="w-12 h-14 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0 border border-white p-1">
-                                        <img src={design.appliedFrontDesign || design.designImage} className="w-full h-full object-contain mix-blend-multiply" alt="preview" />
+                                        <img loading="lazy" src={design.appliedFrontDesign || design.designImage} className="w-full h-full object-contain mix-blend-multiply" alt="preview" />
                                     </div>
                                     <div className="flex-1 overflow-hidden">
                                         <div className="flex items-center justify-between mb-1">
@@ -494,7 +494,7 @@ const DesignReviewPanel = () => {
                                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                                                    {selectedDesign.printAssets?.map((asset, idx) => (
                                                       <div key={idx} className="group relative aspect-[4/5] bg-white rounded-3xl border-4 border-white shadow-xl overflow-hidden hover:scale-105 transition-all">
-                                                         <img src={asset} className="w-full h-full object-cover" />
+                                                         <img loading="lazy" src={asset} className="w-full h-full object-cover" />
                                                          <div className="absolute inset-0 bg-slate-900/80 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center p-4">
                                                             <a href={asset} target="_blank" rel="noreferrer" className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-900 mb-2 hover:bg-indigo-600 hover:text-white transition-colors">
                                                                <FiMaximize2 size={20} />

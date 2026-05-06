@@ -13,7 +13,7 @@ const Footer = () => {
           
           {/* 1. BRAND SECTOR (COMPACT) */}
           <div className="flex items-center gap-4">
-            <img src="/logo.png" alt="Agneya" className="w-10 h-10 object-contain bg-white rounded-xl p-1.5" />
+            <img loading="lazy" src="/logo.png" alt="Agneya" className="w-10 h-10 object-contain bg-white rounded-xl p-1.5" />
             <div className="flex flex-col">
               <span className="font-black text-lg tracking-tight uppercase leading-none">Agneya <span className="text-indigo-400">Creations</span></span>
               <span className="text-[7px] font-black text-slate-500 uppercase tracking-[0.4em]">Artistry & Precision</span>

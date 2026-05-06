@@ -248,7 +248,7 @@ const UserDashboard = () => {
                               <div className="flex -space-x-2">
                                 {order.items.slice(0, 3).map((item, i) => (
                                   <div key={i} className="w-10 h-10 rounded-xl border-2 border-white overflow-hidden bg-slate-100">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                   </div>
                                 ))}
                                 {order.items.length > 3 && (
@@ -402,7 +402,7 @@ const UserDashboard = () => {
                     {customDesigns.map(design => (
                       <div key={design._id} className="bg-white rounded-2xl border border-slate-100 p-5 flex gap-4 hover:shadow-sm transition-shadow">
                         <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 border border-slate-100">
-                          <img src={design.designImage} alt="Design" className="w-full h-full object-contain" />
+                          <img loading="lazy" src={design.designImage} alt="Design" className="w-full h-full object-contain" />
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wide">#{design._id.slice(-6).toUpperCase()}</span>
@@ -437,7 +437,7 @@ const UserDashboard = () => {
                     <div className="space-y-2 mb-4">
                       {order.items.map((item, i) => (
                         <div key={i} className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-                          <img src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                          <img loading="lazy" src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
                           <div>
                             <p className="text-sm font-semibold text-slate-900">{item.name}</p>
                             <p className="text-xs text-slate-400">{item.quantity} units</p>

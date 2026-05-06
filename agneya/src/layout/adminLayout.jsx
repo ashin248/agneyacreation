@@ -23,7 +23,7 @@ const AdminLayout = () => {
       <div className="w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col shadow-xl">
         <div className="p-8 border-b border-slate-800/50">
            <Link to="/" className="flex items-center gap-3">
-              <img src={logoImg} alt="Agneya" className="h-10 w-auto transition-transform hover:scale-105" />
+              <img loading="lazy" src={logoImg} alt="Agneya" className="h-10 w-auto transition-transform hover:scale-105" />
            </Link>
         </div>
 

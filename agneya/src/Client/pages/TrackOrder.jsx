@@ -136,7 +136,7 @@ const TrackingModal = ({ order, onClose }) => {
                 {order.items.map((item, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-100 flex-shrink-0">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-slate-800">{item.name}</p>
@@ -153,7 +153,7 @@ const TrackingModal = ({ order, onClose }) => {
             <div className="border-t border-slate-100 pt-5">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Custom Design</p>
               <div className="flex gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <img src={order.designImage} alt="Design" className="w-20 h-24 object-cover rounded-lg" />
+                <img loading="lazy" src={order.designImage} alt="Design" className="w-20 h-24 object-cover rounded-lg" />
                 <div>
                   <p className="text-sm font-bold text-slate-900">{order.productType}</p>
                   <p className="text-xs text-slate-400 mt-1">Quantity: {order.quantity}</p>
@@ -192,7 +192,7 @@ const OrderCard = ({ order, onTrack }) => {
     <div className="bg-white border border-slate-100 rounded-2xl p-4 flex items-center gap-4 hover:shadow-md hover:border-slate-200 transition-all duration-200 group">
       <div className="w-14 h-16 rounded-xl overflow-hidden bg-slate-50 flex-shrink-0 border border-slate-100 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
         {imageSrc ? (
-          <img src={imageSrc} alt="Order" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
+          <img loading="lazy" src={imageSrc} alt="Order" className="w-full h-full object-cover" onError={e => { e.target.style.display = 'none'; }} />
         ) : (
           <Package size={24} className="text-slate-200" strokeWidth={1.5} />
         )}

@@ -248,7 +248,7 @@ const BasicProductInfoForm = ({
               />
               {formData.category && (
                 <div className="w-10 h-10 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
-                  <img 
+                  <img loading="lazy" 
                     src={`https://image.pollinations.ai/prompt/${encodeURIComponent(formData.category)}%20product%20photography%20minimalist?width=100&height=100&nologo=true&seed=${formData.category.length}`} 
                     alt="Category Preview" 
                     className="w-full h-full object-cover"
@@ -392,7 +392,7 @@ const BasicProductInfoForm = ({
             <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
               {imagePreviews.map((preview, index) => (
                 <div key={index} className="relative group aspect-square rounded-xl overflow-hidden shadow-md border-2 border-gray-100 bg-white">
-                  {preview && <img src={preview} alt={`Gallery ${index}`} className="w-full h-full object-cover" />}
+                  {preview && <img loading="lazy" src={preview} alt={`Gallery ${index}`} className="w-full h-full object-cover" />}
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
@@ -514,7 +514,7 @@ const BasicProductInfoForm = ({
                           <div className="flex items-center gap-6">
                              <div className={`w-32 h-32 rounded-2xl border-2 flex items-center justify-center overflow-hidden bg-white ${model.mainModelPreview ? 'border-blue-500' : 'border-dashed border-gray-300'}`}>
                                {model.mainModelPreview ? (
-                                 <img src={model.mainModelPreview} className="w-full h-full object-contain" alt="Main Model" />
+                                 <img loading="lazy" src={model.mainModelPreview} className="w-full h-full object-contain" alt="Main Model" />
                                ) : (
                                  <FiImage className="text-gray-300" size={32} />
                                )}
@@ -568,7 +568,7 @@ const BasicProductInfoForm = ({
                                 <div key={sm.id} className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
                                    <div className={`w-16 h-16 rounded-xl border flex items-center justify-center overflow-hidden bg-gray-50 flex-shrink-0 ${sm.preview ? 'border-blue-400' : 'border-dashed border-gray-300'}`}>
                                       {sm.preview ? (
-                                        <img src={sm.preview} className="w-full h-full object-contain" alt="Support Model" />
+                                        <img loading="lazy" src={sm.preview} className="w-full h-full object-contain" alt="Support Model" />
                                       ) : (
                                         <FiImage className="text-gray-300" size={20} />
                                       )}
@@ -661,7 +661,7 @@ const BasicProductInfoForm = ({
                           formData.baseModelId === model?.id ? 'border-blue-600 ring-4 ring-blue-50' : 'border-gray-100 hover:border-blue-200'
                         }`}
                       >
-                        {model?.thumbnail && <img src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />}
+                        {model?.thumbnail && <img loading="lazy" src={model.thumbnail} alt={model.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-3">
                           <p className="text-[9px] font-black text-white uppercase tracking-tight leading-tight">{model?.name || '3D Asset'}</p>
                         </div>

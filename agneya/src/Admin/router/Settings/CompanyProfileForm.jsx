@@ -203,7 +203,7 @@ const CompanyProfileForm = () => {
                 <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">Active Logo</span>
                 {formData.logoUrl ? (
                   <div className="w-24 h-24 rounded-[32px] bg-white border border-gray-100 flex-shrink-0 overflow-hidden flex items-center justify-center p-4 shadow-xl shadow-blue-500/5">
-                    <img src={formData.logoUrl} alt="Store Logo" className="w-full h-full object-contain" />
+                    <img loading="lazy" src={formData.logoUrl} alt="Store Logo" className="w-full h-full object-contain" />
                   </div>
                 ) : (
                   <div className="w-24 h-24 rounded-[32px] bg-gray-50 border-2 border-dashed border-gray-100 flex-shrink-0 flex items-center justify-center text-gray-200">

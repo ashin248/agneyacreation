@@ -128,12 +128,12 @@ const OrderDetailsCard = () => {
                         <div className="flex items-center gap-1">
                             {item.image && (
                                 <div className="w-12 h-12 bg-white rounded-md border border-gray-200 overflow-hidden flex-shrink-0 p-0.5">
-                                    <img src={item.image} alt="Product" className="w-full h-full object-contain" />
+                                    <img loading="lazy" src={item.image} alt="Product" className="w-full h-full object-contain" />
                                 </div>
                             )}
                             {item.itemType === 'Custom' && item.designImage && (
                                 <div className="w-10 h-10 bg-gray-50 rounded-md border border-pink-200 overflow-hidden flex-shrink-0 relative -ml-3 z-10 shadow-sm">
-                                    <img src={item.designImage} alt="Custom Details" className="w-full h-full object-cover mix-blend-multiply" />
+                                    <img loading="lazy" src={item.designImage} alt="Custom Details" className="w-full h-full object-cover mix-blend-multiply" />
                                 </div>
                             )}
                         </div>
@@ -214,7 +214,7 @@ const OrderDetailsCard = () => {
                                   {item.customData.manualAttachments.map((url, imgIdx) => (
                                    <div key={imgIdx} className="group relative">
                                        <a href={url} target="_blank" rel="noreferrer" className="block rounded-[32px] overflow-hidden border-4 border-white shadow-xl w-36 h-40 hover:scale-105 transition-all hover:-rotate-1">
-                                         <img src={url} alt={`Attachment ${imgIdx + 1}`} className="object-cover w-full h-full" />
+                                         <img loading="lazy" src={url} alt={`Attachment ${imgIdx + 1}`} className="object-cover w-full h-full" />
                                          <div className="absolute inset-0 bg-indigo-600/90 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all text-white p-2">
                                             <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                             <span className="text-[9px] font-black uppercase tracking-widest">Full View</span>
@@ -273,7 +273,7 @@ const OrderDetailsCard = () => {
                                    {item.customData.appliedFrontDesign && (
                                      <div className="flex flex-col items-center">
                                        <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="group relative block rounded-2xl overflow-hidden border-4 border-white shadow-md w-24 h-28 hover:scale-105 transition-all">
-                                         <img src={item.customData.appliedFrontDesign} alt="Front" className="object-cover w-full h-full" />
+                                         <img loading="lazy" src={item.customData.appliedFrontDesign} alt="Front" className="object-cover w-full h-full" />
                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-bold">FRONT</div>
                                        </a>
                                      </div>
@@ -281,7 +281,7 @@ const OrderDetailsCard = () => {
                                    {item.customData.appliedBackDesign && (
                                      <div className="flex flex-col items-center">
                                        <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="group relative block rounded-2xl overflow-hidden border-4 border-white shadow-md w-24 h-28 hover:scale-105 transition-all">
-                                         <img src={item.customData.appliedBackDesign} alt="Back" className="object-cover w-full h-full" />
+                                         <img loading="lazy" src={item.customData.appliedBackDesign} alt="Back" className="object-cover w-full h-full" />
                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-bold">REAR</div>
                                        </a>
                                      </div>
@@ -296,7 +296,7 @@ const OrderDetailsCard = () => {
                             <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Artwork Asset</span>
                                <a href={item.customData.uploadedImageUrl} target="_blank" rel="noreferrer" className="group rounded-xl overflow-hidden border-2 border-white w-14 h-14 hover:border-indigo-500 transition-colors shadow-lg">
-                                 <img src={item.customData.uploadedImageUrl} alt="Artwork" className="object-cover w-full h-full" />
+                                 <img loading="lazy" src={item.customData.uploadedImageUrl} alt="Artwork" className="object-cover w-full h-full" />
                                </a>
                             </div>
                           )}

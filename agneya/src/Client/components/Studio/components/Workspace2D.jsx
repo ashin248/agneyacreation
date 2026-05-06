@@ -532,7 +532,7 @@ const Workspace2D = forwardRef(({
                         {/* Layer -1: Generic 2D Backdrop (Acrylics, Frames, Mugs) */}
                         {!product?.phoneMask && current2DImageUrl && (
                             <div className={`absolute inset-0 z-0 pointer-events-none flex items-center justify-center p-4 transition-opacity ${activeStudioTab === '2D_STUDIO' ? 'opacity-0' : 'opacity-100'}`}>
-                                <img 
+                                <img loading="lazy" 
                                     src={current2DImageUrl} 
                                     alt="Product Backdrop"
                                     className="w-full h-full object-contain"
@@ -686,14 +686,14 @@ const Workspace2D = forwardRef(({
                         {!product?.phoneMask && !product?.shapeConfig && (product?.frontMaskImage || product?.frontOverlayImage) && (
                             <div className="absolute inset-0 z-[25] pointer-events-none flex items-center justify-center p-4 transition-opacity">
                                 {product.frontMaskImage && (
-                                    <img 
+                                    <img loading="lazy" 
                                         src={product.frontMaskImage} 
                                         alt="Model Mask"
                                         className="absolute inset-0 w-full h-full object-contain mix-blend-multiply opacity-50"
                                     />
                                 )}
                                 {product.frontOverlayImage && (
-                                    <img 
+                                    <img loading="lazy" 
                                         src={product.frontOverlayImage} 
                                         alt="Model Overlay"
                                         className="absolute inset-0 w-full h-full object-contain mix-blend-screen opacity-40"
@@ -721,7 +721,7 @@ const Workspace2D = forwardRef(({
                                     }}
                                     className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                                 >
-                                    <img src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
+                                    <img loading="lazy" src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className="w-8 h-8 object-contain drop-shadow-md" />
                                     <span className="text-[8px] font-black uppercase">Main</span>
                                 </button>
                                 
@@ -734,7 +734,7 @@ const Workspace2D = forwardRef(({
                                         }}
                                         className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white scale-105 shadow-lg' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                                     >
-                                        <img src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
+                                        <img loading="lazy" src={sm.url} alt={sm.side} className="w-8 h-8 object-contain drop-shadow-md" />
                                         <span className="text-[8px] font-black uppercase">{sm.side}</span>
                                     </button>
                                 ))}

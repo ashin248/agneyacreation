@@ -224,7 +224,7 @@ const HomepageBannersGrid = () => {
                 
                 {/* Image Container */}
                 <div className="h-56 relative overflow-hidden bg-gray-50">
-                   <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                   <img loading="lazy" src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                    
                    {!banner.isActive && (
                     <div className="absolute inset-0 bg-gray-900/40 flex items-center justify-center">

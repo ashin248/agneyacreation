@@ -80,8 +80,7 @@ const Navbar = () => {
             {/* ── LOGO ── */}
             <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
               <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-sm ring-1 ring-slate-200 group-hover:ring-indigo-300 transition-all duration-300">
-                <img
-                  src="/logo.png"
+                <img loading="lazy"                   src="/logo.png"
                   alt="Agneya"
                   className="w-full h-full object-contain"
                 />
@@ -242,7 +241,7 @@ const Navbar = () => {
         {/* Drawer Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
           <Link to="/" className="flex items-center gap-2.5" onClick={() => setIsMobileMenuOpen(false)}>
-            <img src="/logo.png" alt="Agneya" className="w-8 h-8 object-contain rounded-lg" />
+            <img loading="lazy" src="/logo.png" alt="Agneya" className="w-8 h-8 object-contain rounded-lg" />
             <span className="text-sm font-black text-slate-900">Agneya</span>
           </Link>
           <button

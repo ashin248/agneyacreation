@@ -303,7 +303,7 @@ const ProductDetails = () => {
                         <div className="flex-1 relative order-1 md:order-2">
                             <div className="relative aspect-[4/5] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group">
                                 <div key={displayMainImage} className={`w-full h-full p-12 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
-                                  <img 
+                                  <img loading="lazy" 
                                       src={displayMainImage} 
                                       alt={product.name} 
                                       className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-110"
@@ -622,7 +622,7 @@ const ProductDetails = () => {
                                     setCustomizingProduct(product);
                                 }} className="cursor-pointer group">
                                     <div className="w-full aspect-square bg-white rounded-[24px] border-2 border-slate-100 overflow-hidden group-hover:border-indigo-600 group-hover:shadow-xl transition-all duration-300 p-6 mb-4">
-                                        <img src={model.mainModelUrl} alt={model.modelName || `Model ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
+                                        <img loading="lazy" src={model.mainModelUrl} alt={model.modelName || `Model ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
                                     </div>
                                     <p className="font-black text-[10px] uppercase tracking-widest text-center text-slate-500 group-hover:text-indigo-600 transition-colors">{model.modelName || `View ${idx + 1}`}</p>
                                 </div>

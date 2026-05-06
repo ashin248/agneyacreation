@@ -44,7 +44,7 @@ const TopProducts = ({ refreshKey }) => {
                <div key={prod._id} className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-50 hover:border-pink-200 transition-colors group">
                    <div className="flex items-center gap-4">
                        <div className="w-10 h-10 bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center">
-                           {prod.image ? <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" /> : <FiShoppingBag className="text-gray-300" />}
+                           {prod.image ? <img loading="lazy" src={prod.image} alt={prod.name} className="w-full h-full object-cover" /> : <FiShoppingBag className="text-gray-300" />}
                        </div>
                        <div>
                            <p className="text-xs font-black text-gray-900 uppercase group-hover:text-pink-600 transition-colors">{prod.name}</p>

@@ -85,7 +85,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       {/* 1. COMPACT MEDIA MODULE */}
       <div className="relative aspect-[4/4.5] overflow-hidden bg-slate-50 cursor-pointer group/media" onClick={() => navigate(`/product/${product._id}`)}>
         <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover/media:opacity-100 transition-opacity"></div>
-        <img
+        <img loading="lazy" 
           src={displayImg}
           alt={product.name}
           className="w-full h-full object-contain p-4 transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1"

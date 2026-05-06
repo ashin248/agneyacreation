@@ -151,7 +151,7 @@ const Shop = () => {
               {banners.map((b) => (
                 <div key={b._id} className="relative w-full h-full flex-shrink-0">
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-900/50 to-transparent z-10" />
-                  <img src={b.imageUrl} alt="Offer banner" className="w-full h-full object-cover" />
+                  <img loading="lazy" src={b.imageUrl} alt="Offer banner" className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>

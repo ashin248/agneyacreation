@@ -280,7 +280,7 @@ const BulkOrderMaster = () => {
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-12 bg-slate-50 rounded-lg overflow-hidden border border-slate-100 flex-shrink-0">
-                                <img src={product.galleryImages?.[0] || product.images?.[0] || ''} className="w-full h-full object-contain" alt="" />
+                                <img loading="lazy" src={product.galleryImages?.[0] || product.images?.[0] || ''} className="w-full h-full object-contain" alt="" />
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-slate-900 leading-tight">{product.name}</p>

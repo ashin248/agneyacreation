@@ -15,17 +15,18 @@ export default defineConfig({
     }
   },
   build: {
-    minify: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/fabric')) {
-            return 'vendor-fabric';
+          if (/[\\/]node_modules[\\/]/.test(id)) {
+            if (id.includes('fabric')) {
+              return 'vendor-fabric';
+            }
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'vendor-three';
+            }
           }
-          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
-            return 'vendor-three';
-          }
-          if (id.includes('Studio')) {
+          if (/[\\/]Studio[\\/]/.test(id)) {
             return 'studio-engine';
           }
         }
