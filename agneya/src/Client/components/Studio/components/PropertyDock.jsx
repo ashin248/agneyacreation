@@ -13,7 +13,7 @@ export default function PropertyDock({
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[600] pointer-events-none flex flex-col justify-end">
             
             {/* Slide-up Editor Drawer (pointer-events-auto) */}
-            <div className={`bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] transition-transform duration-500 pointer-events-auto flex flex-col border-t border-slate-100 ${isMobileUiMinimized ? 'translate-y-full' : 'translate-y-0'}`} style={{ maxHeight: '60vh', paddingBottom: '90px' }}>
+            <div className={`bg-white/95 backdrop-blur-xl rounded-t-[32px] shadow-[0_-20px_60px_rgba(0,0,0,0.1)] transition-transform duration-500 pointer-events-auto flex flex-col border-t border-slate-100 ${isMobileUiMinimized || !activeObject ? 'translate-y-full' : 'translate-y-0'}`} style={{ maxHeight: '60vh', paddingBottom: '90px' }}>
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 rounded-full cursor-pointer" onClick={() => setIsMobileUiMinimized(true)} />
                 
                 {/* Header of Drawer */}
@@ -36,7 +36,7 @@ export default function PropertyDock({
 
                 {/* Body of Drawer */}
                 <div className="overflow-y-auto px-6 py-6 space-y-8 no-scrollbar flex-1">
-                    {activeObject ? (
+                    {activeObject && (
                         <div className="space-y-8">
                             {/* SLIDERS */}
                             <div className="grid grid-cols-2 gap-x-8 gap-y-6">
@@ -136,11 +136,6 @@ export default function PropertyDock({
                                     <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="h-12 bg-rose-50 text-rose-500 text-[9px] font-black uppercase rounded-xl flex items-center justify-center gap-2 border border-rose-100"><FiTrash2 size={14} /> Remove</button>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center py-10 opacity-30">
-                            <FiBox size={48} className="text-[#0c0c2a] mb-6 animate-pulse" />
-                            <p className="text-[10px] font-black text-[#0c0c2a] uppercase tracking-[0.3em] leading-relaxed">No Selection<br />Active</p>
                         </div>
                     )}
                 </div>

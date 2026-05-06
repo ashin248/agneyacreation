@@ -243,7 +243,7 @@ const Shop = () => {
                 <h2 className="text-2xl font-bold text-slate-900 mb-5">
                   Popular Products
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                   {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 4).map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
@@ -256,7 +256,7 @@ const Shop = () => {
                 <h2 className="text-2xl font-bold text-slate-900 mb-5">
                   Trending
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                   {[...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4).map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
@@ -269,7 +269,7 @@ const Shop = () => {
                 <h2 className="text-2xl font-bold text-slate-900 mb-5">
                   Most Searched Products
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                   {[...products].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 4).map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}

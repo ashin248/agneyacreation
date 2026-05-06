@@ -661,6 +661,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 setActiveObject={setActiveObject}
                 canvasObjects={canvasObjects}
                 premiumFonts={premiumFonts}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                activeStudioTab={activeStudioTab}
+                isMobileUiMinimized={isMobileUiMinimized}
+                setIsMobileUiMinimized={setIsMobileUiMinimized}
             />
             <ToolModals 
                 uploadedAssets={uploadedAssets} 

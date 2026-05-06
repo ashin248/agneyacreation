@@ -301,7 +301,7 @@ const ProductDetails = () => {
 
                         {/* Main Product Showcase */}
                         <div className="flex-1 relative order-1 md:order-2">
-                            <div className="relative aspect-[4/5] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                            <div className="relative aspect-square md:aspect-[4/5] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group">
                                 <div key={displayMainImage} className={`w-full h-full p-12 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
                                   <img loading="lazy" 
                                       src={displayMainImage} 
@@ -327,7 +327,7 @@ const ProductDetails = () => {
                     </div>
 
                     {/* Right: Product Details & Actions */}
-                    <div className="lg:col-span-5 flex flex-col justify-center space-y-10 animate-in fade-in slide-in-from-right duration-700">
+                    <div className="lg:col-span-5 flex flex-col justify-center space-y-6 md:space-y-10 animate-in fade-in slide-in-from-right duration-700">
                         
                         {/* Title & Description */}
                         <div className="space-y-4">
@@ -446,14 +446,9 @@ const ProductDetails = () => {
                                         };
                                         requireLogin(() => navigate('/checkout', { state: { buyNowItem: commonItemData } }));
                                     }}
-                                    className="flex-1 relative overflow-hidden bg-slate-900 text-white rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-600/30 active:scale-95 group"
+                                    className="flex-1 flex items-center justify-center gap-3 bg-slate-900 text-white rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-600/30 active:scale-95 py-4 px-2"
                                 >
-                                    <div className="absolute inset-0 flex items-center justify-center gap-3 transition-transform duration-300 group-hover:-translate-y-full">
-                                        <ShoppingCart size={18} /> Add To Cart
-                                    </div>
-                                    <div className="absolute inset-0 flex items-center justify-center gap-2 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
-                                        Checkout • ₹{cartItemTotal.toLocaleString('en-IN')}
-                                    </div>
+                                    <ShoppingCart size={18} /> Add To Cart • ₹{cartItemTotal.toLocaleString('en-IN')}
                                 </button>
                             </div>
                             

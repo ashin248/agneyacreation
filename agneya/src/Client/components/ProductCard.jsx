@@ -85,7 +85,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       {/* 1. COMPACT MEDIA MODULE */}
       <div className="relative aspect-[4/4.5] overflow-hidden bg-slate-50 cursor-pointer group/media" onClick={() => navigate(`/product/${product._id}`)}>
         <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover/media:opacity-100 transition-opacity"></div>
-        <img loading="lazy" 
+        <img 
           src={displayImg}
           alt={product.name}
           className="w-full h-full object-contain p-4 transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1"
@@ -117,7 +117,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
         </button>
 
         {/* Quick Access HUD - Technical */}
-        <div className={`absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl p-2 flex items-center justify-between opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 border border-slate-100`}>
+        <div className={`absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl p-2 flex items-center justify-between opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 border border-slate-100 shadow-sm`}>
             <div className="flex gap-1.5 pl-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"></div>
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">In Stock</span>
