@@ -528,7 +528,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                     </button>
                                 </div>
                             )}
-                            <div className="flex-1 flex items-center justify-center relative">
+                            <div className={`flex-1 flex items-center justify-center relative transition-all duration-500 ease-out ${!isMobileUiMinimized && activeObject ? 'xl:translate-y-0 xl:scale-100 -translate-y-[15vh] scale-95' : 'translate-y-0 scale-100'}`}>
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
                                     <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50"><div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>}>
                                         <Workspace2D 
@@ -605,45 +605,46 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                         />
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full animate-in fade-in slide-in-from-bottom-8">
-                        <div className="w-full bg-white rounded-[48px] p-12 shadow-2xl border border-slate-100 flex flex-col gap-10">
-                            <header className="space-y-4">
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Design Assistance</h2>
-                                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">Describe your vision. Our professional design team will craft a high-fidelity version for your approval.</p>
-                            </header>
-                            <div className="space-y-6">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Project Brief & Instructions</label>
-                                <textarea value={companyInstructions} onChange={(e) => setCompanyInstructions(e.target.value)} placeholder="e.g., Use my logo on the center, add 'Agneya' in gold font below it. Keep the background minimal..." className="w-full h-48 bg-slate-50 border border-slate-100 rounded-[32px] p-8 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-slate-100 transition-all outline-none resize-none" />
-                            </div>
-                            <div className="space-y-6">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-3xl flex flex-col items-center justify-center gap-2 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
-                                        <input type="file" multiple onChange={(e) => { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = (ev) => setCompanyReferences(prev => [...prev, { id: Date.now() + Math.random(), url: ev.target.result }]); reader.readAsDataURL(file); }); }} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                        <FiArrowUp size={20} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
-                                        <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Upload</span>
-                                    </div>
-                                    {companyReferences.map(ref => (
-                                        <div key={ref.id} className="relative aspect-square bg-slate-50 rounded-3xl overflow-hidden group">
-                                            <img loading="lazy" src={ref.url} className="w-full h-full object-cover" alt="Reference" />
-                                            <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12} /></button>
-                                        </div>
-                                    ))}
+                    <div className="flex-1 flex flex-col w-full h-full relative">
+                        <div className="flex-1 overflow-y-auto px-4 sm:px-0 pb-[150px] pt-6 custom-scrollbar">
+                            <div className="max-w-3xl mx-auto w-full bg-white rounded-[40px] p-6 sm:p-10 shadow-xl border border-slate-100 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-8">
+                                <header className="space-y-2">
+                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Design Assistance</h2>
+                                    <p className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed">Describe your vision. Our professional design team will craft a high-fidelity version for your approval.</p>
+                                </header>
+                                <div className="space-y-4">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Project Brief & Instructions</label>
+                                    <textarea value={companyInstructions} onChange={(e) => setCompanyInstructions(e.target.value)} placeholder="e.g., Use my logo on the center, add 'Agneya' in gold font below it. Keep the background minimal..." className="w-full h-32 sm:h-40 bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-slate-100 transition-all outline-none resize-none" />
                                 </div>
+                                <div className="space-y-4">
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                                        <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
+                                            <input type="file" multiple onChange={(e) => { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = (ev) => setCompanyReferences(prev => [...prev, { id: Date.now() + Math.random(), url: ev.target.result }]); reader.readAsDataURL(file); }); }} className="absolute inset-0 opacity-0 cursor-pointer" />
+                                            <FiArrowUp size={20} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
+                                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Upload</span>
+                                        </div>
+                                        {companyReferences.map(ref => (
+                                            <div key={ref.id} className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden group">
+                                                <img loading="lazy" src={ref.url} className="w-full h-full object-cover" alt="Reference" />
+                                                <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12} /></button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button onClick={() => setActiveStudioTab((product?.customizationType === 'Both' || product?.customizationType === '3D') ? '3D_STUDIO' : '2D_STUDIO')} className="w-full py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to Creator Mode</button>
                             </div>
-                            <button onClick={() => setActiveStudioTab((product?.customizationType === 'Both' || product?.customizationType === '3D') ? '3D_STUDIO' : '2D_STUDIO')} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to Creator Mode</button>
                         </div>
-                        <div className="mt-8 w-full bg-slate-900 rounded-3xl p-6 flex items-center justify-between shadow-2xl animate-in slide-in-from-bottom-4">
-                            <div className="flex items-center gap-6">
-                                <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Base Price</span><span className="text-xl font-black text-white">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span></div>
-                                <div className="w-[1px] h-8 bg-white/10" />
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
+                        
+                        <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-4 sm:px-10 py-4 z-50 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)] animate-in slide-in-from-bottom-4">
+                            <div className="flex items-center gap-3 sm:gap-6">
+                                <div className="flex flex-col"><span className="text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Base Price</span><span className="text-lg sm:text-xl font-black text-slate-900">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span></div>
+                                <div className="hidden sm:block w-[1px] h-8 bg-slate-200" />
+                                <span className="hidden sm:block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
                             </div>
-                            <div className="flex gap-4">
-                                <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-12 px-8 bg-white text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 transition-all disabled:opacity-50 flex items-center gap-3 border border-slate-200">
-                                    {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Request Design</>}
-                                </button>
-                            </div>
+                            <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-12 sm:h-14 px-6 sm:px-8 bg-[#0c0c2a] text-white rounded-[20px] font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0">
+                                {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Request Design</>}
+                            </button>
                         </div>
                     </div>
                 )}
