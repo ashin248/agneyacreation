@@ -500,7 +500,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 </div>
             </header>
 
-            <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-0 sm:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
+            <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-[100px] xl:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {activeStudioTab !== 'DESIGN_ASSISTANCE' ? (
                     <>
                         <ToolSidebar 

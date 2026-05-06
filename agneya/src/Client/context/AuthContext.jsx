@@ -94,16 +94,24 @@ export function AuthProvider({ children }) {
       console.log("Diagnostic Info - Domain:", window.location.hostname);
       console.log("Diagnostic Info - Online Status:", window.navigator.onLine);
       
+      let friendlyMessage = "Authentication failed. Please try again.";
+      
       if (!window.navigator.onLine) {
-        toast.error("You appear to be offline. Please check your internet connection.");
+        friendlyMessage = "You appear to be offline. Please check your internet connection.";
       } else if (error.code === 'auth/network-request-failed') {
-        toast.error(`Network Error: Ensure '${window.location.hostname}' is added to Authorized Domains in Firebase Console.`);
+        friendlyMessage = "Network connection blocked. If you are using an Ad-Blocker, Brave Shields, or strict privacy extensions, please disable them for this site to login.";
       } else if (error.code === 'auth/too-many-requests') {
-        toast.error("Too many attempts. Please try again later.");
+        friendlyMessage = "Too many attempts. Please try again later.";
       } else {
-        toast.error(`Authentication Error: ${error.message}`);
+        friendlyMessage = `Authentication Error: ${error.message}`;
       }
-      throw error;
+      
+      toast.error(friendlyMessage);
+      
+      // Throw an error with the friendly message so the modal can display it cleanly
+      const customError = new Error(friendlyMessage);
+      customError.code = error.code;
+      throw customError;
     }
   };
 
