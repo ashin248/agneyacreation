@@ -61,8 +61,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         throw new Error("Please enter a valid 6-digit OTP.");
       }
       await verifyOtp(otp);
-      // After verification succeeds, we wait for AuthContext to sync userData
-      // We set loading to false so the useEffect can trigger
+      // Verification succeeded! Show immediate visual feedback.
+      setIsSuccess(true);
       setLoading(false);
     } catch (err) {
       setError(err.message || "Invalid OTP. Please check and try again.");
@@ -72,8 +72,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
 
   useEffect(() => {
-    if (userData && !loading && step === 2 && !isSuccess) {
-        setIsSuccess(true);
+    if (isSuccess && userData) {
         const isIncomplete = !userData.name || !userData.email || !userData.addresses || userData.addresses.length === 0;
         
         const timer = setTimeout(() => {
@@ -83,11 +82,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 if (onLoginSuccess) onLoginSuccess();
                 else if (onClose) onClose();
             }
-        }, 3000);
+        }, 1000);
         
         return () => clearTimeout(timer);
     }
-  }, [userData, loading, step, isSuccess]);
+  }, [userData, isSuccess, onLoginSuccess, onClose]);
 
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
@@ -150,7 +149,13 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               <button
                 type="submit"
                 disabled={loading || phoneNumber.length < 10 || isSuccess}
-                className={`w-full ${isSuccess ? 'bg-emerald-500' : 'bg-indigo-600 hover:bg-slate-900'} disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 group`}
+                className={`w-full ${
+                  isSuccess 
+                    ? 'bg-emerald-500 cursor-default' 
+                    : (loading || phoneNumber.length < 10) 
+                      ? 'bg-gray-300 cursor-not-allowed' 
+                      : 'bg-indigo-600 hover:bg-slate-900'
+                } text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 group`}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -181,7 +186,13 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
               <button
                 type="submit"
                 disabled={loading || otp.length < 6 || isSuccess}
-                className={`w-full ${isSuccess ? 'bg-emerald-500' : 'bg-indigo-600 hover:bg-slate-900'} disabled:bg-gray-300 text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2`}
+                className={`w-full ${
+                  isSuccess 
+                    ? 'bg-emerald-500 cursor-default' 
+                    : (loading || otp.length < 6) 
+                      ? 'bg-gray-300 cursor-not-allowed' 
+                      : 'bg-indigo-600 hover:bg-slate-900'
+                } text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2`}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
