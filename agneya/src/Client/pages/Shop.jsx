@@ -101,6 +101,24 @@ const Shop = () => {
     return () => clearInterval(t);
   }, [banners]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.05 });
+
+    // Small delay to ensure DOM is updated
+    setTimeout(() => {
+      const elements = document.querySelectorAll('.reveal-on-scroll');
+      elements.forEach(el => observer.observe(el));
+    }, 100);
+
+    return () => observer.disconnect();
+  }, [products, filteredProducts, activeCategory]);
+
   const toggleWishlist = async (id) => {
     const next = wishlist.includes(id) ? wishlist.filter(i => i !== id) : [...wishlist, id];
     setWishlist(next);
@@ -323,7 +341,7 @@ const Shop = () => {
             {activeCategory === 'All' && !searchQuery && (
               <div
                 onClick={() => navigate('/custom-mobile-cases')}
-                className="group relative cursor-pointer h-full"
+                className="group relative cursor-pointer h-full reveal-on-scroll"
               >
                 <div className="relative w-full h-full transition-all duration-500 group-hover:-translate-y-2 active:scale-[0.98]">
                   
@@ -366,16 +384,16 @@ const Shop = () => {
             )}
 
             {filteredProducts.map(product => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                wishlist={wishlist}
-                toggleWishlist={toggleWishlist}
-                addToCart={addToCart}
-                onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))}
-                requireLogin={requireLogin}
-               
-              />
+              <div key={product._id} className="reveal-on-scroll">
+                <ProductCard
+                  product={product}
+                  wishlist={wishlist}
+                  toggleWishlist={toggleWishlist}
+                  addToCart={addToCart}
+                  onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))}
+                  requireLogin={requireLogin}
+                />
+              </div>
             ))}
           </div>
         )}
@@ -391,7 +409,9 @@ const Shop = () => {
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                   {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 6).map(product => (
-                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    <div key={product._id} className="reveal-on-scroll">
+                      <ProductCard product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -405,7 +425,9 @@ const Shop = () => {
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                   {recommendedProducts.map(product => (
-                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    <div key={product._id} className="reveal-on-scroll">
+                      <ProductCard product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -462,14 +484,15 @@ const Shop = () => {
                 <button
                   key={opt}
                   onClick={() => { setSortBy(opt); setIsFilterOpen(false); }}
-                  className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all text-sm font-medium ${
+                  className={`w-full flex items-center justify-between p-4 rounded-xl transition-all text-sm font-medium ${
                     sortBy === opt
-                      ? 'bg-slate-900 border-slate-900 text-white'
-                      : 'bg-white border-slate-100 text-slate-600 hover:border-slate-200'
+                      ? 'neu-pressed'
+                      : 'neu-button hover:neu-pressed'
                   }`}
+                  style={{ color: 'var(--color-neu-text)' }}
                 >
                   {opt}
-                  {sortBy === opt && <Check size={16} className="text-emerald-400" />}
+                  {sortBy === opt && <Check size={16} style={{ color: 'var(--color-neu-accent)' }} />}
                 </button>
               ))}
             </div>

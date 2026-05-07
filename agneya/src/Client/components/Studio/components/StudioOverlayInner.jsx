@@ -480,7 +480,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     if (!isOpen) return null;
 
     return (
-        <div className={`fixed inset-0 z-[1000] bg-[#fafafa] flex flex-col transition-all duration-500 overflow-hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className={`fixed inset-0 z-[1000] flex flex-col transition-all duration-500 overflow-hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)', backgroundColor: 'var(--color-neu-bg)' }}>
             <style>{`
                 .pill-btn { border-radius: 9999px; transition: all 0.3s; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; font-size: 10px; }
                 .floating-card { background: white; border-radius: 42px; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
@@ -493,17 +493,17 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
             `}</style>
 
-            <header className="h-16 md:h-20 shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b border-slate-100 bg-white/50 backdrop-blur-3xl">
-                <button onClick={onClose} className="w-12 h-12 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 transition-all active:scale-90"><FiX size={24} /></button>
+            <header className="h-16 md:h-20 shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b" style={{ backgroundColor: 'var(--color-neu-bg)', borderColor: 'var(--color-neu-dark)' }}>
+                <button onClick={onClose} className="w-12 h-12 rounded-full neu-button flex items-center justify-center transition-all active:scale-90" style={{ color: 'var(--color-neu-text)' }}><FiX size={24} /></button>
                 <div className="flex flex-col items-center">
-                    <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
-                    <div className="flex bg-slate-100 p-1 rounded-full mt-2">
+                    <h1 className="text-sm sm:text-xl font-bold tracking-tight truncate max-w-[150px] sm:max-w-none" style={{ color: 'var(--color-neu-text)' }}>{product?.name || 'Agneya Design'}</h1>
+                    <div className="flex neu-pressed p-1 rounded-full mt-2">
                         {(product?.customizationType === 'Both' || product?.customizationType === '3D') && (
-                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '3D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
+                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== 'DESIGN_ASSISTANCE' && product?.customizationType !== 'None' ? { color: 'var(--color-neu-text)' } : {}}>DESIGN ASSISTANCE</button>
                         {(product?.customizationType === 'Both' || product?.customizationType === '2D') && (
-                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '2D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>2D STUDIO</button>
                         )}
                     </div>
                 </div>
@@ -546,8 +546,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 </div>
                             )}
                             <div className={`flex-1 flex items-center justify-center relative transition-all duration-500 ease-out ${!isMobileUiMinimized && activeObject ? 'xl:translate-y-0 xl:scale-100 -translate-y-[15vh] scale-95' : 'translate-y-0 scale-100'}`}>
-                                <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                    <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50"><div className="w-10 h-10 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+                                <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 neu-pressed rounded-[40px] overflow-hidden">
+                                    <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center z-50"><div className="w-10 h-10 border-4 border-[var(--color-neu-accent)] border-t-transparent rounded-full animate-spin"></div></div>}>
                                         <Workspace2D 
                                             ref={workspace2DRef} 
                                             isOpen={isOpen} 
@@ -629,14 +629,14 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 ) : (
                     <div className="flex-1 flex flex-col w-full h-full relative">
                         <div className="flex-1 overflow-y-auto px-4 sm:px-0 pb-[150px] pt-6 custom-scrollbar">
-                            <div className="max-w-3xl mx-auto w-full bg-white rounded-[40px] p-6 sm:p-10 shadow-xl border border-slate-100 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-8">
+                            <div className="max-w-3xl mx-auto w-full neu-flat rounded-[40px] p-6 sm:p-10 flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-8">
                                 <header className="space-y-2">
-                                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Design Assistance</h2>
-                                    <p className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed">Describe your vision. Our professional design team will craft a high-fidelity version for your approval.</p>
+                                    <h2 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: 'var(--color-neu-text)' }}>Design Assistance</h2>
+                                    <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest leading-relaxed opacity-70" style={{ color: 'var(--color-neu-text)' }}>Describe your vision. Our professional design team will craft a high-fidelity version for your approval.</p>
                                 </header>
                                 <div className="space-y-4">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Project Brief & Instructions</label>
-                                    <textarea value={companyInstructions} onChange={(e) => setCompanyInstructions(e.target.value)} placeholder="e.g., Use my logo on the center, add 'Agneya' in gold font below it. Keep the background minimal..." className="w-full h-32 sm:h-40 bg-slate-50 border border-slate-100 rounded-[24px] p-6 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-slate-100 transition-all outline-none resize-none" />
+                                    <label className="text-[9px] font-black uppercase tracking-widest ml-1" style={{ color: 'var(--color-neu-text)' }}>Project Brief & Instructions</label>
+                                    <textarea value={companyInstructions} onChange={(e) => setCompanyInstructions(e.target.value)} placeholder="e.g., Use my logo on the center, add 'Agneya' in gold font below it. Keep the background minimal..." className="w-full h-32 sm:h-40 neu-input rounded-[24px] p-6 text-sm font-medium transition-all resize-none" style={{ color: 'var(--color-neu-text)' }} />
                                 </div>
                                 <div className="space-y-4">
                                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
@@ -658,17 +658,16 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                             </div>
                         </div>
                         
-                        <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-4 sm:px-10 py-4 z-50 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.05)] animate-in slide-in-from-bottom-4">
-                            <div className="flex items-center gap-3 sm:gap-6">
-                                <div className="flex flex-col"><span className="text-[7px] sm:text-[8px] font-black text-slate-400 uppercase tracking-widest">Est. Base Price</span><span className="text-lg sm:text-xl font-black text-slate-900">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span></div>
-                                <div className="hidden sm:block w-[1px] h-8 bg-slate-200" />
-                                <span className="hidden sm:block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
+                        <div className="absolute bottom-0 left-0 right-0 neu-flat rounded-t-[40px] px-4 sm:px-10 py-4 z-50 flex items-center justify-between animate-in slide-in-from-bottom-4">
+                            <div className="flex items-center gap-3 sm:gap-6" style={{ color: 'var(--color-neu-text)' }}>
+                                <div className="flex flex-col"><span className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest opacity-70">Est. Base Price</span><span className="text-lg sm:text-xl font-black">₹ {(product?.discountPrice || product?.basePrice || 0).toLocaleString()}</span></div>
+                                <div className="hidden sm:block w-[1px] h-8" style={{ backgroundColor: 'var(--color-neu-dark)' }} />
+                                <span className="hidden sm:block text-[9px] font-bold uppercase tracking-widest opacity-70">Final pricing via design verification</span>
                             </div>
                             <button 
                                 onClick={() => handleFinalSubmit(false)} 
                                 disabled={isSubmitting} 
-                                className="h-12 sm:h-14 px-6 sm:px-8 text-white rounded-[20px] font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0"
-                                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                                className="h-12 sm:h-14 px-6 sm:px-8 neu-button-accent font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0"
                             >
                                 {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Request Design</>}
                             </button>

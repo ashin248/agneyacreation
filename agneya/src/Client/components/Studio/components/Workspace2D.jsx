@@ -519,7 +519,7 @@ const Workspace2D = forwardRef(({
             zIndex: activeStudioTab === '2D_STUDIO' ? 10 : -10,
             visibility: activeStudioTab === '2D_STUDIO' ? 'visible' : 'hidden'
         }}>
-            <div className="w-full h-full flex items-center justify-center relative bg-slate-100/30">
+            <div className="w-full h-full flex items-center justify-center relative" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
                 <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
                     <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
                         
@@ -704,9 +704,9 @@ const Workspace2D = forwardRef(({
 
                         {/* Quick Side Toggle */}
                         {(product?.blankFrontImage && product?.blankBackImage && twoDModels.length === 0) && (
-                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-xl z-30 border border-slate-100">
-                                <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Front View</button>
-                                <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'bg-[#0c0c2a] text-white' : 'text-slate-400 hover:text-slate-900'}`}>Back View</button>
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex neu-pressed p-1 rounded-[20px] z-30">
+                                <button onClick={() => handleSwitchSide('front')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'front' ? 'neu-button-accent' : 'neu-button'}`} style={viewSide !== 'front' ? { color: 'var(--color-neu-text)' } : {}}>Front View</button>
+                                <button onClick={() => handleSwitchSide('back')} className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewSide === 'back' ? 'neu-button-accent' : 'neu-button'}`} style={viewSide !== 'back' ? { color: 'var(--color-neu-text)' } : {}}>Back View</button>
                             </div>
                         )}
 

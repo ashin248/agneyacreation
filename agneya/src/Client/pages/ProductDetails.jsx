@@ -163,6 +163,24 @@ const ProductDetails = () => {
         fetchProduct();
     }, [productId]);
 
+    // IntersectionObserver for scroll animations
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        setTimeout(() => {
+            const elements = document.querySelectorAll('.reveal-on-scroll');
+            elements.forEach(el => observer.observe(el));
+        }, 100);
+
+        return () => observer.disconnect();
+    }, [product, relatedProducts]);
+
     // Update selected variation when color/size changes
     useEffect(() => {
       setOverrideImage(null);
@@ -284,7 +302,7 @@ const ProductDetails = () => {
                     </nav>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 reveal-on-scroll">
                     
                     {/* Left: Dynamic Image Gallery */}
                     <div className="lg:col-span-7 flex flex-col md:flex-row gap-6">
@@ -529,7 +547,7 @@ const ProductDetails = () => {
 
                 {/* ── RELATED PRODUCTS ── */}
                 {relatedProducts.length > 0 && (
-                    <div className="mt-12 md:mt-24 mb-16">
+                    <div className="mt-12 md:mt-24 mb-16 reveal-on-scroll">
                         {/* Section Header */}
                         <div className="flex items-end justify-between mb-8">
                             <div>
