@@ -313,8 +313,8 @@ const ProductDetails = () => {
 
                         {/* Main Product Showcase */}
                         <div className="flex-1 relative order-1 md:order-2">
-                            <div className="relative aspect-square md:aspect-auto md:h-[70vh] lg:h-[80vh] max-h-[800px] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group flex items-center justify-center">
-                                <div key={displayMainImage} className={`w-full h-full p-12 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
+                            <div className="relative aspect-square md:aspect-auto md:h-[450px] lg:h-[550px] w-full bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group flex items-center justify-center">
+                                <div key={displayMainImage} className={`w-full h-full p-6 md:p-8 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
                                   <img loading="lazy" 
                                       src={displayMainImage} 
                                       alt={product.name} 
@@ -515,23 +515,6 @@ const ProductDetails = () => {
                                     </button>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Trust Indicators */}
-                        <div className="grid grid-cols-4 gap-4 pt-8">
-                            {[
-                                { icon: <Truck size={18}/>, label: 'Fast Delivery' },
-                                { icon: <ShieldCheck size={18}/>, label: 'Quality Check' },
-                                { icon: <RotateCcw size={18}/>, label: 'Easy Returns' },
-                                { icon: <Share2 size={18}/>, label: 'Share Link' }
-                            ].map((badge, idx) => (
-                                <div key={idx} className="flex flex-col items-center gap-2 text-center group cursor-pointer">
-                                    <div className="w-10 h-10 rounded-[14px] bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
-                                        {badge.icon}
-                                    </div>
-                                    <span className="text-[7px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-600">{badge.label}</span>
-                                </div>
-                            ))}
                         </div>
 
                     </div>
