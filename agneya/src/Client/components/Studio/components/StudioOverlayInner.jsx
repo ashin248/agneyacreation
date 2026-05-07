@@ -244,11 +244,13 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     const saveCurrentToVariation = useCallback(() => {
         if (!fabricRef.current) return;
         const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
+        const snapshot = fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 });
         setVariations(prev => prev.map(v => v.id === activeVariationId ? {
             ...v,
             [`${viewSide}CanvasData`]: currentData,
             [`${viewSide}CanvasObjects`]: [...canvasObjects],
-            [`${viewSide}Anchors`]: { ...objectAnchors }
+            [`${viewSide}Anchors`]: { ...objectAnchors },
+            [`${viewSide}Snapshot`]: snapshot
         } : v));
     }, [activeVariationId, canvasObjects, objectAnchors, viewSide]);
 
@@ -277,12 +279,14 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         if (side === viewSide) return;
         if (fabricRef.current) {
             const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
+            const snapshot = fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 });
             setVariations(prev => {
                 const updatedVars = prev.map(v => v.id === activeVariationId ? {
                     ...v,
                     [`${viewSide}CanvasData`]: currentData,
                     [`${viewSide}CanvasObjects`]: [...canvasObjects],
-                    [`${viewSide}Anchors`]: { ...objectAnchors }
+                    [`${viewSide}Anchors`]: { ...objectAnchors },
+                    [`${viewSide}Snapshot`]: snapshot
                 } : v);
                 const target = updatedVars.find(v => v.id === activeVariationId);
                 const targetData = target[`${side}CanvasData`];
@@ -436,13 +440,22 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         try {
             const allItems = variations.map(v => {
                 const isCurrent = v.id === activeVariationId && fabricRef.current;
+                
+                // Get snapshots - use live canvas for current view, otherwise use stored snapshots
+                const frontSnap = (isCurrent && viewSide === 'front') 
+                    ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) 
+                    : v.frontSnapshot;
+                const backSnap = (isCurrent && viewSide === 'back') 
+                    ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) 
+                    : v.backSnapshot;
+
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
+                
                 const designPayload = !isCompanyMode ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData } : { mode: 'company', instructions: companyInstructions, references: companyReferences };
                 const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
-                const frontSnapshot = isCurrent && viewSide === 'front' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
-                const backSnapshot = isCurrent && viewSide === 'back' ? fabricRef.current.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 }) : null;
+
                 return {
                     productId: product?._id,
                     name: `[Custom] ${product?.name} - ${v.name}`,
@@ -450,12 +463,12 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     quantity: itemQty,
                     itemType: 'Custom',
                     selectedVariation: { sku: `custom_${v.id}`, size: 'Custom' },
-                    image: frontSnapshot || backSnapshot || product?.thumbnail || product?.images?.[0],
-                    designImage: frontSnapshot || backSnapshot || product?.thumbnail || product?.images?.[0],
+                    image: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
+                    designImage: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
                     isBulkEnabled: product?.isBulkEnabled,
                     bulkRules: product?.bulkRules,
                     gstRate: product?.gstRate || 0,
-                    customData: { design: designPayload, variationName: v.name, appliedFrontDesign: frontSnapshot, appliedBackDesign: backSnapshot }
+                    customData: { design: designPayload, variationName: v.name, appliedFrontDesign: frontSnap, appliedBackDesign: backSnap }
                 };
             });
             if (isBuyNow) { navigate('/checkout', { state: { buyNowItems: allItems } }); } else { for (const item of allItems) { await addToCart(item); } toast.success(`${allItems.length} Designs Synced.`); onClose(); navigate('/cart'); }
