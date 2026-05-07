@@ -163,42 +163,42 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
         )}
       </div>
 
-      {/* 2. CLEAN PREMIUM DETAILS */}
+      {/* 2. ULTRA-COMPACT DETAILS */}
       {!imageOnly && (
-        <div className="p-5 md:p-6 flex flex-col flex-1 gap-3 z-20 relative bg-white">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">{product.category || 'Premium'}</span>
-            <div className="flex items-center gap-1 text-slate-400">
-                <Star size={12} className="fill-amber-400 text-amber-400" />
-                <span className="text-xs font-bold">{product.rating || '5.0'}</span>
+        <div className="p-3 md:p-4 flex flex-col z-20 relative bg-white">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-indigo-600">{product.category || 'Premium'}</span>
+            <div className="flex items-center gap-0.5 text-slate-400">
+                <Star size={10} className="fill-amber-400 text-amber-400" />
+                <span className="text-[10px] font-bold">{product.rating || '5.0'}</span>
             </div>
           </div>
           
-          <h3 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight leading-snug line-clamp-2 min-h-[2.5rem]">
+          <h3 className="text-xs md:text-sm font-bold text-slate-900 leading-tight truncate mb-2">
             {product.name}
           </h3>
 
-          <div className="flex flex-col gap-1 mt-auto pt-4 border-t border-slate-100/60">
+          <div className="flex flex-col gap-1.5 mt-auto">
             {discount > 0 ? (
-                <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-slate-900 tracking-tighter">
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-sm md:text-base font-black text-slate-900 tracking-tight">
                         ₹{finalPrice.toLocaleString('en-IN')}
                     </span>
-                    <span className="text-xs text-slate-400 line-through font-bold">
+                    <span className="text-[10px] text-slate-400 line-through font-semibold">
                         ₹{originalPrice.toLocaleString('en-IN')}
                     </span>
                 </div>
             ) : (
-                <span className="text-2xl font-black text-slate-900 tracking-tighter">
+                <span className="text-sm md:text-base font-black text-slate-900 tracking-tight">
                     ₹{finalPrice.toLocaleString('en-IN')}
                 </span>
             )}
             {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
-                        Min Qty: {product.bulkRules[0].minQty}
+                <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        Min: {product.bulkRules[0].minQty}
                     </span>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50/50 border border-emerald-100 px-2 py-1 rounded">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50/50 border border-emerald-100 px-1.5 py-0.5 rounded">
                         ₹{product.bulkRules[0].pricePerUnit}/Unit
                     </span>
                 </div>
