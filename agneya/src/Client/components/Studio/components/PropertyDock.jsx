@@ -7,7 +7,8 @@ export default function PropertyDock({
     activeTab, setActiveTab, 
     isMobileUiMinimized, setIsMobileUiMinimized, 
     activeObject, setActiveObject,
-    premiumFonts
+    premiumFonts,
+    twoDModels
 }) {
     return (
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-[600] pointer-events-none flex flex-col justify-end">
@@ -157,6 +158,7 @@ export default function PropertyDock({
                     { id: 'text', icon: <FiType size={22} />, label: 'Text' },
                     { id: 'stickers', icon: <FiSmile size={22} />, label: 'Sticker' },
                     { id: 'draw', icon: <FiEdit3 size={22} />, label: 'Draw' },
+                    ...(twoDModels?.length > 0 ? [{ id: 'views', icon: <FiBox size={22} />, label: 'Views' }] : []),
                     { id: 'layers', icon: <FiLayers size={22} />, label: 'Layers' }
                 ].map(tab => (
                     <button key={tab.id} onClick={() => { setActiveTab(tab.id); if (tab.id !== 'draw') setIsDrawing(false); }} className={`flex-1 h-full flex flex-col items-center justify-center gap-1 transition-all ${activeTab === tab.id ? 'text-[#0c0c2a]' : 'text-slate-400 hover:text-[#0c0c2a]'}`}>

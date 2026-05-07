@@ -6,7 +6,8 @@ function ToolSidebar({
     fabricRef, brushColor, setBrushColor, updateTexture, fastSync, premiumFonts,
     activeTab, setActiveTab, 
     activeObject, setActiveObject, 
-    canvasObjects 
+    canvasObjects,
+    twoDModels, active2DModelIdx, activeSupportSide, handleSwitchSide
 }) {
     React.useEffect(() => {
         console.log('TRACE: ToolSidebar.jsx Rendered');
@@ -35,6 +36,12 @@ function ToolSidebar({
                             <FiZap size={20} className={isDrawing ? 'text-white' : 'text-slate-400 group-hover:text-[#0c0c2a]'} />
                             <span className="text-[9px] font-black uppercase tracking-widest">{isDrawing ? 'Stop Ink' : 'Ink Mode'}</span>
                         </button>
+                        {twoDModels?.length > 0 && (
+                            <button onClick={() => setActiveTab('views')} className={`h-16 rounded-3xl flex flex-col items-center justify-center gap-2 transition-all group shadow-sm col-span-2 ${activeTab === 'views' ? 'bg-[#4f46e5] text-white shadow-lg' : 'bg-slate-50 text-[#0c0c2a] border border-slate-100 hover:bg-slate-100'}`}>
+                                <FiBox size={16} className={activeTab === 'views' ? 'text-white' : 'text-slate-400 group-hover:text-[#0c0c2a]'} />
+                                <span className="text-[9px] font-black uppercase tracking-widest">Product Views</span>
+                            </button>
+                        )}
                     </div>
                 </div>
 

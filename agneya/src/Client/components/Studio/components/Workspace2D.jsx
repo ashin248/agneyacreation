@@ -710,37 +710,7 @@ const Workspace2D = forwardRef(({
                             </div>
                         )}
 
-                        {/* Dynamic 2D Models Navigation */}
-                        {twoDModels.length > 0 && twoDModels[active2DModelIdx] && (
-                            <div className="absolute top-4 right-4 flex flex-row items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-2xl z-30 border border-slate-100/50 pointer-events-auto">
-                                <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-3 hidden sm:block">Views</div>
-                                <div className="w-[1px] h-6 bg-slate-200 hidden sm:block"></div>
-                                <button 
-                                    onClick={() => {
-                                        handleSwitchSide(`model_${active2DModelIdx}_main`);
-                                        setActiveSupportSide('Main');
-                                    }}
-                                    className={`px-3 h-10 rounded-full flex items-center gap-2 transition-all ${activeSupportSide === 'Main' ? 'bg-[#0c0c2a] text-white shadow-lg scale-105' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-                                >
-                                    <img loading="lazy" src={twoDModels[active2DModelIdx].mainModelUrl} alt="Main" className={`w-5 h-5 object-contain drop-shadow-sm ${activeSupportSide === 'Main' ? 'brightness-0 invert' : ''}`} />
-                                    <span className="text-[8px] font-black uppercase hidden sm:block">Main</span>
-                                </button>
-                                
-                                {twoDModels[active2DModelIdx].supportModels?.map((sm, smIdx) => (
-                                    <button 
-                                        key={smIdx}
-                                        onClick={() => {
-                                            handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`);
-                                            setActiveSupportSide(sm.side);
-                                        }}
-                                        className={`px-3 h-10 rounded-full flex items-center gap-2 transition-all ${activeSupportSide === sm.side ? 'bg-[#0c0c2a] text-white shadow-lg scale-105' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
-                                    >
-                                        <img loading="lazy" src={sm.url} alt={sm.side} className={`w-5 h-5 object-contain drop-shadow-sm ${activeSupportSide === sm.side ? 'brightness-0 invert' : ''}`} />
-                                        <span className="text-[8px] font-black uppercase hidden sm:block">{sm.side}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                        {/* Views are now handled in ToolSidebar and PropertyDock */}
                     </div>
                 </div>
             </div>

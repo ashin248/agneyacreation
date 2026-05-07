@@ -11,8 +11,10 @@ export default function ToolModals({
     stickerLibrary, addSticker,
     activeTab, setActiveTab,
     setIsMobileUiMinimized,
+    setIsMobileUiMinimized,
     canvasObjects,
-    activeObject, setActiveObject
+    activeObject, setActiveObject,
+    twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide, handleSwitchSide
 }) {
     return (
         <>
@@ -132,6 +134,31 @@ export default function ToolModals({
                                     </div>
                                 </div>
                             ))}
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'views' && twoDModels?.length > 0 && (
+                <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-auto max-h-[75vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500 flex flex-col">
+                    <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Product Views</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-400" /></button></div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <button 
+                            onClick={() => { handleSwitchSide(`model_${active2DModelIdx}_main`); setActiveSupportSide('Main'); setActiveTab(null); }}
+                            className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === 'Main' ? 'border-[#0c0c2a] bg-slate-50 shadow-md' : 'border-slate-100 bg-white hover:border-[#0c0c2a]/30'}`}
+                        >
+                            <img loading="lazy" src={twoDModels[active2DModelIdx]?.mainModelUrl} alt="Main" className="w-12 h-12 object-contain drop-shadow-sm" />
+                            <span className="text-[9px] font-black uppercase">Main</span>
+                        </button>
+                        {twoDModels[active2DModelIdx]?.supportModels?.map((sm, smIdx) => (
+                            <button 
+                                key={smIdx}
+                                onClick={() => { handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`); setActiveSupportSide(sm.side); setActiveTab(null); }}
+                                className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === sm.side ? 'border-[#0c0c2a] bg-slate-50 shadow-md' : 'border-slate-100 bg-white hover:border-[#0c0c2a]/30'}`}
+                            >
+                                <img loading="lazy" src={sm.url} alt={sm.side} className="w-12 h-12 object-contain drop-shadow-sm" />
+                                <span className="text-[9px] font-black uppercase">{sm.side}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
             )}

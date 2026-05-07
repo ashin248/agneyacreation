@@ -519,6 +519,10 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                             activeObject={activeObject}
                             setActiveObject={setActiveObject}
                             canvasObjects={canvasObjects}
+                            twoDModels={twoDModels}
+                            active2DModelIdx={active2DModelIdx}
+                            activeSupportSide={activeSupportSide}
+                            handleSwitchSide={handleSwitchSide}
                         />
                         <div className="flex-1 flex flex-col relative h-full">
                             {isDrawing && (
@@ -667,6 +671,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 activeStudioTab={activeStudioTab}
                 isMobileUiMinimized={isMobileUiMinimized}
                 setIsMobileUiMinimized={setIsMobileUiMinimized}
+                twoDModels={twoDModels}
             />
             <ToolModals 
                 uploadedAssets={uploadedAssets} 
@@ -692,6 +697,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 canvasObjects={canvasObjects}
                 activeObject={activeObject}
                 setActiveObject={setActiveObject}
+                twoDModels={twoDModels}
+                active2DModelIdx={active2DModelIdx}
+                activeSupportSide={activeSupportSide}
+                setActiveSupportSide={setActiveSupportSide}
+                handleSwitchSide={handleSwitchSide}
             />
             {cropModalData && (
                 <CropModal 
