@@ -83,8 +83,8 @@ const Workspace2D = forwardRef(({
             // Full update generates DataURLs, Fast sync only updates matrices
             const snapshots = canvas.getObjects().filter(o => !o.excludeFromExport).map(obj => {
                 if (isFullUpdate || !obj._cachedDataUrl) {
-                    // Reduced multiplier to 1.2 to balance quality and GPU memory
-                    obj._cachedDataUrl = obj.toDataURL({ format: 'png', quality: 0.9, multiplier: 1.2 });
+                    // Optimized multiplier to 1.0 to save GPU memory while maintaining clarity
+                    obj._cachedDataUrl = obj.toDataURL({ format: 'png', quality: 0.8, multiplier: 1.0 });
                 }
                 return {
                     uid: obj.uid,

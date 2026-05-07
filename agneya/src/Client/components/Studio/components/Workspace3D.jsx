@@ -30,22 +30,31 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
         
         let isMounted = true;
         let createdTex = null;
+        let timeoutId = null;
 
-        const img = new Image();
-        img.onload = () => {
-            if (!isMounted) return;
-            createdTex = new THREE.Texture(img);
-            createdTex.colorSpace = THREE.SRGBColorSpace;
-            createdTex.anisotropy = 16;
-            createdTex.minFilter = THREE.LinearFilter;
-            createdTex.magFilter = THREE.LinearFilter;
-            createdTex.needsUpdate = true;
-            setTexture(createdTex);
-        };
-        img.src = obj.dataUrl;
+        // Debounce texture creation to avoid GPU spam during rapid edits
+        timeoutId = setTimeout(() => {
+            const img = new Image();
+            img.onload = () => {
+                if (!isMounted) return;
+                
+                // Cleanup previous texture if loading finished before this one
+                if (createdTex) createdTex.dispose();
+                
+                createdTex = new THREE.Texture(img);
+                createdTex.colorSpace = THREE.SRGBColorSpace;
+                createdTex.anisotropy = 4; // Lowered from 16 to save memory
+                createdTex.minFilter = THREE.LinearFilter;
+                createdTex.magFilter = THREE.LinearFilter;
+                createdTex.needsUpdate = true;
+                setTexture(createdTex);
+            };
+            img.src = obj.dataUrl;
+        }, 100);
 
         return () => {
             isMounted = false;
+            if (timeoutId) clearTimeout(timeoutId);
             if (createdTex) {
                 createdTex.dispose();
             }
@@ -84,16 +93,7 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
             depthWrite={false}
             polygonOffset={true}
             polygonOffsetFactor={isActive ? -2 : -1}
-        >
-            <meshStandardMaterial 
-                map={texture} 
-                transparent 
-                polygonOffset={true} 
-                polygonOffsetFactor={isActive ? -2 : -1} 
-                depthTest={true}
-                depthWrite={false}
-            />
-        </Decal>,
+        />,
         targetMesh
     );
 });
@@ -399,10 +399,10 @@ export default function Workspace3D({
                     </div>
                 </div>
                 <Canvas
-                    shadows={{ type: THREE.PCFShadowMap }}
+                    shadows={{ type: THREE.PCFSoftShadowMap }}
                     camera={{ position: [0, 0, 5], fov: 45 }}
-                    gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: true }}
-                    dpr={[1, 2]}
+                    gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: false }}
+                    dpr={[1, 1.5]}
                     onCreated={({ gl }) => {
                         gl.domElement.addEventListener('webglcontextlost', (e) => {
                             console.warn("3D Canvas WebGL Context Lost. Recovering...");
