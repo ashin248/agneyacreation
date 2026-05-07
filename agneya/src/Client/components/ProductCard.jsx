@@ -194,9 +194,14 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
                 </span>
             )}
             {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-1">
-                    Wholesale Pricing Active
-                </span>
+                <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                        Min Qty: {product.bulkRules[0].minQty}
+                    </span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50/50 border border-emerald-100 px-2 py-1 rounded">
+                        ₹{product.bulkRules[0].pricePerUnit}/Unit
+                    </span>
+                </div>
             )}
           </div>
         </div>

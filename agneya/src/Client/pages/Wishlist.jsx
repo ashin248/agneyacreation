@@ -126,7 +126,6 @@ const Wishlist = () => {
               <ProductCard
                 key={product._id}
                 product={product}
-                imageOnly={true}
                 wishlist={wishlistIds}
                 toggleWishlist={toggleWishlist}
                 addToCart={addToCart}

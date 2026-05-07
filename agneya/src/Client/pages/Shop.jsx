@@ -54,7 +54,8 @@ const Shop = () => {
         }
 
         if (!categoriesRes.data.success || !categoriesRes.data.data?.length) {
-          const unique = [...new Set(fetched.map(p => p.category).filter(Boolean))];
+          const normalizeCat = (c) => c ? c.charAt(0).toUpperCase() + c.slice(1).toLowerCase() : '';
+          const unique = [...new Set(fetched.map(p => p.category).filter(Boolean).map(normalizeCat))];
           setCategories([{ name: 'All', _id: 'all' }, ...unique.map(c => ({ name: c, _id: c }))]);
         }
       }
@@ -62,7 +63,10 @@ const Shop = () => {
       if (pulseRes.data.success) setBanners(pulseRes.data.data.banners || []);
 
       if (categoriesRes.data.success && categoriesRes.data.data?.length > 0) {
-        setCategories([{ name: 'All', _id: 'all' }, ...categoriesRes.data.data]);
+        const normalizeCat = (c) => c ? c.charAt(0).toUpperCase() + c.slice(1).toLowerCase() : '';
+        const apiCats = categoriesRes.data.data.map(c => typeof c === 'string' ? c : c.name).filter(Boolean);
+        const unique = [...new Set(apiCats.map(normalizeCat))];
+        setCategories([{ name: 'All', _id: 'all' }, ...unique.map(c => ({ name: c, _id: c }))]);
       }
     } catch (err) {
       console.error('Shop fetch error:', err);
@@ -330,7 +334,7 @@ const Shop = () => {
                 addToCart={addToCart}
                 onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))}
                 requireLogin={requireLogin}
-                imageOnly={true}
+               
               />
             ))}
           </div>
@@ -347,7 +351,7 @@ const Shop = () => {
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                   {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 6).map(product => (
-                    <ProductCard key={product._id} product={product} imageOnly={true} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
@@ -361,7 +365,7 @@ const Shop = () => {
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                   {recommendedProducts.map(product => (
-                    <ProductCard key={product._id} product={product} imageOnly={true} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
+                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
