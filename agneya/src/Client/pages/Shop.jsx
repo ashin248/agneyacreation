@@ -320,31 +320,47 @@ const Shop = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 mb-16">
             
-            {/* INJECTED DESIGN YOUR CASE CARD — Regular Grid Size */}
+            {/* INJECTED DESIGN YOUR CASE CARD — Sleek Phone Aesthetic */}
             {activeCategory === 'All' && !searchQuery && (
               <div
                 onClick={() => navigate('/custom-mobile-cases')}
                 className="group relative cursor-pointer"
               >
-                <div className="relative w-full h-full transition-all duration-500 group-hover:-translate-y-1 active:scale-[0.98]">
+                <div className="relative w-full transition-all duration-500 group-hover:-translate-y-2 active:scale-[0.98]">
+                  
+                  {/* Phone shell decoration (scaled down for card) */}
+                  <div className="absolute -left-[2px] top-[25%] w-[3px] h-6 bg-slate-700 rounded-l-sm z-20" />
+                  <div className="absolute -left-[2px] top-[35%] w-[3px] h-4 bg-slate-700 rounded-l-sm z-20" />
+                  <div className="absolute -right-[2px] top-[30%] w-[3px] h-8 bg-slate-700 rounded-r-sm z-20" />
+
                   <div
-                    className="relative w-full bg-slate-900 border-[3px] border-slate-700 overflow-hidden group-hover:border-orange-500/60 transition-colors duration-500 shadow-sm"
+                    className="relative w-full bg-slate-900 border-[2px] border-slate-700 overflow-hidden group-hover:border-orange-500/60 transition-colors duration-500 shadow-lg"
                     style={{ borderRadius: '24px', aspectRatio: '4/4.5' }}
                   >
                     {/* Gradient BG */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-600/60 via-purple-700/30 to-slate-900 z-0" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-600/40 via-purple-900/40 to-slate-950 z-0" />
                     
-                    {/* Screen content */}
+                    {/* Notch / Dynamic Island */}
+                    <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-[30%] h-[10px] bg-slate-950 rounded-full z-20 flex items-center justify-center gap-1">
+                      <div className="w-[4px] h-[4px] rounded-full bg-slate-800" />
+                      <div className="w-[3px] h-[3px] rounded-full bg-orange-500/40 animate-pulse" />
+                    </div>
+
+                    {/* Content */}
                     <div className="relative z-10 flex flex-col items-center justify-center h-full p-4 text-center">
-                      <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 shadow-[0_0_20px_rgba(247,148,29,0.3)] group-hover:scale-110 transition-transform duration-500 border border-white/10">
+                      <div className="w-10 h-10 rounded-2xl bg-white/5 backdrop-blur-md flex items-center justify-center text-white mb-2 shadow-xl border border-white/10 group-hover:scale-110 transition-transform">
                         <Smartphone size={20} />
                       </div>
-                      <p className="text-[8px] font-black text-white/70 uppercase tracking-[0.2em] mb-0.5">Design Your</p>
-                      <h2 className="text-sm font-black text-white uppercase tracking-tight leading-tight">Own Case</h2>
-                      <div className="mt-4 px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-[9px] font-black uppercase tracking-widest text-white group-hover:bg-orange-500 transition-colors">
+                      <p className="text-[7px] font-black text-white/50 uppercase tracking-[0.2em] mb-0.5">Premium Design</p>
+                      <h2 className="text-xs font-black text-white uppercase tracking-tight leading-tight">Design Your<br/>Own Case</h2>
+                      
+                      <div className="mt-4 px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-[8px] font-black uppercase tracking-[0.15em] text-white group-hover:bg-orange-500 group-hover:border-orange-400 transition-all">
                         Customize →
                       </div>
                     </div>
+
+                    {/* Bottom Bar Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[25%] h-[2px] bg-white/20 rounded-full z-20" />
                   </div>
                 </div>
               </div>
