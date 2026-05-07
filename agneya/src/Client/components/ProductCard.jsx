@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Eye, ShoppingCart, Star, Palette, Building2 } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Star, Palette, Building2, ArrowRight } from 'lucide-react';
 import { FiZap } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
@@ -110,6 +110,11 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
               {product.badge.label}
             </span>
           )}
+          {product.salesCount >= 10 && (
+            <span className="w-fit bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-xl border border-white/20 flex items-center gap-1">
+              <Star size={10} className="fill-white" /> Best Seller
+            </span>
+          )}
           {discount > 0 && (
             <span className="w-fit bg-slate-950 text-white text-[9px] font-black px-2.5 py-1 rounded-md shadow-xl border border-white/20">
               -{discount}%
@@ -145,10 +150,12 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
                   {product.isCustomizable && onCustomize && (
                     <button 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
-                        className="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
+                        className="h-8 px-2.5 flex items-center gap-1.5 bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all group/design"
                         aria-label="Customize"
                     >
-                        <Palette size={14} />
+                        <Palette size={12} />
+                        <span className="text-[9px] font-black uppercase tracking-widest hidden sm:block">Design</span>
+                        <ArrowRight size={12} className="group-hover/design:translate-x-1 transition-transform" />
                     </button>
                   )}
                   <button 

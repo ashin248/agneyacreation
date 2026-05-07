@@ -27,6 +27,7 @@ const Shop = () => {
   const [categories, setCategories] = useState(['All']);
   const [currentBanner, setCurrentBanner] = useState(0);
   const [maxPriceLimit, setMaxPriceLimit] = useState(10000);
+  const [minPriceLimit, setMinPriceLimit] = useState(0);
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
@@ -48,9 +49,16 @@ const Shop = () => {
         setProducts(fetched);
 
         if (fetched.length > 0) {
-          const highest = Math.max(...fetched.map(p => p.discountPrice || p.basePrice || 0), 100);
+          const validPrices = fetched.map(p => p.discountPrice || p.basePrice || 0).filter(p => p > 0);
+          const highest = validPrices.length ? Math.max(...validPrices) : 10000;
+          const lowest = validPrices.length ? Math.min(...validPrices) : 0;
+          
           setMaxPriceLimit(highest);
-          setPriceRange(prev => [prev[0], prev[1] === 10000 && !isSilent ? highest : prev[1]]);
+          setMinPriceLimit(lowest);
+          setPriceRange(prev => {
+             if (prev[0] === 0 && prev[1] === 10000 && !isSilent) return [lowest, highest];
+             return prev;
+          });
         }
 
         if (!categoriesRes.data.success || !categoriesRes.data.data?.length) {
@@ -121,7 +129,12 @@ const Shop = () => {
 
   const filteredProducts = products.filter(p => {
     const q = searchQuery.toLowerCase();
-    const matchSearch = p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q);
+    const matchSearch = 
+      p.name?.toLowerCase().includes(q) || 
+      p.description?.toLowerCase().includes(q) ||
+      p.category?.toLowerCase().includes(q) ||
+      (p.colors && p.colors.some(c => c.toLowerCase().includes(q))) ||
+      (p.tags && p.tags.some(t => t.toLowerCase().includes(q)));
     const matchCat = activeCategory === 'All' || p.category?.toLowerCase() === activeCategory.toLowerCase();
     const effectivePrice = p.discountPrice || p.basePrice || 0;
     const matchPrice = effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
@@ -400,16 +413,16 @@ const Shop = () => {
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-slate-800">Price Range</p>
               <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">
-                Up to ₹{priceRange[1].toLocaleString('en-IN')}
+                ₹{priceRange[0].toLocaleString('en-IN')} - ₹{priceRange[1].toLocaleString('en-IN')}
               </span>
             </div>
             <input
-              type="range" min={0} max={maxPriceLimit} value={priceRange[1]}
-              onChange={e => setPriceRange([0, Number(e.target.value)])}
+              type="range" min={minPriceLimit} max={maxPriceLimit} value={priceRange[1]}
+              onChange={e => setPriceRange([minPriceLimit, Number(e.target.value)])}
               className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-indigo-600"
             />
             <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium">
-              <span>₹0</span>
+              <span>₹{minPriceLimit.toLocaleString('en-IN')}</span>
               <span>₹{maxPriceLimit.toLocaleString('en-IN')}+</span>
             </div>
           </div>
