@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import StarRating from './StarRating';
 
-const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishlist, addToCart, requireLogin }) => {
+const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishlist, addToCart, requireLogin, imageOnly = false }) => {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
   const isWished = wishlist.includes(product._id);
@@ -83,16 +83,25 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       onMouseLeave={() => setHovered(false)}
     >
       {/* 1. COMPACT MEDIA MODULE */}
-      <div className="relative aspect-[4/4.5] overflow-hidden bg-slate-50 cursor-pointer group/media" onClick={() => navigate(`/product/${product._id}`)}>
-        <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover/media:opacity-100 transition-opacity"></div>
+      <div className={`relative ${imageOnly ? 'aspect-square' : 'aspect-[4/4.5]'} overflow-hidden bg-slate-50 cursor-pointer group/media flex-1`} onClick={() => navigate(`/product/${product._id}`)}>
+        <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover/media:opacity-100 transition-opacity z-0"></div>
         <img 
           src={displayImg}
           alt={product.name}
-          className="w-full h-full object-contain p-4 transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1"
+          className="w-full h-full object-contain p-4 transition-all duration-1000 group-hover:scale-110 group-hover:rotate-1 relative z-10"
           onError={e => { e.target.src = ''; }}
           loading="lazy"
           decoding="async"
         />
+
+        {/* Premium Image-Only Hover Overlay */}
+        {imageOnly && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/media:opacity-100 transition-all duration-500 z-30 bg-white/10 backdrop-blur-[2px]">
+            <div className="px-6 py-3 bg-slate-900/90 text-white rounded-[16px] font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl translate-y-4 group-hover/media:translate-y-0 transition-transform duration-500 border border-white/10 flex items-center gap-2">
+              <Eye size={14} /> View Details
+            </div>
+          </div>
+        )}
 
         {/* Dynamic HUD Overlays */}
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
@@ -117,90 +126,92 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
         </button>
 
         {/* Quick Access HUD - Technical */}
-        <div className={`absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl p-2 flex items-center justify-between opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 border border-slate-100 shadow-sm`}>
-            <div className="flex gap-1.5 pl-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"></div>
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">In Stock</span>
-            </div>
-            <div className="flex gap-1">
-                {onQuickView && (
+        {!imageOnly && (
+          <div className={`absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md rounded-2xl p-2 flex items-center justify-between opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 border border-slate-100 shadow-sm z-20`}>
+              <div className="flex gap-1.5 pl-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"></div>
+                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">In Stock</span>
+              </div>
+              <div className="flex gap-1">
+                  {onQuickView && (
+                    <button 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(product); }}
+                        className="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-900 hover:text-white transition-all"
+                        aria-label="Quick View"
+                    >
+                        <Eye size={14} />
+                    </button>
+                  )}
+                  {product.isCustomizable && onCustomize && (
+                    <button 
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
+                        className="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
+                        aria-label="Customize"
+                    >
+                        <Palette size={14} />
+                    </button>
+                  )}
                   <button 
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(product); }}
-                      className="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-xl text-slate-600 hover:bg-slate-900 hover:text-white transition-all"
-                      aria-label="Quick View"
+                      onClick={handleAddToCart}
+                      className="w-8 h-8 flex items-center justify-center bg-slate-900 rounded-xl text-white hover:bg-indigo-600 transition-all"
+                      aria-label="Add to Transaction"
                   >
-                      <Eye size={14} />
+                      <ShoppingCart size={14} />
                   </button>
-                )}
-                {product.isCustomizable && onCustomize && (
-                  <button 
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
-                      className="w-8 h-8 flex items-center justify-center bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"
-                      aria-label="Customize"
-                  >
-                      <Palette size={14} />
-                  </button>
-                )}
-                <button 
-                    onClick={handleAddToCart}
-                    className="w-8 h-8 flex items-center justify-center bg-slate-900 rounded-xl text-white hover:bg-indigo-600 transition-all"
-                    aria-label="Add to Transaction"
-                >
-                    <ShoppingCart size={14} />
-                </button>
-            </div>
-        </div>
+              </div>
+          </div>
+        )}
       </div>
 
       {/* 2. INDUSTRIAL SPECS MODULE */}
-      <div className="p-5 flex flex-col flex-1 gap-4">
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">{product.category || 'GENERIC'}</span>
-            <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
-                <Star size={10} className="fill-amber-400 text-amber-400" />
-                <span className="text-[9px] font-black text-slate-500 font-mono italic">{product.rating || '5.0'}</span>
-            </div>
-          </div>
-          <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-tighter leading-[1.1] line-clamp-2 italic">
-            {product.name}
-          </h3>
-        </div>
-
-        <div className="flex flex-col gap-0.5">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-slate-950 tracking-tighter font-mono">
-              ₹{finalPrice.toLocaleString('en-IN')}
-            </span>
-            {discount > 0 && (
-              <span className="text-[10px] text-slate-400 line-through font-black font-mono">
-                ₹{originalPrice.toLocaleString('en-IN')}
-              </span>
-            )}
-          </div>
-          
-          {/* B2B Intelligence Layer - Minimalist Mobile Tweak */}
-          <div className="hidden md:flex flex-col gap-1.5 mt-2 pt-3 border-t border-slate-100">
+      {!imageOnly && (
+        <div className="p-5 flex flex-col flex-1 gap-4 z-20 relative bg-white">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                    <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Ships in 24 Hours</span>
-                </div>
-                {product.isBulkEnabled && (
-                    <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Bulk Discount Available</span>
-                )}
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">{product.category || 'GENERIC'}</span>
+              <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
+                  <Star size={10} className="fill-amber-400 text-amber-400" />
+                  <span className="text-[9px] font-black text-slate-500 font-mono italic">{product.rating || '5.0'}</span>
+              </div>
             </div>
-            {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                <div className="bg-emerald-50 p-2 rounded-lg flex items-center justify-between border border-emerald-100">
-                    <span className="text-[8px] font-black text-slate-500 uppercase">Save on <span className="text-emerald-700">{product.bulkRules[0].minQty}+</span> Units</span>
-                    <span className="text-[9px] font-black text-emerald-600 font-mono italic">₹{product.bulkRules[0].pricePerUnit} OFF / UNIT</span>
-                </div>
-            )}
+            <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-tighter leading-[1.1] line-clamp-2 italic">
+              {product.name}
+            </h3>
+          </div>
+
+          <div className="flex flex-col gap-0.5 mt-auto">
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-black text-slate-950 tracking-tighter font-mono">
+                ₹{finalPrice.toLocaleString('en-IN')}
+              </span>
+              {discount > 0 && (
+                <span className="text-[10px] text-slate-400 line-through font-black font-mono">
+                  ₹{originalPrice.toLocaleString('en-IN')}
+                </span>
+              )}
+            </div>
+            
+            {/* B2B Intelligence Layer - Minimalist Mobile Tweak */}
+            <div className="hidden md:flex flex-col gap-1.5 mt-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                      <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Ships in 24 Hours</span>
+                  </div>
+                  {product.isBulkEnabled && (
+                      <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Bulk Discount Available</span>
+                  )}
+              </div>
+              {product.isBulkEnabled && product.bulkRules?.length > 0 && (
+                  <div className="bg-emerald-50 p-2 rounded-lg flex items-center justify-between border border-emerald-100">
+                      <span className="text-[8px] font-black text-slate-500 uppercase">Save on <span className="text-emerald-700">{product.bulkRules[0].minQty}+</span> Units</span>
+                      <span className="text-[9px] font-black text-emerald-600 font-mono italic">₹{product.bulkRules[0].pricePerUnit} OFF / UNIT</span>
+                  </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* ACTION HUD removed per user request */}
-      </div>
+      )}
     </div>
   );
 };
