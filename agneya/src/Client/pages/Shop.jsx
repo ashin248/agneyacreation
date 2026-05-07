@@ -155,12 +155,12 @@ const Shop = () => {
     }
 
     // 3. Ultimate Fallback to New Arrivals
-    if (recommended.length < 4) {
+    if (recommended.length < 6) {
       const newArrivals = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).filter(p => !recommended.some(r => r._id === p._id));
       recommended = [...recommended, ...newArrivals];
     }
 
-    return recommended.slice(0, 4);
+    return recommended.slice(0, 6);
   }, [products, wishlist]);
 
   if (loading) {
@@ -177,7 +177,7 @@ const Shop = () => {
 
       {/* ── HERO BANNER ── */}
       {banners.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
           <section className="relative w-full h-[120px] md:h-[180px] overflow-hidden rounded-2xl shadow-md group">
             <div
               className="flex h-full w-full transition-transform duration-700 ease-in-out"
@@ -218,7 +218,7 @@ const Shop = () => {
       )}
 
       {/* ── FILTER / SEARCH BAR ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
         <div className="sticky top-16 md:top-[70px] z-50 bg-slate-50/90 backdrop-blur-sm pt-2 pb-3">
           <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm">
 
@@ -270,7 +270,7 @@ const Shop = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
         
         {/* ── ALL PRODUCTS HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-6 gap-4">
@@ -298,7 +298,7 @@ const Shop = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 mb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 mb-16">
             
             {/* INJECTED DESIGN YOUR CASE CARD */}
             {activeCategory === 'All' && !searchQuery && (
@@ -345,8 +345,8 @@ const Shop = () => {
                   <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
                   Popular Products
                 </h2>
-                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-                  {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 4).map(product => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
+                  {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 6).map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
@@ -359,7 +359,7 @@ const Shop = () => {
                   <div className="w-2 h-8 bg-rose-500 rounded-full"></div>
                   Recommended For You
                 </h2>
-                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                   {recommendedProducts.map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}

@@ -163,52 +163,41 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
         )}
       </div>
 
-      {/* 2. INDUSTRIAL SPECS MODULE */}
+      {/* 2. CLEAN PREMIUM DETAILS */}
       {!imageOnly && (
-        <div className="p-5 flex flex-col flex-1 gap-4 z-20 relative bg-white">
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600">{product.category || 'GENERIC'}</span>
-              <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100">
-                  <Star size={10} className="fill-amber-400 text-amber-400" />
-                  <span className="text-[9px] font-black text-slate-500 font-mono italic">{product.rating || '5.0'}</span>
-              </div>
+        <div className="p-5 md:p-6 flex flex-col flex-1 gap-3 z-20 relative bg-white">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">{product.category || 'Premium'}</span>
+            <div className="flex items-center gap-1 text-slate-400">
+                <Star size={12} className="fill-amber-400 text-amber-400" />
+                <span className="text-xs font-bold">{product.rating || '5.0'}</span>
             </div>
-            <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-tighter leading-[1.1] line-clamp-2 italic">
-              {product.name}
-            </h3>
           </div>
+          
+          <h3 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight leading-snug line-clamp-2 min-h-[2.5rem]">
+            {product.name}
+          </h3>
 
-          <div className="flex flex-col gap-0.5 mt-auto">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-slate-950 tracking-tighter font-mono">
-                ₹{finalPrice.toLocaleString('en-IN')}
-              </span>
-              {discount > 0 && (
-                <span className="text-[10px] text-slate-400 line-through font-black font-mono">
-                  ₹{originalPrice.toLocaleString('en-IN')}
+          <div className="flex flex-col gap-1 mt-auto pt-4 border-t border-slate-100/60">
+            {discount > 0 ? (
+                <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-slate-900 tracking-tighter">
+                        ₹{finalPrice.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-xs text-slate-400 line-through font-bold">
+                        ₹{originalPrice.toLocaleString('en-IN')}
+                    </span>
+                </div>
+            ) : (
+                <span className="text-2xl font-black text-slate-900 tracking-tighter">
+                    ₹{finalPrice.toLocaleString('en-IN')}
                 </span>
-              )}
-            </div>
-            
-            {/* B2B Intelligence Layer - Minimalist Mobile Tweak */}
-            <div className="hidden md:flex flex-col gap-1.5 mt-2 pt-3 border-t border-slate-100">
-              <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                      <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Ships in 24 Hours</span>
-                  </div>
-                  {product.isBulkEnabled && (
-                      <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Bulk Discount Available</span>
-                  )}
-              </div>
-              {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                  <div className="bg-emerald-50 p-2 rounded-lg flex items-center justify-between border border-emerald-100">
-                      <span className="text-[8px] font-black text-slate-500 uppercase">Save on <span className="text-emerald-700">{product.bulkRules[0].minQty}+</span> Units</span>
-                      <span className="text-[9px] font-black text-emerald-600 font-mono italic">₹{product.bulkRules[0].pricePerUnit} OFF / UNIT</span>
-                  </div>
-              )}
-            </div>
+            )}
+            {product.isBulkEnabled && product.bulkRules?.length > 0 && (
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mt-1">
+                    Wholesale Pricing Active
+                </span>
+            )}
           </div>
         </div>
       )}

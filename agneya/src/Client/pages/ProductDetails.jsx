@@ -263,7 +263,7 @@ const ProductDetails = () => {
                 onLoginSuccess={() => setIsLoginModalOpen(false)} 
             />
             
-            <div className="max-w-7xl mx-auto px-6 pt-6">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-6">
                 
                 {/* Minimalist Header Navigation */}
                 <div className="flex items-center justify-between mb-8">
@@ -313,7 +313,7 @@ const ProductDetails = () => {
 
                         {/* Main Product Showcase */}
                         <div className="flex-1 relative order-1 md:order-2">
-                            <div className="relative aspect-square md:aspect-[4/5] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group">
+                            <div className="relative aspect-square md:aspect-auto md:h-[70vh] lg:h-[80vh] max-h-[800px] bg-white rounded-[40px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 group flex items-center justify-center">
                                 <div key={displayMainImage} className={`w-full h-full p-12 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
                                   <img loading="lazy" 
                                       src={displayMainImage} 
