@@ -99,7 +99,7 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
 
         {/* ── HEADER ── */}
         <div className="flex items-center gap-4 mb-8">
@@ -121,11 +121,12 @@ const Wishlist = () => {
         </div>
 
         {wishlistProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
             {wishlistProducts.map(product => (
               <ProductCard
                 key={product._id}
                 product={product}
+                imageOnly={true}
                 wishlist={wishlistIds}
                 toggleWishlist={toggleWishlist}
                 addToCart={addToCart}
