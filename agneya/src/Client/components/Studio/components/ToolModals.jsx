@@ -11,7 +11,6 @@ export default function ToolModals({
     stickerLibrary, addSticker,
     activeTab, setActiveTab,
     setIsMobileUiMinimized,
-    setIsMobileUiMinimized,
     canvasObjects,
     activeObject, setActiveObject,
     twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide, handleSwitchSide
