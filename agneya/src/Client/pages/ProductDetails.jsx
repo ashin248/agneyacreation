@@ -7,6 +7,7 @@ import {
   Heart, 
   ShoppingCart, 
   ChevronRight, 
+  ChevronLeft,
   Check,
   Truck,
   ShieldCheck,
@@ -48,6 +49,14 @@ const ProductDetails = () => {
     const [activeTemplateId, setActiveTemplateId] = useState(null);
     const [show2DModelSelector, setShow2DModelSelector] = useState(false);
     const [initial2DModelIdx, setInitial2DModelIdx] = useState(0);
+    const sliderRef = React.useRef(null);
+
+    const scrollSlider = (direction) => {
+        if (sliderRef.current) {
+            const scrollAmount = direction === 'left' ? -350 : 350;
+            sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
 
     const { currentUser, userData } = useAuth();
     const { addToCart: addToCartBase } = useCart();
@@ -532,7 +541,7 @@ const ProductDetails = () => {
                         <div className="flex items-end justify-between mb-8">
                             <div>
                                 <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
-                                    You May Also Like
+                                    Related Products
                                 </h3>
                                 <div className="h-1.5 w-12 bg-indigo-600 rounded-full mt-4"></div>
                             </div>
@@ -546,7 +555,22 @@ const ProductDetails = () => {
 
                         {/* Horizontal Scrollable Slider */}
                         <div className="relative group">
-                            <div className="flex gap-5 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 snap-x">
+                            {/* Navigation Arrows */}
+                            <button 
+                                onClick={() => scrollSlider('left')}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+                            
+                            <button 
+                                onClick={() => scrollSlider('right')}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+
+                            <div ref={sliderRef} className="flex gap-5 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 snap-x scroll-smooth">
                                 {relatedProducts.map((rel) => (
                                     <div key={rel._id} className="min-w-[240px] md:min-w-[280px] snap-start">
                                         <ProductCard 
