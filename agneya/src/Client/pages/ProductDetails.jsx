@@ -575,8 +575,9 @@ const ProductDetails = () => {
 
                             <div ref={sliderRef} className="flex gap-5 overflow-x-auto no-scrollbar pb-8 -mx-4 px-4 snap-x scroll-smooth">
                                 {relatedProducts.map((rel) => (
-                                    <div key={rel._id} className="min-w-[240px] md:min-w-[280px] snap-start">
+                                    <div key={rel._id} className="min-w-[240px] md:min-w-[280px] max-w-[300px] snap-start">
                                         <ProductCard 
+                                            imageOnly={true}
                                             product={{
                                                 ...rel,
                                                 // Inject model image as second image if it exists for hover effect
