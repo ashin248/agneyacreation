@@ -43,7 +43,7 @@ export function StudioProvider({ children, product, initialMode = 'self', initia
     }
 
     // Prepare context payload
-    const value = {
+    const value = useMemo(() => ({
         // Global Product Access
         product,
         
@@ -68,7 +68,12 @@ export function StudioProvider({ children, product, initialMode = 'self', initia
         
         // Submission
         isSubmitting, setIsSubmitting
-    };
+    }), [
+        product, activeStudioTab, designMode, activeTab, isMobileUiMinimized,
+        activeObject, canvasObjects, historyStep, historyLength,
+        twoDModels, active2DModelIdx, activeSupportSide, viewSide,
+        current2DImageUrl, isSubmitting
+    ]);
 
     return (
         <StudioContext.Provider value={value}>

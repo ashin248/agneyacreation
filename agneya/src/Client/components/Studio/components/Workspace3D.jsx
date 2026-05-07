@@ -366,7 +366,7 @@ function Model3D({
                     if (!anchor) return null;
                     return (
                         <CanvasObjectProjector
-                            key={`${obj.uid}-${obj.dataUrl.length}`}
+                            key={obj.uid}
                             obj={obj}
                             anchor={anchor}
                             isActive={activeObjectId === obj.uid}

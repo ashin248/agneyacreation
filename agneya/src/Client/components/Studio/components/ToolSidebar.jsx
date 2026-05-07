@@ -9,10 +9,6 @@ function ToolSidebar({
     canvasObjects,
     twoDModels, active2DModelIdx, activeSupportSide, handleSwitchSide
 }) {
-    React.useEffect(() => {
-        console.log('TRACE: ToolSidebar.jsx Rendered');
-    }, []);
-
     return (
         <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-col gap-3 xl:gap-4 shrink-0">
             <div className="floating-card flex-1 p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
