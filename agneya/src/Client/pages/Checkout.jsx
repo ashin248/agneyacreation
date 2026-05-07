@@ -10,6 +10,7 @@ import {
   ShieldCheck, Plus, Trash2, Truck, ArrowRight, Lock, ChevronLeft
 } from 'lucide-react';
 import { calculateDetailedFinancials } from '../utils/pricingUtils';
+import { loadRazorpay } from '../utils/razorpayLoader';
 
 const Checkout = () => {
   const { cart, cartTotal, clearCart } = useCart();
@@ -134,6 +135,15 @@ const Checkout = () => {
       try {
         const rzpRes = await axios.post('/api/public/payment/razorpay-order', { amount: checkoutTotal });
         if (!rzpRes.data.success) throw new Error('Payment init failed');
+        
+        const isLoaded = await loadRazorpay();
+        if (!isLoaded) {
+          alert('Could not load Razorpay. Please check your internet connection.');
+          setIsProcessingPayment(false);
+          setIsSubmitting(false);
+          return;
+        }
+
         const rzp = new window.Razorpay({
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: rzpRes.data.order.amount, currency: 'INR',
