@@ -128,6 +128,41 @@ const Shop = () => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
+  const recommendedProducts = React.useMemo(() => {
+    if (!products.length) return [];
+    let recommended = [];
+    
+    // 1. Try to match by Wishlist categories
+    if (wishlist && wishlist.length > 0) {
+      const wishlistedProducts = products.filter(p => wishlist.includes(p._id));
+      const wishlistCategories = [...new Set(wishlistedProducts.map(p => p.category))].filter(Boolean);
+      if (wishlistCategories.length > 0) {
+        recommended = products.filter(p => wishlistCategories.includes(p.category) && !wishlist.includes(p._id));
+      }
+    }
+
+    // 2. Fallback to Recently Viewed logic
+    if (recommended.length < 4) {
+      const recentlyViewedStr = localStorage.getItem('recentlyViewed');
+      if (recentlyViewedStr) {
+        try {
+          const viewed = JSON.parse(recentlyViewedStr);
+          const viewedCategories = [...new Set(viewed.map(v => v.category))].filter(Boolean);
+          const moreRec = products.filter(p => viewedCategories.includes(p.category) && !recommended.some(r => r._id === p._id));
+          recommended = [...recommended, ...moreRec];
+        } catch(e) {}
+      }
+    }
+
+    // 3. Ultimate Fallback to New Arrivals
+    if (recommended.length < 4) {
+      const newArrivals = [...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).filter(p => !recommended.some(r => r._id === p._id));
+      recommended = [...recommended, ...newArrivals];
+    }
+
+    return recommended.slice(0, 4);
+  }, [products, wishlist]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -235,12 +270,79 @@ const Shop = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        
+        {/* ── ALL PRODUCTS HEADER ── */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-6 gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase">All Products</h1>
+            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">{filteredProducts.length} products</p>
+          </div>
+        </div>
+
+        {/* ── PRODUCT GRID ── */}
+        {filteredProducts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[32px] border border-slate-100 shadow-sm gap-5 mb-12">
+            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 border-8 border-white shadow-xl">
+              <ShoppingBag size={28} />
+            </div>
+            <div className="text-center">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">No products found</h3>
+              <p className="text-sm font-medium text-slate-400 mt-2">Try adjusting your filters.</p>
+            </div>
+            <button
+              onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); }}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-50 text-indigo-600 rounded-[16px] font-black uppercase text-[10px] tracking-widest hover:bg-indigo-600 hover:text-white transition-all hover:shadow-lg hover:shadow-indigo-600/20"
+            >
+              <RotateCcw size={14} /> Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-5 mb-16">
+            
+            {/* INJECTED DESIGN YOUR CASE CARD */}
+            {activeCategory === 'All' && !searchQuery && (
+              <div 
+                onClick={() => navigate('/custom-mobile-cases')}
+                className="group relative bg-slate-900 rounded-[24px] overflow-hidden transition-all duration-500 cursor-pointer aspect-square flex flex-col items-center justify-center border border-slate-800 hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.3)] hover:-translate-y-1 active:scale-[0.99]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/40 via-purple-600/20 to-slate-900 z-0"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601593346740-925612772716?w=500&q=80')] opacity-20 bg-cover bg-center mix-blend-overlay group-hover:scale-110 group-hover:rotate-3 transition-all duration-1000"></div>
+                <div className="relative z-10 flex flex-col items-center justify-center p-6 text-center h-full w-full">
+                  <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-4 shadow-[0_0_30px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-500">
+                    <Smartphone size={24} />
+                  </div>
+                  <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-1 group-hover:text-indigo-200 transition-colors">Design Your</h3>
+                  <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 uppercase tracking-tighter">Own Case</h2>
+                  <div className="mt-4 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[8px] font-black uppercase tracking-[0.2em] text-white opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                    Start Customizing →
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {filteredProducts.map(product => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                wishlist={wishlist}
+                toggleWishlist={toggleWishlist}
+                addToCart={addToCart}
+                onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))}
+                requireLogin={requireLogin}
+                imageOnly={true}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* ── SPECIAL SECTIONS (Popular & Recommended) ── */}
         {activeCategory === 'All' && !searchQuery && (
-          <div className="pt-6 pb-8 mb-6 space-y-12 border-b border-slate-100">
+          <div className="pt-10 pb-8 space-y-16 border-t-2 border-slate-100/60">
             {products.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-5">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-8 flex items-center gap-3">
+                  <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
                   Popular Products
                 </h2>
                 <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
@@ -251,80 +353,19 @@ const Shop = () => {
               </div>
             )}
 
-            {products.length > 0 && (
+            {recommendedProducts.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-5">
-                  Trending
+                <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-8 flex items-center gap-3">
+                  <div className="w-2 h-8 bg-rose-500 rounded-full"></div>
+                  Recommended For You
                 </h2>
                 <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-                  {[...products].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 4).map(product => (
+                  {recommendedProducts.map(product => (
                     <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
                   ))}
                 </div>
               </div>
             )}
-
-            {products.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-5">
-                  Most Searched Products
-                </h2>
-                <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-                  {[...products].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 4).map(product => (
-                    <ProductCard key={product._id} product={product} wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))} requireLogin={requireLogin} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── PAGE HEADER ROW ── */}
-        <div className="flex items-center justify-between mt-3 mb-4">
-          <div>
-            <h1 className="text-xl font-bold text-slate-900">Collections</h1>
-            <p className="text-sm text-slate-400 mt-0.5">{filteredProducts.length} products</p>
-          </div>
-          <button
-            onClick={() => navigate('/custom-mobile-cases')}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl hover:bg-indigo-600 hover:text-white transition-all text-sm font-semibold"
-          >
-            <Smartphone size={15} />
-            <span className="hidden sm:inline">Design Your Case</span>
-            <ArrowRight size={14} />
-          </button>
-        </div>
-
-        {/* ── PRODUCT GRID ── */}
-        {filteredProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-slate-100 shadow-sm gap-5">
-            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 border-4 border-white shadow">
-              <ShoppingBag size={24} />
-            </div>
-            <div className="text-center">
-              <h3 className="text-base font-bold text-slate-800">No products found</h3>
-              <p className="text-sm text-slate-400 mt-1">Try adjusting your filters.</p>
-            </div>
-            <button
-              onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl font-semibold text-sm hover:bg-indigo-600 hover:text-white transition-all"
-            >
-              <RotateCcw size={14} /> Reset Filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 min-[450px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {filteredProducts.map(product => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                wishlist={wishlist}
-                toggleWishlist={toggleWishlist}
-                addToCart={addToCart}
-                onCustomize={(p) => requireLogin(() => setCustomizingProduct(p))}
-                requireLogin={requireLogin}
-              />
-            ))}
           </div>
         )}
       </div>
