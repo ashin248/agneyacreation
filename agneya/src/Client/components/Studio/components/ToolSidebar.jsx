@@ -13,8 +13,8 @@ function ToolSidebar({
     }, []);
 
     return (
-        <div className="hidden lg:flex w-[260px] xl:w-[320px] flex-col gap-4 xl:gap-6">
-            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
+        <div className="hidden lg:flex w-[240px] xl:w-[260px] flex-col gap-3 xl:gap-4 shrink-0">
+            <div className="floating-card flex-1 p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar border border-slate-100 shadow-xl bg-white/95">
                 <div className="space-y-2 mb-2">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.30em] text-[#0c0c2a]/40">Creation Suite</h4>
                     <div className="grid grid-cols-2 gap-3">

@@ -586,12 +586,12 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 setActiveSupportSide={setActiveSupportSide}
                             />
                             {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
-                                <div className="xl:hidden absolute bottom-24 right-4 z-[200] flex gap-2 animate-in fade-in slide-in-from-bottom-4">
-                                    <button onClick={() => handleFinalSubmit(true)} className="h-14 px-6 bg-white border-2 border-[#0c0c2a] text-[#0c0c2a] rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all">
-                                        <FiArrowRight /> Buy Now
+                                <div className="xl:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-2xl border border-slate-100/50 animate-in fade-in slide-in-from-bottom-4 pointer-events-auto">
+                                    <button onClick={() => handleFinalSubmit(true)} className="h-12 px-5 bg-slate-50 text-[#0c0c2a] rounded-full hover:bg-slate-100 flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all">
+                                        <FiArrowRight size={14} /> Buy Now
                                     </button>
-                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-14 px-6 bg-[#0c0c2a] text-white rounded-2xl shadow-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
-                                        <FiShoppingCart /> {isSubmitting ? '...' : 'Add to Cart'}
+                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-12 px-5 bg-[#0c0c2a] text-white rounded-full shadow-md flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
+                                        <FiShoppingCart size={14} /> {isSubmitting ? 'Syncing...' : 'Add to Cart'}
                                     </button>
                                 </div>
                             )}

@@ -6,8 +6,8 @@ export default function CheckoutPanel({
     product, isSubmitting
 }) {
     return (
-        <div className="hidden xl:flex w-[320px] flex-col gap-6">
-            <div className="floating-card flex-1 p-8 flex flex-col gap-6 overflow-y-auto no-scrollbar">
+        <div className="hidden xl:flex w-[260px] flex-col gap-4 shrink-0">
+            <div className="floating-card flex-1 p-5 flex flex-col gap-5 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between">
                     <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Order Summary</h4>
                 </div>
