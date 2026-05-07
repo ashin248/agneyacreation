@@ -52,7 +52,7 @@ const AdminLogin = () => {
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="flex justify-center">
-                   <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg rotate-3">
+                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg rotate-3" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                        <svg className="w-8 h-8 text-white -rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                        </svg>
@@ -69,7 +69,7 @@ const AdminLogin = () => {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow-xl shadow-gray-200/50 sm:rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden">
                     {/* Decorative gradient natively matching standard Premium visual targets */}
-                    <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                    <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-orange-500 via-yellow-500 to-purple-600"></div>
 
                     {error && (
                         <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
@@ -95,7 +95,7 @@ const AdminLogin = () => {
                                     required
                                     value={credentials.email}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+                                    className="appearance-none block w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm transition-all"
                                     placeholder="admin@agneya.com"
                                 />
                             </div>
@@ -115,7 +115,7 @@ const AdminLogin = () => {
                                     required
                                     value={credentials.password}
                                     onChange={handleChange}
-                                    className="appearance-none block w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all"
+                                    className="appearance-none block w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm transition-all"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -125,7 +125,8 @@ const AdminLogin = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition-colors ${loading ? 'opacity-75 cursor-wait' : ''}`}
+                                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-extrabold text-white transition-all ${loading ? 'opacity-75 cursor-wait' : 'hover:opacity-90'}`}
+                                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
                             >
                                 {loading ? 'Logging in...' : 'Login'}
                             </button>

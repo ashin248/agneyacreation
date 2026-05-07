@@ -27,13 +27,13 @@ export default function ToolModals({
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-5 mb-8">
-                        <div className="relative h-32 border-2 border-dashed border-slate-100 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
+                        <div className="relative h-32 border-2 border-dashed border-slate-100 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:border-orange-500 hover:bg-slate-50 transition-all cursor-pointer group">
                             <input type="file" ref={fileRef} onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
-                            <FiArrowUp size={24} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
+                            <FiArrowUp size={24} className="text-slate-300 group-hover:text-orange-500 transition-colors" />
                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Import File</span>
                         </div>
-                        <button onClick={handleRemoveBg} disabled={isRemovingBg} className="h-32 bg-slate-50 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:bg-[#0c0c2a] hover:text-white transition-all group">
-                            {isRemovingBg ? <div className="w-6 h-6 border-2 border-[#0c0c2a] border-t-transparent rounded-full animate-spin"></div> : <FiZap size={24} className="group-hover:animate-pulse" />}
+                        <button onClick={handleRemoveBg} disabled={isRemovingBg} className="h-32 bg-slate-50 rounded-[32px] flex flex-col items-center justify-center gap-3 hover:bg-orange-600 hover:text-white transition-all group">
+                            {isRemovingBg ? <div className="w-6 h-6 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div> : <FiZap size={24} className="group-hover:animate-pulse" />}
                             <span className="text-[9px] font-black uppercase tracking-widest">Remove Background</span>
                         </button>
                     </div>
@@ -86,10 +86,16 @@ export default function ToolModals({
                         </div>
                         <div className="grid grid-cols-5 gap-3">
                             {['#000000', '#ffffff', '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b', '#2dd4bf'].map(c => (
-                                <button key={c} onClick={() => setBrushColor(c)} className={`aspect-square rounded-full border-2 ${brushColor === c ? 'border-[#0c0c2a] scale-110 shadow-lg' : 'border-transparent'}`} style={{ backgroundColor: c }} />
+                                <button key={c} onClick={() => setBrushColor(c)} className={`aspect-square rounded-full border-2 ${brushColor === c ? 'border-orange-500 scale-110 shadow-lg' : 'border-transparent'}`} style={{ backgroundColor: c }} />
                             ))}
                         </div>
-                        <button onClick={() => { setIsDrawing(true); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-[#0c0c2a] text-white rounded-[24px] font-black uppercase tracking-widest text-[10px]">Initialize Drawing</button>
+                        <button 
+                            onClick={() => { setIsDrawing(true); setActiveTab(null); setIsMobileUiMinimized(false); }} 
+                            className="w-full h-16 text-white rounded-[24px] font-black uppercase tracking-widest text-[10px]"
+                            style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                        >
+                            Initialize Drawing
+                        </button>
                     </div>
                 </div>
             )}
@@ -98,8 +104,8 @@ export default function ToolModals({
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[400px] h-auto max-h-[70vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Add Text</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="flex flex-col gap-4">
-                        <button onClick={() => { addText('heading'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
-                        <button onClick={() => { addText('body'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-[#0c0c2a] hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Sub-headline <FiPlus size={18} /></button>
+                        <button onClick={() => { addText('heading'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-orange-600 hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Headline <FiMaximize className="group-hover:rotate-45 transition-transform" /></button>
+                        <button onClick={() => { addText('body'); setActiveTab(null); setIsMobileUiMinimized(false); }} className="w-full h-16 bg-slate-50 hover:bg-orange-600 hover:text-white rounded-[24px] text-left px-8 font-black uppercase text-[10px] transition-all flex justify-between items-center group">Sub-headline <FiPlus size={18} /></button>
                     </div>
                 </div>
             )}
@@ -108,7 +114,7 @@ export default function ToolModals({
                 <div className="fixed bottom-0 xl:bottom-[160px] left-1/2 -translate-x-1/2 w-full xl:w-[90%] xl:max-w-[500px] h-auto max-h-[75vh] min-h-[40vh] bg-white rounded-t-[48px] xl:rounded-[48px] shadow-2xl p-8 xl:p-10 overflow-y-auto z-[1000] border border-slate-100 animate-in slide-in-from-bottom-full duration-500">
                     <div className="flex justify-between items-center mb-8"><h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Stickers & Graphics</h4><button onClick={() => setActiveTab(null)}><FiX size={18} className="text-slate-300" /></button></div>
                     <div className="grid grid-cols-4 gap-5">
-                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all text-[#0c0c2a]" dangerouslySetInnerHTML={{ __html: s.svg }} />)}
+                        {stickerLibrary.map(s => <div key={s.id} onClick={() => { addSticker(s.svg); setActiveTab(null); setIsMobileUiMinimized(false); }} className="aspect-square bg-slate-50 rounded-[24px] p-6 flex items-center justify-center cursor-pointer hover:bg-orange-50 hover:scale-105 transition-all text-slate-900" dangerouslySetInnerHTML={{ __html: s.svg }} />)}
                     </div>
                 </div>
             )}
@@ -122,7 +128,7 @@ export default function ToolModals({
                                 <div key={i} onClick={() => {
                                     const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid);
                                     if (real) { fabricRef.current.setActiveObject(real); fabricRef.current.renderAll(); setActiveObject({ ...real, uid: real.uid, type: real.type }); }
-                                }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'bg-[#0c0c2a] text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`}>
+                                }} className={`flex items-center justify-between p-5 rounded-[24px] transition-all cursor-pointer ${activeObject?.uid === obj.uid ? 'text-white shadow-xl translate-x-1' : 'bg-slate-50 text-slate-800 hover:bg-slate-100'}`} style={activeObject?.uid === obj.uid ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}>
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[10px] font-black">{i + 1}</div>
                                         <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
@@ -143,7 +149,7 @@ export default function ToolModals({
                     <div className="grid grid-cols-3 gap-4">
                         <button 
                             onClick={() => { handleSwitchSide(`model_${active2DModelIdx}_main`); setActiveSupportSide('Main'); setActiveTab(null); }}
-                            className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === 'Main' ? 'border-[#0c0c2a] bg-slate-50 shadow-md' : 'border-slate-100 bg-white hover:border-[#0c0c2a]/30'}`}
+                            className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === 'Main' ? 'border-orange-500 bg-orange-50 shadow-md' : 'border-slate-100 bg-white hover:border-orange-200'}`}
                         >
                             <img loading="lazy" src={twoDModels[active2DModelIdx]?.mainModelUrl} alt="Main" className="w-12 h-12 object-contain drop-shadow-sm" />
                             <span className="text-[9px] font-black uppercase">Main</span>
@@ -152,7 +158,7 @@ export default function ToolModals({
                             <button 
                                 key={smIdx}
                                 onClick={() => { handleSwitchSide(`model_${active2DModelIdx}_support_${sm.side}`); setActiveSupportSide(sm.side); setActiveTab(null); }}
-                                className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === sm.side ? 'border-[#0c0c2a] bg-slate-50 shadow-md' : 'border-slate-100 bg-white hover:border-[#0c0c2a]/30'}`}
+                                className={`aspect-square rounded-2xl flex flex-col items-center justify-center gap-2 transition-all border ${activeSupportSide === sm.side ? 'border-orange-500 bg-orange-50 shadow-md' : 'border-slate-100 bg-white hover:border-orange-200'}`}
                             >
                                 <img loading="lazy" src={sm.url} alt={sm.side} className="w-12 h-12 object-contain drop-shadow-sm" />
                                 <span className="text-[9px] font-black uppercase">{sm.side}</span>

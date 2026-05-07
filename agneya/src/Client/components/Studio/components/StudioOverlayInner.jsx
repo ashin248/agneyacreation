@@ -126,7 +126,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             setPendingAnchor(null); 
         } else {
             setPendingAnchor(anchorData); 
-            toast.success("Frame Target Selected", { icon: '🎯', style: { borderRadius: '15px', background: '#0c0c2a', color: '#fff', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' } });
+            toast.success("Frame Target Selected", { icon: '🎯', style: { borderRadius: '15px', background: 'linear-gradient(135deg, #F7941D, #7B1760)', color: '#fff', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' } });
         }
     }, []);
 
@@ -484,10 +484,10 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             <style>{`
                 .pill-btn { border-radius: 9999px; transition: all 0.3s; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; font-size: 10px; }
                 .floating-card { background: white; border-radius: 42px; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
-                .accent-btn { background: #4f46e5; color: white; }
-                .accent-btn:hover { background: #4338ca; }
+                .accent-btn { background: linear-gradient(135deg, #F7941D, #7B1760); color: white; }
+                .accent-btn:hover { opacity: 0.9; }
                 input[type=range] { -webkit-appearance: none; background: #f0f1f4; height: 6px; border-radius: 3px; }
-                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #4f46e5; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #F7941D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
@@ -499,11 +499,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     <h1 className="text-sm sm:text-xl font-bold text-[#0c0c2a] tracking-tight truncate max-w-[150px] sm:max-w-none">{product?.name || 'Agneya Design'}</h1>
                     <div className="flex bg-slate-100 p-1 rounded-full mt-2">
                         {(product?.customizationType === 'Both' || product?.customizationType === '3D') && (
-                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
+                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>DESIGN ASSISTANCE</button>
                         {(product?.customizationType === 'Both' || product?.customizationType === '2D') && (
-                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
+                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'bg-white text-orange-600 shadow-sm border border-slate-200' : 'text-slate-400'}`}>2D STUDIO</button>
                         )}
                     </div>
                 </div>
@@ -547,7 +547,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                             )}
                             <div className={`flex-1 flex items-center justify-center relative transition-all duration-500 ease-out ${!isMobileUiMinimized && activeObject ? 'xl:translate-y-0 xl:scale-100 -translate-y-[15vh] scale-95' : 'translate-y-0 scale-100'}`}>
                                 <div ref={viewportRef} id="studio-design-viewport" className="w-full h-full relative z-10 bg-white/50 rounded-[40px] overflow-hidden shadow-inner">
-                                    <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50"><div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+                                    <React.Suspense fallback={<div className="absolute inset-0 flex items-center justify-center bg-white/50 z-50"><div className="w-10 h-10 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div></div>}>
                                         <Workspace2D 
                                             ref={workspace2DRef} 
                                             isOpen={isOpen} 
@@ -604,10 +604,15 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                             />
                             {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
                                 <div className="xl:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-2xl border border-slate-100/50 animate-in fade-in slide-in-from-bottom-4 pointer-events-auto">
-                                    <button onClick={() => handleFinalSubmit(true)} className="h-12 px-5 bg-slate-50 text-[#0c0c2a] rounded-full hover:bg-slate-100 flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all">
+                                    <button onClick={() => handleFinalSubmit(true)} className="h-12 px-5 bg-slate-50 text-slate-900 rounded-full hover:bg-slate-100 flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all">
                                         <FiArrowRight size={14} /> Buy Now
                                     </button>
-                                    <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-12 px-5 bg-[#0c0c2a] text-white rounded-full shadow-md flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
+                                    <button 
+                                        onClick={() => handleFinalSubmit(false)} 
+                                        disabled={isSubmitting} 
+                                        className="h-12 px-5 text-white rounded-full shadow-md flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
+                                        style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                                    >
                                         <FiShoppingCart size={14} /> {isSubmitting ? 'Syncing...' : 'Add to Cart'}
                                     </button>
                                 </div>
@@ -636,9 +641,9 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 <div className="space-y-4">
                                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                                        <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[#0c0c2a] hover:bg-slate-50 transition-all cursor-pointer group">
+                                        <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-orange-500 hover:bg-slate-50 transition-all cursor-pointer group">
                                             <input type="file" multiple onChange={(e) => { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = (ev) => setCompanyReferences(prev => [...prev, { id: Date.now() + Math.random(), url: ev.target.result }]); reader.readAsDataURL(file); }); }} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                            <FiArrowUp size={20} className="text-slate-300 group-hover:text-[#0c0c2a] transition-colors" />
+                                            <FiArrowUp size={20} className="text-slate-300 group-hover:text-orange-500 transition-colors" />
                                             <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Upload</span>
                                         </div>
                                         {companyReferences.map(ref => (
@@ -659,7 +664,12 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 <div className="hidden sm:block w-[1px] h-8 bg-slate-200" />
                                 <span className="hidden sm:block text-[9px] font-bold text-slate-400 uppercase tracking-widest">Final pricing via design verification</span>
                             </div>
-                            <button onClick={() => handleFinalSubmit(false)} disabled={isSubmitting} className="h-12 sm:h-14 px-6 sm:px-8 bg-[#0c0c2a] text-white rounded-[20px] font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0">
+                            <button 
+                                onClick={() => handleFinalSubmit(false)} 
+                                disabled={isSubmitting} 
+                                className="h-12 sm:h-14 px-6 sm:px-8 text-white rounded-[20px] font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0"
+                                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                            >
                                 {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Request Design</>}
                             </button>
                         </div>

@@ -50,7 +50,8 @@ const Cart = () => {
           <p className="text-sm text-slate-400 mb-8">Looks like you haven't added anything yet.</p>
           <Link
             to="/"
-            className="block w-full py-4 bg-slate-900 text-white rounded-2xl text-sm font-semibold hover:bg-indigo-600 transition-all shadow-lg"
+            className="block w-full py-4 text-white rounded-2xl text-sm font-semibold hover:opacity-90 transition-all shadow-lg"
+            style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
           >
             Start Shopping
           </Link>
@@ -80,7 +81,7 @@ const Cart = () => {
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-bold text-slate-900 truncate leading-tight">{item.name}</h3>
                 {item.itemType === 'Custom' && (
-                  <span className="inline-block mt-1 text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                  <span className="inline-block mt-1 text-[10px] font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">
                     {item.customData?.mode === 'manual' ? 'Manual Brief' : 'Studio Design'}
                   </span>
                 )}
@@ -114,7 +115,7 @@ const Cart = () => {
               <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white h-9">
                 <button
                   onClick={() => updateQuantity(item.productId, item.quantity - 1, variationSku)}
-                  className="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-indigo-600 transition-all border-r border-slate-100 text-base"
+                  className="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-orange-50 hover:text-orange-600 transition-all border-r border-slate-100 text-base"
                 >
                   −
                 </button>
@@ -123,7 +124,7 @@ const Cart = () => {
                 </span>
                 <button
                   onClick={() => updateQuantity(item.productId, item.quantity + 1, variationSku)}
-                  className="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-indigo-600 transition-all border-l border-slate-100 text-base"
+                  className="w-9 h-full flex items-center justify-center text-slate-500 hover:bg-orange-50 hover:text-orange-600 transition-all border-l border-slate-100 text-base"
                 >
                   +
                 </button>
@@ -171,7 +172,7 @@ const Cart = () => {
             {customItems.length > 0 && (
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
                     <Edit3 size={16} />
                   </div>
                   <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Custom Designs</h2>
@@ -207,7 +208,7 @@ const Cart = () => {
 
               {/* Order type badge */}
               <div className="flex items-center gap-2 mb-6">
-                <div className={`w-2.5 h-2.5 rounded-full ${isBulkOrder ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-400'}`} />
+                <div className={`w-2.5 h-2.5 rounded-full ${isBulkOrder ? 'bg-orange-500 animate-pulse' : 'bg-emerald-400'}`} />
                 <span className="text-xs font-semibold text-slate-500">
                   {isBulkOrder ? 'Wholesale / Bulk Order' : 'Standard Order'}
                 </span>
@@ -238,7 +239,7 @@ const Cart = () => {
                 <div className="pt-4 border-t border-slate-100">
                   <div className="flex justify-between items-end">
                     <span className="text-sm font-bold text-slate-900">Total</span>
-                    <span className="text-2xl font-black text-indigo-600 tracking-tight">
+                    <span className="text-2xl font-black tracking-tight" style={{ color: '#F7941D' }}>
                       ₹{cartTotal.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -251,7 +252,7 @@ const Cart = () => {
                   className="flex items-center gap-3 cursor-pointer"
                   onClick={() => setIsIndividual(!isIndividual)}
                 >
-                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isIndividual ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300 bg-white'}`}>
+                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isIndividual ? 'bg-orange-600 border-orange-600' : 'border-slate-300 bg-white'}`}>
                     {isIndividual && <CheckCircle size={12} className="text-white" />}
                   </div>
                   <span className="text-xs font-semibold text-slate-700">Individual order (no GST)</span>
@@ -264,14 +265,14 @@ const Cart = () => {
                       value={companyName}
                       onChange={e => setCompanyName(e.target.value)}
                       placeholder="Company Name *"
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none"
                     />
                     <input
                       type="text"
                       value={gstNumber}
                       onChange={e => setGstNumber(e.target.value)}
                       placeholder="GST Number (15 digits) *"
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none"
                     />
                   </div>
                 )}
@@ -279,7 +280,8 @@ const Cart = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full py-4 bg-slate-900 text-white rounded-xl font-semibold text-sm hover:bg-indigo-600 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="w-full py-4 text-white rounded-xl font-semibold text-sm hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-[0.98]"
+                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
               >
                 Proceed to Checkout <ArrowRight size={16} />
               </button>

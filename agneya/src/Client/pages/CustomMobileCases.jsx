@@ -86,8 +86,9 @@ const CustomMobileCases = () => {
                 <button
                   onClick={() => setSelectedBrand(null)}
                   className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
-                    !selectedBrand ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    !selectedBrand ? 'text-white shadow-lg' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                   }`}
+                  style={!selectedBrand ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}
                 >
                   All Devices
                 </button>
@@ -96,7 +97,7 @@ const CustomMobileCases = () => {
                     key={brand.id}
                     onClick={() => setSelectedBrand(brand.id)}
                     className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
-                      selectedBrand === brand.id ? 'text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
+                      selectedBrand === brand.id ? 'text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-orange-200 hover:text-orange-600'
                     }`}
                     style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
                   >
@@ -117,7 +118,7 @@ const CustomMobileCases = () => {
                 placeholder="Search for your model…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-10 pr-4 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all shadow-sm"
+                className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-10 pr-4 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all shadow-sm"
               />
             </div>
 
@@ -135,19 +136,19 @@ const CustomMobileCases = () => {
                     <button
                       key={model.id}
                       onClick={() => handleCustomize(model)}
-                      className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5 transition-all group text-center cursor-pointer"
+                      className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 hover:-translate-y-0.5 transition-all group text-center cursor-pointer"
                     >
-                      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-indigo-50 transition-colors">
-                        <Smartphone size={20} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-orange-50 transition-colors">
+                        <Smartphone size={20} className="text-slate-400 group-hover:text-orange-500 transition-colors" />
                       </div>
-                      <h4 className="text-xs font-bold text-slate-900 leading-tight mb-2 group-hover:text-indigo-600 transition-colors">
+                      <h4 className="text-xs font-bold text-slate-900 leading-tight mb-2 group-hover:text-orange-600 transition-colors">
                         {model.name}
                       </h4>
                       <div className="flex items-center justify-center gap-2">
                         <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">Soft Case</span>
-                        <span className="text-xs font-bold text-indigo-600">₹{model.price}</span>
+                        <span className="text-xs font-bold text-orange-600">₹{model.price}</span>
                       </div>
-                      <span className="mt-3 inline-block text-[10px] font-semibold text-white bg-indigo-600 px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="mt-3 inline-block text-[10px] font-semibold text-white px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                         Design Now
                       </span>
                     </button>

@@ -59,7 +59,8 @@ const BulkInquiry = () => {
           </p>
           <button
             onClick={() => setStatus('idle')}
-            className="w-full py-3.5 bg-slate-900 text-white rounded-2xl font-semibold text-sm hover:bg-indigo-600 transition-all"
+            className="w-full py-3.5 text-white rounded-2xl font-semibold text-sm hover:opacity-90 transition-all shadow-lg shadow-orange-100"
+            style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
           >
             Submit Another Inquiry
           </button>
@@ -74,8 +75,8 @@ const BulkInquiry = () => {
 
         {/* ── HEADER ── */}
         <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-4">
-            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+          <span className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-4">
+            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
             Enterprise & Bulk Orders
           </span>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Bulk Procurement</h1>
@@ -93,8 +94,8 @@ const BulkInquiry = () => {
               <h3 className="text-sm font-bold text-slate-900">Why order in bulk?</h3>
               {BENEFITS.map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-indigo-600" />
+                  <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                    <Icon size={16} className="text-orange-600" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{title}</p>
@@ -107,19 +108,19 @@ const BulkInquiry = () => {
             {/* Contact Card */}
             <div className="bg-slate-900 rounded-2xl p-6 text-white">
               <div className="flex items-center gap-2 mb-1">
-                <Clock size={14} className="text-indigo-400" />
+                <Clock size={14} className="text-orange-400" />
                 <span className="text-xs font-semibold text-slate-400">Response time</span>
               </div>
               <p className="text-lg font-bold mb-4">12–24 Hours</p>
               <div className="space-y-3 pt-4 border-t border-white/10">
                 <a href="mailto:corporate@agneya.com" className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
                     <Mail size={14} />
                   </div>
                   <span className="text-sm text-slate-300 group-hover:text-white transition-colors">corporate@agneya.com</span>
                 </a>
                 <a href="tel:+919999999999" className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-indigo-600 transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
                     <Phone size={14} />
                   </div>
                   <span className="text-sm text-slate-300 group-hover:text-white transition-colors">+91 99999 99999</span>
@@ -155,7 +156,7 @@ const BulkInquiry = () => {
                           required={required}
                           min={min}
                           placeholder={placeholder}
-                          className={`w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all`}
+                          className={`w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all`}
                         />
                       </div>
                     </div>
@@ -175,7 +176,7 @@ const BulkInquiry = () => {
                       required
                       rows={4}
                       placeholder="Describe your requirements, delivery timelines, customisation needs…"
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all resize-none"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all resize-none"
                     />
                   </div>
                 </div>
@@ -184,7 +185,8 @@ const BulkInquiry = () => {
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="flex-1 py-4 bg-indigo-600 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-900 transition-all shadow-md shadow-indigo-100 active:scale-[0.98] disabled:opacity-60"
+                    className="flex-1 py-4 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md shadow-orange-100 active:scale-[0.98] disabled:opacity-60"
+                    style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
                   >
                     {status === 'submitting' ? (
                       <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>

@@ -13,7 +13,7 @@ import AddressForm from '../components/AddressForm';
 const STATUS_CONFIG = (status = '') => {
   const s = status.toLowerCase();
   if (s === 'delivered')   return { label: 'Delivered',   cls: 'text-emerald-600 bg-emerald-50 border-emerald-100', Icon: CheckCircle };
-  if (s === 'shipped')     return { label: 'Shipped',     cls: 'text-indigo-600 bg-indigo-50 border-indigo-100',   Icon: Activity };
+  if (s === 'shipped')     return { label: 'Shipped',     cls: 'text-orange-600 bg-orange-50 border-orange-100',   Icon: Activity };
   if (s === 'processing')  return { label: 'Processing',  cls: 'text-amber-600 bg-amber-50 border-amber-100',      Icon: Clock };
   if (s === 'cancelled')   return { label: 'Cancelled',   cls: 'text-red-600 bg-red-50 border-red-100',            Icon: AlertCircle };
   return                          { label: status || 'Pending', cls: 'text-slate-500 bg-slate-50 border-slate-100', Icon: Box };
@@ -97,7 +97,7 @@ const UserDashboard = () => {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-600 rounded-full animate-spin" />
     </div>
   );
 
@@ -115,8 +115,8 @@ const UserDashboard = () => {
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         {/* User Card */}
         <div className="p-5 flex items-center gap-4 border-b border-slate-50">
-          <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-            <User size={20} className="text-indigo-600" />
+          <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <User size={20} className="text-orange-600" />
           </div>
           <div className="min-w-0">
             <p className="text-xs text-slate-400 font-medium">Welcome back,</p>
@@ -140,9 +140,9 @@ const UserDashboard = () => {
                   : 'text-slate-600 hover:bg-slate-50 font-medium'
               }`}
             >
-              <Icon size={16} className={activeTab === id ? 'text-indigo-600' : 'text-slate-400'} />
+              <Icon size={16} className={activeTab === id ? 'text-white' : 'text-slate-400'} />
               {label}
-              {activeTab === id && <ChevronRight size={14} className="ml-auto text-indigo-400" />}
+              {activeTab === id && <ChevronRight size={14} className="ml-auto text-white/70" />}
             </button>
           ))}
 
@@ -160,14 +160,14 @@ const UserDashboard = () => {
                   : 'text-slate-600 hover:bg-slate-50 font-medium'
               }`}
             >
-              <Icon size={16} className={activeTab === id ? 'text-indigo-600' : 'text-slate-400'} />
+              <Icon size={16} className={activeTab === id ? 'text-white' : 'text-slate-400'} />
               {label}
               {id === 'orders' && orders.length > 0 && (
-                <span className="ml-auto text-[10px] font-bold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full">
+                <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${activeTab === id ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'}`}>
                   {orders.length}
                 </span>
               )}
-              {activeTab === id && orders.length === 0 && <ChevronRight size={14} className="ml-auto text-indigo-400" />}
+              {activeTab === id && orders.length === 0 && <ChevronRight size={14} className="ml-auto text-white/70" />}
             </button>
           ))}
         </nav>
@@ -219,7 +219,7 @@ const UserDashboard = () => {
                   <div className="bg-white rounded-2xl border border-slate-100 p-10 text-center">
                     <ShoppingBag size={28} className="text-slate-200 mx-auto mb-4" />
                     <p className="text-sm font-medium text-slate-400 mb-5">No orders yet.</p>
-                    <button onClick={() => navigate('/')} className="px-6 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all">
+                    <button onClick={() => navigate('/')} className="px-6 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                       Start Shopping
                     </button>
                   </div>
@@ -238,7 +238,7 @@ const UserDashboard = () => {
                               <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${cls}`}>
                                 <Icon size={11} /> {order.orderStatus}
                               </span>
-                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-xs text-indigo-600 font-semibold hover:underline">
+                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-xs text-orange-600 font-semibold hover:underline">
                                 Track →
                               </button>
                             </div>
@@ -303,7 +303,7 @@ const UserDashboard = () => {
                       <input
                         name="name"
                         defaultValue={userData?.name || ''}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none transition-all"
                         required
                       />
                     </div>
@@ -313,7 +313,7 @@ const UserDashboard = () => {
                         name="email"
                         type="email"
                         defaultValue={userData?.email || ''}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none transition-all"
                         required
                       />
                     </div>
@@ -326,7 +326,7 @@ const UserDashboard = () => {
                       />
                     </div>
                   </div>
-                  <button type="submit" className="px-8 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all shadow-sm">
+                  <button type="submit" className="px-8 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                     Save Changes
                   </button>
                 </form>
@@ -341,7 +341,7 @@ const UserDashboard = () => {
                   {!isEditingAddress && (
                     <button
                       onClick={() => setIsEditingAddress({})}
-                      className="flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                      className="flex items-center gap-1.5 text-sm font-semibold text-orange-600 hover:text-orange-700"
                     >
                       <Plus size={15} /> Add Address
                     </button>
@@ -359,7 +359,7 @@ const UserDashboard = () => {
                 ) : (
                   <div className="space-y-3">
                     {userData?.addresses?.map(addr => (
-                      <div key={addr._id} className="flex items-start justify-between p-5 bg-slate-50 rounded-xl border border-slate-100 hover:border-indigo-200 transition-all group">
+                      <div key={addr._id} className="flex items-start justify-between p-5 bg-slate-50 rounded-xl border border-slate-100 hover:border-orange-200 transition-all group">
                         <div>
                           <div className="flex items-center gap-2 mb-1.5">
                             <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md uppercase">{addr.type || 'Home'}</span>
@@ -372,7 +372,7 @@ const UserDashboard = () => {
                           <p className="text-sm text-slate-700 font-medium mt-1">{addr.mobile}</p>
                         </div>
                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => setIsEditingAddress(addr)} className="text-xs text-indigo-600 font-semibold px-3 py-1.5 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">Edit</button>
+                          <button onClick={() => setIsEditingAddress(addr)} className="text-xs text-orange-600 font-semibold px-3 py-1.5 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">Edit</button>
                           <button onClick={() => handleDeleteAddress(addr._id)} className="text-xs text-rose-500 font-semibold px-3 py-1.5 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors">Delete</button>
                         </div>
                       </div>
@@ -405,7 +405,7 @@ const UserDashboard = () => {
                           <img loading="lazy" src={design.designImage} alt="Design" className="w-full h-full object-contain" />
                         </div>
                         <div>
-                          <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-wide">#{design._id.slice(-6).toUpperCase()}</span>
+                          <span className="text-[10px] font-bold text-orange-500 uppercase tracking-wide">#{design._id.slice(-6).toUpperCase()}</span>
                           <h4 className="text-sm font-bold text-slate-900 mt-1">{design.productCategory}</h4>
                           <p className="text-xs text-slate-400 mt-1">{design.quantity} units</p>
                           <span className={`inline-block mt-2 text-[10px] font-semibold px-2 py-1 rounded-lg ${
@@ -459,10 +459,10 @@ const UserDashboard = () => {
                 <h2 className="text-lg font-bold text-slate-900">Gift Cards</h2>
 
                 <div className="bg-slate-900 rounded-2xl p-6 relative overflow-hidden">
-                  <div className="absolute -top-8 -right-8 w-40 h-40 bg-indigo-500/10 blur-2xl rounded-full" />
+                  <div className="absolute -top-8 -right-8 w-40 h-40 bg-orange-500/10 blur-2xl rounded-full" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-5">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                         <Gift size={20} className="text-white" />
                       </div>
                       <div>
@@ -486,10 +486,10 @@ const UserDashboard = () => {
                       <input
                         name="giftCode"
                         placeholder="e.g. AGNEYA-XXXX-XXXX"
-                        className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                         required
                       />
-                      <button type="submit" className="px-6 py-3 bg-white text-slate-900 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition-all">
+                      <button type="submit" className="px-6 py-3 bg-white text-slate-900 rounded-xl text-sm font-semibold hover:bg-orange-50 transition-all">
                         Redeem
                       </button>
                     </form>

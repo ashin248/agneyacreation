@@ -8,34 +8,44 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  @apply text-slate-900 bg-gray-50;
+  @apply text-slate-900 bg-white;
 }
 
 :root {
-  /* Existing */
-  --tech-border: 0.5px solid rgba(15, 23, 42, 0.1);
-  --tech-border-dark: 0.5px solid rgba(15, 23, 42, 0.3);
-  --ceramic-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
-  --industrial-glass: rgba(255, 255, 255, 0.7);
+  /* ── Agneya Brand Palette (from logo) ── */
+  --brand-orange:      #F7941D;   /* logo warm orange */
+  --brand-amber:       #F4A41B;   /* logo gold/amber  */
+  --brand-purple:      #7B1760;   /* logo deep purple */
+  --brand-dark-purple: #4A0E3C;   /* darker purple shade */
+  --brand-gradient: linear-gradient(135deg, #F7941D 0%, #F4A41B 40%, #9B2D6F 75%, #7B1760 100%);
+  --brand-gradient-h:  linear-gradient(90deg,  #F7941D 0%, #F4A41B 50%, #7B1760 100%);
+  --brand-glow:        0 4px 24px rgba(247, 148, 29, 0.35);
+  --brand-glow-purple: 0 4px 24px rgba(123, 23, 96, 0.3);
 
-  /* New Tactical Studio Tokens */
-  --studio-bg: radial-gradient(circle at 50% 50%, #f8fafc 0%, #e2e8f0 100%);
-  --studio-dark: #0f172a;
-  --tactical-glow: 0 0 15px rgba(99, 102, 241, 0.3);
-  --hud-bg: rgba(15, 23, 42, 0.95);
-  --hud-glass: rgba(15, 23, 42, 0.85);
+  /* Surface Tokens */
+  --tech-border:      0.5px solid rgba(247, 148, 29, 0.15);
+  --tech-border-dark: 0.5px solid rgba(247, 148, 29, 0.3);
+  --ceramic-shadow:   0 20px 50px -12px rgba(247, 148, 29, 0.12);
+  --industrial-glass: rgba(255, 255, 255, 0.8);
+
+  /* Studio Tokens */
+  --studio-bg:      radial-gradient(circle at 50% 50%, #fff8f2 0%, #fdeee0 100%);
+  --studio-dark:    #1a0b12;
+  --tactical-glow:  0 0 15px rgba(247, 148, 29, 0.3);
+  --hud-bg:         rgba(26, 11, 18, 0.95);
+  --hud-glass:      rgba(26, 11, 18, 0.85);
 }
 
 .studio-workspace {
   background-color: var(--studio-dark);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.05) 0px, transparent 50%);
+    radial-gradient(at 0% 0%,   rgba(247, 148, 29, 0.06) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(123, 23,  96, 0.06) 0px, transparent 50%);
 }
 
 @keyframes tactical-pulse {
-  0% { opacity: 0.4; transform: scale(0.98); }
-  50% { opacity: 1; transform: scale(1); }
+  0%   { opacity: 0.4; transform: scale(0.98); }
+  50%  { opacity: 1;   transform: scale(1);    }
   100% { opacity: 0.4; transform: scale(0.98); }
 }
 
@@ -45,31 +55,44 @@ body {
 
 .mockup-stage {
   background: var(--studio-bg);
-  box-shadow: inset 0 0 100px rgba(0,0,0,0.02);
+  box-shadow: inset 0 0 100px rgba(247,148,29,0.03);
 }
 
+/* ── Brand Gradient Utility ── */
+.brand-gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-gradient-bg {
+  background: var(--brand-gradient);
+}
+
+/* Light/Client Theme */
 .Lite-theme {
-  --bg-primary: #FFFFFF;         
-  --bg-secondary: #FFF5F0;       
-  --text-main: #2D3436;           
-  --text-muted: #636E72;         
-  --border-color: #FFDAB9;      
-  --btn-bg: #FF6B2C;             
-  --btn-text: #FFFFFF;           
-  --btn-hover: #E8511E;          
-  --accent: #FFB830;    
-  }
+  --bg-primary:   #FFFFFF;
+  --bg-secondary: #FFF8F2;
+  --text-main:    #2D1A0E;
+  --text-muted:   #7A5C48;
+  --border-color: #FDDCB5;
+  --btn-bg:       #F7941D;
+  --btn-text:     #FFFFFF;
+  --btn-hover:    #E0820F;
+  --accent:       #7B1760;
+}
+
 /* Dark/Admin Mode Variables */
 .dark-theme {
-  --bg-primary: #1A1A2E;         
-  --bg-secondary: #4B164C;        
-  --text-main: #FFFFFF;         
-  --text-muted: #BDBDBD;         
-  --border-color: #8E1B41;       
-  --btn-bg: #D82E3F;             
-  --btn-text: #FFFFFF;
-  --btn-hover: #8E1B41;          
-  --accent: #FF9248;
+  --bg-primary:   #1A0B12;
+  --bg-secondary: #2D1020;
+  --text-main:    #FFFFFF;
+  --text-muted:   #C4A0B5;
+  --border-color: #7B1760;
+  --btn-bg:       #F7941D;
+  --btn-text:     #FFFFFF;
+  --btn-hover:    #E0820F;
+  --accent:       #F4A41B;
 }
 
 /* Scrollbar Utilities */

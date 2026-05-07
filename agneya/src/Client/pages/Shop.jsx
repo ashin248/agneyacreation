@@ -119,7 +119,7 @@ const Shop = () => {
   const requireLogin = (callback, action = 'order and customize') => {
     if (!currentUser) {
       toast.error(`Please login to ${action}.`, {
-        style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '13px' }
+        style: { borderRadius: '12px', background: '#7B1760', color: '#f8fafc', fontSize: '13px' }
       });
       setIsLoginModalOpen(true);
     } else {
@@ -182,15 +182,15 @@ const Shop = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
-        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
+        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin" />
         <p className="text-sm font-medium text-slate-400">Loading products…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-white pb-16">
 
       {/* ── HERO BANNER ── */}
       {banners.length > 0 && (
@@ -236,7 +236,7 @@ const Shop = () => {
 
       {/* ── FILTER / SEARCH BAR ── */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
-        <div className="sticky top-16 md:top-[70px] z-50 bg-slate-50/90 backdrop-blur-sm pt-2 pb-3">
+        <div className="sticky top-16 md:top-[70px] z-50 bg-white/90 backdrop-blur-sm pt-2 pb-3">
           <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm">
 
             {/* Search */}
@@ -247,7 +247,7 @@ const Shop = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search products…"
-                className="h-9 w-36 md:w-48 bg-slate-50 border border-slate-100 rounded-xl pl-8 pr-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+                className="h-9 w-36 md:w-48 bg-slate-50 border border-slate-100 rounded-xl pl-8 pr-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-300 transition-all"
               />
             </div>
 
@@ -263,9 +263,10 @@ const Shop = () => {
                     onClick={() => setActiveCategory(name)}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
                       activeCategory === name
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        ? 'text-white'
+                        : 'bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-600'
                     }`}
+                    style={activeCategory === name ? { background: 'linear-gradient(135deg,#F7941D,#7B1760)' } : {}}
                   >
                     {name}
                   </button>
@@ -278,7 +279,8 @@ const Shop = () => {
             {/* Filter button */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 h-9 bg-slate-900 text-white rounded-xl hover:bg-indigo-600 transition-all text-xs font-semibold"
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 h-9 text-white rounded-xl hover:opacity-90 transition-all text-xs font-semibold"
+              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
             >
               <SlidersHorizontal size={14} />
               <span className="hidden sm:inline">Filter</span>
@@ -309,7 +311,8 @@ const Shop = () => {
             </div>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); }}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-50 text-indigo-600 rounded-[16px] font-black uppercase text-[10px] tracking-widest hover:bg-indigo-600 hover:text-white transition-all hover:shadow-lg hover:shadow-indigo-600/20"
+              className="flex items-center gap-2 px-6 py-3 rounded-[16px] font-black uppercase text-[10px] tracking-widest text-white transition-all hover:opacity-90 hover:shadow-lg"
+              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
             >
               <RotateCcw size={14} /> Reset Filters
             </button>
@@ -335,42 +338,41 @@ const Shop = () => {
 
                   {/* Phone body */}
                   <div
-                    className="relative w-full bg-slate-900 border-[3px] border-slate-700 overflow-hidden group-hover:border-indigo-500/60 transition-colors duration-500"
+                    className="relative w-full bg-slate-900 border-[3px] border-slate-700 overflow-hidden group-hover:border-orange-500/60 transition-colors duration-500"
                     style={{ borderRadius: '28px', aspectRatio: '9 / 19' }}
                   >
                     {/* Gradient BG */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-700/60 via-purple-700/30 to-slate-900 z-0 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-600/60 via-purple-700/30 to-slate-900 z-0 transition-opacity duration-500" />
                     {/* Animated shimmer */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 bg-[radial-gradient(ellipse_at_30%_20%,rgba(129,140,248,0.6),transparent_70%)] z-0" />
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 bg-[radial-gradient(ellipse_at_30%_20%,rgba(247,148,29,0.6),transparent_70%)] z-0" />
                     {/* Background image */}
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601593346740-925612772716?w=500&q=80')] opacity-10 group-hover:opacity-20 bg-cover bg-center mix-blend-overlay group-hover:scale-110 transition-all duration-1000 z-0" />
-
                     {/* ── Notch / Dynamic Island ── */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[36%] h-[14px] bg-slate-950 rounded-full z-20 flex items-center justify-center gap-1.5">
                       <div className="w-[6px] h-[6px] rounded-full bg-slate-800 border border-slate-700" />
-                      <div className="w-[5px] h-[5px] rounded-full bg-indigo-500/40 animate-pulse" />
+                      <div className="w-[5px] h-[5px] rounded-full bg-orange-500/40 animate-pulse" />
                     </div>
 
                     {/* ── Screen content ── */}
                     <div className="relative z-10 flex flex-col items-center justify-center h-full pt-8 pb-6 px-3 text-center">
                       {/* Phone icon badge */}
-                      <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 shadow-[0_0_20px_rgba(129,140,248,0.4)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-white/10">
+                      <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 shadow-[0_0_20px_rgba(247,148,29,0.4)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-white/10">
                         <Smartphone size={18} />
                       </div>
 
                       <p className="text-[8px] font-black text-white/70 uppercase tracking-[0.25em] mb-0.5">Design Your</p>
-                      <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 uppercase tracking-tight leading-tight">Own Case</h2>
+                      <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-pink-300 uppercase tracking-tight leading-tight">Own Case</h2>
 
                       {/* Divider */}
                       <div className="w-8 h-px bg-white/20 my-3" />
 
                       {/* CTA pill */}
-                      <div className="px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[7px] font-black uppercase tracking-[0.15em] text-white group-hover:bg-indigo-500/40 group-hover:border-indigo-400/40 transition-all duration-500">
+                      <div className="px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[7px] font-black uppercase tracking-[0.15em] text-white group-hover:bg-orange-500/40 group-hover:border-orange-400/40 transition-all duration-500">
                         Customize →
                       </div>
 
                       {/* Floating sparkle dots */}
-                      <div className="absolute top-[30%] left-[15%] w-1 h-1 rounded-full bg-indigo-400 opacity-0 group-hover:opacity-80 animate-ping" style={{ animationDelay: '0.1s' }} />
+                      <div className="absolute top-[30%] left-[15%] w-1 h-1 rounded-full bg-orange-400 opacity-0 group-hover:opacity-80 animate-ping" style={{ animationDelay: '0.1s' }} />
                       <div className="absolute top-[55%] right-[10%] w-1 h-1 rounded-full bg-purple-400 opacity-0 group-hover:opacity-60 animate-ping" style={{ animationDelay: '0.4s' }} />
                     </div>
 
@@ -402,7 +404,7 @@ const Shop = () => {
             {products.length > 0 && (
               <div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tighter uppercase mb-8 flex items-center gap-3">
-                  <div className="w-2 h-8 bg-indigo-600 rounded-full"></div>
+                  <div className="w-2 h-8 rounded-full" style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}></div>
                   Popular Products
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
@@ -455,14 +457,14 @@ const Shop = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-slate-800">Price Range</p>
-              <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">
+              <span className="text-sm font-bold bg-orange-50 px-3 py-1 rounded-lg" style={{ color: '#F7941D' }}>
                 ₹{priceRange[0].toLocaleString('en-IN')} - ₹{priceRange[1].toLocaleString('en-IN')}
               </span>
             </div>
             <input
               type="range" min={minPriceLimit} max={maxPriceLimit} value={priceRange[1]}
               onChange={e => setPriceRange([minPriceLimit, Number(e.target.value)])}
-              className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-indigo-600"
+              className="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-orange-500"
             />
             <div className="flex justify-between text-xs text-slate-400 mt-2 font-medium">
               <span>₹{minPriceLimit.toLocaleString('en-IN')}</span>
@@ -495,7 +497,8 @@ const Shop = () => {
         <div className="px-6 py-5 border-t border-slate-100 flex flex-col gap-3">
           <button
             onClick={() => setIsFilterOpen(false)}
-            className="w-full py-3.5 bg-indigo-600 text-white font-semibold text-sm rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-[0.98]"
+            className="w-full py-3.5 text-white font-semibold text-sm rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
           >
             Apply Filters
           </button>

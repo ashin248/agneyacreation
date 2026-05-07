@@ -70,17 +70,18 @@ const Navbar = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/90 backdrop-blur-xl shadow-sm shadow-slate-200/60 border-b border-slate-100'
-            : 'bg-white/70 backdrop-blur-md'
+            ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b'
+            : 'bg-white/80 backdrop-blur-md'
         }`}
+        style={isScrolled ? { borderBottomColor: 'rgba(247,148,29,0.18)', boxShadow: '0 1px 16px rgba(247,148,29,0.08)' } : {}}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-[70px]">
 
             {/* ── LOGO ── */}
             <Link to="/" className="flex items-center gap-3 group flex-shrink-0">
-              <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-sm ring-1 ring-slate-200 group-hover:ring-indigo-300 transition-all duration-300">
-                <img loading="lazy"                   src="/logo.png"
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-sm ring-1 ring-orange-200 group-hover:ring-orange-400 transition-all duration-300">
+                <img loading="lazy" src="/logo.png"
                   alt="Agneya"
                   className="w-full h-full object-contain"
                 />
@@ -89,7 +90,10 @@ const Navbar = () => {
                 <span className="text-sm font-black text-slate-900 tracking-tight block leading-none">
                   Agneya
                 </span>
-                <span className="text-[9px] font-semibold text-indigo-500 uppercase tracking-[0.18em] leading-none mt-0.5 block">
+                <span
+                  className="text-[9px] font-bold uppercase tracking-[0.18em] leading-none mt-0.5 block"
+                  style={{ background: 'linear-gradient(90deg,#F7941D,#7B1760)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+                >
                   Live Collections
                 </span>
               </div>
@@ -104,10 +108,11 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold transition-all duration-200 ${
                       isActive
-                        ? 'bg-slate-900 text-white'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                        ? 'text-white shadow-sm'
+                        : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50'
                     }`
                   }
+                  style={({ isActive }) => isActive ? { background: 'linear-gradient(135deg,#F7941D,#7B1760)' } : {}}
                 >
                   <Icon size={15} />
                   {name}
@@ -121,7 +126,8 @@ const Navbar = () => {
               {/* Custom CTA — Desktop only */}
               <Link
                 to="/custom-mobile-cases"
-                className="hidden lg:flex items-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded-xl text-[12px] font-semibold transition-all duration-200"
+                className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold transition-all duration-200 text-white shadow-sm hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg,#F7941D 0%,#F4A41B 50%,#7B1760 100%)' }}
               >
                 <Sparkles size={14} />
                 Design Your Case
@@ -130,12 +136,12 @@ const Navbar = () => {
               {/* Cart */}
               <Link
                 to="/cart"
-                className="relative flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-200"
+                className="relative flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-200"
                 aria-label={`Shopping cart, ${cartCount} items`}
               >
                 <ShoppingCart size={20} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-indigo-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-sm">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-sm" style={{ background: '#F7941D' }}>
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
@@ -146,10 +152,10 @@ const Navbar = () => {
                 <div className="relative hidden md:block" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition-all duration-200"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-orange-50 transition-all duration-200"
                     aria-expanded={isUserMenuOpen}
                   >
-                    <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}>
                       <User size={14} />
                     </div>
                     <span className="text-[12px] font-semibold max-w-[80px] truncate">{displayName}</span>
@@ -197,7 +203,8 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[12px] font-semibold hover:bg-indigo-600 transition-all duration-200 shadow-sm"
+                  className="hidden md:flex items-center gap-2 px-4 py-2.5 text-white rounded-xl text-[12px] font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg,#F7941D 0%,#7B1760 100%)' }}
                   aria-label="Login to your account"
                 >
                   <LogIn size={14} />
@@ -265,12 +272,12 @@ const Navbar = () => {
               key={path}
               to={path}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-slate-50 transition-all group"
+              className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-orange-50 transition-all group"
             >
-              <div className="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-indigo-50 flex items-center justify-center text-slate-500 group-hover:text-indigo-600 transition-colors flex-shrink-0 relative">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 group-hover:bg-orange-100 flex items-center justify-center text-orange-400 group-hover:text-orange-600 transition-colors flex-shrink-0 relative">
                 <Icon size={18} />
                 {badge > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center" style={{ background: '#F7941D' }}>
                     {badge}
                   </span>
                 )}
@@ -290,9 +297,9 @@ const Navbar = () => {
               <Link
                 to="/dashboard"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all"
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-orange-50 hover:bg-orange-100 transition-all"
               >
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}>
                   <User size={16} />
                 </div>
                 <div>
@@ -310,7 +317,8 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => { setIsMobileMenuOpen(false); setIsLoginModalOpen(true); }}
-              className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold text-[13px] flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all shadow-lg"
+              className="w-full py-4 text-white rounded-2xl font-semibold text-[13px] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg"
+              style={{ background: 'linear-gradient(135deg,#F7941D 0%,#F4A41B 45%,#7B1760 100%)' }}
             >
               <LogIn size={16} />
               Login / Sign Up

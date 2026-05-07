@@ -62,7 +62,7 @@ const TrackingModal = ({ order, onClose }) => {
         {/* Header */}
         <div className="bg-slate-900 px-7 py-6 flex items-start justify-between">
           <div>
-            <p className="text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">Live Tracking</p>
+            <p className="text-orange-400 text-xs font-semibold uppercase tracking-wider mb-1">Live Tracking</p>
             <h2 className="text-white text-xl font-bold">#{order.orderId}</h2>
             <p className="text-slate-400 text-sm mt-1">
               Est. delivery: <span className="text-white font-semibold">{estDate}</span>
@@ -76,7 +76,7 @@ const TrackingModal = ({ order, onClose }) => {
         {/* Status badge */}
         <div className="bg-slate-800 px-7 py-3 flex items-center gap-3">
           <span className="text-slate-400 text-sm">Current status:</span>
-          <span className="bg-indigo-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+          <span className="text-white text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
             {displayStatus}
           </span>
         </div>
@@ -87,7 +87,7 @@ const TrackingModal = ({ order, onClose }) => {
             <div className="relative px-4">
               <div className="absolute top-5 left-4 right-4 h-1 bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-500 rounded-full transition-all duration-[1200ms] ease-out"
+                  className="h-full bg-orange-500 rounded-full transition-all duration-[1200ms] ease-out"
                   style={{ width: animStep >= 0 ? `${(animStep / (STATUSES.length - 1)) * 100}%` : '0%' }}
                 />
               </div>
@@ -98,12 +98,12 @@ const TrackingModal = ({ order, onClose }) => {
                   return (
                     <div key={id} className="flex flex-col items-center">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 relative z-10 transition-all duration-500 ${
-                        done ? 'bg-indigo-600 border-white text-white shadow-md shadow-indigo-200' : 'bg-white border-slate-200 text-slate-300'
+                        done ? 'bg-orange-600 border-white text-white shadow-md shadow-orange-200' : 'bg-white border-slate-200 text-slate-300'
                       }`}>
                         <Icon size={18} />
-                        {active && <span className="absolute -inset-2 bg-indigo-400/20 rounded-full animate-ping" />}
+                        {active && <span className="absolute -inset-2 bg-orange-400/20 rounded-full animate-ping" />}
                       </div>
-                      <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-indigo-600' : 'text-slate-400'}`}>
+                      <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-orange-600' : 'text-slate-400'}`}>
                         {label}
                       </p>
                     </div>
@@ -119,10 +119,10 @@ const TrackingModal = ({ order, onClose }) => {
               const done = id <= animStep;
               return (
                 <div key={id} className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-300'}`}>
                     <Icon size={15} />
                   </div>
-                  <span className={`text-sm font-medium ${done ? 'text-indigo-600' : 'text-slate-400'}`}>{label}</span>
+                  <span className={`text-sm font-medium ${done ? 'text-orange-600' : 'text-slate-400'}`}>{label}</span>
                 </div>
               );
             })}
@@ -142,7 +142,7 @@ const TrackingModal = ({ order, onClose }) => {
                       <p className="text-sm font-semibold text-slate-800">{item.name}</p>
                       <p className="text-xs text-slate-400">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-bold text-indigo-600">₹{(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
+                    <p className="text-sm font-bold text-orange-600">₹{(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
                   </div>
                 ))}
               </div>
@@ -199,7 +199,7 @@ const OrderCard = ({ order, onTrack }) => {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">#{order.orderId}</p>
+        <p className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors truncate">#{order.orderId}</p>
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${badgeStyle(status)}`}>
             {displayStatus}
@@ -210,7 +210,8 @@ const OrderCard = ({ order, onTrack }) => {
 
       <button
         onClick={() => onTrack(order)}
-        className="flex items-center gap-1.5 px-4 py-2.5 bg-slate-900 text-white text-xs font-semibold rounded-xl hover:bg-indigo-600 transition-all flex-shrink-0"
+        className="flex items-center gap-1.5 px-4 py-2.5 text-white text-xs font-semibold rounded-xl transition-all flex-shrink-0 hover:opacity-90"
+        style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
       >
         Track <ChevronRight size={14} />
       </button>
@@ -345,7 +346,7 @@ const TrackOrder = () => {
         {/* ── SEARCH BOX ── */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-5">
-            <Search size={16} className="text-indigo-600" />
+            <Search size={16} className="text-orange-600" />
             <h2 className="text-sm font-bold text-slate-900">Track with Order ID</h2>
           </div>
           <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -354,19 +355,20 @@ const TrackOrder = () => {
               placeholder="Order ID (e.g. ORD-XXX)"
               value={searchForm.orderId}
               onChange={e => setSearchForm(p => ({ ...p, orderId: e.target.value }))}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
             />
             <input
               type="tel"
               placeholder="Linked phone number"
               value={searchForm.phone}
               onChange={e => setSearchForm(p => ({ ...p, phone: e.target.value }))}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
             />
             <button
               type="submit"
               disabled={searching}
-              className="bg-indigo-600 text-white rounded-xl px-4 py-3 text-sm font-semibold hover:bg-slate-900 transition-all shadow-md shadow-indigo-100 active:scale-[0.98] disabled:opacity-60"
+              className="text-white rounded-xl px-4 py-3 text-sm font-semibold transition-all shadow-md shadow-orange-100 active:scale-[0.98] disabled:opacity-60 hover:opacity-90"
+              style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
             >
               {searching ? 'Searching…' : 'Track Order'}
             </button>
@@ -386,7 +388,7 @@ const TrackOrder = () => {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === tab
-                  ? 'bg-white text-indigo-600 shadow-sm'
+                  ? 'bg-white text-orange-600 shadow-sm'
                   : 'text-slate-500 hover:text-slate-800'
               }`}
             >
@@ -398,7 +400,7 @@ const TrackOrder = () => {
         {/* ── ORDER LIST ── */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+            <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-600 rounded-full animate-spin" />
             <p className="text-sm text-slate-400">Loading orders…</p>
           </div>
         ) : filtered.length > 0 ? (

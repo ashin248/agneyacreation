@@ -129,14 +129,14 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
     return (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/80 backdrop-blur-3xl p-4 md:p-10 animate-in fade-in duration-500 overflow-y-auto">
             {/* Soft Background Light Effects */}
-            <div className="absolute top-[10%] left-[10%] w-[30%] h-[30%] bg-indigo-600/20 blur-[150px] rounded-full pointer-events-none"></div>
+            <div className="absolute top-[10%] left-[10%] w-[30%] h-[30%] blur-[150px] rounded-full pointer-events-none" style={{ background: 'rgba(247,148,29,0.15)' }}></div>
             <div className="absolute bottom-[10%] right-[10%] w-[30%] h-[30%] bg-emerald-600/20 blur-[150px] rounded-full pointer-events-none"></div>
 
             <div className="w-full max-w-4xl bg-white/90 backdrop-blur-2xl rounded-[48px] shadow-2xl border border-white/50 overflow-hidden relative flex flex-col md:flex-row min-h-[600px]">
                 
                 {/* Visual Sidebar */}
                 <div className="hidden md:flex md:w-1/3 bg-slate-950 p-12 flex-col justify-between relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 to-transparent"></div>
                     <div className="relative z-10 space-y-6">
                         <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
                             <ShieldCheck className="text-white w-8 h-8" />
@@ -149,7 +149,7 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
 
                     <div className="relative z-10 space-y-8">
                         <div className="flex items-center gap-4 group">
-                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-orange-400 group-hover:text-white transition-all" style={{ }} onMouseEnter={e => e.currentTarget.style.background='linear-gradient(135deg,#F7941D,#7B1760)'} onMouseLeave={e => e.currentTarget.style.background=''}>
                                 <Smartphone size={18} />
                             </div>
                             <div className="space-y-0.5">
@@ -206,27 +206,27 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
 
                         {/* Deployment Vectors (Address) */}
                         <div className="space-y-6">
-                            <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em]">Logistics HQ (Primary Address)</h4>
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em]" style={{ color: '#F7941D' }}>Logistics HQ (Primary Address)</h4>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input name="houseNo" value={formData.houseNo} onChange={handleChange} placeholder="House / Flat / Office No" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none" required />
-                                    <input name="area" value={formData.area} onChange={handleChange} placeholder="Area / Street / Colony" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none" required />
+                                    <input name="houseNo" value={formData.houseNo} onChange={handleChange} placeholder="House / Flat / Office No" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
+                                    <input name="area" value={formData.area} onChange={handleChange} placeholder="Area / Street / Colony" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
                                 </div>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="relative flex-1">
-                                        <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none" required />
+                                        <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
                                     </div>
                                     <div className="relative flex-1">
-                                        <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none" required />
+                                        <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
                                     </div>
                                     <div className="relative flex-1">
                                         <input name="country" value={formData.country} onChange={handleChange} placeholder="Country" className="w-full h-12 bg-gray-100 border border-slate-100 rounded-xl px-5 text-xs font-bold text-slate-400 cursor-not-allowed" readOnly />
                                     </div>
                                     <div className="relative flex-1">
-                                        <input name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Pincode" className={`w-full h-12 bg-gray-50 border rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-50 outline-none transition-all ${pincodeError ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} required maxLength={6} />
+                                        <input name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Pincode" className={`w-full h-12 bg-gray-50 border rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none transition-all ${pincodeError ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} required maxLength={6} />
                                         {pincodeLoading && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                                                <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#F7941D' }} />
                                             </div>
                                         )}
                                         {pincodeError && <p className="absolute -bottom-4 left-1 text-[8px] text-red-500 font-black uppercase tracking-widest">{pincodeError}</p>}
@@ -250,7 +250,8 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-indigo-600 text-white h-16 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-200 hover:bg-slate-950 transition-all flex items-center justify-center gap-3 group active:scale-[0.98]"
+                            className="w-full text-white h-16 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl hover:opacity-90 transition-all flex items-center justify-center gap-3 group active:scale-[0.98]"
+                            style={{ background: 'linear-gradient(135deg,#F7941D 0%,#F4A41B 40%,#7B1760 100%)', boxShadow: '0 20px 40px rgba(247,148,29,0.3)' }}
                         >
                             {loading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

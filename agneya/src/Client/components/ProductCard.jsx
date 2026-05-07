@@ -78,13 +78,13 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
 
   return (
     <div
-      className="group relative bg-white rounded-[24px] overflow-hidden transition-all duration-500 flex flex-col h-full border border-slate-100 hover:border-indigo-500/30 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] active:scale-[0.99]"
+      className="group relative bg-white rounded-[24px] overflow-hidden transition-all duration-500 flex flex-col h-full border border-slate-100 hover:border-orange-300/50 hover:shadow-[0_20px_60px_-15px_rgba(247,148,29,0.15)] active:scale-[0.99]"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* 1. COMPACT MEDIA MODULE */}
       <div className={`relative ${imageOnly ? 'aspect-square' : 'aspect-[4/4.5]'} overflow-hidden bg-slate-50 cursor-pointer group/media flex-1`} onClick={() => navigate(`/product/${product._id}`)}>
-        <div className="absolute inset-0 bg-indigo-600/5 opacity-0 group-hover/media:opacity-100 transition-opacity z-0"></div>
+        <div className="absolute inset-0 opacity-0 group-hover/media:opacity-100 transition-opacity z-0" style={{ background: 'rgba(247,148,29,0.03)' }}></div>
         <img 
           src={displayImg}
           alt={product.name}
@@ -150,7 +150,8 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
                   {product.isCustomizable && onCustomize && (
                     <button 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
-                        className="h-8 px-2.5 flex items-center gap-1.5 bg-indigo-50 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all group/design"
+                        className="h-8 px-2.5 flex items-center gap-1.5 rounded-xl text-white transition-all group/design hover:opacity-90"
+                        style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
                         aria-label="Customize"
                     >
                         <Palette size={12} />
@@ -160,7 +161,8 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
                   )}
                   <button 
                       onClick={handleAddToCart}
-                      className="w-8 h-8 flex items-center justify-center bg-slate-900 rounded-xl text-white hover:bg-indigo-600 transition-all"
+                      className="w-8 h-8 flex items-center justify-center rounded-xl text-white transition-all hover:opacity-90"
+                      style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
                       aria-label="Add to Transaction"
                   >
                       <ShoppingCart size={14} />
@@ -174,7 +176,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       {!imageOnly && (
         <div className="p-3 md:p-4 flex flex-col z-20 relative bg-white">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-indigo-600">{product.category || 'Premium'}</span>
+            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest" style={{ color: '#F7941D' }}>{product.category || 'Premium'}</span>
             <div className="flex items-center gap-0.5 text-slate-400">
                 <Star size={10} className="fill-amber-400 text-amber-400" />
                 <span className="text-[10px] font-bold">{product.rating || '5.0'}</span>

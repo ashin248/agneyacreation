@@ -90,15 +90,15 @@ const Wishlist = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin" />
         <p className="text-sm font-medium text-slate-400">Loading your wishlist…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen bg-white pb-16">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
 
         {/* ── HEADER ── */}
@@ -148,7 +148,8 @@ const Wishlist = () => {
             </div>
             <Link
               to="/shop"
-              className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-indigo-600 transition-all shadow-md"
+              className="flex items-center gap-2 px-6 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md"
+              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
             >
               <ShoppingBag size={15} /> Browse Products
             </Link>

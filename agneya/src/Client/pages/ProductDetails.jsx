@@ -66,14 +66,14 @@ const ProductDetails = () => {
         addToCartBase(item);
         toast.success(`${item.name} added to cart!`, {
             icon: '🛍️',
-            style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '13px' }
+            style: { borderRadius: '12px', background: 'linear-gradient(135deg, #F7941D, #7B1760)', color: '#f8fafc', fontSize: '13px' }
         });
     };
     
     const requireLogin = (callback, action = 'interact') => {
         if (!currentUser) {
             toast.error(`Please login to ${action}.`, {
-                style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '13px' }
+                style: { borderRadius: '12px', background: '#7B1760', color: '#f8fafc', fontSize: '13px' }
             });
             setIsLoginModalOpen(true);
         } else {
@@ -172,10 +172,10 @@ const ProductDetails = () => {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#FBFCFE] gap-6">
                 <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-4 border-indigo-100 border-t-indigo-600 animate-spin"></div>
-                    <div className="absolute inset-3 rounded-full border-4 border-indigo-100 border-b-indigo-400 animate-spin-reverse"></div>
+                    <div className="absolute inset-0 rounded-full border-4 border-orange-100 border-t-orange-600 animate-spin"></div>
+                    <div className="absolute inset-3 rounded-full border-4 border-orange-100 border-b-orange-400 animate-spin-reverse"></div>
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 animate-pulse">Loading Details</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-400 animate-pulse">Loading Details</p>
             </div>
         );
     }
@@ -184,7 +184,7 @@ const ProductDetails = () => {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#FBFCFE] gap-6">
                 <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Product Not Found</h2>
-                <button onClick={() => navigate('/shop')} className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:-translate-y-1 transition-all text-white rounded-2xl font-black uppercase tracking-widest text-xs">
+                <button onClick={() => navigate('/shop')} className="px-8 py-4 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:shadow-lg hover:-translate-y-1 transition-all" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
                     Explore Shop
                 </button>
             </div>
@@ -247,7 +247,7 @@ const ProductDetails = () => {
     const displayMainImage = overrideImage || images[activeImage];
 
     return (
-        <div className="bg-[#FBFCFE] min-h-screen pb-32 font-sans selection:bg-indigo-600 selection:text-white">
+        <div className="bg-[#FBFCFE] min-h-screen pb-32 font-sans selection:bg-orange-600 selection:text-white">
             <SEO 
                 title={product.name}
                 description={product.description || `Premium ${product.name} at Agneya Creations.`}
@@ -269,18 +269,18 @@ const ProductDetails = () => {
                 <div className="flex items-center justify-between mb-8">
                     <button 
                         onClick={() => navigate('/shop')} 
-                        className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-600 transition-colors"
+                        className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-orange-600 transition-colors"
                     >
-                        <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-indigo-50 group-hover:shadow-md group-hover:-translate-x-1 transition-all border border-slate-100">
+                        <div className="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-orange-50 group-hover:shadow-md group-hover:-translate-x-1 transition-all border border-slate-100">
                             <ArrowLeft size={16} />
                         </div>
                         Back to Shop
                     </button>
                     
                     <nav className="hidden md:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-                        <button onClick={() => navigate('/')} className="hover:text-indigo-600 transition-colors">Home</button>
+                        <button onClick={() => navigate('/')} className="hover:text-orange-600 transition-colors">Home</button>
                         <ChevronRight size={10} className="text-slate-300" />
-                        <span className="text-indigo-600 truncate max-w-[200px]">{product.name}</span>
+                        <span className="text-orange-600 truncate max-w-[200px]">{product.name}</span>
                     </nav>
                 </div>
 
@@ -304,7 +304,7 @@ const ProductDetails = () => {
                                             }, 200);
                                         }
                                     }}
-                                    className={`relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-white rounded-[20px] overflow-hidden transition-all duration-300 ${activeImage === idx && !overrideImage ? 'ring-2 ring-indigo-600 ring-offset-2 scale-95 shadow-md' : 'border border-slate-100 opacity-60 hover:opacity-100 hover:scale-105'}`}
+                                    className={`relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 bg-white rounded-[20px] overflow-hidden transition-all duration-300 ${activeImage === idx && !overrideImage ? 'ring-2 ring-orange-600 ring-offset-2 scale-95 shadow-md' : 'border border-slate-100 opacity-60 hover:opacity-100 hover:scale-105'}`}
                                 >
                                     <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${idx + 1}`} loading="lazy" />
                                 </button>
@@ -344,7 +344,7 @@ const ProductDetails = () => {
                         {/* Title & Description */}
                         <div className="space-y-4">
                             {product.category && (
-                                <span className="inline-block px-4 py-1.5 bg-indigo-50/50 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-indigo-100/50">
+                                <span className="inline-block px-4 py-1.5 bg-orange-50/50 text-orange-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-orange-100/50">
                                     {product.category}
                                 </span>
                             )}
@@ -361,7 +361,7 @@ const ProductDetails = () => {
                         {/* Pricing Component */}
                         <div className="bg-white p-6 rounded-[24px] border border-slate-100 shadow-sm shadow-slate-100/50 space-y-4">
                             <div className="flex items-baseline gap-4">
-                                <span className="text-4xl font-black text-indigo-600 tracking-tight">
+                                <span className="text-4xl font-black tracking-tight" style={{ color: '#F7941D' }}>
                                     ₹{baseFinalPrice.toLocaleString('en-IN')}
                                 </span>
                                 {discount > 0 && (
@@ -401,7 +401,7 @@ const ProductDetails = () => {
                                             <button 
                                                 key={i}
                                                 onClick={() => setSelectedColor(color)}
-                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedColor === color ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 scale-105' : 'bg-white border-2 border-slate-100 text-slate-500 hover:border-indigo-200 hover:text-indigo-600 hover:-translate-y-1'}`}
+                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedColor === color ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 scale-105' : 'bg-white border-2 border-slate-100 text-slate-500 hover:border-orange-200 hover:text-orange-600 hover:-translate-y-1'}`}
                                             >
                                                 {color === '-' ? 'Standard' : color}
                                             </button>
@@ -419,7 +419,8 @@ const ProductDetails = () => {
                                             <button 
                                                 key={i}
                                                 onClick={() => setSelectedSize(size)}
-                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedSize === size ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 scale-105' : 'bg-white border-2 border-slate-100 text-slate-500 hover:border-indigo-200 hover:text-indigo-600 hover:-translate-y-1'}`}
+                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedSize === size ? 'text-white shadow-lg shadow-orange-600/20 scale-105' : 'bg-white border-2 border-slate-100 text-slate-500 hover:border-orange-200 hover:text-orange-600 hover:-translate-y-1'}`}
+                                                style={selectedSize === size ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}
                                             >
                                                 {size}
                                             </button>
@@ -434,9 +435,9 @@ const ProductDetails = () => {
                             <div className="flex gap-4">
                                 {/* Quantity Selector */}
                                 <div className="flex items-center bg-white rounded-[20px] border-2 border-slate-100 p-1 shadow-sm">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-colors font-black text-lg">−</button>
+                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-2xl transition-colors font-black text-lg">−</button>
                                     <span className="w-12 text-center font-black text-sm text-slate-900">{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-colors font-black text-lg">+</button>
+                                    <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-2xl transition-colors font-black text-lg">+</button>
                                 </div>
                                 
                                 {/* Buy Now Button */}
@@ -458,7 +459,8 @@ const ProductDetails = () => {
                                         };
                                         requireLogin(() => navigate('/checkout', { state: { buyNowItem: commonItemData } }));
                                     }}
-                                    className="flex-1 flex items-center justify-center gap-3 bg-slate-900 text-white rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-600/30 active:scale-95 py-4 px-2"
+                                    className="flex-1 flex items-center justify-center gap-3 text-white rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:opacity-90 hover:shadow-xl hover:shadow-orange-600/30 active:scale-95 py-4 px-2"
+                                    style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
                                 >
                                     <ShoppingCart size={18} /> Add To Cart • ₹{cartItemTotal.toLocaleString('en-IN')}
                                 </button>
@@ -481,7 +483,7 @@ const ProductDetails = () => {
                                                 setInitialStudioMode('3d');
                                                 setCustomizingProduct(product);
                                             })} 
-                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
+                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-orange-600 hover:text-orange-600 hover:bg-orange-50 transition-all active:scale-95 group"
                                         >
                                             <Box size={18} className="group-hover:scale-110 transition-transform" /> 3D Studio
                                         </button>
@@ -498,7 +500,7 @@ const ProductDetails = () => {
                                                     setCustomizingProduct(product);
                                                 }
                                             })} 
-                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all active:scale-95 group"
+                                            className="h-14 sm:h-16 bg-white border-2 border-slate-100 text-slate-700 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:border-orange-600 hover:text-orange-600 hover:bg-orange-50 transition-all active:scale-95 group"
                                         >
                                             <ImageIcon size={18} className="group-hover:scale-110 transition-transform" /> 2D Canvas
                                         </button>
@@ -509,9 +511,12 @@ const ProductDetails = () => {
                                             setInitialStudioMode('company');
                                             setCustomizingProduct(product);
                                         })} 
-                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:bg-indigo-600 hover:text-white transition-all active:scale-95 shadow-inner`}
+                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 bg-orange-50 border border-orange-100 text-orange-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all active:scale-95 shadow-inner group`}
                                     >
-                                        <PenTool size={18} /> Hire Designer
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-[20px]" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }} />
+                                        <div className="relative z-10 flex flex-col items-center justify-center gap-1.5">
+                                            <PenTool size={18} /> Hire Designer
+                                        </div>
                                     </button>
                                 </div>
                             )}
@@ -529,11 +534,11 @@ const ProductDetails = () => {
                                 <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase leading-none">
                                     Related Products
                                 </h3>
-                                <div className="h-1.5 w-12 bg-indigo-600 rounded-full mt-4"></div>
+                                <div className="h-1.5 w-12 rounded-full mt-4" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}></div>
                             </div>
                             <button 
                                 onClick={() => navigate('/shop')}
-                                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-all"
+                                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-orange-600 transition-all"
                             >
                                 View All <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -544,14 +549,14 @@ const ProductDetails = () => {
                             {/* Navigation Arrows */}
                             <button 
                                 onClick={() => scrollSlider('left')}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-orange-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
                             >
                                 <ChevronLeft size={24} />
                             </button>
                             
                             <button 
                                 onClick={() => scrollSlider('right')}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-12 h-12 bg-white rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] flex items-center justify-center text-slate-400 hover:text-orange-600 hover:scale-110 opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex"
                             >
                                 <ChevronRight size={24} />
                             </button>
@@ -599,7 +604,7 @@ const ProductDetails = () => {
                         <div className="md:hidden mt-4">
                             <button
                                 onClick={() => navigate('/shop')}
-                                className="w-full py-4 rounded-2xl bg-indigo-50 text-indigo-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
+                                className="w-full py-4 rounded-2xl bg-orange-50 text-orange-600 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2"
                             >
                                 Explore Full Catalog <ChevronRight size={14} />
                             </button>
@@ -626,10 +631,10 @@ const ProductDetails = () => {
                                     setInitialStudioMode('2d');
                                     setCustomizingProduct(product);
                                 }} className="cursor-pointer group">
-                                    <div className="w-full aspect-square bg-white rounded-[24px] border-2 border-slate-100 overflow-hidden group-hover:border-indigo-600 group-hover:shadow-xl transition-all duration-300 p-6 mb-4">
+                                    <div className="w-full aspect-square bg-white rounded-[24px] border-2 border-slate-100 overflow-hidden group-hover:border-orange-600 group-hover:shadow-xl transition-all duration-300 p-6 mb-4">
                                         <img loading="lazy" src={model.mainModelUrl} alt={model.modelName || `Model ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
                                     </div>
-                                    <p className="font-black text-[10px] uppercase tracking-widest text-center text-slate-500 group-hover:text-indigo-600 transition-colors">{model.modelName || `View ${idx + 1}`}</p>
+                                    <p className="font-black text-[10px] uppercase tracking-widest text-center text-slate-500 group-hover:text-orange-600 transition-colors">{model.modelName || `View ${idx + 1}`}</p>
                                 </div>
                             ))}
                         </div>

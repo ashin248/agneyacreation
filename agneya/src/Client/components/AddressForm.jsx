@@ -91,8 +91,8 @@ const AddressForm = ({ onSave, initialData = null }) => {
   return (
     <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl max-w-2xl mx-auto animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
-          <MapPin className="text-indigo-600 w-6 h-6" />
+        <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
+          <MapPin className="text-orange-600 w-6 h-6" />
         </div>
         <div>
           <h2 className="text-xl font-bold text-gray-900">Add New Address</h2>
@@ -118,7 +118,7 @@ const AddressForm = ({ onSave, initialData = null }) => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Receiver's name"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
                 required
               />
             </div>
@@ -178,10 +178,10 @@ const AddressForm = ({ onSave, initialData = null }) => {
               className="w-full h-[50px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-2xl transition-all flex items-center justify-center gap-2 border border-gray-200 group"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+                <Loader2 className="w-5 h-5 animate-spin text-orange-600" />
               ) : (
                 <>
-                  <MapPin className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+                  <MapPin className="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform" />
                   Use Current Location
                 </>
               )}
@@ -264,9 +264,10 @@ const AddressForm = ({ onSave, initialData = null }) => {
                 onClick={() => setFormData({ ...formData, type })}
                 className={`flex-1 py-3.5 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 border transition-all ${
                   formData.type === type
-                    ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-100"
+                    ? "text-white shadow-lg shadow-orange-100"
                     : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
                 }`}
+                style={formData.type === type ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}
               >
                 {type === "home" && <Home size={14} />}
                 {type === "work" && <Briefcase size={14} />}
@@ -279,7 +280,8 @@ const AddressForm = ({ onSave, initialData = null }) => {
 
         <button
           type="submit"
-          className="w-full py-5 bg-slate-900 border border-slate-900 hover:bg-white hover:text-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-3xl shadow-xl transition-all flex items-center justify-center gap-3 mt-6"
+          className="w-full py-5 text-white font-black text-xs uppercase tracking-[0.2em] rounded-3xl shadow-xl transition-all flex items-center justify-center gap-3 mt-6 hover:opacity-90"
+          style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
         >
           Save & Use Address
         </button>

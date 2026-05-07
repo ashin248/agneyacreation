@@ -120,7 +120,7 @@ const BulkOrderMaster = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
-        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-600 rounded-full animate-spin" />
         <p className="text-sm font-medium text-slate-400">Loading product catalogue…</p>
       </div>
     );
@@ -147,12 +147,13 @@ const BulkOrderMaster = () => {
                 placeholder="Search products…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
               />
             </div>
             <button
               onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border flex-shrink-0 transition-all ${showSelectedOnly ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border flex-shrink-0 transition-all ${showSelectedOnly ? 'text-white' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+              style={showSelectedOnly ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}
             >
               <Filter size={13} />
               {showSelectedOnly ? 'All Products' : 'Selected Only'}
@@ -164,20 +165,20 @@ const BulkOrderMaster = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
         {/* Info Banner */}
-        <div className="bg-indigo-600 rounded-2xl p-5 mb-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="rounded-2xl p-5 mb-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
           <div className="max-w-lg">
-            <p className="text-xs font-semibold text-indigo-200 mb-1">How bulk pricing works</p>
+            <p className="text-xs font-semibold text-orange-200 mb-1">How bulk pricing works</p>
             <p className="text-sm text-white/80 leading-relaxed">
               Discounts are applied <strong className="text-white">per product</strong>. Once you reach a product's minimum quantity threshold (shown in each row), the discounted price automatically applies to <strong className="text-white">all units</strong> of that product.
             </p>
           </div>
           <div className="flex gap-3 flex-shrink-0">
             <div className="bg-white/10 rounded-xl px-4 py-3 text-center">
-              <p className="text-[10px] text-indigo-300 font-semibold">Total Units</p>
+              <p className="text-[10px] text-orange-200 font-semibold">Total Units</p>
               <p className="text-xl font-bold">{totalUnits}</p>
             </div>
             <div className="bg-white/10 rounded-xl px-4 py-3 text-center">
-              <p className="text-[10px] text-indigo-300 font-semibold">Status</p>
+              <p className="text-[10px] text-orange-200 font-semibold">Status</p>
               <p className="text-sm font-bold">{isBulkOrder ? 'Wholesale' : 'Standard'}</p>
             </div>
           </div>
@@ -194,7 +195,7 @@ const BulkOrderMaster = () => {
                 placeholder="Your organisation name"
                 value={companyName}
                 onChange={e => { setCompanyName(e.target.value); localStorage.setItem('temp_company_name', e.target.value); }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
               />
             </div>
             <div>
@@ -204,7 +205,7 @@ const BulkOrderMaster = () => {
                 placeholder="Enter GSTIN"
                 value={gstNumber}
                 onChange={e => { setGstNumber(e.target.value); localStorage.setItem('temp_gst_number', e.target.value); }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
               />
             </div>
           </div>
@@ -275,7 +276,7 @@ const BulkOrderMaster = () => {
                         : null;
 
                       return (
-                        <tr key={product._id || idx} className={`transition-colors ${isSelected ? 'bg-indigo-50/30' : 'hover:bg-slate-50/50'}`}>
+                        <tr key={product._id || idx} className={`transition-colors ${isSelected ? 'bg-orange-50/20' : 'hover:bg-slate-50/50'}`}>
                           {/* Product Info */}
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
@@ -290,7 +291,7 @@ const BulkOrderMaster = () => {
                                     {[...product.bulkRules].sort((a, b) => a.minQty - b.minQty).map((rule, ri) => {
                                       const active = totalProductQty >= rule.minQty;
                                       return (
-                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
+                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'text-white' : 'bg-slate-50 text-slate-400 border-slate-100'}`} style={active ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}>
                                           {rule.minQty}+: ₹{(product.basePrice - (rule.pricePerUnit || 0)).toLocaleString('en-IN')}
                                         </span>
                                       );
@@ -298,7 +299,7 @@ const BulkOrderMaster = () => {
                                   </div>
                                 )}
                                 {nextTier && totalProductQty > 0 && (
-                                  <p className="text-[9px] text-indigo-500 font-semibold mt-1">
+                                  <p className="text-[9px] text-orange-500 font-semibold mt-1">
                                     Add {nextTier.minQty - totalProductQty} more for ₹{(product.basePrice - (nextTier.pricePerUnit || 0)).toLocaleString('en-IN')} each
                                   </p>
                                 )}
@@ -313,8 +314,8 @@ const BulkOrderMaster = () => {
                                 const sku = v.sku || 'STD';
                                 const qty = getQty(product._id, sku);
                                 return (
-                                  <div key={sku} className={`flex flex-col items-center rounded-lg border p-1 min-w-[48px] transition-all ${qty > 0 ? 'border-indigo-300 bg-white ring-1 ring-indigo-100' : 'border-slate-100 bg-slate-50'}`}>
-                                    <span className={`text-[9px] font-semibold mb-1 ${qty > 0 ? 'text-indigo-600' : 'text-slate-400'}`}>{v.size || sku}</span>
+                                  <div key={sku} className={`flex flex-col items-center rounded-lg border p-1 min-w-[48px] transition-all ${qty > 0 ? 'border-orange-300 bg-white ring-1 ring-orange-100' : 'border-slate-100 bg-slate-50'}`}>
+                                    <span className={`text-[9px] font-semibold mb-1 ${qty > 0 ? 'text-orange-600' : 'text-slate-400'}`}>{v.size || sku}</span>
                                     <input
                                       type="number"
                                       value={qty || ''}
@@ -331,7 +332,7 @@ const BulkOrderMaster = () => {
 
                           {/* Subtotal */}
                           <td className="px-5 py-4 text-right">
-                            <p className={`text-sm font-bold ${isSelected ? 'text-indigo-600' : 'text-slate-200'}`}>
+                            <p className={`text-sm font-bold ${isSelected ? 'text-orange-600' : 'text-slate-200'}`}>
                               ₹{subtotal.toLocaleString('en-IN')}
                             </p>
                             {isSelected && wMin && totalProductQty < wMin && (
@@ -358,7 +359,7 @@ const BulkOrderMaster = () => {
           <div className="lg:col-span-1">
             <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl sticky top-[130px] md:top-[150px]">
               <div className="flex items-center gap-2 mb-5">
-                <ShoppingCart size={16} className="text-indigo-400" />
+                <ShoppingCart size={16} className="text-orange-400" />
                 <h2 className="text-sm font-bold">Order Summary</h2>
               </div>
 
@@ -398,7 +399,8 @@ const BulkOrderMaster = () => {
               <button
                 disabled={cart.length === 0}
                 onClick={handleCheckout}
-                className="w-full py-4 bg-white text-slate-900 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-indigo-500 hover:text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+                className="w-full py-4 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
               >
                 Proceed to Checkout <ArrowRight size={16} />
               </button>

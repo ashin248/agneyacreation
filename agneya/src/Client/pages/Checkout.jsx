@@ -173,7 +173,7 @@ const Checkout = () => {
             finally { setIsProcessingPayment(false); setIsSubmitting(false); }
           },
           prefill: { name: selectedAddress.name || userData?.name, email: selectedAddress.email || userData?.email, contact: selectedAddress.mobile || userData?.phone },
-          theme: { color: '#4f46e5' }
+          theme: { color: '#F7941D' }
         });
         rzp.open(); return;
       } catch (err) { console.error(err); setIsProcessingPayment(false); setIsSubmitting(false); return; }
@@ -208,12 +208,12 @@ const Checkout = () => {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-3">Order Confirmed!</h2>
           <p className="text-sm text-slate-500 leading-relaxed mb-8">
-            Your order <span className="text-indigo-600 font-bold">#{orderId}</span> has been placed successfully. A confirmation will be sent to your phone.
+            Your order <span className="font-bold" style={{ color: '#F7941D' }}>#{orderId}</span> has been placed successfully. A confirmation will be sent to your phone.
           </p>
-          <button onClick={() => navigate('/')} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all shadow-lg">
+          <button onClick={() => navigate('/')} className="w-full py-4 text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
             <ShoppingBag size={16} /> Continue Shopping
           </button>
-          <button onClick={() => navigate('/track-order')} className="w-full mt-3 py-3 text-sm font-semibold text-slate-500 hover:text-indigo-600 transition-colors">
+          <button onClick={() => navigate('/track-order')} className="w-full mt-3 py-3 text-sm font-semibold text-slate-500 hover:text-orange-600 transition-colors">
             Track Your Order →
           </button>
         </div>
@@ -231,7 +231,7 @@ const Checkout = () => {
           </div>
           <h2 className="text-xl font-bold text-slate-900 mb-2">Nothing to checkout</h2>
           <p className="text-sm text-slate-400 mb-7">Your cart is empty.</p>
-          <button onClick={() => navigate('/')} className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl font-semibold text-sm hover:bg-indigo-700 transition-all">
+          <button onClick={() => navigate('/')} className="w-full py-3.5 text-white rounded-2xl font-semibold text-sm hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
             Go Shopping
           </button>
         </div>
@@ -262,7 +262,7 @@ const Checkout = () => {
               <React.Fragment key={n}>
                 {n > 1 && <div className="w-8 h-px bg-slate-200" />}
                 <div className={`flex items-center gap-2 ${dim ? 'opacity-30' : ''}`}>
-                  <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${done ? 'bg-emerald-500 text-white' : active ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>{n}</span>
+                  <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${done ? 'bg-emerald-500 text-white' : active ? 'text-white' : 'bg-slate-200 text-slate-500'}`} style={active ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}>{n}</span>
                   <span className={`text-xs font-semibold hidden sm:inline ${active ? 'text-slate-900' : 'text-slate-400'}`}>{label}</span>
                 </div>
               </React.Fragment>
@@ -289,10 +289,10 @@ const Checkout = () => {
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <MapPin size={16} className="text-indigo-600" /> Delivery Address
+                  <MapPin size={16} className="text-orange-600" /> Delivery Address
                 </h2>
                 {selectedAddress && !showAddressForm && (
-                  <button onClick={() => setShowAddressForm(true)} className="text-xs font-semibold text-indigo-600 hover:underline">
+                  <button onClick={() => setShowAddressForm(true)} className="text-xs font-semibold text-orange-600 hover:underline">
                     Change
                   </button>
                 )}
@@ -305,11 +305,12 @@ const Checkout = () => {
                       <div
                         key={i}
                         onClick={() => setSelectedAddress(addr)}
-                        className={`relative p-4 rounded-xl border-2 cursor-pointer group transition-all ${selectedAddress === addr ? 'border-indigo-500 bg-indigo-50/30' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                        className={`relative p-4 rounded-xl border-2 cursor-pointer group transition-all ${selectedAddress === addr ? 'bg-orange-50/10' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                        style={selectedAddress === addr ? { borderImageSource: 'linear-gradient(135deg, #F7941D, #7B1760)', borderImageSlice: 1, borderStyle: 'solid', borderWidth: '2px' } : {}}
                       >
                         <div className="flex items-start justify-between mb-2">
                           <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-500 px-2 py-0.5 rounded-md uppercase">{addr.type || 'Home'}</span>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${selectedAddress === addr ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'}`}>
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${selectedAddress === addr ? 'border-orange-600 bg-orange-600' : 'border-slate-300'}`}>
                             {selectedAddress === addr && <CheckCircle2 size={11} className="text-white" />}
                           </div>
                         </div>
@@ -326,7 +327,7 @@ const Checkout = () => {
                     ))}
                     <button
                       onClick={() => { setSelectedAddress(null); setShowAddressForm(true); }}
-                      className="p-4 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-indigo-400 hover:text-indigo-600 transition-all min-h-[120px]"
+                      className="p-4 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-orange-400 hover:text-orange-600 transition-all min-h-[120px]"
                     >
                       <Plus size={18} />
                       <span className="text-xs font-semibold">Add New Address</span>
@@ -342,22 +343,23 @@ const Checkout = () => {
             <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-slate-50">
                 <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <CreditCard size={16} className="text-indigo-600" /> Payment Method
+                  <CreditCard size={16} className="text-orange-600" /> Payment Method
                 </h2>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div
                   onClick={() => setPaymentMethod('online')}
-                  className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-4 transition-all ${paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50/30' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                  className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-4 transition-all ${paymentMethod === 'online' ? 'bg-orange-50/10' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                  style={paymentMethod === 'online' ? { borderImageSource: 'linear-gradient(135deg, #F7941D, #7B1760)', borderImageSlice: 1, borderStyle: 'solid', borderWidth: '2px' } : {}}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${paymentMethod === 'online' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-400'}`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${paymentMethod === 'online' ? 'text-white' : 'bg-slate-200 text-slate-400'}`} style={paymentMethod === 'online' ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}>
                     <ShieldCheck size={18} />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-bold text-slate-900">Online Payment</p>
                     <p className="text-[10px] text-slate-400">UPI, Cards, Wallets, NetBanking</p>
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${paymentMethod === 'online' ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300'}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${paymentMethod === 'online' ? 'border-orange-600 bg-orange-600' : 'border-slate-300'}`}>
                     {paymentMethod === 'online' && <CheckCircle2 size={11} className="text-white" />}
                   </div>
                 </div>
@@ -379,7 +381,7 @@ const Checkout = () => {
                 <input
                   type="checkbox" checked={needsGst}
                   onChange={e => setNeedsGst(e.target.checked)}
-                  className="w-4 h-4 accent-indigo-600 cursor-pointer rounded"
+                  className="w-4 h-4 accent-orange-600 cursor-pointer rounded"
                 />
                 <span className="text-sm font-semibold text-slate-700">Request GST Invoice (optional)</span>
               </label>
@@ -396,7 +398,7 @@ const Checkout = () => {
                         value={gstDetails[key]}
                         onChange={e => setGstDetails(p => ({ ...p, [key]: e.target.value }))}
                         placeholder={placeholder}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all"
                       />
                     </div>
                   ))}
@@ -425,7 +427,7 @@ const Checkout = () => {
                         )}
                         <span className="text-[10px] bg-white border border-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md font-medium">Qty {item.quantity}</span>
                         {item.itemType === 'Custom' && (
-                          <span className="text-[10px] bg-indigo-50 border border-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-md font-semibold">Custom</span>
+                          <span className="text-[10px] bg-orange-50 border border-orange-100 text-orange-600 px-1.5 py-0.5 rounded-md font-semibold">Custom</span>
                         )}
                       </div>
                     </div>
@@ -454,7 +456,7 @@ const Checkout = () => {
                 </div>
                 <div className="flex justify-between items-end pt-3 border-t border-slate-200">
                   <span className="text-sm font-bold text-slate-900">Total</span>
-                  <span className="text-2xl font-black text-indigo-600 tracking-tight">₹{checkoutTotal.toLocaleString('en-IN')}</span>
+                  <span className="text-2xl font-black tracking-tight" style={{ color: '#F7941D' }}>₹{checkoutTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -464,9 +466,10 @@ const Checkout = () => {
                 disabled={!canCheckout}
                 className={`w-full py-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98] ${
                   canCheckout
-                    ? 'bg-indigo-600 text-white hover:bg-slate-900 shadow-indigo-100'
+                    ? 'text-white hover:opacity-90 shadow-orange-100'
                     : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                 }`}
+                style={canCheckout ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}
               >
                 {isSubmitting || isProcessingPayment ? (
                   <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing…</>
