@@ -101,23 +101,7 @@ const Shop = () => {
     return () => clearInterval(t);
   }, [banners]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-        }
-      });
-    }, { threshold: 0.05 });
 
-    // Small delay to ensure DOM is updated
-    setTimeout(() => {
-      const elements = document.querySelectorAll('.reveal-on-scroll');
-      elements.forEach(el => observer.observe(el));
-    }, 100);
-
-    return () => observer.disconnect();
-  }, [products, filteredProducts, activeCategory]);
 
   const toggleWishlist = async (id) => {
     const next = wishlist.includes(id) ? wishlist.filter(i => i !== id) : [...wishlist, id];
@@ -197,6 +181,23 @@ const Shop = () => {
 
     return recommended.slice(0, 6);
   }, [products, wishlist]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.05 });
+
+    setTimeout(() => {
+      const elements = document.querySelectorAll('.reveal-on-scroll');
+      elements.forEach(el => observer.observe(el));
+    }, 100);
+
+    return () => observer.disconnect();
+  }, [filteredProducts, recommendedProducts, activeCategory]);
 
   if (loading) {
     return (
