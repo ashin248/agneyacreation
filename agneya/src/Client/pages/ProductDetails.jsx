@@ -124,9 +124,12 @@ const ProductDetails = () => {
                     
                     // Fetch related products - fetch more for slider
                     if (res.data.category) {
-                        const relatedRes = await axios.get(`/api/public/products?category=${res.data.category}`);
-                        if (relatedRes.data && relatedRes.data.success && Array.isArray(relatedRes.data.data)) {
-                          setRelatedProducts(relatedRes.data.data.filter(p => p._id !== productId).slice(0, 8));
+                        const relatedRes = await axios.get(`/api/public/products?category=${encodeURIComponent(res.data.category)}`);
+                        if (relatedRes.data && relatedRes.data.success) {
+                            const fetchedRelated = relatedRes.data.products || relatedRes.data.data || [];
+                            if (Array.isArray(fetchedRelated)) {
+                                setRelatedProducts(fetchedRelated.filter(p => p._id !== productId).slice(0, 8));
+                            }
                         }
                     }
 
