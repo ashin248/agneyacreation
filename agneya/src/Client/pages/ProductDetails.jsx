@@ -511,7 +511,7 @@ const ProductDetails = () => {
                                             setInitialStudioMode('company');
                                             setCustomizingProduct(product);
                                         })} 
-                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 bg-orange-50 border border-orange-100 text-orange-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all active:scale-95 shadow-inner group`}
+                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 relative overflow-hidden bg-orange-50 border border-orange-100 text-orange-600 rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all active:scale-95 shadow-inner group`}
                                     >
                                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-[20px]" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }} />
                                         <div className="relative z-10 flex flex-col items-center justify-center gap-1.5">
