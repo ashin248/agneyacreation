@@ -182,20 +182,20 @@ const Shop = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-4">
-        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin" />
-        <p className="text-sm font-medium text-slate-400">Loading products…</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="w-10 h-10 border-4 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] rounded-full animate-spin" />
+        <p className="text-sm font-medium" style={{ color: 'var(--color-neu-text)' }}>Loading products…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pb-16">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
 
       {/* ── HERO BANNER ── */}
       {banners.length > 0 && (
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
-          <section className="relative w-full h-[120px] md:h-[180px] overflow-hidden rounded-2xl shadow-md group">
+          <section className="relative w-full h-[120px] md:h-[180px] overflow-hidden rounded-2xl neu-pressed group">
             <div
               className="flex h-full w-full transition-transform duration-700 ease-in-out"
               style={{ transform: `translateX(-${currentBanner * 100}%)` }}
@@ -236,37 +236,38 @@ const Shop = () => {
 
       {/* ── FILTER / SEARCH BAR ── */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
-        <div className="sticky top-16 md:top-[70px] z-50 bg-white/90 backdrop-blur-sm pt-2 pb-3">
-          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 shadow-sm">
+        <div className="sticky top-16 md:top-[70px] z-50 pt-2 pb-3" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+          <div className="flex items-center gap-2 neu-flat px-3 py-2">
 
             {/* Search */}
             <div className="relative flex-shrink-0">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-neu-text)' }} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search products…"
-                className="h-9 w-36 md:w-48 bg-slate-50 border border-slate-100 rounded-xl pl-8 pr-3 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-400/20 focus:border-orange-300 transition-all"
+                className="h-9 w-36 md:w-48 neu-input rounded-xl pl-8 pr-3 text-sm font-medium transition-all"
+                style={{ color: 'var(--color-neu-text)' }}
               />
             </div>
 
             <div className="w-px h-6 bg-slate-200 flex-shrink-0" />
 
             {/* Category Pills */}
-            <div className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
               {categories.map(cat => {
                 const name = typeof cat === 'string' ? cat : cat.name;
                 return (
                   <button
                     key={name}
                     onClick={() => setActiveCategory(name)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
                       activeCategory === name
-                        ? 'text-white'
-                        : 'bg-slate-100 text-slate-500 hover:bg-orange-50 hover:text-orange-600'
+                        ? 'neu-button-accent'
+                        : 'neu-button'
                     }`}
-                    style={activeCategory === name ? { background: 'linear-gradient(135deg,#F7941D,#7B1760)' } : {}}
+                    style={activeCategory === name ? {} : { color: 'var(--color-neu-text)' }}
                   >
                     {name}
                   </button>
@@ -279,8 +280,7 @@ const Shop = () => {
             {/* Filter button */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 h-9 text-white rounded-xl hover:opacity-90 transition-all text-xs font-semibold"
-              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
+              className="flex-shrink-0 flex items-center gap-1.5 px-3 h-9 neu-button-accent text-xs font-semibold"
             >
               <SlidersHorizontal size={14} />
               <span className="hidden sm:inline">Filter</span>
@@ -294,25 +294,24 @@ const Shop = () => {
         {/* ── ALL PRODUCTS HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-6 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter uppercase">All Products</h1>
-            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">{filteredProducts.length} products</p>
+            <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase" style={{ color: 'var(--color-neu-text)' }}>All Products</h1>
+            <p className="text-xs font-bold mt-1 uppercase tracking-widest" style={{ color: 'var(--color-neu-text)', opacity: 0.7 }}>{filteredProducts.length} products</p>
           </div>
         </div>
 
         {/* ── PRODUCT GRID ── */}
         {filteredProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[32px] border border-slate-100 shadow-sm gap-5 mb-12">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 border-8 border-white shadow-xl">
+          <div className="flex flex-col items-center justify-center py-24 neu-pressed gap-5 mb-12">
+            <div className="w-20 h-20 neu-flat flex items-center justify-center" style={{ color: 'var(--color-neu-text)' }}>
               <ShoppingBag size={28} />
             </div>
-            <div className="text-center">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tighter">No products found</h3>
-              <p className="text-sm font-medium text-slate-400 mt-2">Try adjusting your filters.</p>
+            <div className="text-center" style={{ color: 'var(--color-neu-text)' }}>
+              <h3 className="text-xl font-black uppercase tracking-tighter">No products found</h3>
+              <p className="text-sm font-medium mt-2 opacity-70">Try adjusting your filters.</p>
             </div>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); }}
-              className="flex items-center gap-2 px-6 py-3 rounded-[16px] font-black uppercase text-[10px] tracking-widest text-white transition-all hover:opacity-90 hover:shadow-lg"
-              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
+              className="flex items-center gap-2 px-6 py-3 neu-button-accent font-black uppercase text-[10px] tracking-widest"
             >
               <RotateCcw size={14} /> Reset Filters
             </button>
@@ -423,13 +422,13 @@ const Shop = () => {
         />
       )}
 
-      <aside className={`fixed top-0 right-0 w-full sm:w-[380px] h-full bg-white z-[110] shadow-2xl flex flex-col transition-transform duration-300 ease-out ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-          <div>
-            <h3 className="text-lg font-bold text-slate-900">Filters</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Narrow down your results</p>
+      <aside className={`fixed top-0 right-0 w-full sm:w-[380px] h-full z-[110] flex flex-col transition-transform duration-300 ease-out ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`} style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--color-neu-dark)]">
+          <div style={{ color: 'var(--color-neu-text)' }}>
+            <h3 className="text-lg font-bold">Filters</h3>
+            <p className="text-xs opacity-70 mt-0.5">Narrow down your results</p>
           </div>
-          <button onClick={() => setIsFilterOpen(false)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-500 transition-colors">
+          <button onClick={() => setIsFilterOpen(false)} className="w-9 h-9 flex items-center justify-center neu-button" style={{ color: 'var(--color-neu-text)' }}>
             <X size={18} />
           </button>
         </div>
@@ -477,17 +476,17 @@ const Shop = () => {
           </div>
         </div>
 
-        <div className="px-6 py-5 border-t border-slate-100 flex flex-col gap-3">
+        <div className="px-6 py-5 flex flex-col gap-4 border-t border-[var(--color-neu-dark)]">
           <button
             onClick={() => setIsFilterOpen(false)}
-            className="w-full py-3.5 text-white font-semibold text-sm rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
-            style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
+            className="w-full py-3.5 neu-button-accent font-semibold text-sm"
           >
             Apply Filters
           </button>
           <button
             onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); setSortBy('Newest'); setIsFilterOpen(false); }}
-            className="w-full py-3.5 flex items-center justify-center gap-2 bg-white text-rose-500 border-2 border-slate-100 font-semibold text-sm rounded-xl hover:border-rose-200 hover:bg-rose-50 transition-all"
+            className="w-full py-3.5 flex items-center justify-center gap-2 neu-button font-semibold text-sm"
+            style={{ color: 'var(--color-neu-text)' }}
           >
             <RotateCcw size={14} /> Reset All
           </button>

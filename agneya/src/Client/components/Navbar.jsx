@@ -70,10 +70,10 @@ const Navbar = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/95 backdrop-blur-xl shadow-sm border-b'
-            : 'bg-white/80 backdrop-blur-md'
+            ? 'neu-flat rounded-none shadow-none border-b border-[var(--color-neu-dark)]'
+            : 'bg-transparent'
         }`}
-        style={isScrolled ? { borderBottomColor: 'rgba(247,148,29,0.18)', boxShadow: '0 1px 16px rgba(247,148,29,0.08)' } : {}}
+        style={{ backgroundColor: isScrolled ? 'var(--color-neu-bg)' : 'transparent' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-[70px]">
@@ -108,11 +108,11 @@ const Navbar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold transition-all duration-200 ${
                       isActive
-                        ? 'text-white shadow-sm'
-                        : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50'
+                        ? 'neu-pressed'
+                        : 'hover:neu-flat'
                     }`
                   }
-                  style={({ isActive }) => isActive ? { background: 'linear-gradient(135deg,#F7941D,#7B1760)' } : {}}
+                  style={{ color: 'var(--color-neu-text)' }}
                 >
                   <Icon size={15} />
                   {name}
@@ -128,7 +128,8 @@ const Navbar = () => {
               {/* Cart */}
               <Link
                 to="/cart"
-                className="relative flex items-center justify-center w-10 h-10 rounded-xl text-slate-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-200"
+                className="relative flex items-center justify-center w-10 h-10 rounded-xl neu-button transition-all duration-200"
+                style={{ color: 'var(--color-neu-text)' }}
                 aria-label={`Shopping cart, ${cartCount} items`}
               >
                 <ShoppingCart size={20} />
@@ -144,10 +145,11 @@ const Navbar = () => {
                 <div className="relative hidden md:block" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 hover:bg-orange-50 transition-all duration-200"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl neu-button transition-all duration-200"
+                    style={{ color: 'var(--color-neu-text)' }}
                     aria-expanded={isUserMenuOpen}
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}>
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center neu-pressed" style={{ color: 'var(--color-neu-accent)' }}>
                       <User size={14} />
                     </div>
                     <span className="text-[12px] font-semibold max-w-[80px] truncate">{displayName}</span>
@@ -159,10 +161,10 @@ const Navbar = () => {
 
                   {/* Dropdown */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 py-2 z-50">
-                      <div className="px-4 py-3 border-b border-slate-50">
-                        <p className="text-[10px] text-slate-400 font-medium">Signed in as</p>
-                        <p className="text-[12px] font-bold text-slate-900 truncate mt-0.5">{userData?.name || 'User'}</p>
+                    <div className="absolute right-0 top-full mt-2 w-52 neu-flat py-2 z-50">
+                      <div className="px-4 py-3 border-b border-[var(--color-neu-dark)]">
+                        <p className="text-[10px] opacity-70 font-medium" style={{ color: 'var(--color-neu-text)' }}>Signed in as</p>
+                        <p className="text-[12px] font-bold truncate mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</p>
                       </div>
                       {[
                         { label: 'My Dashboard', path: '/dashboard', icon: User },
@@ -173,10 +175,11 @@ const Navbar = () => {
                         <Link
                           key={label}
                           to={path}
-                          className="flex items-center gap-3 px-4 py-2.5 text-[12px] text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2.5 text-[12px] hover:neu-pressed transition-all"
+                          style={{ color: 'var(--color-neu-text)' }}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <Icon size={14} className="text-slate-400" />
+                          <Icon size={14} className="opacity-70" />
                           {label}
                         </Link>
                       ))}
@@ -195,8 +198,7 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="hidden md:flex items-center gap-2 px-4 py-2.5 text-white rounded-xl text-[12px] font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
-                  style={{ background: 'linear-gradient(135deg,#F7941D 0%,#7B1760 100%)' }}
+                  className="hidden md:flex items-center gap-2 px-4 py-2.5 neu-button-accent text-[12px] font-semibold transition-all duration-200"
                   aria-label="Login to your account"
                 >
                   <LogIn size={14} />
@@ -207,7 +209,8 @@ const Navbar = () => {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl text-slate-700 hover:bg-slate-100 transition-all"
+                className="md:hidden flex items-center justify-center w-10 h-10 neu-button transition-all"
+                style={{ color: 'var(--color-neu-text)' }}
                 aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 aria-expanded={isMobileMenuOpen}
               >
@@ -230,18 +233,19 @@ const Navbar = () => {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-[300px] z-[95] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed top-0 right-0 bottom-0 w-[300px] z-[95] flex flex-col transition-transform duration-300 ease-out md:hidden ${
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
+        style={{ backgroundColor: 'var(--color-neu-bg)' }}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
       >
         {/* Drawer Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[var(--color-neu-dark)]">
           <Link to="/" className="flex items-center gap-2.5" onClick={() => setIsMobileMenuOpen(false)}>
             <img loading="lazy" src="/logo.png" alt="Agneya" className="w-8 h-8 object-contain rounded-lg" />
-            <span className="text-sm font-black text-slate-900">Agneya</span>
+            <span className="text-sm font-black" style={{ color: 'var(--color-neu-text)' }}>Agneya</span>
           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
@@ -283,25 +287,25 @@ const Navbar = () => {
         </nav>
 
         {/* Drawer Footer */}
-        <div className="px-4 pb-6 pt-4 border-t border-slate-100">
+        <div className="px-4 pb-6 pt-4 border-t border-[var(--color-neu-dark)]">
           {currentUser || userData ? (
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Link
                 to="/dashboard"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-orange-50 hover:bg-orange-100 transition-all"
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl neu-pressed transition-all"
               >
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center neu-flat" style={{ color: 'var(--color-neu-accent)' }}>
                   <User size={16} />
                 </div>
                 <div>
-                  <p className="text-[11px] text-slate-400">Signed in as</p>
-                  <p className="text-[13px] font-bold text-slate-900">{displayName}</p>
+                  <p className="text-[11px] opacity-70" style={{ color: 'var(--color-neu-text)' }}>Signed in as</p>
+                  <p className="text-[13px] font-bold" style={{ color: 'var(--color-neu-text)' }}>{displayName}</p>
                 </div>
               </Link>
               <button
                 onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                className="w-full py-3 rounded-2xl text-[12px] font-semibold text-rose-500 hover:bg-rose-50 transition-all"
+                className="w-full py-3 neu-button text-[12px] font-semibold text-rose-500 transition-all"
               >
                 Sign Out
               </button>
@@ -309,8 +313,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => { setIsMobileMenuOpen(false); setIsLoginModalOpen(true); }}
-              className="w-full py-4 text-white rounded-2xl font-semibold text-[13px] flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg"
-              style={{ background: 'linear-gradient(135deg,#F7941D 0%,#F4A41B 45%,#7B1760 100%)' }}
+              className="w-full py-4 neu-button-accent font-semibold text-[13px] flex items-center justify-center gap-2 transition-all"
             >
               <LogIn size={16} />
               Login / Sign Up
