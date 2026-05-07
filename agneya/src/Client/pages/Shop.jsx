@@ -317,22 +317,65 @@ const Shop = () => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 mb-16">
             
-            {/* INJECTED DESIGN YOUR CASE CARD */}
+            {/* INJECTED DESIGN YOUR CASE CARD — Phone Shape */}
             {activeCategory === 'All' && !searchQuery && (
-              <div 
+              <div
                 onClick={() => navigate('/custom-mobile-cases')}
-                className="group relative bg-slate-900 rounded-[24px] overflow-hidden transition-all duration-500 cursor-pointer aspect-square flex flex-col items-center justify-center border border-slate-800 hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.3)] hover:-translate-y-1 active:scale-[0.99]"
+                className="group relative cursor-pointer flex items-center justify-center row-span-2"
+                style={{ gridRow: 'span 2' }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/40 via-purple-600/20 to-slate-900 z-0"></div>
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601593346740-925612772716?w=500&q=80')] opacity-20 bg-cover bg-center mix-blend-overlay group-hover:scale-110 group-hover:rotate-3 transition-all duration-1000"></div>
-                <div className="relative z-10 flex flex-col items-center justify-center p-6 text-center h-full w-full">
-                  <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-4 shadow-[0_0_30px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-500">
-                    <Smartphone size={24} />
-                  </div>
-                  <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-1 group-hover:text-indigo-200 transition-colors">Design Your</h3>
-                  <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-300 uppercase tracking-tighter">Own Case</h2>
-                  <div className="mt-4 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[8px] font-black uppercase tracking-[0.2em] text-white opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                    Start Customizing →
+                {/* ── Phone outer shell ── */}
+                <div className="relative w-full max-w-[160px] mx-auto transition-all duration-500 group-hover:-translate-y-2 group-hover:drop-shadow-[0_30px_50px_rgba(99,102,241,0.45)] active:scale-[0.97]">
+
+                  {/* Side volume buttons */}
+                  <div className="absolute -left-[5px] top-[22%] w-[5px] h-8 bg-slate-700 rounded-l-md shadow-inner" />
+                  <div className="absolute -left-[5px] top-[36%] w-[5px] h-6 bg-slate-700 rounded-l-md shadow-inner" />
+                  {/* Side power button */}
+                  <div className="absolute -right-[5px] top-[28%] w-[5px] h-10 bg-slate-700 rounded-r-md shadow-inner" />
+
+                  {/* Phone body */}
+                  <div
+                    className="relative w-full bg-slate-900 border-[3px] border-slate-700 overflow-hidden group-hover:border-indigo-500/60 transition-colors duration-500"
+                    style={{ borderRadius: '28px', aspectRatio: '9 / 19' }}
+                  >
+                    {/* Gradient BG */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-700/60 via-purple-700/30 to-slate-900 z-0 transition-opacity duration-500" />
+                    {/* Animated shimmer */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700 bg-[radial-gradient(ellipse_at_30%_20%,rgba(129,140,248,0.6),transparent_70%)] z-0" />
+                    {/* Background image */}
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601593346740-925612772716?w=500&q=80')] opacity-10 group-hover:opacity-20 bg-cover bg-center mix-blend-overlay group-hover:scale-110 transition-all duration-1000 z-0" />
+
+                    {/* ── Notch / Dynamic Island ── */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[36%] h-[14px] bg-slate-950 rounded-full z-20 flex items-center justify-center gap-1.5">
+                      <div className="w-[6px] h-[6px] rounded-full bg-slate-800 border border-slate-700" />
+                      <div className="w-[5px] h-[5px] rounded-full bg-indigo-500/40 animate-pulse" />
+                    </div>
+
+                    {/* ── Screen content ── */}
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full pt-8 pb-6 px-3 text-center">
+                      {/* Phone icon badge */}
+                      <div className="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white mb-3 shadow-[0_0_20px_rgba(129,140,248,0.4)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 border border-white/10">
+                        <Smartphone size={18} />
+                      </div>
+
+                      <p className="text-[8px] font-black text-white/70 uppercase tracking-[0.25em] mb-0.5">Design Your</p>
+                      <h2 className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 uppercase tracking-tight leading-tight">Own Case</h2>
+
+                      {/* Divider */}
+                      <div className="w-8 h-px bg-white/20 my-3" />
+
+                      {/* CTA pill */}
+                      <div className="px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[7px] font-black uppercase tracking-[0.15em] text-white group-hover:bg-indigo-500/40 group-hover:border-indigo-400/40 transition-all duration-500">
+                        Customize →
+                      </div>
+
+                      {/* Floating sparkle dots */}
+                      <div className="absolute top-[30%] left-[15%] w-1 h-1 rounded-full bg-indigo-400 opacity-0 group-hover:opacity-80 animate-ping" style={{ animationDelay: '0.1s' }} />
+                      <div className="absolute top-[55%] right-[10%] w-1 h-1 rounded-full bg-purple-400 opacity-0 group-hover:opacity-60 animate-ping" style={{ animationDelay: '0.4s' }} />
+                    </div>
+
+                    {/* ── Home indicator bar ── */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[30%] h-[3px] bg-white/30 rounded-full z-20" />
                   </div>
                 </div>
               </div>
