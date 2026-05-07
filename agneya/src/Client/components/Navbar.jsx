@@ -123,15 +123,7 @@ const Navbar = () => {
             {/* ── RIGHT ACTIONS ── */}
             <div className="flex items-center gap-2">
 
-              {/* Custom CTA — Desktop only */}
-              <Link
-                to="/custom-mobile-cases"
-                className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-semibold transition-all duration-200 text-white shadow-sm hover:opacity-90"
-                style={{ background: 'linear-gradient(135deg,#F7941D 0%,#F4A41B 50%,#7B1760 100%)' }}
-              >
-                <Sparkles size={14} />
-                Design Your Case
-              </Link>
+
 
               {/* Cart */}
               <Link
