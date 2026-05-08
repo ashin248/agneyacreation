@@ -120,8 +120,8 @@ const UserDashboard = () => {
             <User size={20} style={{ color: 'var(--color-neu-accent)' }} />
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider opacity-50" style={{ color: 'var(--color-neu-text)' }}>Welcome back,</p>
-            <h2 className="text-sm font-black truncate uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</h2>
+            <p className="text-micro opacity-50" style={{ color: 'var(--color-neu-text)' }}>Welcome back,</p>
+            <h2 className="text-sm font-semibold truncate" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</h2>
           </div>
         </div>
 
@@ -179,9 +179,9 @@ const UserDashboard = () => {
         <div className="border-t border-[var(--color-neu-dark)] p-3">
           <button
             onClick={() => logout().then(() => navigate('/'))}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-500 hover:neu-pressed rounded-xl transition-all font-bold uppercase tracking-widest"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-500 hover:neu-pressed rounded-xl transition-all font-medium"
           >
-            <LogOut size={16} /> Sign Out
+            <LogOut size={15} /> Sign Out
           </button>
         </div>
       </div>
@@ -198,12 +198,9 @@ const UserDashboard = () => {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap flex-shrink-0 transition-all ${
-                activeTab === id ? 'neu-button-accent' : 'neu-button'
-              }`}
-              style={activeTab === id ? {} : { color: 'var(--color-neu-text)' }}
+              className={activeTab === id ? 'btn-pill-active flex items-center gap-1.5 whitespace-nowrap flex-shrink-0' : 'btn-pill flex items-center gap-1.5 whitespace-nowrap flex-shrink-0'}
             >
-              <Icon size={14} />
+              <Icon size={13} />
               {label}
             </button>
           ))}
@@ -218,12 +215,15 @@ const UserDashboard = () => {
             {/* ── MY ORDERS ── */}
             {activeTab === 'orders' && (
               <div className="space-y-4">
-                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>My Orders</h2>
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>My Orders</h2>
+                </div>
                 {orders.filter(o => o.orderType !== 'Bulk').length === 0 ? (
                   <div className="neu-flat p-12 text-center">
                     <ShoppingBag size={32} className="opacity-20 mx-auto mb-4" style={{ color: 'var(--color-neu-text)' }} />
                     <p className="text-sm font-medium mb-6 opacity-60" style={{ color: 'var(--color-neu-text)' }}>No orders yet.</p>
-                    <button onClick={() => navigate('/')} className="px-8 py-3 neu-button-accent font-black uppercase text-xs tracking-widest">
+                    <button onClick={() => navigate('/')} className="btn-primary btn-primary-sm">
                       Start Shopping
                     </button>
                   </div>
@@ -276,7 +276,10 @@ const UserDashboard = () => {
             {/* ── PROFILE ── */}
             {activeTab === 'profile' && (
               <div className="neu-flat p-6">
-                <h2 className="text-xl font-black uppercase tracking-tighter mb-6" style={{ color: 'var(--color-neu-text)' }}>Profile Information</h2>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Profile Information</h2>
+                </div>
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
@@ -303,7 +306,7 @@ const UserDashboard = () => {
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Full Name</label>
+                      <label className="text-label opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Full Name</label>
                       <input
                         name="name"
                         defaultValue={userData?.name || ''}
@@ -313,7 +316,7 @@ const UserDashboard = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Email Address</label>
+                      <label className="text-label opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Email Address</label>
                       <input
                         name="email"
                         type="email"
@@ -324,7 +327,7 @@ const UserDashboard = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Phone Number</label>
+                      <label className="text-label opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Phone Number</label>
                       <input
                         value={currentUser?.phoneNumber || ''}
                         className="w-full neu-pressed rounded-xl px-4 py-3 text-sm font-bold opacity-50 cursor-not-allowed"
@@ -333,9 +336,7 @@ const UserDashboard = () => {
                       />
                     </div>
                   </div>
-                  <button type="submit" className="px-10 py-3 neu-button-accent font-black uppercase text-xs tracking-widest">
-                    Save Changes
-                  </button>
+                  <button type="submit" className="btn-primary">Save Changes</button>
                 </form>
               </div>
             )}
@@ -343,8 +344,11 @@ const UserDashboard = () => {
             {/* ── ADDRESSES ── */}
             {activeTab === 'addresses' && (
               <div className="neu-flat p-6">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Saved Addresses</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                    <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Saved Addresses</h2>
+                  </div>
                   {!isEditingAddress && (
                     <button
                       onClick={() => setIsEditingAddress({})}
@@ -399,7 +403,10 @@ const UserDashboard = () => {
             {/* ── CUSTOM DESIGNS ── */}
             {activeTab === 'custom' && (
               <div className="space-y-4">
-                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Custom Designs</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Custom Designs</h2>
+                </div>
                 {customDesigns.length === 0 ? (
                   <div className="neu-flat p-12 text-center">
                     <Layout size={32} className="opacity-20 mx-auto mb-4" style={{ color: 'var(--color-neu-text)' }} />
@@ -432,7 +439,10 @@ const UserDashboard = () => {
             {/* ── WHOLESALE ── */}
             {activeTab === 'wholesale' && (
               <div className="space-y-4">
-                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Wholesale Orders</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Wholesale Orders</h2>
+                </div>
                 {orders.filter(o => o.orderType === 'Bulk').map(order => (
                   <div key={order._id} className="neu-flat p-6">
                     <div className="flex items-center justify-between mb-5">

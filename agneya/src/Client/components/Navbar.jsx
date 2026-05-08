@@ -149,22 +149,22 @@ const Navbar = () => {
                     style={{ color: 'var(--color-neu-text)' }}
                     aria-expanded={isUserMenuOpen}
                   >
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center neu-pressed" style={{ color: 'var(--color-neu-accent)' }}>
-                      <User size={14} />
+                    <div className="w-6 h-6 rounded-lg flex items-center justify-center neu-pressed" style={{ color: 'var(--color-neu-accent)' }}>
+                      <User size={13} />
                     </div>
-                    <span className="text-[12px] font-semibold max-w-[80px] truncate">{displayName}</span>
+                    <span className="text-[12px] font-semibold max-w-[72px] truncate">{displayName}</span>
                     <ChevronDown
-                      size={13}
+                      size={12}
                       className={`text-slate-400 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`}
                     />
                   </button>
 
                   {/* Dropdown */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-52 neu-flat py-2 z-50">
-                      <div className="px-4 py-3 border-b border-[var(--color-neu-dark)]">
-                        <p className="text-[10px] opacity-70 font-medium" style={{ color: 'var(--color-neu-text)' }}>Signed in as</p>
-                        <p className="text-[12px] font-bold truncate mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</p>
+                    <div className="absolute right-0 top-full mt-2 w-48 neu-flat-sm py-1.5 z-50">
+                      <div className="px-3 py-2.5 border-b border-[var(--color-neu-dark)]">
+                        <p className="text-micro opacity-60" style={{ color: 'var(--color-neu-text)' }}>Signed in as</p>
+                        <p className="text-[12px] font-semibold truncate mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</p>
                       </div>
                       {[
                         { label: 'My Dashboard', path: '/dashboard', icon: User },
@@ -175,20 +175,20 @@ const Navbar = () => {
                         <Link
                           key={label}
                           to={path}
-                          className="flex items-center gap-3 px-4 py-2.5 text-[12px] hover:neu-pressed transition-all"
+                          className="flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium transition-all hover:neu-pressed"
                           style={{ color: 'var(--color-neu-text)' }}
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <Icon size={14} className="opacity-70" />
+                          <Icon size={13} className="opacity-60" />
                           {label}
                         </Link>
                       ))}
-                      <div className="border-t border-slate-50 mt-1 pt-1">
+                      <div className="border-t border-[var(--color-neu-dark)] mt-1 pt-1">
                         <button
                           onClick={() => { logout(); setIsUserMenuOpen(false); }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] text-rose-500 hover:bg-rose-50 transition-colors"
+                          className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium text-rose-500 hover:bg-rose-50 transition-colors"
                         >
-                          <LogIn size={14} className="rotate-180" />
+                          <LogIn size={13} className="rotate-180" />
                           Sign Out
                         </button>
                       </div>
@@ -198,10 +198,10 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="hidden md:flex items-center gap-2 px-4 py-2.5 neu-button-accent text-[12px] font-semibold transition-all duration-200"
+                  className="btn-primary hidden md:flex items-center gap-2"
                   aria-label="Login to your account"
                 >
-                  <LogIn size={14} />
+                  <LogIn size={13} />
                   Login
                 </button>
               )}
@@ -280,8 +280,8 @@ const Navbar = () => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{name}</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{desc}</p>
+                <p className="text-[13px] font-semibold" style={{ color: 'var(--color-neu-text)' }}>{name}</p>
+                <p className="text-micro mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{desc}</p>
               </div>
             </Link>
           ))}
@@ -314,7 +314,7 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => { setIsMobileMenuOpen(false); setIsLoginModalOpen(true); }}
-              className="w-full py-4 neu-button-accent font-semibold text-[13px] flex items-center justify-center gap-2 transition-all"
+              className="w-full btn-primary font-semibold text-[13px] flex items-center justify-center gap-2"
             >
               <LogIn size={16} />
               Login / Sign Up

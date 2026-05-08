@@ -274,19 +274,14 @@ const Shop = () => {
             <div className="w-px h-6 bg-slate-200 flex-shrink-0" />
 
             {/* Category Pills */}
-            <div className="flex-1 flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
+            <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1">
               {categories.map(cat => {
                 const name = typeof cat === 'string' ? cat : cat.name;
                 return (
                   <button
                     key={name}
                     onClick={() => setActiveCategory(name)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                      activeCategory === name
-                        ? 'neu-button-accent'
-                        : 'neu-button'
-                    }`}
-                    style={activeCategory === name ? {} : { color: 'var(--color-neu-text)' }}
+                    className={activeCategory === name ? 'btn-pill-active' : 'btn-pill'}
                   >
                     {name}
                   </button>
@@ -299,9 +294,9 @@ const Shop = () => {
             {/* Filter button */}
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="flex-shrink-0 flex items-center gap-1.5 px-3 h-9 neu-button-accent text-xs font-semibold"
+              className="btn-primary btn-primary-sm flex-shrink-0 flex items-center gap-1.5"
             >
-              <SlidersHorizontal size={14} />
+              <SlidersHorizontal size={13} />
               <span className="hidden sm:inline">Filter</span>
             </button>
           </div>
@@ -311,10 +306,13 @@ const Shop = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
         
         {/* ── ALL PRODUCTS HEADER ── */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase" style={{ color: 'var(--color-neu-text)' }}>All Products</h1>
-            <p className="text-xs font-bold mt-1 uppercase tracking-widest" style={{ color: 'var(--color-neu-text)', opacity: 0.7 }}>{filteredProducts.length} products</p>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-5 gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-7 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+            <div>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--color-neu-text)' }}>All Products</h1>
+              <p className="text-micro mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{filteredProducts.length} products</p>
+            </div>
           </div>
         </div>
 
@@ -330,9 +328,9 @@ const Shop = () => {
             </div>
             <button
               onClick={() => { setActiveCategory('All'); setSearchQuery(''); setPriceRange([0, maxPriceLimit]); }}
-              className="flex items-center gap-2 px-6 py-3 neu-button-accent font-black uppercase text-[10px] tracking-widest"
+              className="btn-secondary btn-secondary-sm flex items-center gap-2"
             >
-              <RotateCcw size={14} /> Reset Filters
+              <RotateCcw size={13} /> Reset Filters
             </button>
           </div>
         ) : (
@@ -407,10 +405,10 @@ const Shop = () => {
           <div className="pt-16 pb-8 space-y-20 border-t border-[var(--color-neu-dark)]">
             {products.length > 0 && (
               <div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-10 flex items-center gap-4" style={{ color: 'var(--color-neu-text)' }}>
-                  <div className="w-2.5 h-8 rounded-full bg-[var(--color-neu-accent)] shadow-[0_0_15px_var(--color-neu-accent)]"></div>
-                  Popular Gear
-                </h2>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-1 h-6 rounded-full" style={{ background: 'var(--brand-gradient)' }} />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Popular Gear</h2>
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                   {[...products].sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0)).slice(0, 6).map(product => (
                     <div key={product._id} className="reveal-on-scroll">
@@ -423,10 +421,10 @@ const Shop = () => {
 
             {recommendedProducts.length > 0 && (
               <div>
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-10 flex items-center gap-4" style={{ color: 'var(--color-neu-text)' }}>
-                  <div className="w-2.5 h-8 bg-emerald-500 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div>
-                  Curated For You
-                </h2>
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-1 h-6 rounded-full bg-emerald-400" />
+                  <h2 className="text-lg font-semibold" style={{ color: 'var(--color-neu-text)' }}>Curated For You</h2>
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                   {recommendedProducts.map(product => (
                     <div key={product._id} className="reveal-on-scroll">

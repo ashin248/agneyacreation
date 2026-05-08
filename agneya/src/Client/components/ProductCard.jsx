@@ -78,7 +78,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
 
   return (
     <div
-      className="group relative neu-flat rounded-[24px] overflow-hidden transition-all duration-500 flex flex-col h-full active:scale-[0.99]"
+      className="group relative neu-flat rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full active:scale-[0.99]"
       style={{ border: 'none' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -105,19 +105,19 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
         )}
 
         {/* Dynamic HUD Overlays */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           {product.badge && (
-            <span className={`text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg ${product.badge.color} text-white shadow-lg`}>
+            <span className={`text-[8px] font-semibold px-2.5 py-1 rounded-md ${product.badge.color} text-white`}>
               {product.badge.label}
             </span>
           )}
           {product.salesCount >= 10 && (
-            <span className="w-fit bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-xl border border-white/20 flex items-center gap-1">
-              <Star size={10} className="fill-white" /> Best Seller
+            <span className="w-fit text-white text-[8px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1" style={{ background: 'var(--brand-gradient)' }}>
+              <Star size={9} className="fill-white" /> Best Seller
             </span>
           )}
           {discount > 0 && (
-            <span className="w-fit bg-slate-950 text-white text-[9px] font-black px-2.5 py-1 rounded-md shadow-xl border border-white/20">
+            <span className="w-fit bg-slate-800/80 text-white text-[9px] font-semibold px-2 py-0.5 rounded-md">
               -{discount}%
             </span>
           )}
@@ -132,84 +132,81 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
           <Heart className={`w-4 h-4 ${isWished ? 'fill-current' : ''}`} />
         </button>
 
-        {/* Quick Access HUD - Technical */}
+        {/* Quick Access HUD */}
         {!imageOnly && (
-          <div className={`absolute bottom-4 left-4 right-4 neu-pressed rounded-2xl p-2 flex items-center justify-between opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 z-20`}>
-              <div className="flex gap-1.5 pl-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]"></div>
-                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">In Stock</span>
+          <div className="absolute bottom-3 left-3 right-3 neu-pressed rounded-xl p-1.5 flex items-center justify-between opacity-100 translate-y-0 md:opacity-0 md:translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20">
+              <div className="flex items-center gap-1.5 pl-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                  <span className="text-micro text-slate-400">In Stock</span>
               </div>
               <div className="flex gap-1">
                   {onQuickView && (
                     <button 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(product); }}
-                        className="w-8 h-8 flex items-center justify-center rounded-xl neu-button transition-all"
+                        className="w-7 h-7 flex items-center justify-center rounded-lg neu-button transition-all"
                         style={{ color: 'var(--color-neu-text)' }}
                         aria-label="Quick View"
                     >
-                        <Eye size={14} />
+                        <Eye size={13} />
                     </button>
                   )}
                   {product.isCustomizable && onCustomize && (
                     <button 
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCustomize(product); }}
-                        className="h-8 px-2.5 flex items-center gap-1.5 rounded-xl neu-button-accent transition-all group/design"
+                        className="h-7 px-2 flex items-center gap-1 rounded-lg neu-button-accent transition-all"
                         aria-label="Customize"
                     >
-                        <Palette size={12} />
-                        <span className="text-[9px] font-black uppercase tracking-widest hidden sm:block">Design</span>
-                        <ArrowRight size={12} className="group-hover/design:translate-x-1 transition-transform" />
+                        <Palette size={11} />
+                        <span className="text-[9px] font-semibold hidden sm:block">Design</span>
                     </button>
                   )}
                   <button 
                       onClick={handleAddToCart}
-                      className="w-8 h-8 flex items-center justify-center rounded-xl neu-button-accent transition-all"
-                      aria-label="Add to Transaction"
+                      className="w-7 h-7 flex items-center justify-center rounded-lg neu-button-accent transition-all"
+                      aria-label="Add to cart"
                   >
-                      <ShoppingCart size={14} />
+                      <ShoppingCart size={13} />
                   </button>
               </div>
           </div>
         )}
       </div>
 
-      {/* 2. ULTRA-COMPACT DETAILS */}
+      {/* 2. COMPACT DETAILS */}
       {!imageOnly && (
-        <div className="p-3 md:p-4 flex flex-col z-20 relative" style={{ backgroundColor: 'transparent' }}>
+        <div className="p-3 flex flex-col z-20 relative" style={{ backgroundColor: 'transparent' }}>
           <div className="flex justify-between items-center mb-1">
-            <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-accent)' }}>{product.category || 'Premium'}</span>
+            <span className="text-micro" style={{ color: 'var(--brand-orange)' }}>{product.category || 'Premium'}</span>
             <div className="flex items-center gap-0.5 text-slate-400">
-                <Star size={10} className="fill-amber-400 text-amber-400" />
-                <span className="text-[10px] font-bold">{product.rating || '5.0'}</span>
+                <Star size={9} className="fill-amber-400 text-amber-400" />
+                <span className="text-[10px] font-medium">{product.rating || '5.0'}</span>
             </div>
           </div>
-          
-          <h3 className="text-xs md:text-sm font-bold leading-tight truncate mb-2" style={{ color: 'var(--color-neu-text)' }}>
+          <h3 className="text-xs font-semibold leading-snug truncate mb-2" style={{ color: 'var(--color-neu-text)' }}>
             {product.name}
           </h3>
-
-          <div className="flex flex-col gap-1.5 mt-auto">
+          <div className="flex flex-col gap-1 mt-auto">
             {discount > 0 ? (
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-sm md:text-base font-black tracking-tight" style={{ color: 'var(--color-neu-text)' }}>
+                    <span className="text-sm font-bold" style={{ color: 'var(--color-neu-text)' }}>
                         ₹{finalPrice.toLocaleString('en-IN')}
                     </span>
-                    <span className="text-[10px] opacity-70 line-through font-semibold" style={{ color: 'var(--color-neu-text)' }}>
+                    <span className="text-[10px] opacity-50 line-through font-medium" style={{ color: 'var(--color-neu-text)' }}>
                         ₹{originalPrice.toLocaleString('en-IN')}
                     </span>
                 </div>
             ) : (
-                <span className="text-sm md:text-base font-black tracking-tight" style={{ color: 'var(--color-neu-text)' }}>
+                <span className="text-sm font-bold" style={{ color: 'var(--color-neu-text)' }}>
                     ₹{finalPrice.toLocaleString('en-IN')}
                 </span>
             )}
             {product.isBulkEnabled && product.bulkRules?.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                <div className="flex flex-wrap items-center gap-1">
+                    <span className="text-micro text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
                         Min: {product.bulkRules[0].minQty}
                     </span>
-                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50/50 border border-emerald-100 px-1.5 py-0.5 rounded">
-                        ₹{product.bulkRules[0].pricePerUnit}/Unit
+                    <span className="text-micro text-emerald-600 bg-emerald-50/50 border border-emerald-100 px-1.5 py-0.5 rounded">
+                        ₹{product.bulkRules[0].pricePerUnit}/unit
                     </span>
                 </div>
             )}

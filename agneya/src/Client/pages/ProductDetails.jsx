@@ -362,11 +362,11 @@ const ProductDetails = () => {
                         {/* Title & Description */}
                         <div className="space-y-4">
                             {product.category && (
-                                <span className="inline-block px-4 py-1.5 bg-orange-50/50 text-orange-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-orange-100/50">
+                                <span className="text-label" style={{ color: 'var(--brand-orange)' }}>
                                     {product.category}
                                 </span>
                             )}
-                            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase leading-[1.1]" style={{ color: 'var(--color-neu-text)' }}>
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight leading-snug" style={{ color: 'var(--color-neu-text)' }}>
                                 {product.name}
                             </h1>
                             {product.description && (
@@ -377,13 +377,13 @@ const ProductDetails = () => {
                         </div>
 
                         {/* Pricing Component */}
-                        <div className="neu-flat p-6 space-y-4">
+                        <div className="neu-flat-sm p-4 space-y-3">
                             <div className="flex items-baseline gap-4">
-                                <span className="text-4xl font-black tracking-tight" style={{ color: '#F7941D' }}>
+                                <span className="text-3xl font-bold tracking-tight" style={{ color: '#F7941D' }}>
                                     ₹{baseFinalPrice.toLocaleString('en-IN')}
                                 </span>
                                 {discount > 0 && (
-                                    <span className="text-lg text-slate-300 line-through font-bold">
+                                    <span className="text-sm line-through font-medium opacity-50" style={{ color: 'var(--color-neu-text)' }}>
                                         ₹{originalPrice.toLocaleString('en-IN')}
                                     </span>
                                 )}
@@ -419,8 +419,7 @@ const ProductDetails = () => {
                                             <button 
                                                 key={i}
                                                 onClick={() => setSelectedColor(color)}
-                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedColor === color ? 'neu-button-accent scale-105' : 'neu-button hover:-translate-y-1'}`}
-                                                style={selectedColor !== color ? { color: 'var(--color-neu-text)' } : {}}
+                                                className={selectedColor === color ? 'btn-pill-active' : 'btn-pill'}
                                             >
                                                 {color === '-' ? 'Standard' : color}
                                             </button>
@@ -438,8 +437,7 @@ const ProductDetails = () => {
                                             <button 
                                                 key={i}
                                                 onClick={() => setSelectedSize(size)}
-                                                className={`px-6 py-3 rounded-[16px] font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${selectedSize === size ? 'neu-button-accent scale-105' : 'neu-button hover:-translate-y-1'}`}
-                                                style={selectedSize !== size ? { color: 'var(--color-neu-text)' } : {}}
+                                                className={selectedSize === size ? 'btn-pill-active' : 'btn-pill'}
                                             >
                                                 {size}
                                             </button>
@@ -459,7 +457,7 @@ const ProductDetails = () => {
                                     <button onClick={() => setQuantity(quantity + 1)} className="w-12 h-12 flex items-center justify-center rounded-2xl transition-colors font-black text-lg" style={{ color: 'var(--color-neu-text)' }}>+</button>
                                 </div>
                                 
-                                {/* Buy Now Button */}
+                                {/* Add To Cart Button */}
                                 <button 
                                     onClick={() => {
                                         const commonItemData = {
@@ -478,9 +476,9 @@ const ProductDetails = () => {
                                         };
                                         requireLogin(() => navigate('/checkout', { state: { buyNowItem: commonItemData } }));
                                     }}
-                                    className="flex-1 flex items-center justify-center gap-3 text-white rounded-[20px] neu-button-accent font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:opacity-90 active:scale-95 py-4 px-2"
+                                    className="btn-primary flex-1 py-3.5"
                                 >
-                                    <ShoppingCart size={18} /> Add To Cart • ₹{cartItemTotal.toLocaleString('en-IN')}
+                                    <ShoppingCart size={16} /> Add To Cart &nbsp;·&nbsp; ₹{cartItemTotal.toLocaleString('en-IN')}
                                 </button>
                             </div>
                             
