@@ -107,11 +107,11 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
         </button>
 
         <div className="p-6 md:p-8">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto" style={{ background: 'linear-gradient(135deg,#FFF0E0,#F9E0F5)' }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto" style={{ background: 'linear-gradient(135deg, #EEF0FB, #E0F2FE)' }}>
             {step === 1 ? (
-              <Phone className="w-8 h-8" style={{ color: '#F7941D' }} />
+              <Phone className="w-8 h-8" style={{ color: '#4A5FD4' }} />
             ) : (
-              <MessageSquare className="w-8 h-8" style={{ color: '#7B1760' }} />
+              <MessageSquare className="w-8 h-8" style={{ color: '#0EA5E9' }} />
             )}
           </div>
 
@@ -142,8 +142,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(String(e.target.value || '').replace(/\D/g, "").slice(0, 10))}
                   className="w-full pl-16 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:border-transparent outline-none transition-all text-lg font-medium tracking-wide"
-                  style={{ '--tw-ring-color': '#F7941D' }}
-                  onFocus={e => e.target.style.borderColor = '#F7941D'}
+                  onFocus={e => e.target.style.borderColor = '#4A5FD4'}
                   onBlur={e => e.target.style.borderColor = ''}
                   required
                 />
@@ -159,7 +158,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       ? 'bg-gray-300 cursor-not-allowed' 
                       : 'hover:opacity-90'
                 } text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 group`}
-                style={(loading || phoneNumber.length < 10 || isSuccess) ? {} : { background: 'linear-gradient(135deg,#F7941D 0%,#7B1760 100%)' }}
+                style={(loading || phoneNumber.length < 10 || isSuccess) ? {} : { background: 'linear-gradient(135deg,#4A5FD4 0%,#0EA5E9 100%)' }}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -184,8 +183,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 value={otp}
                 onChange={(e) => setOtp(String(e.target.value || '').replace(/\D/g, "").slice(0, 6))}
                 className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:border-transparent outline-none transition-all text-center text-2xl font-bold tracking-[0.5em]"
-                style={{ '--tw-ring-color': '#7B1760' }}
-                onFocus={e => { e.target.style.borderColor = '#7B1760'; e.target.style.boxShadow = '0 0 0 2px rgba(123,23,96,0.2)'; }}
+                onFocus={e => { e.target.style.borderColor = '#4A5FD4'; e.target.style.boxShadow = '0 0 0 2px rgba(74,95,212,0.2)'; }}
                 onBlur={e => { e.target.style.borderColor = ''; e.target.style.boxShadow = ''; }}
                 required
               />
@@ -200,7 +198,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                       ? 'bg-gray-300 cursor-not-allowed' 
                       : 'hover:opacity-90'
                 } text-white font-bold py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2`}
-                style={(loading || otp.length < 6 || isSuccess) ? {} : { background: 'linear-gradient(135deg,#F7941D 0%,#7B1760 100%)' }}
+                style={(loading || otp.length < 6 || isSuccess) ? {} : { background: 'linear-gradient(135deg,#4A5FD4 0%,#0EA5E9 100%)' }}
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -218,7 +216,7 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="w-full text-gray-500 text-sm font-medium hover:text-orange-500 transition-colors"
+                  className="w-full text-gray-500 text-sm font-medium hover:text-indigo-500 transition-colors"
                   disabled={loading}
                 >
                   Change Mobile Number

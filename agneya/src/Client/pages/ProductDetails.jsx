@@ -379,7 +379,7 @@ const ProductDetails = () => {
                         {/* Pricing Component */}
                         <div className="neu-flat-sm p-4 space-y-3">
                             <div className="flex items-baseline gap-4">
-                                <span className="text-3xl font-bold tracking-tight" style={{ color: '#F7941D' }}>
+                                <span className="text-3xl font-bold tracking-tight" style={{ color: 'var(--brand-price)' }}>
                                     ₹{baseFinalPrice.toLocaleString('en-IN')}
                                 </span>
                                 {discount > 0 && (

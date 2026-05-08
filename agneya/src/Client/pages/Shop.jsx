@@ -121,7 +121,7 @@ const Shop = () => {
   const requireLogin = (callback, action = 'order and customize') => {
     if (!currentUser) {
       toast.error(`Please login to ${action}.`, {
-        style: { borderRadius: '12px', background: '#7B1760', color: '#f8fafc', fontSize: '13px' }
+        style: { borderRadius: '12px', background: '#4A5FD4', color: '#f8fafc', fontSize: '13px' }
       });
       setIsLoginModalOpen(true);
     } else {
@@ -463,7 +463,7 @@ const Shop = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-slate-800">Price Range</p>
-              <span className="text-sm font-bold bg-orange-50 px-3 py-1 rounded-lg" style={{ color: '#F7941D' }}>
+              <span className="text-sm font-bold bg-indigo-50 px-3 py-1 rounded-lg" style={{ color: 'var(--brand-primary)' }}>
                 ₹{priceRange[0].toLocaleString('en-IN')} - ₹{priceRange[1].toLocaleString('en-IN')}
               </span>
             </div>

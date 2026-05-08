@@ -234,7 +234,7 @@ const Cart = () => {
                 <div className="pt-5 border-t border-[var(--color-neu-dark)]">
                   <div className="flex justify-between items-end">
                     <span className="text-sm font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Total Amount</span>
-                    <span className="text-3xl font-black tracking-tighter" style={{ color: 'var(--color-neu-accent)' }}>
+                    <span className="text-3xl font-black tracking-tighter" style={{ color: 'var(--brand-price)' }}>
                       ₹{cartTotal.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -277,7 +277,7 @@ const Cart = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full py-5 neu-button-accent font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98]"
+                className="w-full btn-primary py-4 flex items-center justify-center gap-3 active:scale-[0.98] text-sm"
               >
                 Proceed to Checkout <ArrowRight size={18} />
               </button>

@@ -92,7 +92,7 @@ const Navbar = () => {
                 </span>
                 <span
                   className="text-[9px] font-bold uppercase tracking-[0.18em] leading-none mt-0.5 block"
-                  style={{ background: 'linear-gradient(90deg,#F7941D,#7B1760)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
+                  style={{ background: 'linear-gradient(90deg,#4A5FD4,#0EA5E9)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
                 >
                   Live Collections
                 </span>
@@ -134,7 +134,7 @@ const Navbar = () => {
               >
                 <ShoppingCart size={20} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-sm" style={{ background: '#F7941D' }}>
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none shadow-sm" style={{ background: '#4A5FD4' }}>
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
@@ -274,7 +274,7 @@ const Navbar = () => {
               <div className="w-10 h-10 rounded-xl neu-pressed flex items-center justify-center flex-shrink-0 relative">
                 <Icon size={18} style={{ color: 'var(--color-neu-accent)' }} />
                 {badge > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center" style={{ background: '#F7941D' }}>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center" style={{ background: '#4A5FD4' }}>
                     {badge}
                   </span>
                 )}

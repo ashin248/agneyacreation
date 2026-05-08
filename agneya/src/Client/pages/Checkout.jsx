@@ -183,7 +183,7 @@ const Checkout = () => {
             finally { setIsProcessingPayment(false); setIsSubmitting(false); }
           },
           prefill: { name: selectedAddress.name || userData?.name, email: selectedAddress.email || userData?.email, contact: selectedAddress.mobile || userData?.phone },
-          theme: { color: '#F7941D' }
+          theme: { color: '#4A5FD4' }
         });
         rzp.open(); return;
       } catch (err) { console.error(err); setIsProcessingPayment(false); setIsSubmitting(false); return; }
@@ -241,7 +241,7 @@ const Checkout = () => {
           </div>
           <h2 className="text-xl font-bold text-slate-900 mb-2">Nothing to checkout</h2>
           <p className="text-sm text-slate-400 mb-7">Your cart is empty.</p>
-          <button onClick={() => navigate('/')} className="w-full py-3.5 text-white rounded-2xl font-semibold text-sm hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
+          <button onClick={() => navigate('/')} className="w-full py-3.5 text-white rounded-2xl font-semibold text-sm hover:opacity-90 transition-all shadow-md shadow-indigo-100" style={{ background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)' }}>
             Go Shopping
           </button>
         </div>

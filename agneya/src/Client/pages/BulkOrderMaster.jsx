@@ -153,7 +153,7 @@ const BulkOrderMaster = () => {
             <button
               onClick={() => setShowSelectedOnly(!showSelectedOnly)}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border flex-shrink-0 transition-all ${showSelectedOnly ? 'text-white' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
-              style={showSelectedOnly ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}
+              style={showSelectedOnly ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#7B1760' } : {}}
             >
               <Filter size={13} />
               {showSelectedOnly ? 'All Products' : 'Selected Only'}
@@ -165,7 +165,7 @@ const BulkOrderMaster = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
         {/* Info Banner */}
-        <div className="rounded-2xl p-5 mb-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
+        <div className="rounded-2xl p-5 mb-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)' }}>
           <div className="max-w-lg">
             <p className="text-xs font-semibold text-orange-200 mb-1">How bulk pricing works</p>
             <p className="text-sm text-white/80 leading-relaxed">
@@ -291,7 +291,7 @@ const BulkOrderMaster = () => {
                                     {[...product.bulkRules].sort((a, b) => a.minQty - b.minQty).map((rule, ri) => {
                                       const active = totalProductQty >= rule.minQty;
                                       return (
-                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'text-white' : 'bg-slate-50 text-slate-400 border-slate-100'}`} style={active ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}>
+                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'text-white' : 'bg-slate-50 text-slate-400 border-slate-100'}`} style={active ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#7B1760' } : {}}>
                                           {rule.minQty}+: ₹{(product.basePrice - (rule.pricePerUnit || 0)).toLocaleString('en-IN')}
                                         </span>
                                       );
@@ -400,7 +400,7 @@ const BulkOrderMaster = () => {
                 disabled={cart.length === 0}
                 onClick={handleCheckout}
                 className="w-full py-4 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                style={{ background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)' }}
               >
                 Proceed to Checkout <ArrowRight size={16} />
               </button>

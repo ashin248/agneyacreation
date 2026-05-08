@@ -76,7 +76,7 @@ const TrackingModal = ({ order, onClose }) => {
         {/* Status badge */}
         <div className="bg-slate-800 px-7 py-3 flex items-center gap-3">
           <span className="text-slate-400 text-sm">Current status:</span>
-          <span className="text-white text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
+          <span className="text-white text-xs font-semibold px-3 py-1.5 rounded-full" style={{ background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)' }}>
             {displayStatus}
           </span>
         </div>

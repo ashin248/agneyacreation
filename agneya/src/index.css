@@ -4,18 +4,19 @@
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --color-neu-bg: #e8ecf0;
-  --color-neu-dark: #b8c4d0;
+  /* ── Option A: Blue-tinted neumorphic surface ── */
+  --color-neu-bg:    #edf1f7;
+  --color-neu-dark:  #b8c4d8;
   --color-neu-light: #ffffff;
-  --color-neu-accent: #2d3748;
-  --color-neu-text: #1a202c;
+  --color-neu-accent: #4A5FD4;   /* Indigo Blue replaces dark grey */
+  --color-neu-text:  #1a202c;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-neu-bg);
   color: var(--color-neu-text);
-  background: linear-gradient(120deg, #e8ecf0 0%, #f5f7fa 50%, #e8ecf0 100%);
+  background: linear-gradient(120deg, #edf1f7 0%, #f5f7fb 50%, #edf1f7 100%);
   background-size: 200% 200%;
   animation: gradientBG 15s ease infinite;
 }
@@ -26,7 +27,7 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Scroll Animation Utilities */
+/* Scroll Animation */
 .reveal-on-scroll {
   opacity: 0;
   transform: translateY(20px);
@@ -38,35 +39,62 @@ body {
 }
 
 :root {
-  /* ── Agneya Brand Palette ── */
-  --brand-orange:      #F7941D;
-  --brand-amber:       #F4A41B;
-  --brand-purple:      #7B1760;
-  --brand-dark-purple: #4A0E3C;
-  --brand-gradient:    linear-gradient(135deg, #F7941D 0%, #F4A41B 40%, #9B2D6F 75%, #7B1760 100%);
-  --brand-gradient-h:  linear-gradient(90deg,  #F7941D 0%, #F4A41B 50%, #7B1760 100%);
-  --brand-glow:        0 4px 20px rgba(247, 148, 29, 0.28);
-  --brand-glow-purple: 0 4px 20px rgba(123, 23, 96, 0.25);
+  /* ═══════════════════════════════════════════
+     OPTION A — Multi-Color Blue Palette
+     ═══════════════════════════════════════════ */
+
+  /* Primary — Indigo Blue */
+  --brand-primary:       #4A5FD4;
+  --brand-primary-dark:  #3346C0;
+  --brand-primary-light: #EEF0FB;
+
+  /* Secondary — Sky Blue */
+  --brand-secondary:     #0EA5E9;
+  --brand-secondary-dark:#0284C7;
+
+  /* Success — Green */
+  --brand-success:       #22C55E;
+  --brand-success-light: #DCFCE7;
+
+  /* Price / Highlight — Orange-Red */
+  --brand-price:         #E85820;
+  --brand-price-light:   #FEF0EB;
+
+  /* Warning / Info */
+  --brand-warning:       #F59E0B;
+
+  /* Gradients */
+  --brand-gradient:   linear-gradient(135deg, #4A5FD4 0%, #0EA5E9 100%);
+  --brand-gradient-h: linear-gradient(90deg,  #4A5FD4 0%, #0EA5E9 100%);
+  --brand-gradient-v: linear-gradient(180deg, #4A5FD4 0%, #0EA5E9 100%);
+  --brand-glow:       0 4px 20px rgba(74, 95, 212, 0.28);
+  --brand-glow-lg:    0 8px 32px rgba(74, 95, 212, 0.35);
+
+  /* Legacy aliases (keep for studio/dark UI) */
+  --brand-orange:      #E85820;
+  --brand-amber:       #F59E0B;
+  --brand-purple:      #4A5FD4;
+  --brand-dark-purple: #3346C0;
 
   /* Surface Tokens */
-  --tech-border:       0.5px solid rgba(247, 148, 29, 0.15);
-  --tech-border-dark:  0.5px solid rgba(247, 148, 29, 0.3);
-  --ceramic-shadow:    0 16px 40px -10px rgba(247, 148, 29, 0.1);
-  --industrial-glass:  rgba(255, 255, 255, 0.8);
+  --tech-border:       0.5px solid rgba(74, 95, 212, 0.15);
+  --tech-border-dark:  0.5px solid rgba(74, 95, 212, 0.3);
+  --ceramic-shadow:    0 16px 40px -10px rgba(74, 95, 212, 0.1);
+  --industrial-glass:  rgba(255, 255, 255, 0.85);
 
-  /* Studio Tokens */
-  --studio-bg:      radial-gradient(circle at 50% 50%, #fff8f2 0%, #fdeee0 100%);
-  --studio-dark:    #1a0b12;
-  --tactical-glow:  0 0 15px rgba(247, 148, 29, 0.3);
-  --hud-bg:         rgba(26, 11, 18, 0.95);
-  --hud-glass:      rgba(26, 11, 18, 0.85);
+  /* Studio (dark UI — unchanged) */
+  --studio-bg:      radial-gradient(circle at 50% 50%, #f0f4ff 0%, #e0e8f5 100%);
+  --studio-dark:    #0f172a;
+  --tactical-glow:  0 0 15px rgba(74, 95, 212, 0.3);
+  --hud-bg:         rgba(15, 23, 42, 0.95);
+  --hud-glass:      rgba(15, 23, 42, 0.85);
 }
 
 .studio-workspace {
   background-color: var(--studio-dark);
-  background-image: 
-    radial-gradient(at 0% 0%,   rgba(247, 148, 29, 0.06) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(123, 23,  96, 0.06) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 0%   0%,  rgba(74, 95, 212, 0.07) 0px, transparent 50%),
+    radial-gradient(at 100% 0%,  rgba(14, 165, 233, 0.07) 0px, transparent 50%);
 }
 
 @keyframes tactical-pulse {
@@ -74,64 +102,56 @@ body {
   50%  { opacity: 1;   transform: scale(1);    }
   100% { opacity: 0.4; transform: scale(0.98); }
 }
-
-.animate-tactical-pulse {
-  animation: tactical-pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+.animate-tactical-pulse { animation: tactical-pulse 4s cubic-bezier(0.4,0,0.6,1) infinite; }
 
 .mockup-stage {
   background: var(--studio-bg);
-  box-shadow: inset 0 0 100px rgba(247,148,29,0.03);
+  box-shadow: inset 0 0 100px rgba(74,95,212,0.03);
 }
 
-/* ── Brand Gradient Utility ── */
+/* ── Gradient Utilities ── */
 .brand-gradient-text {
   background: var(--brand-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.brand-gradient-bg {
-  background: var(--brand-gradient);
-}
+.brand-gradient-bg { background: var(--brand-gradient); }
 
-/* Light/Client Theme */
+/* ── Light/Client Theme ── */
 .Lite-theme {
   --bg-primary:   #FFFFFF;
-  --bg-secondary: #FFF8F2;
-  --text-main:    #2D1A0E;
-  --text-muted:   #7A5C48;
-  --border-color: #FDDCB5;
-  --btn-bg:       #F7941D;
+  --bg-secondary: #EEF2FB;
+  --text-main:    #1a202c;
+  --text-muted:   #4A5568;
+  --border-color: #C3CFF5;
+  --btn-bg:       #4A5FD4;
   --btn-text:     #FFFFFF;
-  --btn-hover:    #E0820F;
-  --accent:       #7B1760;
+  --btn-hover:    #3346C0;
+  --accent:       #0EA5E9;
 }
 
-/* Dark/Admin Mode Variables */
+/* ── Dark/Admin Theme ── */
 .dark-theme {
-  --bg-primary:   #1A0B12;
-  --bg-secondary: #2D1020;
+  --bg-primary:   #0f172a;
+  --bg-secondary: #1e293b;
   --text-main:    #FFFFFF;
-  --text-muted:   #C4A0B5;
-  --border-color: #7B1760;
-  --btn-bg:       #F7941D;
+  --text-muted:   #94a3b8;
+  --border-color: #334155;
+  --btn-bg:       #4A5FD4;
   --btn-text:     #FFFFFF;
-  --btn-hover:    #E0820F;
-  --accent:       #F4A41B;
+  --btn-hover:    #3346C0;
+  --accent:       #0EA5E9;
 }
 
 /* ═══════════════════════════════════════════
-   NEUMORPHIC CORE + BUTTON DESIGN SYSTEM
+   NEUMORPHIC CORE — Blue-Tinted Surfaces
    ═══════════════════════════════════════════ */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* ── Neumorphic Surfaces (lighter shadows) ── */
+  /* Raised surface */
   .neu-flat {
     background: var(--color-neu-bg);
     box-shadow:
@@ -140,6 +160,7 @@ body {
     border-radius: 16px;
     border: none;
   }
+  /* Smaller raised */
   .neu-flat-sm {
     background: var(--color-neu-bg);
     box-shadow:
@@ -148,6 +169,7 @@ body {
     border-radius: 12px;
     border: none;
   }
+  /* Inset / pressed */
   .neu-pressed {
     background: var(--color-neu-bg);
     box-shadow:
@@ -156,6 +178,7 @@ body {
     border-radius: 14px;
     border: none;
   }
+  /* Interactive button */
   .neu-button {
     background: var(--color-neu-bg);
     box-shadow:
@@ -175,22 +198,24 @@ body {
       inset 3px 3px 7px var(--color-neu-dark),
       inset -3px -3px 7px var(--color-neu-light);
   }
+  /* Accent button — uses brand gradient */
   .neu-button-accent {
     background: var(--brand-gradient);
-    box-shadow: 0 4px 14px rgba(247, 148, 29, 0.35);
+    box-shadow: var(--brand-glow);
     color: white;
     border-radius: 10px;
     transition: all 0.2s ease;
     border: none;
   }
   .neu-button-accent:hover {
-    box-shadow: 0 6px 20px rgba(247, 148, 29, 0.45);
+    box-shadow: var(--brand-glow-lg);
     transform: translateY(-1px);
   }
   .neu-button-accent:active {
     transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(247, 148, 29, 0.3);
+    box-shadow: 0 2px 8px rgba(74, 95, 212, 0.3);
   }
+  /* Input — inset */
   .neu-input {
     background: var(--color-neu-bg);
     box-shadow:
@@ -205,7 +230,7 @@ body {
    STANDARDIZED BUTTON VARIANTS
    ═══════════════════════════════════════════ */
 
-/* Primary — Brand gradient, main CTA */
+/* Primary — Indigo→Sky gradient */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -221,27 +246,21 @@ body {
   border: none;
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 16px rgba(247, 148, 29, 0.3);
+  box-shadow: var(--brand-glow);
   white-space: nowrap;
 }
-.btn-primary:hover  { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(247, 148, 29, 0.4); }
+.btn-primary:hover  { opacity: 0.92; transform: translateY(-1px); box-shadow: var(--brand-glow-lg); }
 .btn-primary:active { transform: scale(0.97); opacity: 1; }
-.btn-primary-sm {
-  font-size: 11px;
-  padding: 7px 14px;
-  border-radius: 10px;
-}
+.btn-primary-sm { font-size: 11px; padding: 7px 14px; border-radius: 10px; }
 
-/* Secondary — Neumorphic raised, brand text */
+/* Secondary — Neumorphic raised */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   background: var(--color-neu-bg);
-  box-shadow:
-    4px 4px 8px var(--color-neu-dark),
-    -4px -4px 8px var(--color-neu-light);
+  box-shadow: 4px 4px 8px var(--color-neu-dark), -4px -4px 8px var(--color-neu-light);
   color: var(--color-neu-text);
   border-radius: 12px;
   padding: 10px 20px;
@@ -253,23 +272,11 @@ body {
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.btn-secondary:hover {
-  box-shadow:
-    6px 6px 12px var(--color-neu-dark),
-    -6px -6px 12px var(--color-neu-light);
-}
-.btn-secondary:active {
-  box-shadow:
-    inset 3px 3px 6px var(--color-neu-dark),
-    inset -3px -3px 6px var(--color-neu-light);
-}
-.btn-secondary-sm {
-  font-size: 11px;
-  padding: 7px 14px;
-  border-radius: 10px;
-}
+.btn-secondary:hover { box-shadow: 6px 6px 12px var(--color-neu-dark), -6px -6px 12px var(--color-neu-light); }
+.btn-secondary:active { box-shadow: inset 3px 3px 6px var(--color-neu-dark), inset -3px -3px 6px var(--color-neu-light); }
+.btn-secondary-sm { font-size: 11px; padding: 7px 14px; border-radius: 10px; }
 
-/* Ghost — Subtle outline, tertiary actions */
+/* Ghost — Outline */
 .btn-ghost {
   display: inline-flex;
   align-items: center;
@@ -287,27 +294,17 @@ body {
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.btn-ghost:hover {
-  border-color: var(--brand-orange);
-  color: var(--brand-orange);
-  background: rgba(247, 148, 29, 0.04);
-}
+.btn-ghost:hover { border-color: var(--brand-primary); color: var(--brand-primary); background: var(--brand-primary-light); }
 .btn-ghost:active { transform: scale(0.98); }
-.btn-ghost-sm {
-  font-size: 11px;
-  padding: 6px 14px;
-  border-radius: 10px;
-}
+.btn-ghost-sm { font-size: 11px; padding: 6px 14px; border-radius: 10px; }
 
-/* ── Pill variant (for category/tag buttons) ── */
+/* Pill — Category / Tags */
 .btn-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: var(--color-neu-bg);
-  box-shadow:
-    3px 3px 7px var(--color-neu-dark),
-    -3px -3px 7px var(--color-neu-light);
+  box-shadow: 3px 3px 7px var(--color-neu-dark), -3px -3px 7px var(--color-neu-light);
   color: var(--color-neu-text);
   border-radius: 50px;
   padding: 6px 14px;
@@ -318,15 +315,14 @@ body {
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.btn-pill:hover {
-  box-shadow:
-    5px 5px 10px var(--color-neu-dark),
-    -5px -5px 10px var(--color-neu-light);
-}
+.btn-pill:hover { box-shadow: 5px 5px 10px var(--color-neu-dark), -5px -5px 10px var(--color-neu-light); }
 .btn-pill-active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--brand-gradient);
   color: white;
-  box-shadow: 0 3px 12px rgba(247, 148, 29, 0.3);
+  box-shadow: var(--brand-glow);
   border-radius: 50px;
   padding: 6px 14px;
   font-weight: 700;
@@ -349,3 +345,8 @@ body {
   font-weight: 500;
   opacity: 0.65;
 }
+
+/* ── Price / Highlight color ── */
+.text-price { color: var(--brand-price); }
+.text-primary { color: var(--brand-primary); }
+.text-success { color: var(--brand-success); }

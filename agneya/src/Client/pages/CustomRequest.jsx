@@ -256,7 +256,7 @@ const CustomRequest = () => {
                     { id: false, label: 'Individual (No GST Invoice)' },
                     { id: true, label: 'Business (With GSTIN Invoice)' }
                   ].map(({ id, label }) => (
-                    <label key={String(id)} onClick={() => setIsCompany(id)} className="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:bg-slate-50" style={{ borderColor: isCompany === id ? '#F7941D' : '#f1f5f9' }}>
+                    <label key={String(id)} onClick={() => setIsCompany(id)} className="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:bg-slate-50" style={{ borderColor: isCompany === id ? '#4A5FD4' : '#f1f5f9' }}>
                       <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${isCompany === id ? 'bg-orange-600 border-orange-600' : 'border-slate-300'}`}>
                         {isCompany === id && <CheckCircle size={12} className="text-white" />}
                       </div>
@@ -304,7 +304,7 @@ const CustomRequest = () => {
                     onClick={() => handleSubmission('checkout')}
                     disabled={isUploading || files.length === 0}
                     className="w-full py-3 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50 active:scale-[0.98]"
-                    style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                    style={{ background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)' }}
                   >
                     {isUploading ? (
                       <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Uploading…</>
