@@ -247,7 +247,7 @@ const Cart = () => {
                   className="flex items-center gap-3 cursor-pointer group"
                   onClick={() => setIsIndividual(!isIndividual)}
                 >
-                  <div className={`w-6 h-6 rounded-lg neu-pressed flex items-center justify-center transition-all ${isIndividual ? 'shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1)] bg-[var(--color-neu-accent)] border-none' : 'opacity-40 group-hover:opacity-100'}`}>
+                  <div className={`w-6 h-6 rounded-lg neu-pressed flex items-center justify-center transition-all ${isIndividual ? 'shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1)] bg-[var(--brand-primary)] border-none' : 'opacity-40 group-hover:opacity-100'}`}>
                     {isIndividual && <CheckCircle size={14} className="text-white" />}
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-neu-text)' }}>Individual (No GST)</span>

@@ -129,7 +129,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
           style={isWished ? {} : { color: 'var(--color-neu-text)' }}
           aria-label={isWished ? "Remove from Wishlist" : "Add to Wishlist"}
         >
-          <Heart className={`w-4 h-4 ${isWished ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 ${isWished ? 'fill-rose-500 text-rose-500' : 'text-indigo-400'}`} />
         </button>
 
         {/* Quick Access HUD */}
@@ -176,7 +176,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       {!imageOnly && (
         <div className="p-3 flex flex-col z-20 relative" style={{ backgroundColor: 'transparent' }}>
           <div className="flex justify-between items-center mb-1">
-            <span className="text-micro" style={{ color: 'var(--brand-orange)' }}>{product.category || 'Premium'}</span>
+            <span className="text-micro" style={{ color: 'var(--brand-primary)' }}>{product.category || 'Premium'}</span>
             <div className="flex items-center gap-0.5 text-slate-400">
                 <Star size={9} className="fill-amber-400 text-amber-400" />
                 <span className="text-[10px] font-medium">{product.rating || '5.0'}</span>

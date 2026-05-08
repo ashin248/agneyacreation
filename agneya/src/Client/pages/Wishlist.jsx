@@ -91,7 +91,7 @@ const Wishlist = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
-        <div className="w-10 h-10 border-4 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-[var(--color-neu-dark)] border-t-[var(--brand-primary)] rounded-full animate-spin" />
         <p className="text-sm font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>Syncing Wishlist…</p>
       </div>
     );
@@ -149,7 +149,7 @@ const Wishlist = () => {
             </div>
             <Link
               to="/shop"
-              className="flex items-center gap-3 px-8 py-4 neu-button-accent text-white text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+              className="flex items-center gap-3 px-8 py-4 btn-primary text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
             >
               <ShoppingBag size={18} /> Browse Collections
             </Link>

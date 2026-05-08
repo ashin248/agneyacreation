@@ -265,7 +265,7 @@ const ProductDetails = () => {
     const displayMainImage = overrideImage || images[activeImage];
 
     return (
-        <div className="min-h-screen pb-32 font-sans selection:bg-indigo-600 selection:text-white" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="min-h-screen pb-32 font-sans selection:bg-orange-600 selection:text-white" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
             <SEO 
                 title={product.name}
                 description={product.description || `Premium ${product.name} at Agneya Creations.`}
@@ -287,7 +287,7 @@ const ProductDetails = () => {
                 <div className="flex items-center justify-between mb-8">
                     <button 
                         onClick={() => navigate('/shop')} 
-                        className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-indigo-600 transition-colors"
+                        className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-orange-600 transition-colors"
                     >
                         <div className="w-10 h-10 rounded-2xl neu-button flex items-center justify-center group-hover:-translate-x-1 transition-all" style={{ color: 'var(--color-neu-text)' }}>
                             <ArrowLeft size={16} />
@@ -296,9 +296,9 @@ const ProductDetails = () => {
                     </button>
                     
                     <nav className="hidden md:flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
-                        <button onClick={() => navigate('/')} className="hover:text-indigo-600 transition-colors">Home</button>
+                        <button onClick={() => navigate('/')} className="hover:text-orange-600 transition-colors">Home</button>
                         <ChevronRight size={10} className="text-slate-300" />
-                        <span className="text-indigo-600 truncate max-w-[200px]">{product.name}</span>
+                        <span className="text-orange-600 truncate max-w-[200px]">{product.name}</span>
                     </nav>
                 </div>
 
@@ -362,7 +362,7 @@ const ProductDetails = () => {
                         {/* Title & Description */}
                         <div className="space-y-4">
                             {product.category && (
-                                <span className="text-label" style={{ color: 'var(--brand-primary)' }}>
+                                <span className="text-label" style={{ color: 'var(--brand-orange)' }}>
                                     {product.category}
                                 </span>
                             )}
@@ -553,7 +553,7 @@ const ProductDetails = () => {
                             </div>
                             <button 
                                 onClick={() => navigate('/shop')}
-                                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-indigo-600 transition-all"
+                                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-orange-600 transition-all"
                             >
                                 View All <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                             </button>
@@ -648,10 +648,10 @@ const ProductDetails = () => {
                                     setInitialStudioMode('2d');
                                     setCustomizingProduct(product);
                                 }} className="cursor-pointer group">
-                                    <div className="w-full aspect-square bg-white rounded-[24px] border-2 border-slate-100 overflow-hidden group-hover:border-indigo-600 group-hover:shadow-xl transition-all duration-300 p-6 mb-4">
+                                    <div className="w-full aspect-square bg-white rounded-[24px] border-2 border-slate-100 overflow-hidden group-hover:border-orange-600 group-hover:shadow-xl transition-all duration-300 p-6 mb-4">
                                         <img loading="lazy" src={model.mainModelUrl} alt={model.modelName || `Model ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 ease-out" />
                                     </div>
-                                    <p className="font-black text-[10px] uppercase tracking-widest text-center text-slate-500 group-hover:text-indigo-600 transition-colors">{model.modelName || `View ${idx + 1}`}</p>
+                                    <p className="font-black text-[10px] uppercase tracking-widest text-center text-slate-500 group-hover:text-orange-600 transition-colors">{model.modelName || `View ${idx + 1}`}</p>
                                 </div>
                             ))}
                         </div>

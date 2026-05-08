@@ -117,7 +117,7 @@ const UserDashboard = () => {
         {/* User Card */}
         <div className="p-5 flex items-center gap-4 border-b border-[var(--color-neu-dark)]">
           <div className="w-12 h-12 rounded-xl neu-pressed flex items-center justify-center flex-shrink-0">
-            <User size={20} style={{ color: 'var(--color-neu-accent)' }} />
+            <User size={20} style={{ color: 'var(--brand-primary)' }} />
           </div>
           <div className="min-w-0">
             <p className="text-micro opacity-50" style={{ color: 'var(--color-neu-text)' }}>Welcome back,</p>
@@ -163,10 +163,10 @@ const UserDashboard = () => {
               }`}
               style={{ color: 'var(--color-neu-text)' }}
             >
-              <Icon size={16} className={activeTab === id ? 'opacity-100' : 'opacity-40'} style={activeTab === id ? { color: 'var(--color-neu-accent)' } : {}} />
+              <Icon size={16} className={activeTab === id ? 'opacity-100' : 'opacity-40'} style={activeTab === id ? { color: 'var(--brand-primary)' } : {}} />
               <span className={activeTab === id ? 'font-bold' : 'font-medium'}>{label}</span>
               {id === 'orders' && orders.length > 0 && (
-                <span className={`ml-auto text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === id ? 'bg-[var(--color-neu-accent)] text-white' : 'neu-pressed opacity-60'}`}>
+                <span className={`ml-auto text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === id ? 'bg-[var(--brand-primary)] text-white' : 'neu-pressed opacity-60'}`}>
                   {orders.length}
                 </span>
               )}
@@ -242,7 +242,7 @@ const UserDashboard = () => {
                               <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${cls}`}>
                                 <Icon size={11} /> {order.orderStatus}
                               </span>
-                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-[10px] font-black uppercase tracking-widest transition-colors hover:opacity-70" style={{ color: 'var(--color-neu-accent)' }}>
+                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-[10px] font-black uppercase tracking-widest transition-colors hover:opacity-70" style={{ color: 'var(--brand-primary)' }}>
                                 Track →
                               </button>
                             </div>
@@ -375,7 +375,7 @@ const UserDashboard = () => {
                         <div>
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-[9px] font-black uppercase tracking-widest neu-pressed px-2.5 py-1 rounded-md" style={{ color: 'var(--color-neu-text)', opacity: 0.6 }}>{addr.type || 'Home'}</span>
-                            {addr.isDefault && <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-accent)' }}>Default</span>}
+                            {addr.isDefault && <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--brand-primary)' }}>Default</span>}
                           </div>
                           <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{addr.name}</p>
                           <p className="text-xs font-medium mt-2 leading-relaxed opacity-60" style={{ color: 'var(--color-neu-text)' }}>
@@ -447,7 +447,7 @@ const UserDashboard = () => {
                   <div key={order._id} className="neu-flat p-6">
                     <div className="flex items-center justify-between mb-5">
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1" style={{ color: 'var(--color-neu-accent)' }}>Bulk Order</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1" style={{ color: 'var(--brand-primary)' }}>Bulk Order</p>
                         <h3 className="text-base font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>#{order._id.slice(-10).toUpperCase()}</h3>
                       </div>
                       <span className="px-3 py-1.5 neu-button-accent text-[10px] font-black uppercase tracking-widest">{order.orderStatus}</span>
@@ -476,7 +476,7 @@ const UserDashboard = () => {
               <div className="space-y-6">
 
                 <div className="neu-flat p-8 relative overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-48 h-48 bg-[var(--color-neu-accent)] opacity-5 blur-3xl rounded-full" />
+                  <div className="absolute -top-10 -right-10 w-48 h-48 bg-[var(--brand-primary)] opacity-5 blur-3xl rounded-full" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-4 mb-8">
                       <div className="w-12 h-12 rounded-xl neu-button-accent flex items-center justify-center">

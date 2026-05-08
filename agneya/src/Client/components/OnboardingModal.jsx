@@ -209,21 +209,21 @@ const OnboardingModal = ({ isOpen, onComplete }) => {
                             <h4 className="text-[10px] font-black uppercase tracking-[0.3em]" style={{ color: '#4A5FD4' }}>Delivery Address</h4>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input name="houseNo" value={formData.houseNo} onChange={handleChange} placeholder="House / Flat / Office No" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
-                                    <input name="area" value={formData.area} onChange={handleChange} placeholder="Area / Street / Colony" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
+                                    <input name="houseNo" value={formData.houseNo} onChange={handleChange} placeholder="House / Flat / Office No" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none" required />
+                                    <input name="area" value={formData.area} onChange={handleChange} placeholder="Area / Street / Colony" className="h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none" required />
                                 </div>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="relative flex-1">
-                                        <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
+                                        <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none" required />
                                     </div>
                                     <div className="relative flex-1">
-                                        <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none" required />
+                                        <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className="w-full h-12 bg-gray-50 border border-slate-100 rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none" required />
                                     </div>
                                     <div className="relative flex-1">
                                         <input name="country" value={formData.country} onChange={handleChange} placeholder="Country" className="w-full h-12 bg-gray-100 border border-slate-100 rounded-xl px-5 text-xs font-bold text-slate-400 cursor-not-allowed" readOnly />
                                     </div>
                                     <div className="relative flex-1">
-                                        <input name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Pincode" className={`w-full h-12 bg-gray-50 border rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-orange-100 outline-none transition-all ${pincodeError ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} required maxLength={6} />
+                                        <input name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Pincode" className={`w-full h-12 bg-gray-50 border rounded-xl px-5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none transition-all ${pincodeError ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} required maxLength={6} />
                                         {pincodeLoading && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                                 <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#4A5FD4' }} />

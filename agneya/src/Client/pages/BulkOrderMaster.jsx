@@ -120,7 +120,7 @@ const BulkOrderMaster = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
-        <div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-600 rounded-full animate-spin" />
         <p className="text-sm font-medium text-slate-400">Loading product catalogue…</p>
       </div>
     );
@@ -147,13 +147,13 @@ const BulkOrderMaster = () => {
                 placeholder="Search products…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
               />
             </div>
             <button
               onClick={() => setShowSelectedOnly(!showSelectedOnly)}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border flex-shrink-0 transition-all ${showSelectedOnly ? 'text-white' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
-              style={showSelectedOnly ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#4A5FD4' } : {}}
+              style={showSelectedOnly ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#7B1760' } : {}}
             >
               <Filter size={13} />
               {showSelectedOnly ? 'All Products' : 'Selected Only'}
@@ -195,7 +195,7 @@ const BulkOrderMaster = () => {
                 placeholder="Your organisation name"
                 value={companyName}
                 onChange={e => { setCompanyName(e.target.value); localStorage.setItem('temp_company_name', e.target.value); }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
               />
             </div>
             <div>
@@ -205,7 +205,7 @@ const BulkOrderMaster = () => {
                 placeholder="Enter GSTIN"
                 value={gstNumber}
                 onChange={e => { setGstNumber(e.target.value); localStorage.setItem('temp_gst_number', e.target.value); }}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all"
               />
             </div>
           </div>
@@ -276,7 +276,7 @@ const BulkOrderMaster = () => {
                         : null;
 
                       return (
-                        <tr key={product._id || idx} className={`transition-colors ${isSelected ? 'bg-indigo-50/20' : 'hover:bg-slate-50/50'}`}>
+                        <tr key={product._id || idx} className={`transition-colors ${isSelected ? 'bg-orange-50/20' : 'hover:bg-slate-50/50'}`}>
                           {/* Product Info */}
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
@@ -291,7 +291,7 @@ const BulkOrderMaster = () => {
                                     {[...product.bulkRules].sort((a, b) => a.minQty - b.minQty).map((rule, ri) => {
                                       const active = totalProductQty >= rule.minQty;
                                       return (
-                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'text-white' : 'bg-slate-50 text-slate-400 border-slate-100'}`} style={active ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#4A5FD4' } : {}}>
+                                        <span key={ri} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${active ? 'text-white' : 'bg-slate-50 text-slate-400 border-slate-100'}`} style={active ? { background: 'linear-gradient(135deg, #4A5FD4, #0EA5E9)', borderColor: '#7B1760' } : {}}>
                                           {rule.minQty}+: ₹{(product.basePrice - (rule.pricePerUnit || 0)).toLocaleString('en-IN')}
                                         </span>
                                       );
@@ -299,7 +299,7 @@ const BulkOrderMaster = () => {
                                   </div>
                                 )}
                                 {nextTier && totalProductQty > 0 && (
-                                  <p className="text-[9px] text-indigo-500 font-semibold mt-1">
+                                  <p className="text-[9px] text-orange-500 font-semibold mt-1">
                                     Add {nextTier.minQty - totalProductQty} more for ₹{(product.basePrice - (nextTier.pricePerUnit || 0)).toLocaleString('en-IN')} each
                                   </p>
                                 )}
@@ -315,7 +315,7 @@ const BulkOrderMaster = () => {
                                 const qty = getQty(product._id, sku);
                                 return (
                                   <div key={sku} className={`flex flex-col items-center rounded-lg border p-1 min-w-[48px] transition-all ${qty > 0 ? 'border-orange-300 bg-white ring-1 ring-orange-100' : 'border-slate-100 bg-slate-50'}`}>
-                                    <span className={`text-[9px] font-semibold mb-1 ${qty > 0 ? 'text-indigo-600' : 'text-slate-400'}`}>{v.size || sku}</span>
+                                    <span className={`text-[9px] font-semibold mb-1 ${qty > 0 ? 'text-orange-600' : 'text-slate-400'}`}>{v.size || sku}</span>
                                     <input
                                       type="number"
                                       value={qty || ''}
@@ -332,7 +332,7 @@ const BulkOrderMaster = () => {
 
                           {/* Subtotal */}
                           <td className="px-5 py-4 text-right">
-                            <p className={`text-sm font-bold ${isSelected ? 'text-indigo-600' : 'text-slate-200'}`}>
+                            <p className={`text-sm font-bold ${isSelected ? 'text-orange-600' : 'text-slate-200'}`}>
                               ₹{subtotal.toLocaleString('en-IN')}
                             </p>
                             {isSelected && wMin && totalProductQty < wMin && (
@@ -359,7 +359,7 @@ const BulkOrderMaster = () => {
           <div className="lg:col-span-1">
             <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-xl sticky top-[130px] md:top-[150px]">
               <div className="flex items-center gap-2 mb-5">
-                <ShoppingCart size={16} className="text-indigo-400" />
+                <ShoppingCart size={16} className="text-orange-400" />
                 <h2 className="text-sm font-bold">Order Summary</h2>
               </div>
 
