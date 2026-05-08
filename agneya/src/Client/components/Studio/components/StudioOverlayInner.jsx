@@ -482,15 +482,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     return (
         <div className={`fixed inset-0 z-[1000] flex flex-col transition-all duration-500 overflow-hidden ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} style={{ paddingBottom: 'env(safe-area-inset-bottom)', backgroundColor: 'var(--color-neu-bg)' }}>
             <style>{`
-                .pill-btn { border-radius: 9999px; transition: all 0.3s; text-transform: uppercase; font-weight: 800; letter-spacing: 0.1em; font-size: 10px; }
-                .floating-card { background: white; border-radius: 42px; box-shadow: 0 20px 50px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
-                .accent-btn { background: linear-gradient(135deg, #F7941D, #7B1760); color: white; }
-                .accent-btn:hover { opacity: 0.9; }
-                input[type=range] { -webkit-appearance: none; background: #f0f1f4; height: 6px; border-radius: 3px; }
-                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #F7941D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; }
+                input[type=range] { -webkit-appearance: none; background: rgba(0,0,0,0.05); height: 6px; border-radius: 3px; }
+                input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--color-neu-accent); border-radius: 50%; border: 3px solid var(--color-neu-bg); box-shadow: 3px 3px 6px rgba(0,0,0,0.1), -3px -3px 6px rgba(255,255,255,0.8); cursor: pointer; }
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--color-neu-dark); border-radius: 10px; }
             `}</style>
 
             <header className="h-16 md:h-20 shrink-0 px-4 sm:px-10 flex items-center justify-between z-[100] border-b" style={{ backgroundColor: 'var(--color-neu-bg)', borderColor: 'var(--color-neu-dark)' }}>
@@ -540,8 +536,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                         <div className="flex-1 flex flex-col relative h-full">
                             {isDrawing && (
                                 <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[200]">
-                                    <button onClick={() => setIsDrawing(false)} className="px-8 h-12 bg-rose-500 text-white rounded-full shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 animate-bounce">
-                                        <FiX /> Exit Ink Mode
+                                    <button onClick={() => setIsDrawing(false)} className="px-8 h-12 neu-pressed text-rose-500 shadow-2xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 animate-bounce active:scale-95 transition-all">
+                                        <FiX /> Exit Studio Ink
                                     </button>
                                 </div>
                             )}
@@ -603,15 +599,14 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 setActiveSupportSide={setActiveSupportSide}
                             />
                             {activeStudioTab !== 'DESIGN_ASSISTANCE' && (
-                                <div className="xl:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-2 bg-white/90 backdrop-blur-md p-1.5 rounded-full shadow-2xl border border-slate-100/50 animate-in fade-in slide-in-from-bottom-4 pointer-events-auto">
-                                    <button onClick={() => handleFinalSubmit(true)} className="h-12 px-5 bg-slate-50 text-slate-900 rounded-full hover:bg-slate-100 flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all">
+                                <div className="xl:hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 neu-flat p-2 rounded-full shadow-2xl border border-[var(--color-neu-dark)] animate-in fade-in slide-in-from-bottom-4 pointer-events-auto" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                                    <button onClick={() => handleFinalSubmit(true)} className="h-12 px-6 neu-button flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all" style={{ color: 'var(--color-neu-text)' }}>
                                         <FiArrowRight size={14} /> Buy Now
                                     </button>
                                     <button 
                                         onClick={() => handleFinalSubmit(false)} 
                                         disabled={isSubmitting} 
-                                        className="h-12 px-5 text-white rounded-full shadow-md flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
-                                        style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                                        className="h-12 px-6 neu-button-accent flex items-center gap-2 font-black text-[9px] uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50"
                                     >
                                         <FiShoppingCart size={14} /> {isSubmitting ? 'Syncing...' : 'Add to Cart'}
                                     </button>
@@ -641,15 +636,15 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 <div className="space-y-4">
                                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference Assets (Logos, Sketches, Inspiration)</label>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                                        <div className="relative aspect-square border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-orange-500 hover:bg-slate-50 transition-all cursor-pointer group">
+                                        <div className="relative aspect-square neu-pressed border-2 border-dashed border-[var(--color-neu-dark)] rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[var(--color-neu-accent)] transition-all cursor-pointer group">
                                             <input type="file" multiple onChange={(e) => { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = (ev) => setCompanyReferences(prev => [...prev, { id: Date.now() + Math.random(), url: ev.target.result }]); reader.readAsDataURL(file); }); }} className="absolute inset-0 opacity-0 cursor-pointer" />
-                                            <FiArrowUp size={20} className="text-slate-300 group-hover:text-orange-500 transition-colors" />
-                                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Upload</span>
+                                            <FiArrowUp size={20} className="opacity-30 group-hover:opacity-100 transition-all" style={{ color: 'var(--color-neu-text)' }} />
+                                            <span className="text-[8px] font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--color-neu-text)' }}>Upload Ref</span>
                                         </div>
                                         {companyReferences.map(ref => (
-                                            <div key={ref.id} className="relative aspect-square bg-slate-50 rounded-2xl overflow-hidden group">
-                                                <img loading="lazy" src={ref.url} className="w-full h-full object-cover" alt="Reference" />
-                                                <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><FiX size={12} /></button>
+                                            <div key={ref.id} className="relative aspect-square neu-button rounded-2xl overflow-hidden group p-1">
+                                                <img loading="lazy" src={ref.url} className="w-full h-full object-cover rounded-xl" alt="Reference" />
+                                                <button onClick={() => setCompanyReferences(prev => prev.filter(r => r.id !== ref.id))} className="absolute top-2 right-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"><FiX size={12} /></button>
                                             </div>
                                         ))}
                                     </div>
