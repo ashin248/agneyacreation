@@ -169,7 +169,7 @@ const CustomRequest = () => {
                 />
               </div>
               <div>
-                <span className="text-[10px] font-semibold text-orange-500 bg-orange-50 px-2 py-0.5 rounded-md">Custom Order</span>
+                <span className="text-[10px] font-semibold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-md">Custom Order</span>
                 <h2 className="text-base font-bold text-slate-900 mt-1">{product.name}</h2>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-sm text-slate-500">Base price: <strong className="text-slate-900">₹{(product.discountPrice || product.basePrice).toLocaleString('en-IN')}</strong></span>
@@ -217,11 +217,11 @@ const CustomRequest = () => {
                   </div>
                 ))}
                 {files.length < 10 && (
-                  <label className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all group">
+                  <label className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition-all group">
                     <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                      <Plus size={18} className="text-slate-400 group-hover:text-orange-500" />
+                      <Plus size={18} className="text-slate-400 group-hover:text-indigo-500" />
                     </div>
-                    <span className="text-[10px] font-semibold text-slate-400 group-hover:text-orange-500">Upload</span>
+                    <span className="text-[10px] font-semibold text-slate-400 group-hover:text-indigo-500">Upload</span>
                     <input type="file" multiple accept="image/*" onChange={handleFileChange} className="hidden" />
                   </label>
                 )}
@@ -239,7 +239,7 @@ const CustomRequest = () => {
                 onChange={e => setInstructions(e.target.value)}
                 rows={5}
                 placeholder="Describe how you'd like your design placed — positioning, text, colors, special requirements…"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none transition-all resize-none font-medium"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all resize-none font-medium"
               />
             </div>
           </div>
@@ -257,7 +257,7 @@ const CustomRequest = () => {
                     { id: true, label: 'Business (With GSTIN Invoice)' }
                   ].map(({ id, label }) => (
                     <label key={String(id)} onClick={() => setIsCompany(id)} className="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:bg-slate-50" style={{ borderColor: isCompany === id ? '#4A5FD4' : '#f1f5f9' }}>
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${isCompany === id ? 'bg-orange-600 border-orange-600' : 'border-slate-300'}`}>
+                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${isCompany === id ? 'bg-indigo-600 border-indigo-600' : 'border-slate-300'}`}>
                         {isCompany === id && <CheckCircle size={12} className="text-white" />}
                       </div>
                       <span className="text-sm font-medium text-slate-700">{label}</span>
@@ -266,8 +266,8 @@ const CustomRequest = () => {
                 </div>
                 {isCompany && (
                   <div className="mt-3 space-y-2">
-                    <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Legal Company Name *" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all" />
-                    <input type="text" value={gstNumber} onChange={e => setGstNumber(e.target.value.toUpperCase())} placeholder="GSTIN (15 characters) *" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all" />
+                    <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Legal Company Name *" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all" />
+                    <input type="text" value={gstNumber} onChange={e => setGstNumber(e.target.value.toUpperCase())} placeholder="GSTIN (15 characters) *" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all" />
                   </div>
                 )}
               </div>
@@ -287,7 +287,7 @@ const CustomRequest = () => {
                   <div className="border-t border-white/10 pt-4">
                     <div className="flex justify-between items-end">
                       <span className="text-xs text-slate-400">Total (excl. tax & delivery)</span>
-                      <span className="text-2xl font-bold text-orange-400">₹{totalPrice.toLocaleString('en-IN')}</span>
+                      <span className="text-2xl font-bold text-indigo-500">₹{totalPrice.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
@@ -330,8 +330,8 @@ const CustomRequest = () => {
                   { icon: ShieldCheck, title: 'Quality Check', desc: 'Our designers optimise your images before printing.' }
                 ].map(({ icon: Icon, title, desc }) => (
                   <div key={title} className="flex gap-3">
-                    <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon size={14} className="text-orange-600" />
+                    <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon size={14} className="text-indigo-600" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-slate-800">{title}</p>

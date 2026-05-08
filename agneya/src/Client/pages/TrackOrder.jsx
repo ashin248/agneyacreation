@@ -62,7 +62,7 @@ const TrackingModal = ({ order, onClose }) => {
         {/* Header */}
         <div className="bg-slate-900 px-7 py-6 flex items-start justify-between">
           <div>
-            <p className="text-orange-400 text-xs font-semibold uppercase tracking-wider mb-1">Live Tracking</p>
+            <p className="text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">Live Tracking</p>
             <h2 className="text-white text-xl font-bold">#{order.orderId}</h2>
             <p className="text-slate-400 text-sm mt-1">
               Est. delivery: <span className="text-white font-semibold">{estDate}</span>
@@ -87,7 +87,7 @@ const TrackingModal = ({ order, onClose }) => {
             <div className="relative px-4">
               <div className="absolute top-5 left-4 right-4 h-1 bg-slate-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-orange-500 rounded-full transition-all duration-[1200ms] ease-out"
+                  className="h-full bg-indigo-500 rounded-full transition-all duration-[1200ms] ease-out"
                   style={{ width: animStep >= 0 ? `${(animStep / (STATUSES.length - 1)) * 100}%` : '0%' }}
                 />
               </div>
@@ -98,12 +98,12 @@ const TrackingModal = ({ order, onClose }) => {
                   return (
                     <div key={id} className="flex flex-col items-center">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 relative z-10 transition-all duration-500 ${
-                        done ? 'bg-orange-600 border-white text-white shadow-md shadow-orange-200' : 'bg-white border-slate-200 text-slate-300'
+                        done ? 'bg-indigo-600 border-white text-white shadow-md shadow-indigo-200' : 'bg-white border-slate-200 text-slate-300'
                       }`}>
                         <Icon size={18} />
-                        {active && <span className="absolute -inset-2 bg-orange-400/20 rounded-full animate-ping" />}
+                        {active && <span className="absolute -inset-2 bg-indigo-400/20 rounded-full animate-ping" />}
                       </div>
-                      <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-orange-600' : 'text-slate-400'}`}>
+                      <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-indigo-600' : 'text-slate-400'}`}>
                         {label}
                       </p>
                     </div>
@@ -119,10 +119,10 @@ const TrackingModal = ({ order, onClose }) => {
               const done = id <= animStep;
               return (
                 <div key={id} className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${done ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-300'}`}>
                     <Icon size={15} />
                   </div>
-                  <span className={`text-sm font-medium ${done ? 'text-orange-600' : 'text-slate-400'}`}>{label}</span>
+                  <span className={`text-sm font-medium ${done ? 'text-indigo-600' : 'text-slate-400'}`}>{label}</span>
                 </div>
               );
             })}
@@ -142,7 +142,7 @@ const TrackingModal = ({ order, onClose }) => {
                       <p className="text-sm font-semibold text-slate-800">{item.name}</p>
                       <p className="text-xs text-slate-400">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-sm font-bold text-orange-600">₹{(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
+                    <p className="text-sm font-bold text-indigo-600">₹{(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
                   </div>
                 ))}
               </div>
@@ -199,7 +199,7 @@ const OrderCard = ({ order, onTrack }) => {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-black uppercase tracking-tight group-hover:text-orange-600 transition-colors truncate" style={{ color: 'var(--color-neu-text)' }}>#{order.orderId}</p>
+        <p className="text-sm font-black uppercase tracking-tight group-hover:text-indigo-600 transition-colors truncate" style={{ color: 'var(--color-neu-text)' }}>#{order.orderId}</p>
         <div className="flex flex-wrap items-center gap-3 mt-1.5">
           <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${badgeStyle(status)}`}>
             {displayStatus}
