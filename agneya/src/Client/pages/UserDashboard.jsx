@@ -96,8 +96,9 @@ const UserDashboard = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-600 rounded-full animate-spin" />
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+      <div className="w-10 h-10 border-4 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] rounded-full animate-spin" />
+      <p className="text-sm font-medium" style={{ color: 'var(--color-neu-text)' }}>Loading dashboard…</p>
     </div>
   );
 
@@ -112,15 +113,15 @@ const UserDashboard = () => {
       ? 'block md:hidden'
       : 'hidden md:block w-64 flex-shrink-0'
     }>
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="neu-flat overflow-hidden">
         {/* User Card */}
-        <div className="p-5 flex items-center gap-4 border-b border-slate-50">
-          <div className="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
-            <User size={20} className="text-orange-600" />
+        <div className="p-5 flex items-center gap-4 border-b border-[var(--color-neu-dark)]">
+          <div className="w-12 h-12 rounded-xl neu-pressed flex items-center justify-center flex-shrink-0">
+            <User size={20} style={{ color: 'var(--color-neu-accent)' }} />
           </div>
           <div className="min-w-0">
-            <p className="text-xs text-slate-400 font-medium">Welcome back,</p>
-            <h2 className="text-sm font-bold text-slate-900 truncate">{userData?.name || 'User'}</h2>
+            <p className="text-[10px] font-bold uppercase tracking-wider opacity-50" style={{ color: 'var(--color-neu-text)' }}>Welcome back,</p>
+            <h2 className="text-sm font-black truncate uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>{userData?.name || 'User'}</h2>
           </div>
         </div>
 
@@ -134,15 +135,16 @@ const UserDashboard = () => {
             <button
               key={id}
               onClick={() => { setActiveTab(id); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all ${
                 activeTab === id
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:bg-slate-50 font-medium'
+                  ? 'neu-pressed'
+                  : 'hover:neu-pressed opacity-70'
               }`}
+              style={{ color: 'var(--color-neu-text)' }}
             >
-              <Icon size={16} className={activeTab === id ? 'text-white' : 'text-slate-400'} />
-              {label}
-              {activeTab === id && <ChevronRight size={14} className="ml-auto text-white/70" />}
+              <Icon size={16} className={activeTab === id ? 'opacity-100' : 'opacity-40'} style={activeTab === id ? { color: 'var(--color-neu-accent)' } : {}} />
+              <span className={activeTab === id ? 'font-bold' : 'font-medium'}>{label}</span>
+              {activeTab === id && <ChevronRight size={14} className="ml-auto opacity-50" />}
             </button>
           ))}
 
@@ -154,29 +156,30 @@ const UserDashboard = () => {
             <button
               key={id}
               onClick={() => { setActiveTab(id); setIsSidebarOpen(false); }}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-all ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all ${
                 activeTab === id
-                  ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                  : 'text-slate-600 hover:bg-slate-50 font-medium'
+                  ? 'neu-pressed'
+                  : 'hover:neu-pressed opacity-70'
               }`}
+              style={{ color: 'var(--color-neu-text)' }}
             >
-              <Icon size={16} className={activeTab === id ? 'text-white' : 'text-slate-400'} />
-              {label}
+              <Icon size={16} className={activeTab === id ? 'opacity-100' : 'opacity-40'} style={activeTab === id ? { color: 'var(--color-neu-accent)' } : {}} />
+              <span className={activeTab === id ? 'font-bold' : 'font-medium'}>{label}</span>
               {id === 'orders' && orders.length > 0 && (
-                <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${activeTab === id ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600'}`}>
+                <span className={`ml-auto text-[10px] font-black px-2 py-0.5 rounded-full ${activeTab === id ? 'bg-[var(--color-neu-accent)] text-white' : 'neu-pressed opacity-60'}`}>
                   {orders.length}
                 </span>
               )}
-              {activeTab === id && orders.length === 0 && <ChevronRight size={14} className="ml-auto text-white/70" />}
+              {activeTab === id && orders.length === 0 && <ChevronRight size={14} className="ml-auto opacity-50" />}
             </button>
           ))}
         </nav>
 
         {/* Logout */}
-        <div className="border-t border-slate-50 p-3">
+        <div className="border-t border-[var(--color-neu-dark)] p-3">
           <button
             onClick={() => logout().then(() => navigate('/'))}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-500 hover:bg-rose-50 rounded-xl transition-all font-medium"
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-rose-500 hover:neu-pressed rounded-xl transition-all font-bold uppercase tracking-widest"
           >
             <LogOut size={16} /> Sign Out
           </button>
@@ -186,7 +189,7 @@ const UserDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Mobile tab strip */}
@@ -195,9 +198,10 @@ const UserDashboard = () => {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
-                activeTab === id ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200'
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap flex-shrink-0 transition-all ${
+                activeTab === id ? 'neu-button-accent' : 'neu-button'
               }`}
+              style={activeTab === id ? {} : { color: 'var(--color-neu-text)' }}
             >
               <Icon size={14} />
               {label}
@@ -214,12 +218,12 @@ const UserDashboard = () => {
             {/* ── MY ORDERS ── */}
             {activeTab === 'orders' && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-slate-900">My Orders</h2>
+                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>My Orders</h2>
                 {orders.filter(o => o.orderType !== 'Bulk').length === 0 ? (
-                  <div className="bg-white rounded-2xl border border-slate-100 p-10 text-center">
-                    <ShoppingBag size={28} className="text-slate-200 mx-auto mb-4" />
-                    <p className="text-sm font-medium text-slate-400 mb-5">No orders yet.</p>
-                    <button onClick={() => navigate('/')} className="px-6 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
+                  <div className="neu-flat p-12 text-center">
+                    <ShoppingBag size={32} className="opacity-20 mx-auto mb-4" style={{ color: 'var(--color-neu-text)' }} />
+                    <p className="text-sm font-medium mb-6 opacity-60" style={{ color: 'var(--color-neu-text)' }}>No orders yet.</p>
+                    <button onClick={() => navigate('/')} className="px-8 py-3 neu-button-accent font-black uppercase text-xs tracking-widest">
                       Start Shopping
                     </button>
                   </div>
@@ -228,17 +232,17 @@ const UserDashboard = () => {
                     {orders.filter(o => o.orderType !== 'Bulk').map(order => {
                       const { cls, Icon } = STATUS_CONFIG(order.orderStatus);
                       return (
-                        <div key={order._id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-sm transition-shadow">
-                          <div className="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-100">
-                            <div className="flex items-center gap-4 text-xs text-slate-500">
-                              <span><span className="font-medium text-slate-700">#{order._id.slice(-8).toUpperCase()}</span></span>
+                        <div key={order._id} className="neu-button overflow-hidden group">
+                          <div className="flex items-center justify-between px-5 py-3 neu-pressed rounded-none border-b border-[var(--color-neu-dark)]">
+                            <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider opacity-60" style={{ color: 'var(--color-neu-text)' }}>
+                              <span>#<span className="opacity-100">{order._id.slice(-8).toUpperCase()}</span></span>
                               <span>{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${cls}`}>
+                              <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${cls}`}>
                                 <Icon size={11} /> {order.orderStatus}
                               </span>
-                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-xs text-orange-600 font-semibold hover:underline">
+                              <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="text-[10px] font-black uppercase tracking-widest transition-colors hover:opacity-70" style={{ color: 'var(--color-neu-accent)' }}>
                                 Track →
                               </button>
                             </div>
@@ -247,19 +251,19 @@ const UserDashboard = () => {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex -space-x-2">
                                 {order.items.slice(0, 3).map((item, i) => (
-                                  <div key={i} className="w-10 h-10 rounded-xl border-2 border-white overflow-hidden bg-slate-100">
+                                  <div key={i} className="w-10 h-10 rounded-xl border-2 border-[var(--color-neu-bg)] overflow-hidden neu-pressed">
                                     <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                   </div>
                                 ))}
                                 {order.items.length > 3 && (
-                                  <div className="w-10 h-10 rounded-xl border-2 border-white bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">
+                                  <div className="w-10 h-10 rounded-xl border-2 border-[var(--color-neu-bg)] neu-pressed flex items-center justify-center text-[10px] font-black" style={{ color: 'var(--color-neu-text)' }}>
                                     +{order.items.length - 3}
                                   </div>
                                 )}
                               </div>
-                              <span className="text-base font-bold text-slate-900">₹{order.totalAmount.toLocaleString('en-IN')}</span>
+                              <span className="text-base font-black" style={{ color: 'var(--color-neu-text)' }}>₹{order.totalAmount.toLocaleString('en-IN')}</span>
                             </div>
-                            <p className="text-xs text-slate-400">{order.items.length} item{order.items.length !== 1 ? 's' : ''}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider opacity-40" style={{ color: 'var(--color-neu-text)' }}>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</p>
                           </div>
                         </div>
                       );
@@ -271,8 +275,8 @@ const UserDashboard = () => {
 
             {/* ── PROFILE ── */}
             {activeTab === 'profile' && (
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <h2 className="text-lg font-bold text-slate-900 mb-6">Profile Information</h2>
+              <div className="neu-flat p-6">
+                <h2 className="text-xl font-black uppercase tracking-tighter mb-6" style={{ color: 'var(--color-neu-text)' }}>Profile Information</h2>
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();
@@ -297,36 +301,39 @@ const UserDashboard = () => {
                   }}
                   className="max-w-lg space-y-5"
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Full Name</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Full Name</label>
                       <input
                         name="name"
                         defaultValue={userData?.name || ''}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none transition-all"
+                        className="w-full neu-input rounded-xl px-4 py-3 text-sm font-bold outline-none"
+                        style={{ color: 'var(--color-neu-text)' }}
                         required
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Email Address</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Email Address</label>
                       <input
                         name="email"
                         type="email"
                         defaultValue={userData?.email || ''}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 outline-none transition-all"
+                        className="w-full neu-input rounded-xl px-4 py-3 text-sm font-bold outline-none"
+                        style={{ color: 'var(--color-neu-text)' }}
                         required
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Phone Number</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1.5 block" style={{ color: 'var(--color-neu-text)' }}>Phone Number</label>
                       <input
                         value={currentUser?.phoneNumber || ''}
-                        className="w-full px-4 py-3 bg-slate-100 border border-slate-100 rounded-xl text-sm font-medium text-slate-400 cursor-not-allowed"
+                        className="w-full neu-pressed rounded-xl px-4 py-3 text-sm font-bold opacity-50 cursor-not-allowed"
+                        style={{ color: 'var(--color-neu-text)' }}
                         readOnly
                       />
                     </div>
                   </div>
-                  <button type="submit" className="px-8 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md shadow-orange-100" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
+                  <button type="submit" className="px-10 py-3 neu-button-accent font-black uppercase text-xs tracking-widest">
                     Save Changes
                   </button>
                 </form>
@@ -335,13 +342,14 @@ const UserDashboard = () => {
 
             {/* ── ADDRESSES ── */}
             {activeTab === 'addresses' && (
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-bold text-slate-900">Saved Addresses</h2>
+              <div className="neu-flat p-6">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Saved Addresses</h2>
                   {!isEditingAddress && (
                     <button
                       onClick={() => setIsEditingAddress({})}
-                      className="flex items-center gap-1.5 text-sm font-semibold text-orange-600 hover:text-orange-700"
+                      className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest transition-opacity hover:opacity-70"
+                      style={{ color: 'var(--color-neu-accent)' }}
                     >
                       <Plus size={15} /> Add Address
                     </button>
@@ -349,38 +357,38 @@ const UserDashboard = () => {
                 </div>
 
                 {isEditingAddress ? (
-                  <div className="bg-slate-50 rounded-xl border border-slate-100 p-5">
-                    <div className="flex items-center justify-between mb-5">
-                      <h3 className="text-sm font-bold text-slate-800">{isEditingAddress._id ? 'Edit Address' : 'New Address'}</h3>
-                      <button onClick={() => setIsEditingAddress(null)} className="text-sm text-rose-500 font-semibold">Cancel</button>
+                  <div className="neu-pressed p-6 mb-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-xs font-black uppercase tracking-widest opacity-60" style={{ color: 'var(--color-neu-text)' }}>{isEditingAddress._id ? 'Edit Address' : 'New Address'}</h3>
+                      <button onClick={() => setIsEditingAddress(null)} className="text-xs font-black uppercase tracking-widest text-rose-500">Cancel</button>
                     </div>
                     <AddressForm initialData={isEditingAddress._id ? isEditingAddress : null} onSave={handleAddressSave} />
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 gap-4">
                     {userData?.addresses?.map(addr => (
-                      <div key={addr._id} className="flex items-start justify-between p-5 bg-slate-50 rounded-xl border border-slate-100 hover:border-orange-200 transition-all group">
+                      <div key={addr._id} className="neu-button p-6 flex items-start justify-between group hover:neu-pressed transition-all">
                         <div>
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-md uppercase">{addr.type || 'Home'}</span>
-                            {addr.isDefault && <span className="text-[10px] font-bold text-emerald-600">Default</span>}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[9px] font-black uppercase tracking-widest neu-pressed px-2.5 py-1 rounded-md" style={{ color: 'var(--color-neu-text)', opacity: 0.6 }}>{addr.type || 'Home'}</span>
+                            {addr.isDefault && <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-accent)' }}>Default</span>}
                           </div>
-                          <p className="text-sm font-bold text-slate-900">{addr.name}</p>
-                          <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                          <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{addr.name}</p>
+                          <p className="text-xs font-medium mt-2 leading-relaxed opacity-60" style={{ color: 'var(--color-neu-text)' }}>
                             {addr.houseNo}, {addr.area}, {addr.city}, {addr.state} — {addr.pincode}
                           </p>
-                          <p className="text-sm text-slate-700 font-medium mt-1">{addr.mobile}</p>
+                          <p className="text-xs font-black mt-2 opacity-80" style={{ color: 'var(--color-neu-text)' }}>{addr.mobile}</p>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => setIsEditingAddress(addr)} className="text-xs text-orange-600 font-semibold px-3 py-1.5 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">Edit</button>
-                          <button onClick={() => handleDeleteAddress(addr._id)} className="text-xs text-rose-500 font-semibold px-3 py-1.5 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors">Delete</button>
+                        <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => setIsEditingAddress(addr)} className="text-[9px] font-black uppercase tracking-widest px-3 py-2 neu-pressed transition-all hover:opacity-70" style={{ color: 'var(--color-neu-accent)' }}>Edit</button>
+                          <button onClick={() => handleDeleteAddress(addr._id)} className="text-[9px] font-black uppercase tracking-widest px-3 py-2 neu-pressed transition-all hover:text-rose-500">Delete</button>
                         </div>
                       </div>
                     ))}
                     {(!userData?.addresses || userData.addresses.length === 0) && (
-                      <div className="text-center py-12 text-slate-300">
-                        <MapPin size={28} className="mx-auto mb-3" />
-                        <p className="text-sm font-medium">No addresses saved yet.</p>
+                      <div className="text-center py-16 neu-pressed border-dashed opacity-40">
+                        <MapPin size={32} className="mx-auto mb-3" style={{ color: 'var(--color-neu-text)' }} />
+                        <p className="text-sm font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-text)' }}>No addresses saved yet.</p>
                       </div>
                     )}
                   </div>
@@ -391,26 +399,26 @@ const UserDashboard = () => {
             {/* ── CUSTOM DESIGNS ── */}
             {activeTab === 'custom' && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-slate-900">Custom Studio Designs</h2>
+                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Custom Designs</h2>
                 {customDesigns.length === 0 ? (
-                  <div className="bg-white rounded-2xl border border-slate-100 p-10 text-center">
-                    <Layout size={28} className="text-slate-200 mx-auto mb-3" />
-                    <p className="text-sm text-slate-400">No custom designs in your history.</p>
+                  <div className="neu-flat p-12 text-center">
+                    <Layout size={32} className="opacity-20 mx-auto mb-4" style={{ color: 'var(--color-neu-text)' }} />
+                    <p className="text-sm font-medium opacity-60" style={{ color: 'var(--color-neu-text)' }}>No custom designs found.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {customDesigns.map(design => (
-                      <div key={design._id} className="bg-white rounded-2xl border border-slate-100 p-5 flex gap-4 hover:shadow-sm transition-shadow">
-                        <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 border border-slate-100">
+                      <div key={design._id} className="neu-button p-5 flex gap-5 hover:neu-pressed transition-all">
+                        <div className="w-20 h-24 neu-pressed overflow-hidden flex-shrink-0 flex items-center justify-center">
                           <img loading="lazy" src={design.designImage} alt="Design" className="w-full h-full object-contain" />
                         </div>
                         <div>
-                          <span className="text-[10px] font-bold text-orange-500 uppercase tracking-wide">#{design._id.slice(-6).toUpperCase()}</span>
-                          <h4 className="text-sm font-bold text-slate-900 mt-1">{design.productCategory}</h4>
-                          <p className="text-xs text-slate-400 mt-1">{design.quantity} units</p>
-                          <span className={`inline-block mt-2 text-[10px] font-semibold px-2 py-1 rounded-lg ${
-                            design.status === 'Approved' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-                          }`}>
+                          <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>#{design._id.slice(-6).toUpperCase()}</span>
+                          <h4 className="text-sm font-black uppercase mt-1 leading-tight" style={{ color: 'var(--color-neu-text)' }}>{design.productCategory}</h4>
+                          <p className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-50" style={{ color: 'var(--color-neu-text)' }}>{design.quantity} units</p>
+                          <span className={`inline-block mt-3 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${
+                            design.status === 'Approved' ? 'bg-emerald-50 text-emerald-700' : 'neu-pressed opacity-70'
+                          }`} style={design.status !== 'Approved' ? { color: 'var(--color-neu-text)' } : {}}>
                             {design.status}
                           </span>
                         </div>
@@ -424,28 +432,28 @@ const UserDashboard = () => {
             {/* ── WHOLESALE ── */}
             {activeTab === 'wholesale' && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-slate-900">Wholesale Orders</h2>
+                <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Wholesale Orders</h2>
                 {orders.filter(o => o.orderType === 'Bulk').map(order => (
-                  <div key={order._id} className="bg-white rounded-2xl border border-orange-100 p-6">
-                    <div className="flex items-center justify-between mb-4">
+                  <div key={order._id} className="neu-flat p-6">
+                    <div className="flex items-center justify-between mb-5">
                       <div>
-                        <p className="text-xs text-orange-500 font-semibold mb-1">Bulk Order</p>
-                        <h3 className="text-base font-bold text-slate-900">#{order._id.slice(-10).toUpperCase()}</h3>
+                        <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1" style={{ color: 'var(--color-neu-accent)' }}>Bulk Order</p>
+                        <h3 className="text-base font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>#{order._id.slice(-10).toUpperCase()}</h3>
                       </div>
-                      <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">{order.orderStatus}</span>
+                      <span className="px-3 py-1.5 neu-button-accent text-[10px] font-black uppercase tracking-widest">{order.orderStatus}</span>
                     </div>
-                    <div className="space-y-2 mb-4">
+                    <div className="space-y-3 mb-6">
                       {order.items.map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 bg-slate-50 rounded-xl p-3">
-                          <img loading="lazy" src={item.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                        <div key={i} className="flex items-center gap-4 neu-pressed p-4 rounded-xl">
+                          <img loading="lazy" src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
                           <div>
-                            <p className="text-sm font-semibold text-slate-900">{item.name}</p>
-                            <p className="text-xs text-slate-400">{item.quantity} units</p>
+                            <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider opacity-50" style={{ color: 'var(--color-neu-text)' }}>{item.quantity} units</p>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="w-full py-3 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition-all">
+                    <button onClick={() => navigate(`/track-order?id=${order._id}`)} className="w-full py-3.5 neu-button font-black uppercase text-xs tracking-widest transition-all hover:neu-pressed" style={{ color: 'var(--color-neu-text)' }}>
                       Track Order
                     </button>
                   </div>
@@ -456,18 +464,17 @@ const UserDashboard = () => {
             {/* ── GIFT CARDS ── */}
             {activeTab === 'giftcards' && (
               <div className="space-y-6">
-                <h2 className="text-lg font-bold text-slate-900">Gift Cards</h2>
 
-                <div className="bg-slate-900 rounded-2xl p-6 relative overflow-hidden">
-                  <div className="absolute -top-8 -right-8 w-40 h-40 bg-orange-500/10 blur-2xl rounded-full" />
+                <div className="neu-flat p-8 relative overflow-hidden">
+                  <div className="absolute -top-10 -right-10 w-48 h-48 bg-[var(--color-neu-accent)] opacity-5 blur-3xl rounded-full" />
                   <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
-                        <Gift size={20} className="text-white" />
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="w-12 h-12 rounded-xl neu-button-accent flex items-center justify-center">
+                        <Gift size={22} className="text-white" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-white">Redeem a Gift Card</h3>
-                        <p className="text-xs text-slate-400">Enter your code below</p>
+                        <h3 className="text-sm font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-text)' }}>Redeem Gift Card</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-1 opacity-50" style={{ color: 'var(--color-neu-text)' }}>Enter your unique code</p>
                       </div>
                     </div>
                     <form
@@ -481,15 +488,16 @@ const UserDashboard = () => {
                         );
                         e.target.reset();
                       }}
-                      className="flex flex-col sm:flex-row gap-3"
+                      className="flex flex-col sm:flex-row gap-4"
                     >
                       <input
                         name="giftCode"
                         placeholder="e.g. AGNEYA-XXXX-XXXX"
-                        className="flex-1 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="flex-1 neu-input rounded-xl px-5 py-4 text-xs font-bold outline-none"
+                        style={{ color: 'var(--color-neu-text)' }}
                         required
                       />
-                      <button type="submit" className="px-6 py-3 bg-white text-slate-900 rounded-xl text-sm font-semibold hover:bg-orange-50 transition-all">
+                      <button type="submit" className="px-8 py-4 neu-button-accent font-black uppercase text-xs tracking-widest active:scale-[0.98]">
                         Redeem
                       </button>
                     </form>
@@ -501,16 +509,16 @@ const UserDashboard = () => {
                     { label: 'Active Balance', value: '₹0.00' },
                     { label: 'Total Redeemed', value: '₹0.00' }
                   ].map(({ label, value }) => (
-                    <div key={label} className="bg-white rounded-2xl border border-slate-100 p-5">
-                      <p className="text-xs text-slate-400 font-medium mb-1">{label}</p>
-                      <p className="text-2xl font-black text-slate-900">{value}</p>
+                    <div key={label} className="neu-button p-6 group hover:neu-pressed transition-all">
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2" style={{ color: 'var(--color-neu-text)' }}>{label}</p>
+                      <p className="text-2xl font-black tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{value}</p>
                     </div>
                   ))}
                 </div>
 
-                <div className="bg-white rounded-2xl border border-slate-100 p-8 flex flex-col items-center gap-3 border-dashed">
-                  <Clock size={24} className="text-slate-200" />
-                  <p className="text-sm text-slate-400">No redemption history.</p>
+                <div className="neu-pressed p-10 flex flex-col items-center gap-4 border-dashed border-[var(--color-neu-dark)]">
+                  <Clock size={28} className="opacity-20" style={{ color: 'var(--color-neu-text)' }} />
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-30" style={{ color: 'var(--color-neu-text)' }}>No transaction history found</p>
                 </div>
               </div>
             )}

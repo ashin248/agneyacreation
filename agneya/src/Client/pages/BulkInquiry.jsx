@@ -48,21 +48,20 @@ const BulkInquiry = () => {
 
   if (status === 'success') {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-3xl p-10 md:p-14 text-center shadow-sm border border-slate-100 max-w-md w-full">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle size={32} className="text-emerald-600" />
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="neu-flat p-10 md:p-14 text-center max-w-md w-full">
+          <div className="w-20 h-20 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-10 shadow-[0_10px_30px_rgba(16,185,129,0.3)]">
+            <CheckCircle size={32} className="text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">Inquiry Submitted!</h2>
-          <p className="text-slate-500 text-sm leading-relaxed mb-8">
-            Thank you for your interest. Our team will review your inquiry and get back to you within 12–24 hours.
+          <h2 className="text-2xl font-black uppercase tracking-tighter mb-4" style={{ color: 'var(--color-neu-text)' }}>Inquiry Received</h2>
+          <p className="text-[10px] font-bold uppercase tracking-widest leading-loose mb-10 opacity-50" style={{ color: 'var(--color-neu-text)' }}>
+            Thank you for your interest. Our enterprise team will review your requirements and reach out within 12–24 hours.
           </p>
           <button
             onClick={() => setStatus('idle')}
-            className="w-full py-3.5 text-white rounded-2xl font-semibold text-sm hover:opacity-90 transition-all shadow-lg shadow-orange-100"
-            style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+            className="w-full py-5 neu-button-accent font-black uppercase text-xs tracking-[0.2em] active:scale-[0.98]"
           >
-            Submit Another Inquiry
+            Submit Another Request
           </button>
         </div>
       </div>
@@ -70,18 +69,18 @@ const BulkInquiry = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         {/* ── HEADER ── */}
-        <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-4">
-            <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-            Enterprise & Bulk Orders
+        <div className="text-center mb-16">
+          <span className="inline-flex items-center gap-3 neu-pressed text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full mb-6" style={{ color: 'var(--color-neu-accent)' }}>
+            <span className="w-2 h-2 bg-[var(--color-neu-accent)] rounded-full animate-pulse shadow-[0_0_8px_var(--color-neu-accent)]" />
+            Enterprise Solutions
           </span>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Bulk Procurement</h1>
-          <p className="text-slate-500 text-base max-w-xl mx-auto">
-            Ordering 10+ units for your business, event, or team? Fill out the form and we'll tailor a quote for you.
+          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4" style={{ color: 'var(--color-neu-text)' }}>Bulk Procurement</h1>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] max-w-xl mx-auto opacity-40 leading-relaxed" style={{ color: 'var(--color-neu-text)' }}>
+            Ordering 10+ units for your team or event? Fill out the brief and we'll engineer a tailored quote for you.
           </p>
         </div>
 
@@ -90,40 +89,40 @@ const BulkInquiry = () => {
           {/* ── LEFT SIDEBAR ── */}
           <div className="lg:col-span-4 space-y-5">
             {/* Benefits Card */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
-              <h3 className="text-sm font-bold text-slate-900">Why order in bulk?</h3>
+            <div className="neu-flat p-8 space-y-8">
+              <h3 className="text-xs font-black uppercase tracking-widest opacity-60" style={{ color: 'var(--color-neu-text)' }}>Why choose us?</h3>
               {BENEFITS.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="flex gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-orange-600" />
+                <div key={title} className="flex gap-5">
+                  <div className="w-10 h-10 rounded-xl neu-button flex items-center justify-center flex-shrink-0" style={{ color: 'var(--color-neu-accent)' }}>
+                    <Icon size={18} />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-800">{title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{desc}</p>
+                    <p className="text-xs font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{title}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mt-1.5 opacity-40 leading-relaxed" style={{ color: 'var(--color-neu-text)' }}>{desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Contact Card */}
-            <div className="bg-slate-900 rounded-2xl p-6 text-white">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock size={14} className="text-orange-400" />
-                <span className="text-xs font-semibold text-slate-400">Response time</span>
+            <div className="neu-flat p-8 bg-[var(--color-neu-dark)] border-none">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock size={14} style={{ color: 'var(--color-neu-accent)' }} />
+                <span className="text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>Direct Line</span>
               </div>
-              <p className="text-lg font-bold mb-4">12–24 Hours</p>
-              <div className="space-y-3 pt-4 border-t border-white/10">
-                <a href="mailto:corporate@agneya.com" className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
-                    <Mail size={14} />
+              <p className="text-xl font-black uppercase tracking-tighter mb-6" style={{ color: 'var(--color-neu-text)' }}>12–24h Support</p>
+              <div className="space-y-4 pt-6 border-t border-[var(--color-neu-dark)]" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                <a href="mailto:corporate@agneya.com" className="flex items-center gap-4 group">
+                  <div className="w-10 h-10 rounded-xl neu-button flex items-center justify-center group-hover:neu-pressed transition-all">
+                    <Mail size={16} style={{ color: 'var(--color-neu-text)' }} />
                   </div>
-                  <span className="text-sm text-slate-300 group-hover:text-white transition-colors">corporate@agneya.com</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-neu-text)' }}>corporate@agneya.com</span>
                 </a>
-                <a href="tel:+919999999999" className="flex items-center gap-3 group">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-orange-600 transition-colors">
-                    <Phone size={14} />
+                <a href="tel:+919999999999" className="flex items-center gap-4 group">
+                  <div className="w-10 h-10 rounded-xl neu-button flex items-center justify-center group-hover:neu-pressed transition-all">
+                    <Phone size={16} style={{ color: 'var(--color-neu-text)' }} />
                   </div>
-                  <span className="text-sm text-slate-300 group-hover:text-white transition-colors">+91 99999 99999</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-neu-text)' }}>+91 99999 99999</span>
                 </a>
               </div>
             </div>
@@ -131,10 +130,10 @@ const BulkInquiry = () => {
 
           {/* ── FORM ── */}
           <div className="lg:col-span-8">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+            <div className="neu-flat p-8 md:p-10">
               {status === 'error' && (
-                <div className="mb-6 flex items-center gap-3 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-medium">
-                  <Shield size={16} className="flex-shrink-0" />
+                <div className="mb-8 flex items-center gap-4 neu-pressed p-5 text-rose-500 text-xs font-black uppercase tracking-widest">
+                  <Shield size={18} className="flex-shrink-0" />
                   {errorMsg}
                 </div>
               )}
@@ -143,11 +142,11 @@ const BulkInquiry = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {FIELDS.map(({ name, label, type, icon: Icon, placeholder, required, min }) => (
                     <div key={name}>
-                      <label className="text-xs font-semibold text-slate-600 mb-1.5 block">
-                        {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2 block" style={{ color: 'var(--color-neu-text)' }}>
+                        {label}{required && <span className="text-[var(--color-neu-accent)] ml-1">*</span>}
                       </label>
                       <div className="relative">
-                        {Icon && <Icon size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />}
+                        {Icon && <Icon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30" style={{ color: 'var(--color-neu-text)' }} />}
                         <input
                           type={type}
                           name={name}
@@ -156,7 +155,8 @@ const BulkInquiry = () => {
                           required={required}
                           min={min}
                           placeholder={placeholder}
-                          className={`w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all`}
+                          className={`w-full ${Icon ? 'pl-12' : 'pl-5'} pr-5 py-4 neu-input rounded-xl text-xs font-black outline-none transition-all`}
+                          style={{ color: 'var(--color-neu-text)' }}
                         />
                       </div>
                     </div>
@@ -164,40 +164,40 @@ const BulkInquiry = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-600 mb-1.5 block">
-                    Message / Requirements<span className="text-red-400 ml-0.5">*</span>
+                  <label className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-2 block" style={{ color: 'var(--color-neu-text)' }}>
+                    Message / Requirements<span className="text-[var(--color-neu-accent)] ml-1">*</span>
                   </label>
                   <div className="relative">
-                    <MessageSquare size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+                    <MessageSquare size={16} className="absolute left-4 top-5 opacity-30" style={{ color: 'var(--color-neu-text)' }} />
                     <textarea
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      rows={4}
-                      placeholder="Describe your requirements, delivery timelines, customisation needs…"
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all resize-none"
+                      rows={5}
+                      placeholder="Describe your project, delivery timelines, and customisation needs…"
+                      className="w-full pl-12 pr-5 py-4 neu-input rounded-xl text-xs font-black outline-none transition-all resize-none"
+                      style={{ color: 'var(--color-neu-text)' }}
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <button
                     type="submit"
                     disabled={status === 'submitting'}
-                    className="flex-1 py-4 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md shadow-orange-100 active:scale-[0.98] disabled:opacity-60"
-                    style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+                    className="flex-1 py-5 neu-button-accent font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-60"
                   >
                     {status === 'submitting' ? (
-                      <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>
+                      <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>
                     ) : (
-                      <><Send size={15} /> Submit Inquiry</>
+                      <><Send size={18} /> Submit Inquiry</>
                     )}
                   </button>
                 </div>
 
-                <p className="text-[11px] text-slate-400 text-center">
-                  By submitting, you agree to be contacted by our team regarding your inquiry.
+                <p className="text-[9px] font-black uppercase tracking-widest opacity-20 text-center">
+                  Protected by secure enterprise encryption
                 </p>
               </form>
             </div>

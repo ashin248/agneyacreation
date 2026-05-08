@@ -249,7 +249,8 @@ const Navbar = () => {
           </Link>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500"
+            className="w-10 h-10 flex items-center justify-center neu-button"
+            style={{ color: 'var(--color-neu-text)' }}
           >
             <X size={18} />
           </button>
@@ -268,10 +269,10 @@ const Navbar = () => {
               key={path}
               to={path}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-orange-50 transition-all group"
+              className="flex items-center gap-4 px-4 py-4 neu-button transition-all group"
             >
-              <div className="w-10 h-10 rounded-xl bg-orange-50 group-hover:bg-orange-100 flex items-center justify-center text-orange-400 group-hover:text-orange-600 transition-colors flex-shrink-0 relative">
-                <Icon size={18} />
+              <div className="w-10 h-10 rounded-xl neu-pressed flex items-center justify-center flex-shrink-0 relative">
+                <Icon size={18} style={{ color: 'var(--color-neu-accent)' }} />
                 {badge > 0 && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 text-white text-[9px] font-bold rounded-full flex items-center justify-center" style={{ background: '#F7941D' }}>
                     {badge}
@@ -279,8 +280,8 @@ const Navbar = () => {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-slate-800 leading-tight">{name}</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">{desc}</p>
+                <p className="text-[13px] font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{name}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-0.5" style={{ color: 'var(--color-neu-text)' }}>{desc}</p>
               </div>
             </Link>
           ))}

@@ -46,7 +46,7 @@ const CustomMobileCases = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
       <SEO
         title="Custom Mobile Cases | Agneya Design"
         description="Design your own custom mobile cover. Select your brand and model to start printing."
@@ -64,12 +64,13 @@ const CustomMobileCases = () => {
         <div className="mb-7">
           <button
             onClick={() => navigate('/shop')}
-            className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors mb-5"
+            className="flex items-center gap-2 text-sm font-medium transition-colors mb-5 opacity-70 hover:opacity-100"
+            style={{ color: 'var(--color-neu-text)' }}
           >
             <ArrowLeft size={16} /> Back to Shop
           </button>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Design Your Mobile Case</h1>
-          <p className="text-sm text-slate-500 max-w-xl">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase" style={{ color: 'var(--color-neu-text)' }}>Design Your Mobile Case</h1>
+          <p className="text-sm max-w-xl font-medium mt-2" style={{ color: 'var(--color-neu-text)', opacity: 0.7 }}>
             Select your brand and model below, then upload or create a design in our studio. We use precise vector masking so your design fits perfectly.
           </p>
         </div>
@@ -78,17 +79,17 @@ const CustomMobileCases = () => {
 
           {/* ── BRAND SIDEBAR ── */}
           <aside className="w-full lg:w-56 flex-shrink-0">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sticky top-24">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <div className="neu-flat p-4 sticky top-24">
+              <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: 'var(--color-neu-text)', opacity: 0.5 }}>
                 <Grid3X3 size={12} /> Brand
               </p>
               <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible no-scrollbar pb-1 lg:pb-0">
                 <button
                   onClick={() => setSelectedBrand(null)}
                   className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
-                    !selectedBrand ? 'text-white shadow-lg' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    !selectedBrand ? 'neu-button-accent' : 'neu-button'
                   }`}
-                  style={!selectedBrand ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}
+                  style={!selectedBrand ? {} : { color: 'var(--color-neu-text)' }}
                 >
                   All Devices
                 </button>
@@ -97,9 +98,9 @@ const CustomMobileCases = () => {
                     key={brand.id}
                     onClick={() => setSelectedBrand(brand.id)}
                     className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold text-left transition-all whitespace-nowrap ${
-                      selectedBrand === brand.id ? 'text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-orange-200 hover:text-orange-600'
+                      selectedBrand === brand.id ? 'neu-button-accent' : 'neu-button'
                     }`}
-                    style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : {}}
+                    style={selectedBrand === brand.id ? { backgroundColor: brand.theme, borderColor: brand.theme } : { color: 'var(--color-neu-text)' }}
                   >
                     {brand.name}
                   </button>
@@ -112,44 +113,45 @@ const CustomMobileCases = () => {
           <div className="flex-1 min-w-0">
             {/* Search */}
             <div className="relative mb-5">
-              <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-neu-text)', opacity: 0.4 }} />
               <input
                 type="text"
                 placeholder="Search for your model…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full h-12 bg-white border border-slate-200 rounded-xl pl-10 pr-4 text-sm font-medium text-slate-800 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-all shadow-sm"
+                className="w-full h-12 neu-input rounded-xl pl-10 pr-4 text-sm font-medium outline-none transition-all"
+                style={{ color: 'var(--color-neu-text)' }}
               />
             </div>
 
             {filteredModels.length === 0 ? (
-              <div className="py-20 text-center bg-white rounded-2xl border border-dashed border-slate-200">
-                <Smartphone size={36} className="mx-auto text-slate-200 mb-4" />
-                <p className="text-sm font-medium text-slate-400">No matching devices found.</p>
-                <p className="text-xs text-slate-400 mt-1">Try a different brand or model name.</p>
+              <div className="py-24 text-center neu-pressed border-dashed border-[var(--color-neu-dark)]">
+                <Smartphone size={36} className="mx-auto mb-5 opacity-20" style={{ color: 'var(--color-neu-text)' }} strokeWidth={1} />
+                <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-text)', opacity: 0.6 }}>No matching gear found</p>
+                <p className="text-[10px] font-bold mt-2 uppercase tracking-widest opacity-30" style={{ color: 'var(--color-neu-text)' }}>Try a different brand or search term</p>
               </div>
             ) : (
               <>
-                <p className="text-xs text-slate-400 mb-4 font-medium">{filteredModels.length} models available</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 opacity-30" style={{ color: 'var(--color-neu-text)' }}>{filteredModels.length} variations engineered</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredModels.map(model => (
                     <button
                       key={model.id}
                       onClick={() => handleCustomize(model)}
-                      className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-orange-200 hover:-translate-y-0.5 transition-all group text-center cursor-pointer"
+                      className="neu-button p-6 group text-center cursor-pointer transition-all hover:neu-pressed"
                     >
-                      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-orange-50 transition-colors">
-                        <Smartphone size={20} className="text-slate-400 group-hover:text-orange-500 transition-colors" />
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 neu-pressed">
+                        <Smartphone size={20} className="opacity-40 group-hover:opacity-100 transition-colors" style={{ color: 'var(--color-neu-accent)' }} />
                       </div>
-                      <h4 className="text-xs font-bold text-slate-900 leading-tight mb-2 group-hover:text-orange-600 transition-colors">
+                      <h4 className="text-[10px] font-black uppercase tracking-tight leading-tight mb-3 transition-colors" style={{ color: 'var(--color-neu-text)' }}>
                         {model.name}
                       </h4>
-                      <div className="flex items-center justify-center gap-2">
-                        <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">Soft Case</span>
-                        <span className="text-xs font-bold text-orange-600">₹{model.price}</span>
+                      <div className="flex items-center justify-center gap-3">
+                        <span className="text-[9px] font-black uppercase tracking-widest neu-pressed px-2.5 py-1 rounded-md" style={{ color: 'var(--color-neu-text)', opacity: 0.5 }}>Standard</span>
+                        <span className="text-xs font-black" style={{ color: 'var(--color-neu-accent)' }}>₹{model.price}</span>
                       </div>
-                      <span className="mt-3 inline-block text-[10px] font-semibold text-white px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
-                        Design Now
+                      <span className="mt-5 w-full inline-block text-[9px] font-black uppercase tracking-[0.2em] neu-button-accent text-white py-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+                        Design →
                       </span>
                     </button>
                   ))}

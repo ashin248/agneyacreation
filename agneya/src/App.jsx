@@ -37,9 +37,12 @@ const Cart = lazy(() => import('./Client/pages/Cart'));
 
 // Loader for Suspense
 const PageLoader = () => (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-4">
-    <div className="w-12 h-12 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin"></div>
-    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 animate-pulse">Loading Application...</p>
+  <div className="flex flex-col items-center justify-center min-h-screen gap-8" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+    <div className="relative w-20 h-20">
+      <div className="absolute inset-0 rounded-3xl neu-flat animate-pulse"></div>
+      <div className="absolute inset-4 rounded-full border-4 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] animate-spin"></div>
+    </div>
+    <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 animate-pulse" style={{ color: 'var(--color-neu-text)' }}>Initializing Experience</p>
   </div>
 );
 

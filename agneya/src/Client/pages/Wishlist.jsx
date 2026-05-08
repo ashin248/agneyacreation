@@ -90,38 +90,39 @@ const Wishlist = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
-        <div className="w-10 h-10 border-4 border-orange-100 border-t-orange-500 rounded-full animate-spin" />
-        <p className="text-sm font-medium text-slate-400">Loading your wishlist…</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="w-10 h-10 border-4 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] rounded-full animate-spin" />
+        <p className="text-sm font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>Syncing Wishlist…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pb-16">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* ── HEADER ── */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-6 mb-12">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all text-slate-500"
+            className="w-12 h-12 flex items-center justify-center neu-button hover:neu-pressed transition-all"
+            style={{ color: 'var(--color-neu-text)' }}
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <Heart size={22} className="text-rose-500 fill-rose-500" />
-              Wishlist
+            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter flex items-center gap-3" style={{ color: 'var(--color-neu-text)' }}>
+              <Heart size={26} className="text-rose-500 fill-rose-500" />
+              My Wishlist
             </h1>
-            <p className="text-sm text-slate-400 mt-0.5">
-              {wishlistProducts.length} saved item{wishlistProducts.length !== 1 ? 's' : ''}
+            <p className="text-[10px] font-black uppercase tracking-widest mt-1 opacity-50" style={{ color: 'var(--color-neu-text)' }}>
+              {wishlistProducts.length} curated item{wishlistProducts.length !== 1 ? 's' : ''} saved
             </p>
           </div>
         </div>
 
         {wishlistProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {wishlistProducts.map(product => (
               <ProductCard
                 key={product._id}
@@ -136,22 +137,21 @@ const Wishlist = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-dashed border-slate-200 text-center gap-5">
-            <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center">
-              <Heart size={24} className="text-rose-300" />
+          <div className="flex flex-col items-center justify-center py-24 neu-flat text-center gap-8">
+            <div className="w-20 h-20 neu-pressed rounded-full flex items-center justify-center">
+              <Heart size={32} className="opacity-20" style={{ color: 'var(--color-neu-text)' }} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800">Your wishlist is empty</h2>
-              <p className="text-sm text-slate-400 mt-1 max-w-xs mx-auto">
-                Browse the store and tap the heart icon to save items here.
+              <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Your wishlist is empty</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest mt-2 opacity-40 max-w-xs mx-auto" style={{ color: 'var(--color-neu-text)' }}>
+                Discover premium cases and tap the heart icon to save them for later.
               </p>
             </div>
             <Link
               to="/shop"
-              className="flex items-center gap-2 px-6 py-3 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-md"
-              style={{ background: 'linear-gradient(135deg,#F7941D,#7B1760)' }}
+              className="flex items-center gap-3 px-8 py-4 neu-button-accent text-white text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
             >
-              <ShoppingBag size={15} /> Browse Products
+              <ShoppingBag size={18} /> Browse Collections
             </Link>
           </div>
         )}

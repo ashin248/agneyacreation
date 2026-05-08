@@ -5,7 +5,7 @@ import Footer from './Footer';
 
 const ClientLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
+    <div className="flex flex-col min-h-screen font-sans" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
       <Navbar />
       <main className="flex-grow">
         <Outlet />

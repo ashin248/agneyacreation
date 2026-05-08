@@ -89,19 +89,19 @@ const AddressForm = ({ onSave, initialData = null }) => {
   };
 
   return (
-    <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl max-w-2xl mx-auto animate-in slide-in-from-bottom-4 duration-500">
+    <div className="neu-flat p-8 max-w-2xl mx-auto animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
-          <MapPin className="text-orange-600 w-6 h-6" />
+        <div className="w-12 h-12 neu-pressed rounded-2xl flex items-center justify-center">
+          <MapPin className="w-6 h-6" style={{ color: 'var(--color-neu-accent)' }} />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Add New Address</h2>
-          <p className="text-gray-500 text-sm">Where should we deliver your order?</p>
+          <h2 className="text-xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Add New Address</h2>
+          <p className="text-sm font-medium opacity-50" style={{ color: 'var(--color-neu-text)' }}>Where should we deliver your order?</p>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl">
+        <div className="mb-6 p-4 neu-pressed border-rose-500/20 text-rose-500 text-xs font-bold uppercase tracking-widest rounded-xl">
           {error}
         </div>
       )}
@@ -109,55 +109,58 @@ const AddressForm = ({ onSave, initialData = null }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">Full Name</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>Full Name</label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" style={{ color: 'var(--color-neu-text)' }} />
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Receiver's name"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+                style={{ color: 'var(--color-neu-text)' }}
                 required
               />
             </div>
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>Email Address</label>
             <input
               type="email"
               name="email"
               value={formData.email || ""}
               onChange={handleChange}
               placeholder="For order tracking"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+              className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+              style={{ color: 'var(--color-neu-text)' }}
               required
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700 ml-1">Mobile Number</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>Mobile Number</label>
           <input
             type="tel"
             name="mobile"
             value={formData.mobile}
             onChange={handleChange}
             placeholder="10-digit number"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+            className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+            style={{ color: 'var(--color-neu-text)' }}
             required
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">Pincode</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>Pincode</label>
             <div className="relative">
               {pincodeLoading ? (
-                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-orange-600 animate-spin" />
+                <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 animate-spin" style={{ color: 'var(--color-neu-accent)' }} />
               ) : (
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" style={{ color: 'var(--color-neu-text)' }} />
               )}
               <input
                 type="text"
@@ -165,7 +168,8 @@ const AddressForm = ({ onSave, initialData = null }) => {
                 value={formData.pincode}
                 onChange={handleChange}
                 placeholder="6-digit Pincode"
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+                style={{ color: 'var(--color-neu-text)' }}
                 required
               />
             </div>
@@ -175,14 +179,15 @@ const AddressForm = ({ onSave, initialData = null }) => {
               type="button"
               onClick={useCurrentLocation}
               disabled={loading}
-              className="w-full h-[50px] bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-2xl transition-all flex items-center justify-center gap-2 border border-gray-200 group"
+              className="w-full h-[54px] neu-button font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 group"
+              style={{ color: 'var(--color-neu-text)' }}
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin text-orange-600" />
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: 'var(--color-neu-accent)' }} />
               ) : (
                 <>
-                  <MapPin className="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform" />
-                  Use Current Location
+                  <MapPin className="w-5 h-5 group-hover:scale-110 transition-transform" style={{ color: 'var(--color-neu-accent)' }} />
+                  Use My Location
                 </>
               )}
             </button>
@@ -190,84 +195,76 @@ const AddressForm = ({ onSave, initialData = null }) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700 ml-1">House No / Flat / Building Name</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>House No / Flat / Building Name</label>
           <input
             type="text"
             name="houseNo"
             value={formData.houseNo}
             onChange={handleChange}
             placeholder="e.g., Flat 101, Skyline Apartments"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+            className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+            style={{ color: 'var(--color-neu-text)' }}
             required
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-gray-700 ml-1">Area / Street / Sector</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>Area / Street / Sector</label>
           <input
             type="text"
             name="area"
             value={formData.area}
             onChange={handleChange}
             placeholder="e.g., MG Road, Sector 4"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+            className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+            style={{ color: 'var(--color-neu-text)' }}
             required
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">City / District</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>City / District</label>
             <input
               type="text"
               name="city"
               value={formData.city}
               onChange={handleChange}
-              placeholder="Auto-filled from pincode"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+              placeholder="Auto-filled"
+              className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+              style={{ color: 'var(--color-neu-text)' }}
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">State</label>
+            <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1" style={{ color: 'var(--color-neu-text)' }}>State</label>
             <input
               type="text"
               name="state"
               value={formData.state}
               onChange={handleChange}
               placeholder="State"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none transition-all"
+              className="w-full px-4 py-3.5 neu-input rounded-2xl text-sm font-bold outline-none"
+              style={{ color: 'var(--color-neu-text)' }}
               required
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 ml-1">Country</label>
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              placeholder="Country"
-              className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-2xl text-gray-400 cursor-not-allowed outline-none"
-              readOnly
             />
           </div>
         </div>
 
         <div className="space-y-4">
-          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Address Label</label>
+          <label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1" style={{ color: 'var(--color-neu-text)' }}>Address Label</label>
           <div className="flex gap-3">
             {["home", "work", "other"].map((type) => (
               <button
                 key={type}
                 type="button"
                 onClick={() => setFormData({ ...formData, type })}
-                className={`flex-1 py-3.5 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 border transition-all ${
+                className={`flex-1 py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                   formData.type === type
-                    ? "text-white shadow-lg shadow-orange-100"
-                    : "bg-white border-gray-100 text-gray-400 hover:border-gray-200"
+                    ? "neu-button-accent"
+                    : "neu-button opacity-60 hover:opacity-100"
                 }`}
-                style={formData.type === type ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)', borderColor: '#7B1760' } : {}}
+                style={formData.type === type ? {} : { color: 'var(--color-neu-text)' }}
               >
                 {type === "home" && <Home size={14} />}
                 {type === "work" && <Briefcase size={14} />}
@@ -280,8 +277,7 @@ const AddressForm = ({ onSave, initialData = null }) => {
 
         <button
           type="submit"
-          className="w-full py-5 text-white font-black text-xs uppercase tracking-[0.2em] rounded-3xl shadow-xl transition-all flex items-center justify-center gap-3 mt-6 hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}
+          className="w-full py-5 neu-button-accent font-black text-xs uppercase tracking-[0.2em] rounded-3xl transition-all flex items-center justify-center gap-3 mt-6"
         >
           Save & Use Address
         </button>

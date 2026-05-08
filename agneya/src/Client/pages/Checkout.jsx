@@ -198,23 +198,23 @@ const Checkout = () => {
   /* ── ORDER SUCCESS ── */
   if (orderSuccess) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-        <div className="bg-white rounded-3xl p-10 md:p-14 text-center shadow-sm border border-slate-100 max-w-md w-full">
-          <div className="relative w-20 h-20 mx-auto mb-6">
-            <div className="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-30" />
-            <div className="relative w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+        <div className="neu-flat p-10 md:p-14 text-center max-w-md w-full">
+          <div className="relative w-20 h-20 mx-auto mb-10">
+            <div className="absolute inset-0 bg-emerald-500 opacity-20 blur-xl rounded-full animate-pulse" />
+            <div className="relative w-20 h-20 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.3)]">
               <CheckCircle2 size={32} className="text-white" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">Order Confirmed!</h2>
-          <p className="text-sm text-slate-500 leading-relaxed mb-8">
-            Your order <span className="font-bold" style={{ color: '#F7941D' }}>#{orderId}</span> has been placed successfully. A confirmation will be sent to your phone.
+          <h2 className="text-2xl font-black uppercase tracking-tighter mb-4" style={{ color: 'var(--color-neu-text)' }}>Order Confirmed</h2>
+          <p className="text-[10px] font-bold uppercase tracking-widest leading-loose mb-10 opacity-50" style={{ color: 'var(--color-neu-text)' }}>
+            Your order <span className="font-black" style={{ color: 'var(--color-neu-accent)' }}>#{orderId}</span> has been placed. A confirmation message is on its way.
           </p>
-          <button onClick={() => navigate('/')} className="w-full py-4 text-white rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}>
-            <ShoppingBag size={16} /> Continue Shopping
+          <button onClick={() => navigate('/')} className="w-full py-5 neu-button-accent font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98]">
+            <ShoppingBag size={18} /> Continue Shopping
           </button>
-          <button onClick={() => navigate('/track-order')} className="w-full mt-3 py-3 text-sm font-semibold text-slate-500 hover:text-orange-600 transition-colors">
-            Track Your Order →
+          <button onClick={() => navigate('/track-order')} className="w-full mt-6 text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity" style={{ color: 'var(--color-neu-text)' }}>
+            Track Your Shipment →
           </button>
         </div>
       </div>
@@ -243,15 +243,14 @@ const Checkout = () => {
     (!needsGst || (gstDetails.companyName && gstDetails.gstNumber));
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-16">
+    <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
       <LoginModal isOpen={isLoginModalOpen} onClose={() => { setIsLoginModalOpen(false); navigate(-1); }} onLoginSuccess={() => setIsLoginModalOpen(false)} />
 
       {/* ── PROGRESS HEADER ── */}
-      <div className="sticky top-16 md:top-[70px] z-40 bg-white border-b border-slate-100 shadow-sm">
+      <div className="sticky top-16 md:top-[70px] z-40 bg-[var(--color-neu-bg)] border-b border-[var(--color-neu-dark)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 transition-colors">
+          <button onClick={() => navigate(-1)} className="w-10 h-10 neu-button flex items-center justify-center" style={{ color: 'var(--color-neu-text)' }}>
             <ChevronLeft size={18} />
-            <span className="text-sm font-medium hidden sm:inline">Back</span>
           </button>
           <div className="flex items-center gap-3">
             {[
@@ -260,15 +259,15 @@ const Checkout = () => {
               { n: 3, label: 'Done', dim: true }
             ].map(({ n, label, done, active, dim }) => (
               <React.Fragment key={n}>
-                {n > 1 && <div className="w-8 h-px bg-slate-200" />}
-                <div className={`flex items-center gap-2 ${dim ? 'opacity-30' : ''}`}>
-                  <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${done ? 'bg-emerald-500 text-white' : active ? 'text-white' : 'bg-slate-200 text-slate-500'}`} style={active ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}>{n}</span>
-                  <span className={`text-xs font-semibold hidden sm:inline ${active ? 'text-slate-900' : 'text-slate-400'}`}>{label}</span>
+                {n > 1 && <div className="w-6 h-px opacity-20" style={{ background: 'var(--color-neu-text)' }} />}
+                <div className={`flex items-center gap-2 ${dim ? 'opacity-20' : ''}`}>
+                  <span className={`w-8 h-8 rounded-full text-[11px] font-black flex items-center justify-center transition-all ${done ? 'bg-emerald-500 text-white' : active ? 'neu-button-accent' : 'neu-button'}`} style={active ? {} : { color: 'var(--color-neu-text)' }}>{n}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest hidden sm:inline ${active ? 'opacity-100' : 'opacity-40'}`} style={{ color: 'var(--color-neu-text)' }}>{label}</span>
                 </div>
               </React.Fragment>
             ))}
           </div>
-          <div className="w-16" />
+          <div className="w-10" />
         </div>
       </div>
 
@@ -278,22 +277,22 @@ const Checkout = () => {
           {/* ── LEFT: FORMS ── */}
           <div className="lg:col-span-7 space-y-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Checkout</h1>
-              <p className="text-sm text-slate-400 mt-1 flex items-center gap-1.5">
-                <Lock size={12} className="text-emerald-500" />
-                Secure checkout · {currentUser?.phoneNumber}
+              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Secure Checkout</h1>
+              <p className="text-sm font-medium mt-1 opacity-50 flex items-center gap-2" style={{ color: 'var(--color-neu-text)' }}>
+                <Lock size={12} style={{ color: 'var(--color-neu-accent)' }} />
+                End-to-End Encrypted · {currentUser?.phoneNumber}
               </p>
             </div>
 
             {/* Shipping */}
-            <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
-                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <MapPin size={16} className="text-orange-600" /> Delivery Address
+            <section className="neu-flat overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-neu-dark)]">
+                <h2 className="text-sm font-black uppercase tracking-tighter flex items-center gap-2" style={{ color: 'var(--color-neu-text)' }}>
+                  <MapPin size={16} style={{ color: 'var(--color-neu-accent)' }} /> Delivery Address
                 </h2>
                 {selectedAddress && !showAddressForm && (
-                  <button onClick={() => setShowAddressForm(true)} className="text-xs font-semibold text-orange-600 hover:underline">
-                    Change
+                  <button onClick={() => setShowAddressForm(true)} className="text-[10px] font-black uppercase tracking-widest transition-opacity hover:opacity-70" style={{ color: 'var(--color-neu-accent)' }}>
+                    Modify
                   </button>
                 )}
               </div>
@@ -305,21 +304,20 @@ const Checkout = () => {
                       <div
                         key={i}
                         onClick={() => setSelectedAddress(addr)}
-                        className={`relative p-4 rounded-xl border-2 cursor-pointer group transition-all ${selectedAddress === addr ? 'bg-orange-50/10' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
-                        style={selectedAddress === addr ? { borderImageSource: 'linear-gradient(135deg, #F7941D, #7B1760)', borderImageSlice: 1, borderStyle: 'solid', borderWidth: '2px' } : {}}
+                        className={`relative p-4 neu-button transition-all group ${selectedAddress === addr ? 'neu-pressed' : ''}`}
                       >
                         <div className="flex items-start justify-between mb-2">
-                          <span className="text-[10px] font-bold bg-white border border-slate-200 text-slate-500 px-2 py-0.5 rounded-md uppercase">{addr.type || 'Home'}</span>
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${selectedAddress === addr ? 'border-orange-600 bg-orange-600' : 'border-slate-300'}`}>
+                          <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-2 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{addr.type || 'Home'}</span>
+                          <div className={`w-5 h-5 rounded-full neu-pressed flex items-center justify-center flex-shrink-0 transition-all ${selectedAddress === addr ? 'bg-emerald-500 border-none' : ''}`}>
                             {selectedAddress === addr && <CheckCircle2 size={11} className="text-white" />}
                           </div>
                         </div>
-                        <p className="text-sm font-bold text-slate-900">{addr.name}</p>
-                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{addr.houseNo}, {addr.area}, {addr.city} — {addr.pincode}</p>
-                        <p className="text-xs text-slate-400 mt-1 font-medium">{addr.mobile}</p>
+                        <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>{addr.name}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mt-1 leading-relaxed" style={{ color: 'var(--color-neu-text)' }}>{addr.houseNo}, {addr.area}, {addr.city} — {addr.pincode}</p>
+                        <p className="text-[10px] font-black mt-2" style={{ color: 'var(--color-neu-accent)' }}>{addr.mobile}</p>
                         <button
                           onClick={e => handleDeleteAddress(e, addr._id)}
-                          className="absolute bottom-3 right-3 p-1.5 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
+                          className="absolute bottom-3 right-3 p-1.5 text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
                         >
                           <Trash2 size={13} />
                         </button>
@@ -327,10 +325,11 @@ const Checkout = () => {
                     ))}
                     <button
                       onClick={() => { setSelectedAddress(null); setShowAddressForm(true); }}
-                      className="p-4 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-orange-400 hover:text-orange-600 transition-all min-h-[120px]"
+                      className="p-4 neu-pressed border-dashed border-[var(--color-neu-dark)] flex flex-col items-center justify-center gap-2 opacity-40 hover:opacity-100 transition-all min-h-[120px]"
+                      style={{ color: 'var(--color-neu-text)' }}
                     >
                       <Plus size={18} />
-                      <span className="text-xs font-semibold">Add New Address</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">New Address</span>
                     </button>
                   </div>
                 ) : (
@@ -340,65 +339,63 @@ const Checkout = () => {
             </section>
 
             {/* Payment */}
-            <section className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-50">
-                <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <CreditCard size={16} className="text-orange-600" /> Payment Method
+            <section className="neu-flat overflow-hidden">
+              <div className="px-5 py-4 border-b border-[var(--color-neu-dark)]">
+                <h2 className="text-sm font-black uppercase tracking-tighter flex items-center gap-2" style={{ color: 'var(--color-neu-text)' }}>
+                  <CreditCard size={16} style={{ color: 'var(--color-neu-accent)' }} /> Payment Method
                 </h2>
               </div>
               <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div
                   onClick={() => setPaymentMethod('online')}
-                  className={`p-4 rounded-xl border-2 cursor-pointer flex items-center gap-4 transition-all ${paymentMethod === 'online' ? 'bg-orange-50/10' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
-                  style={paymentMethod === 'online' ? { borderImageSource: 'linear-gradient(135deg, #F7941D, #7B1760)', borderImageSlice: 1, borderStyle: 'solid', borderWidth: '2px' } : {}}
+                  className={`p-5 neu-button transition-all flex items-center gap-4 ${paymentMethod === 'online' ? 'neu-pressed' : ''}`}
                 >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${paymentMethod === 'online' ? 'text-white' : 'bg-slate-200 text-slate-400'}`} style={paymentMethod === 'online' ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${paymentMethod === 'online' ? 'neu-button-accent text-white' : 'neu-pressed opacity-40'}`} style={paymentMethod === 'online' ? {} : { color: 'var(--color-neu-text)' }}>
                     <ShieldCheck size={18} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-slate-900">Online Payment</p>
-                    <p className="text-[10px] text-slate-400">UPI, Cards, Wallets, NetBanking</p>
+                    <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>Online Payment</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>UPI, Cards, Wallets</p>
                   </div>
-                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${paymentMethod === 'online' ? 'border-orange-600 bg-orange-600' : 'border-slate-300'}`}>
+                  <div className={`w-5 h-5 rounded-full neu-pressed flex-shrink-0 flex items-center justify-center ${paymentMethod === 'online' ? 'bg-emerald-500' : ''}`}>
                     {paymentMethod === 'online' && <CheckCircle2 size={11} className="text-white" />}
                   </div>
                 </div>
-                <div className="p-4 rounded-xl border-2 border-slate-100 bg-slate-50 opacity-40 cursor-not-allowed flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0 text-slate-400">
+                <div className="p-5 neu-pressed opacity-20 cursor-not-allowed flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl neu-pressed flex items-center justify-center flex-shrink-0" style={{ color: 'var(--color-neu-text)' }}>
                     <Truck size={18} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-500">Cash on Delivery</p>
-                    <p className="text-[10px] text-slate-400">Currently unavailable</p>
+                    <p className="text-sm font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>Cash on Delivery</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--color-neu-text)' }}>Coming Soon</p>
                   </div>
                 </div>
               </div>
             </section>
 
             {/* GST */}
-            <section className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox" checked={needsGst}
-                  onChange={e => setNeedsGst(e.target.checked)}
-                  className="w-4 h-4 accent-orange-600 cursor-pointer rounded"
-                />
-                <span className="text-sm font-semibold text-slate-700">Request GST Invoice (optional)</span>
+            <section className="neu-flat p-5">
+              <label className="flex items-center gap-4 cursor-pointer group">
+                <div onClick={() => setNeedsGst(!needsGst)} className={`w-6 h-6 rounded-lg neu-pressed flex items-center justify-center transition-all ${needsGst ? 'bg-[var(--color-neu-accent)]' : 'opacity-40'}`}>
+                  {needsGst && <CheckCircle2 size={14} className="text-white" />}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--color-neu-text)' }}>Request Business GST Invoice</span>
               </label>
               {needsGst && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-50">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-[var(--color-neu-dark)]">
                   {[
                     { label: 'Company Name', key: 'companyName', placeholder: 'Legal entity name' },
-                    { label: 'GSTIN', key: 'gstNumber', placeholder: 'GSTIN (15 characters)' }
+                    { label: 'GSTIN', key: 'gstNumber', placeholder: '15-digit GSTIN' }
                   ].map(({ label, key, placeholder }) => (
                     <div key={key}>
-                      <label className="text-xs font-semibold text-slate-500 mb-1.5 block">{label}</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2 block" style={{ color: 'var(--color-neu-text)' }}>{label}</label>
                       <input
                         type="text"
                         value={gstDetails[key]}
                         onChange={e => setGstDetails(p => ({ ...p, [key]: e.target.value }))}
                         placeholder={placeholder}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-400 transition-all"
+                        className="w-full neu-input rounded-xl px-4 py-3 text-xs font-bold outline-none"
+                        style={{ color: 'var(--color-neu-text)' }}
                       />
                     </div>
                   ))}
@@ -409,29 +406,28 @@ const Checkout = () => {
 
           {/* ── RIGHT: SUMMARY ── */}
           <div className="lg:col-span-5">
-            <aside className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 sticky top-24 md:top-[130px]">
+            <aside className="neu-flat p-6 sticky top-24 md:top-[130px]">
               <h2 className="text-base font-bold text-slate-900 mb-5">Order Summary</h2>
 
-              {/* Items */}
-              <div className="space-y-3 max-h-64 overflow-y-auto mb-5 pr-1">
+              <div className="space-y-3 max-h-64 overflow-y-auto mb-6 pr-1">
                 {checkoutItems.map((item, idx) => (
-                  <div key={idx} className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="w-14 h-16 bg-white rounded-lg overflow-hidden border border-slate-100 flex-shrink-0">
+                  <div key={idx} className="flex gap-3 p-3 neu-pressed rounded-xl">
+                    <div className="w-14 h-16 neu-button rounded-lg overflow-hidden flex-shrink-0">
                       <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-slate-900 leading-tight truncate">{item.name}</p>
-                      <div className="flex gap-2 mt-1.5 flex-wrap">
+                      <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
+                      <div className="flex gap-2 mt-2 flex-wrap">
                         {item.selectedVariation?.size && (
-                          <span className="text-[10px] bg-white border border-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md font-medium">{item.selectedVariation.size}</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{item.selectedVariation.size}</span>
                         )}
-                        <span className="text-[10px] bg-white border border-slate-100 text-slate-500 px-1.5 py-0.5 rounded-md font-medium">Qty {item.quantity}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</span>
                         {item.itemType === 'Custom' && (
-                          <span className="text-[10px] bg-orange-50 border border-orange-100 text-orange-600 px-1.5 py-0.5 rounded-md font-semibold">Custom</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] neu-pressed px-1.5 py-0.5 rounded-md">Custom</span>
                         )}
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-slate-900 flex-shrink-0">
+                    <p className="text-sm font-black flex-shrink-0" style={{ color: 'var(--color-neu-text)' }}>
                       ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
                     </p>
                   </div>
@@ -439,24 +435,24 @@ const Checkout = () => {
               </div>
 
               {/* Totals */}
-              <div className="space-y-2.5 pt-4 border-t border-slate-100 mb-5">
-                <div className="flex justify-between text-sm text-slate-500">
+              <div className="space-y-3 pt-5 border-t border-[var(--color-neu-dark)] mb-8">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>
                   <span>Subtotal ({checkoutTotalCount} items)</span>
-                  <span className="font-medium text-slate-800">₹{totalMRP.toLocaleString('en-IN')}</span>
+                  <span className="opacity-100">₹{totalMRP.toLocaleString('en-IN')}</span>
                 </div>
                 {totalDiscount > 0 && (
-                  <div className="flex justify-between text-sm text-emerald-600">
-                    <span className="font-semibold">Savings</span>
-                    <span className="font-semibold">−₹{totalDiscount.toLocaleString('en-IN')}</span>
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                    <span>Savings</span>
+                    <span>−₹{totalDiscount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-slate-500">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest opacity-40" style={{ color: 'var(--color-neu-text)' }}>
                   <span>Shipping</span>
-                  <span className="font-semibold text-emerald-600">FREE</span>
+                  <span className="text-emerald-600 font-black">FREE</span>
                 </div>
-                <div className="flex justify-between items-end pt-3 border-t border-slate-200">
-                  <span className="text-sm font-bold text-slate-900">Total</span>
-                  <span className="text-2xl font-black tracking-tight" style={{ color: '#F7941D' }}>₹{checkoutTotal.toLocaleString('en-IN')}</span>
+                <div className="flex justify-between items-end pt-5 border-t border-[var(--color-neu-dark)]">
+                  <span className="text-sm font-black uppercase tracking-tighter" style={{ color: 'var(--color-neu-text)' }}>Payable Amount</span>
+                  <span className="text-3xl font-black tracking-tighter" style={{ color: 'var(--color-neu-accent)' }}>₹{checkoutTotal.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -464,28 +460,25 @@ const Checkout = () => {
               <button
                 onClick={handlePlaceOrder}
                 disabled={!canCheckout}
-                className={`w-full py-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98] ${
-                  canCheckout
-                    ? 'text-white hover:opacity-90 shadow-orange-100'
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                className={`w-full py-5 neu-button-accent font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 active:scale-[0.98] ${
+                  !canCheckout ? 'opacity-20 cursor-not-allowed' : ''
                 }`}
-                style={canCheckout ? { background: 'linear-gradient(135deg, #F7941D, #7B1760)' } : {}}
               >
                 {isSubmitting || isProcessingPayment ? (
                   <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing…</>
                 ) : (
-                  <>{isCheckoutBulkOrder ? 'Submit Bulk Order' : 'Place Order'} <ArrowRight size={16} /></>
+                  <>{isCheckoutBulkOrder ? 'Submit Bulk Order' : 'Place Order'} <ArrowRight size={18} /></>
                 )}
               </button>
 
               {!selectedAddress && (
-                <p className="text-[11px] text-amber-500 text-center mt-2 font-medium">
-                  Please select a delivery address to continue.
+                <p className="text-[9px] font-black uppercase tracking-widest text-rose-500 text-center mt-3">
+                  Please select delivery address
                 </p>
               )}
 
-              <p className="text-[11px] text-slate-400 text-center mt-3 flex items-center justify-center gap-1.5">
-                <CheckCircle2 size={12} className="text-emerald-500" /> Guaranteed safe checkout
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-20 text-center mt-5 flex items-center justify-center gap-2" style={{ color: 'var(--color-neu-text)' }}>
+                <CheckCircle2 size={12} style={{ color: 'var(--color-neu-accent)' }} /> Secure Checkout Active
               </p>
             </aside>
           </div>

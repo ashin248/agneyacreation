@@ -66,14 +66,14 @@ const ProductDetails = () => {
         addToCartBase(item);
         toast.success(`${item.name} added to cart!`, {
             icon: '🛍️',
-            style: { borderRadius: '12px', background: 'linear-gradient(135deg, #F7941D, #7B1760)', color: '#f8fafc', fontSize: '13px' }
+            style: { borderRadius: '16px', background: 'var(--color-neu-bg)', color: 'var(--color-neu-text)', fontSize: '13px', border: '1px solid var(--color-neu-dark)', boxShadow: '10px 10px 20px rgba(0,0,0,0.05)' }
         });
     };
     
     const requireLogin = (callback, action = 'interact') => {
         if (!currentUser) {
             toast.error(`Please login to ${action}.`, {
-                style: { borderRadius: '12px', background: '#7B1760', color: '#f8fafc', fontSize: '13px' }
+                style: { borderRadius: '16px', background: 'var(--color-neu-bg)', color: 'var(--color-neu-text)', fontSize: '13px', border: '1px solid var(--color-neu-dark)', boxShadow: '10px 10px 20px rgba(0,0,0,0.05)' }
             });
             setIsLoginModalOpen(true);
         } else {
@@ -531,12 +531,9 @@ const ProductDetails = () => {
                                             setInitialStudioMode('company');
                                             setCustomizingProduct(product);
                                         })} 
-                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 relative overflow-hidden neu-pressed text-[var(--color-neu-accent)] rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all active:scale-95 group`}
+                                        className={`${product.customizationType === 'Both' ? 'col-span-1 sm:col-span-1' : ''} h-14 sm:h-16 relative overflow-hidden neu-pressed text-[var(--color-neu-accent)] rounded-[20px] flex flex-col items-center justify-center gap-1.5 font-black uppercase tracking-widest text-[8px] transition-all active:scale-95 group`}
                                     >
-                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-[20px]" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }} />
-                                        <div className="relative z-10 flex flex-col items-center justify-center gap-1.5">
-                                            <PenTool size={18} /> Hire Designer
-                                        </div>
+                                        <PenTool size={18} /> Hire Designer
                                     </button>
                                 </div>
                             )}
@@ -549,12 +546,12 @@ const ProductDetails = () => {
                 {relatedProducts.length > 0 && (
                     <div className="mt-12 md:mt-24 mb-16 reveal-on-scroll">
                         {/* Section Header */}
-                        <div className="flex items-end justify-between mb-8">
+                        <div className="flex items-end justify-between mb-12">
                             <div>
-                                <h3 className="text-3xl font-black tracking-tighter uppercase leading-none" style={{ color: 'var(--color-neu-text)' }}>
-                                    Related Products
+                                <h3 className="text-2xl md:text-3xl font-black tracking-tighter uppercase leading-none" style={{ color: 'var(--color-neu-text)' }}>
+                                    Curated Alternatives
                                 </h3>
-                                <div className="h-1.5 w-12 rounded-full mt-4" style={{ background: 'linear-gradient(135deg, #F7941D, #7B1760)' }}></div>
+                                <div className="h-2 w-16 rounded-full mt-6 bg-[var(--color-neu-accent)] shadow-[0_0_15px_var(--color-neu-accent)]"></div>
                             </div>
                             <button 
                                 onClick={() => navigate('/shop')}
