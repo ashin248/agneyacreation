@@ -11,19 +11,28 @@ export const loadRazorpay = () => {
       return;
     }
 
+    // Check if script already exists in document
+    const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existingScript) {
+      if (window.Razorpay) {
+        resolve(true);
+      } else {
+        existingScript.onload = () => resolve(true);
+        existingScript.onerror = () => resolve(false);
+      }
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     
-    script.onload = () => {
-      resolve(true);
-    };
-
+    script.onload = () => resolve(true);
     script.onerror = () => {
       console.error("Razorpay SDK failed to load.");
       resolve(false);
     };
 
-    document.body.appendChild(script);
+    document.head.appendChild(script);
   });
 };

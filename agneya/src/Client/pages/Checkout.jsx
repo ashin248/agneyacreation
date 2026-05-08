@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AddressForm from '../components/AddressForm';
@@ -144,8 +145,17 @@ const Checkout = () => {
           return;
         }
 
+        const rzpKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+        if (!rzpKey) {
+          toast.error('Payment gateway configuration is missing. Please contact support.');
+          console.error('[RAZORPAY] Error: VITE_RAZORPAY_KEY_ID is not defined in environment variables.');
+          setIsProcessingPayment(false);
+          setIsSubmitting(false);
+          return;
+        }
+
         const rzp = new window.Razorpay({
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          key: rzpKey,
           amount: rzpRes.data.order.amount, currency: 'INR',
           name: 'Agneya', description: 'Order Checkout', order_id: rzpRes.data.order.id,
           handler: async (response) => {
