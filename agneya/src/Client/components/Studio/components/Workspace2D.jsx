@@ -598,8 +598,9 @@ const Workspace2D = forwardRef(({
                                             ))}
                                         </mask>
                                     </defs>
-                                    <rect width="100%" height="100%" fill="#f8fafc" mask="url(#phone-mask-inverted)" />
+                                    <rect width="100%" height="100%" fill="var(--color-neu-bg)" mask="url(#phone-mask-inverted)" />
                                     
+                                    {/* 3D Model Style Border (Yellow accent) */}
                                     <rect 
                                         x={200 - (product.phoneMask.shape.width/2)} 
                                         y={400 - (product.phoneMask.shape.height/2)} 
@@ -607,8 +608,20 @@ const Workspace2D = forwardRef(({
                                         height={product.phoneMask.shape.height} 
                                         rx={product.phoneMask.shape.rx} 
                                         fill="none" 
-                                        stroke="#e2e8f0"
-                                        strokeWidth="1"
+                                        stroke="var(--brand-warning)"
+                                        strokeWidth="3"
+                                        style={{ filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.15))" }}
+                                    />
+                                    {/* Inner Edge Highlight for 3D Feel */}
+                                    <rect 
+                                        x={200 - (product.phoneMask.shape.width/2) + 1.5} 
+                                        y={400 - (product.phoneMask.shape.height/2) + 1.5} 
+                                        width={product.phoneMask.shape.width - 3} 
+                                        height={product.phoneMask.shape.height - 3} 
+                                        rx={Math.max(0, product.phoneMask.shape.rx - 1.5)} 
+                                        fill="none" 
+                                        stroke="rgba(255,255,255,0.8)"
+                                        strokeWidth="1.5"
                                     />
                                 </svg>
                             </div>
