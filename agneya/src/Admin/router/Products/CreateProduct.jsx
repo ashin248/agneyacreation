@@ -35,30 +35,29 @@ const CreateProduct = () => {
   
   // Custom helper to sync name to first variation SKU
   const handleBasicInfoChange = (updateAction) => {
-    setBasicInfo(prev => {
-      const next = typeof updateAction === 'function' ? updateAction(prev) : updateAction;
-      
-      // Auto-generate/Update SKU for the first variation if product name changes
-      if (Array.isArray(variations) && variations.length > 0 && next.name !== prev.name) {
-        const generatedSku = next.name
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, '')
-          .substring(0, 8) + "-BASE";
-          
-        setVariations(prevVars => {
-          if (!Array.isArray(prevVars) || prevVars.length === 0) return prevVars;
-          // Only update if it's currently empty OR looks like a generated SKU
-          const currentSku = prevVars[0].sku;
-          if (!currentSku || currentSku.endsWith('-BASE')) {
-            const newVars = [...prevVars];
-            newVars[0] = { ...newVars[0], sku: generatedSku };
-            return newVars;
-          }
-          return prevVars;
-        });
-      }
-      return next;
-    });
+    const nextInfo = typeof updateAction === 'function' ? updateAction(basicInfo) : updateAction;
+    
+    // Auto-generate/Update SKU for the first variation if product name changes
+    if (Array.isArray(variations) && variations.length > 0 && nextInfo.name !== basicInfo.name) {
+      const generatedSku = nextInfo.name
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .substring(0, 8) + "-BASE";
+        
+      setVariations(prevVars => {
+        if (!Array.isArray(prevVars) || prevVars.length === 0) return prevVars;
+        // Only update if it's currently empty OR looks like a generated SKU
+        const currentSku = prevVars[0].sku;
+        if (!currentSku || currentSku.endsWith('-BASE')) {
+          const newVars = [...prevVars];
+          newVars[0] = { ...newVars[0], sku: generatedSku };
+          return newVars;
+        }
+        return prevVars;
+      });
+    }
+    
+    setBasicInfo(nextInfo);
   };
 
   // 2. Master State for Product Variations
@@ -239,7 +238,7 @@ const CreateProduct = () => {
       formData.append('twoDModels', JSON.stringify(twoDModelsMetadata));
 
       // Arrays formatting and appending
-      const finalVariations = (Array.isArray(variations) ? variations : []).map(({ id, previewUrl, ...rest }) => ({
+      const finalVariations = (Array.isArray(currentVars) ? currentVars : []).map(({ id, previewUrl, ...rest }) => ({
         ...rest,
         stock: Number(rest.stock),
         priceModifier: Number(rest.priceModifier),
@@ -264,8 +263,8 @@ const CreateProduct = () => {
       if (base3DModelFile) formData.append('base3DModelFile', base3DModelFile);
 
       // Append Variation Images strictly pointing to index
-      if (Array.isArray(variations)) {
-        variations.forEach((v, index) => {
+      if (Array.isArray(currentVars)) {
+        currentVars.forEach((v, index) => {
           if (v?.imageFile) {
             formData.append(`variationImage_${index}`, v.imageFile);
           }
