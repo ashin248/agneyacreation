@@ -14,7 +14,9 @@ import {
   ChevronDown,
   Sparkles,
   ShoppingCart,
-  MapPin
+  MapPin,
+  Moon,
+  Sun
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -26,6 +28,28 @@ const Navbar = () => {
   const { currentUser, userData, logout } = useAuth();
   const location = useLocation();
   const userMenuRef = useRef(null);
+
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark' || 
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    return false;
+  });
+
+  // Apply dark mode class to document element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -123,7 +147,15 @@ const Navbar = () => {
             {/* ── RIGHT ACTIONS ── */}
             <div className="flex items-center gap-2">
 
-
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="relative flex items-center justify-center w-10 h-10 rounded-xl neu-button transition-all duration-200"
+                style={{ color: 'var(--color-neu-text)' }}
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
 
               {/* Cart */}
               <Link
@@ -247,13 +279,23 @@ const Navbar = () => {
             <img loading="lazy" src="/logo.png" alt="Agneya" className="w-8 h-8 object-contain rounded-lg" />
             <span className="text-sm font-black" style={{ color: 'var(--color-neu-text)' }}>Agneya</span>
           </Link>
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="w-10 h-10 flex items-center justify-center neu-button"
-            style={{ color: 'var(--color-neu-text)' }}
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 flex items-center justify-center neu-button"
+              style={{ color: 'var(--color-neu-text)' }}
+              aria-label="Toggle dark mode"
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-10 h-10 flex items-center justify-center neu-button"
+              style={{ color: 'var(--color-neu-text)' }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Drawer Body */}

@@ -145,7 +145,7 @@ const Checkout = () => {
           return;
         }
 
-        const rzpKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+        const rzpKey = import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SUO6dQWJx2bid8';
         if (!rzpKey) {
           toast.error('Payment gateway configuration is missing. Please contact support.');
           console.error('[RAZORPAY] Error: VITE_RAZORPAY_KEY_ID is not defined in environment variables.');
