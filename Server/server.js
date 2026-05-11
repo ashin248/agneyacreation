@@ -13,7 +13,12 @@ const PORT = process.env.PORT || process.env.Server_port || 5000;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Razorpay-Signature'],
+  exposedHeaders: ['X-Razorpay-Signature']
+}));
 
 const bulkOrderRoutes = require('./routes/admin/bulkOrderRoutes');
 const customDesignRoutes = require('./routes/admin/customDesignRoutes');

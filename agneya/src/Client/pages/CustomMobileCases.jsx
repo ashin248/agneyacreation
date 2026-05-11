@@ -1,5 +1,7 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Smartphone, ArrowLeft, Grid3X3, Search, Loader2 } from 'lucide-react';
+import { Smartphone, ArrowLeft, Grid3X3, Search, Loader2, ChevronRight } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
 import LoginModal from '../components/LoginModal';
 const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));

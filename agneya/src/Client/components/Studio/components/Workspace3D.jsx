@@ -397,7 +397,7 @@ export default function Workspace3D({
                     </div>
                 </div>
                 <Canvas
-                    shadows={{ type: THREE.PCFSoftShadowMap }}
+                    shadows={{ type: THREE.PCFShadowMap }}
                     camera={{ position: [0, 0, 5], fov: 45 }}
                     gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: false }}
                     dpr={[1, 1.5]}
@@ -407,6 +407,10 @@ export default function Workspace3D({
                             e.preventDefault();
                             setTimeout(() => setContextKey(prev => prev + 1), 500);
                             setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
+                        }, false);
+                        gl.domElement.addEventListener('webglcontextrestored', () => {
+                            console.log("3D Canvas WebGL Context Restored.");
+                            if (fabricRef.current) updateTexture(true);
                         }, false);
                     }}
                     onPointerMissed={() => {}}

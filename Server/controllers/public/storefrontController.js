@@ -31,10 +31,15 @@ const uploadToCloudinary = (buffer, folderName, resourceType = 'auto') => {
   });
 };
 
-const razorpayInstance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+const getRazorpayInstance = () => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay keys are missing from environment variables');
+  }
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+};
 
 // @desc    Get all active banners
 // @route   GET /api/public/banners
@@ -949,7 +954,8 @@ const createRazorpayOrder = async (req, res) => {
       receipt: "receipt_" + Date.now(),
     };
 
-    const order = await razorpayInstance.orders.create(options);
+    const instance = getRazorpayInstance();
+    const order = await instance.orders.create(options);
     res.status(200).json({ success: true, order });
   } catch (error) {
     console.error('Razorpay Order Creation Error:', error);
@@ -963,6 +969,11 @@ const createRazorpayOrder = async (req, res) => {
 const verifyRazorpayPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      console.error('[PAYMENT-VERIFY] RAZORPAY_KEY_SECRET is missing');
+      return res.status(500).json({ success: false, message: 'Server configuration error' });
+    }
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
