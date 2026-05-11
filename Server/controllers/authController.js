@@ -16,34 +16,16 @@ exports.loginAdmin = async (req, res) => {
     const normalizedEmail = email.toLowerCase().trim();
 
     // Lookup user explicitly requesting exact matches natively
-    console.log(`[AUTH] 🔍 Login attempt for: ${normalizedEmail}`);
     let user = await User.findOne({ email: normalizedEmail });
 
     // SELF-HEALING: If admin is missing but credentials match .env, bootstrap on-the-fly
     if (!user && normalizedEmail === (process.env.Email || '').toLowerCase().trim()) {
-        console.warn(`[AUTH] 🩹 Admin user ${normalizedEmail} missing from DB. Triggering emergency bootstrap...`);
         await bootstrapAdmin();
         user = await User.findOne({ email: normalizedEmail });
     }
 
-    // Fallback: Case-insensitive search if exact match fails (Diagnosing data inconsistency)
     if (!user) {
-        console.warn(`[AUTH] ❓ Exact match failed for ${normalizedEmail}. Trying case-insensitive fallback...`);
         user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
-        
-        // --- DEBUG INJECTION START ---
-        const allLocalUsers = await User.find({}, 'email role');
-        console.log(`[DEBUG] Total users in active DB connection during login: ${allLocalUsers.length}`);
-        console.log(`[DEBUG] dumping emails:`, allLocalUsers.map(u => `'${u.email}'`));
-        // --- DEBUG INJECTION END ---
-        
-        if (user) {
-            console.log(`[AUTH] ✅ User found via fallback. Note: DB stored email might not be fully normalized.`);
-        } else {
-            console.error(`[AUTH] ❌ User not found in DB even with fallback search.`);
-        }
-    } else {
-        console.log(`[AUTH] ✅ User found via exact match.`);
     }
 
     if (!user) {
@@ -61,7 +43,6 @@ exports.loginAdmin = async (req, res) => {
     // MASTER OVERRIDE: If password doesn't match DB but matches .env master password, sync it
     if (!isMatch && normalizedEmail === (process.env.Email || '').toLowerCase().trim()) {
         if (password === process.env.Password) {
-            console.log(`[AUTH] 🔑 Password mismatch but matches .env Master Password. Syncing DB hash...`);
             user.password = await bcrypt.hash(password, 10);
             await user.save();
             isMatch = true;

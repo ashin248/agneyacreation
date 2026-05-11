@@ -191,85 +191,84 @@ function Model3D({
 
 
     useEffect(() => {
-        let bestTarget = null;
-        let largestArea = 0;
-        const priorityNamesFromLibrary = modelConfig?.printableMeshes || [];
-        const genericPriorityNames = [
-            'mug_again', '191,191,191',
-            'printable_area', 'design_area', 'main_body', 'body', 'shirt', 'front', 'surface'
-        ];
+        // Deferring geometry-heavy anchor calculation to prevent main thread blocking
+        const timeoutId = setTimeout(() => {
+            let bestTarget = null;
+            let largestArea = 0;
+            const priorityNamesFromLibrary = modelConfig?.printableMeshes || [];
+            const genericPriorityNames = [
+                'mug_again', '191,191,191',
+                'printable_area', 'design_area', 'main_body', 'body', 'shirt', 'front', 'surface'
+            ];
 
-        scene.traverse((child) => {
-            if (child.isMesh) {
-                const name = child.name || '';
-                const lowerName = name.toLowerCase();
-                const isPhotoframe = modelConfig?.category === 'Photoframe';
+            scene.traverse((child) => {
+                if (child.isMesh) {
+                    const name = child.name || '';
+                    const lowerName = name.toLowerCase();
+                    const isPhotoframe = modelConfig?.category === 'Photoframe';
 
-                if (priorityNamesFromLibrary?.includes(name)) {
-                    bestTarget = child;
-                    return;
-                }
-                const isGenericPriority = genericPriorityNames.some(p => lowerName.includes(p));
-                let isAuxiliary = lowerName.includes('handle') ||
-                    lowerName.includes('bottom') || lowerName.includes('sole') ||
-                    lowerName.includes('lace') || lowerName.includes('decal') ||
-                    lowerName.includes('shadow');
+                    if (priorityNamesFromLibrary?.includes(name)) {
+                        bestTarget = child;
+                        return;
+                    }
+                    const isGenericPriority = genericPriorityNames.some(p => lowerName.includes(p));
+                    let isAuxiliary = lowerName.includes('handle') ||
+                        lowerName.includes('bottom') || lowerName.includes('sole') ||
+                        lowerName.includes('lace') || lowerName.includes('decal') ||
+                        lowerName.includes('shadow');
 
-                // Exception for photoframes: 'inside' meshes ARE printable areas
-                if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
+                    if (!isPhotoframe && lowerName.includes('inside')) isAuxiliary = true;
 
-                if (isGenericPriority && !isAuxiliary && !bestTarget) {
-                    bestTarget = child;
-                }
-                if (!isAuxiliary && !bestTarget) {
-                    child.geometry.computeBoundingBox();
-                    const box = child.geometry.boundingBox;
-                    const area = (box.max.x - box.min.x) * (box.max.y - box.min.y);
-                    if (area > largestArea) {
-                        largestArea = area;
+                    if (isGenericPriority && !isAuxiliary && !bestTarget) {
                         bestTarget = child;
                     }
+                    if (!isAuxiliary && !bestTarget) {
+                        child.geometry.computeBoundingBox();
+                        const box = child.geometry.boundingBox;
+                        const area = (box.max.x - box.min.x) * (box.max.y - box.min.y);
+                        if (area > largestArea) {
+                            largestArea = area;
+                            bestTarget = child;
+                        }
+                    }
                 }
-            }
-        });
-
-        if (bestTarget) {
-            bestTarget.geometry.computeBoundingBox();
-            const box = bestTarget.geometry.boundingBox;
-
-            const w = (box.max.x - box.min.x);
-            const h = (box.max.y - box.min.y);
-            const d = (box.max.z - box.min.z);
-
-            // Smarter default anchor: Look for the 'Front' face by inspecting normals if possible
-            // or default to a safe standard for the given model category
-            const isPlanar = modelConfig?.projectionType === 'planar' ||
-                modelConfig?.projectionType === 'decal' ||
-                modelConfig?.category === 'Photoframe' ||
-                !modelConfig?.projectionType;
-
-            // Center Front for mugs
-            const defaultPos = isPlanar ?
-                [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : 
-                [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  
-
-            // Ensure Z-axis points INWARD toward the mesh
-            const defaultRot = isPlanar ? [Math.PI / 2, 0, 0] : [0, Math.PI, 0];
-
-            // Compute groupPos by converting local position to world, then to group space
-            const localPoint = new THREE.Vector3(defaultPos[0], defaultPos[1], defaultPos[2]);
-            const worldPoint = bestTarget.localToWorld(localPoint.clone());
-            const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(worldPoint.clone()) : localPoint;
-
-            setDefaultAnchor({
-                meshId: bestTarget.uuid,
-                meshName: bestTarget.name,
-                pos: defaultPos,
-                groupPos: [groupPosVec.x, groupPosVec.y, groupPosVec.z],
-                rot: defaultRot,
-                dim: [w, h, d]
             });
-        }
+
+            if (bestTarget) {
+                bestTarget.geometry.computeBoundingBox();
+                const box = bestTarget.geometry.boundingBox;
+
+                const w = (box.max.x - box.min.x);
+                const h = (box.max.y - box.min.y);
+                const d = (box.max.z - box.min.z);
+
+                const isPlanar = modelConfig?.projectionType === 'planar' ||
+                    modelConfig?.projectionType === 'decal' ||
+                    modelConfig?.category === 'Photoframe' ||
+                    !modelConfig?.projectionType;
+
+                const defaultPos = isPlanar ?
+                    [(box.max.x + box.min.x) / 2, box.max.y, (box.max.z + box.min.z) / 2] : 
+                    [(box.max.x + box.min.x) / 2, (box.max.y + box.min.y) / 2, box.max.z];  
+
+                const defaultRot = isPlanar ? [Math.PI / 2, 0, 0] : [0, Math.PI, 0];
+
+                const localPoint = new THREE.Vector3(defaultPos[0], defaultPos[1], defaultPos[2]);
+                const worldPoint = bestTarget.localToWorld(localPoint.clone());
+                const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(worldPoint.clone()) : localPoint;
+
+                setDefaultAnchor({
+                    meshId: bestTarget.uuid,
+                    meshName: bestTarget.name,
+                    pos: defaultPos,
+                    groupPos: [groupPosVec.x, groupPosVec.y, groupPosVec.z],
+                    rot: defaultRot,
+                    dim: [w, h, d]
+                });
+            }
+        }, 50);
+
+        return () => clearTimeout(timeoutId);
     }, [scene, modelConfig]);
 
     const handleMeshClick = (e) => {
@@ -278,7 +277,6 @@ function Model3D({
         if (!clickedMesh.isMesh) return;
 
         const lowerName = clickedMesh.name.toLowerCase();
-        console.log("3D Selection Clicked:", lowerName, clickedMesh.uuid); // CRITICAL DEBUG LOG
 
         // Strict Model Selection Guard: Prevent selecting non-printable parts (like handles)
         // For Photoframes, we want to be much more permissive as almost every part is a frame
@@ -411,7 +409,7 @@ export default function Workspace3D({
                             setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
                         }, false);
                     }}
-                    onPointerMissed={() => console.log("Pointer Missed - No interactive object hit")}
+                    onPointerMissed={() => {}}
                     key={contextKey}
                 >
                     <React.Suspense fallback={null}>

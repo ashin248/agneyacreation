@@ -1,25 +1,5 @@
 const Product = require('../src/schema/ProductSchema');
-const cloudinary = require('../config/cloudinary');
-const streamifier = require('streamifier');
-
-
-
-// Helper function to upload an image buffer directly to Cloudinary
-const uploadToCloudinary = (buffer, folderName, resourceType = 'auto') => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: folderName, resource_type: resourceType },
-      (error, result) => {
-        if (result) {
-          resolve(result.secure_url);
-        } else {
-          reject(error);
-        }
-      }
-    );
-    streamifier.createReadStream(buffer).pipe(uploadStream);
-  });
-};
+const { processProductUploads } = require('../services/uploadService');
 
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -149,127 +129,17 @@ exports.createProduct = async (req, res) => {
     // Convert boolean string
     const bulkActive = isBulkEnabled === 'true' || isBulkEnabled === true;
 
-    // 3. Image Sorting & Uploading Variables
-    const galleryImageUrls = [];
-    let blankFrontImageUrl = null;
-    let frontMaskImageUrl = null;
-    let frontOverlayImageUrl = null;
-    let blankBackImageUrl = null;
-    let backMaskImageUrl = null;
-    let backOverlayImageUrl = null;
-    let base3DModelUrl = null;
-    
-    // We will store promises in an array to upload them concurrently for speed
-    const uploadPromises = [];
-
-    // Loop through all incoming files caught by multer.any()
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        if (file.fieldname === 'galleryImages') {
-          // Push to upload queue for Gallery Images
-          const promise = uploadToCloudinary(file.buffer, 'products/gallery').then(url => {
-            galleryImageUrls.push(url);
-          });
-          uploadPromises.push(promise);
-        } 
-        else if (file.fieldname === 'blankFrontImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-            blankFrontImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'frontMaskImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/masks').then(url => {
-            frontMaskImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'frontOverlayImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/overlays').then(url => {
-            frontOverlayImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'blankBackImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-            blankBackImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'backMaskImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/masks').then(url => {
-            backMaskImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'backOverlayImage') {
-          const promise = uploadToCloudinary(file.buffer, 'products/overlays').then(url => {
-            backOverlayImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'base3DModelFile') {
-          const promise = uploadToCloudinary(file.buffer, 'products/3d', 'raw').then(url => {
-            base3DModelUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname === 'base2DImageFile') {
-          const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-            blankFrontImageUrl = url;
-          });
-          uploadPromises.push(promise);
-        }
-        else if (file.fieldname.startsWith('variationImage_')) {
-          // Fieldname looks like "variationImage_0", "variationImage_1", etc.
-          const indexStr = file.fieldname.split('_')[1];
-          const index = parseInt(indexStr, 10);
-          
-          if (!isNaN(index) && variations[index]) {
-            // Push to upload queue for Variation Image
-            const promise = uploadToCloudinary(file.buffer, 'products/variations').then(url => {
-              variations[index].imageUrl = url; // Attaching to the specific variation object
-            });
-            uploadPromises.push(promise);
-          }
-        }
-        else if (file.fieldname.startsWith('override_image_')) {
-          const templateId = file.fieldname.replace('override_image_', '');
-          const templateObj = linkedTemplates.find(t => t.templateId === templateId);
-          if (templateObj) {
-            const promise = uploadToCloudinary(file.buffer, 'products/overrides').then(url => {
-              templateObj.overrideImageUrl = url;
-            });
-            uploadPromises.push(promise);
-          }
-        }
-        else if (file.fieldname.startsWith('twoDModel_main_')) {
-          const idx = parseInt(file.fieldname.replace('twoDModel_main_', ''), 10);
-          if (!isNaN(idx) && twoDModels[idx]) {
-            const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
-              twoDModels[idx].mainModelUrl = url;
-            });
-            uploadPromises.push(promise);
-          }
-        }
-        else if (file.fieldname.startsWith('twoDModel_support_')) {
-          const parts = file.fieldname.replace('twoDModel_support_', '').split('_');
-          const idx = parseInt(parts[0], 10);
-          const sIdx = parseInt(parts[1], 10);
-          if (!isNaN(idx) && !isNaN(sIdx) && twoDModels[idx] && twoDModels[idx].supportModels && twoDModels[idx].supportModels[sIdx]) {
-            const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
-              twoDModels[idx].supportModels[sIdx].url = url;
-            });
-            uploadPromises.push(promise);
-          }
-        }
-      }
-    }
-
-    // Await all image uploads to finish
-    if (uploadPromises.length > 0) {
-      await Promise.all(uploadPromises);
-    }
+    // 3. Image Sorting & Uploading Variables using central service
+    const { 
+        galleryImageUrls, 
+        blankFrontImageUrl, 
+        frontMaskImageUrl, 
+        frontOverlayImageUrl, 
+        blankBackImageUrl, 
+        backMaskImageUrl, 
+        backOverlayImageUrl, 
+        base3DModelUrl 
+    } = await processProductUploads(req.files, variations, linkedTemplates, twoDModels);
 
     // 4. Construct Final DB Payloads
     const productPayload = {
@@ -291,7 +161,7 @@ exports.createProduct = async (req, res) => {
       customizationType: customizationType || 'None',
       baseModelId: req.body.baseModelId || null,
       base2DTemplateId: req.body.base2DTemplateId || null,
-      model3d: base3DModelUrl,
+      base3DModelUrl: base3DModelUrl || req.body.base3DModelUrl || null,
       blankFrontImage: blankFrontImageUrl || req.body.blankFrontImage || null,
       frontMaskImage: frontMaskImageUrl || req.body.frontMaskImage || null,
       frontOverlayImage: frontOverlayImageUrl || req.body.frontOverlayImage || null,
@@ -434,98 +304,19 @@ exports.updateProduct = async (req, res) => {
 
         let galleryImageUrls = req.body.existingGalleryImages ? JSON.parse(req.body.existingGalleryImages) : (product.galleryImages || []);
         
-        const uploadPromises = [];
-        if (req.files && req.files.length > 0) {
-            for (const file of req.files) {
-                if (file.fieldname === 'galleryImages') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/gallery').then(url => {
-                        galleryImageUrls.push(url);
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'blankFrontImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-                        updateData.blankFrontImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'frontMaskImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/masks').then(url => {
-                        updateData.frontMaskImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'frontOverlayImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/overlays').then(url => {
-                        updateData.frontOverlayImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'blankBackImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-                        updateData.blankBackImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'backMaskImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/masks').then(url => {
-                        updateData.backMaskImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'backOverlayImage') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/overlays').then(url => {
-                        updateData.backOverlayImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'base3DModelFile') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/3d', 'raw').then(url => {
-                        updateData.model3d = url;
-                        updateData.base3DModelUrl = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname === 'base2DImageFile') {
-                    const promise = uploadToCloudinary(file.buffer, 'products/base').then(url => {
-                        updateData.blankFrontImage = url;
-                    });
-                    uploadPromises.push(promise);
-                } else if (file.fieldname.startsWith('variationImage_')) {
-                    const index = parseInt(file.fieldname.split('_')[1], 10);
-                    if (!isNaN(index) && updateData.variations && updateData.variations[index]) {
-                        const promise = uploadToCloudinary(file.buffer, 'products/variations').then(url => {
-                            updateData.variations[index].imageUrl = url;
-                        });
-                        uploadPromises.push(promise);
-                    }
-                } else if (file.fieldname.startsWith('override_image_')) {
-                    const templateId = file.fieldname.replace('override_image_', '');
-                    if (updateData.linkedTemplates) {
-                        const templateObj = updateData.linkedTemplates.find(t => t.templateId === templateId);
-                        if (templateObj) {
-                            const promise = uploadToCloudinary(file.buffer, 'products/overrides').then(url => {
-                                templateObj.overrideImageUrl = url;
-                            });
-                            uploadPromises.push(promise);
-                        }
-                    }
-                } else if (file.fieldname.startsWith('twoDModel_main_')) {
-                    const idx = parseInt(file.fieldname.replace('twoDModel_main_', ''), 10);
-                    if (!isNaN(idx) && updateData.twoDModels && updateData.twoDModels[idx]) {
-                        const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
-                            updateData.twoDModels[idx].mainModelUrl = url;
-                        });
-                        uploadPromises.push(promise);
-                    }
-                } else if (file.fieldname.startsWith('twoDModel_support_')) {
-                    const parts = file.fieldname.replace('twoDModel_support_', '').split('_');
-                    const idx = parseInt(parts[0], 10);
-                    const sIdx = parseInt(parts[1], 10);
-                    if (!isNaN(idx) && !isNaN(sIdx) && updateData.twoDModels && updateData.twoDModels[idx] && updateData.twoDModels[idx].supportModels && updateData.twoDModels[idx].supportModels[sIdx]) {
-                        const promise = uploadToCloudinary(file.buffer, 'products/twod').then(url => {
-                            updateData.twoDModels[idx].supportModels[sIdx].url = url;
-                        });
-                        uploadPromises.push(promise);
-                    }
-                }
-            }
+        const uploadResults = await processProductUploads(req.files, updateData.variations, updateData.linkedTemplates, updateData.twoDModels);
+        
+        if (uploadResults.blankFrontImageUrl) updateData.blankFrontImage = uploadResults.blankFrontImageUrl;
+        if (uploadResults.frontMaskImageUrl) updateData.frontMaskImage = uploadResults.frontMaskImageUrl;
+        if (uploadResults.frontOverlayImageUrl) updateData.frontOverlayImage = uploadResults.frontOverlayImageUrl;
+        if (uploadResults.blankBackImageUrl) updateData.blankBackImage = uploadResults.blankBackImageUrl;
+        if (uploadResults.backMaskImageUrl) updateData.backMaskImage = uploadResults.backMaskImageUrl;
+        if (uploadResults.backOverlayImageUrl) updateData.backOverlayImage = uploadResults.backOverlayImageUrl;
+        if (uploadResults.base3DModelUrl) {
+            updateData.base3DModelUrl = uploadResults.base3DModelUrl;
         }
 
-        if (uploadPromises.length > 0) await Promise.all(uploadPromises);
-        updateData.galleryImages = galleryImageUrls;
+        updateData.galleryImages = [...galleryImageUrls, ...uploadResults.galleryImageUrls];
 
         const updatedProduct = await Product.findByIdAndUpdate(id, { $set: updateData }, { new: true });
         return res.status(200).json({ success: true, data: updatedProduct, message: 'Product updated successfully.' });

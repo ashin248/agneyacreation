@@ -33,16 +33,12 @@ client.on('ready', async () => {
 
     try {
         targetGroupId = await client.acceptInvite(INVITE_CODE);
-        console.log('🟢 Successfully joined/found target group! Target ID:', targetGroupId);
     } catch (error) {
         console.log('⚠️ Could not join group (maybe already joined?). Attempting to find group in chats.');
         const chats = await client.getChats();
         const groupChat = chats.find(chat => chat.isGroup && chat.name.toLowerCase().includes('agneya'));
         if (groupChat) {
             targetGroupId = groupChat.id._serialized;
-            console.log('🟢 Found Target Group from Existing Chats:', targetGroupId);
-        } else {
-            console.log('❌ Failed to find the Agneya target group automatically.');
         }
     }
 });
@@ -51,7 +47,6 @@ client.initialize().catch(err => console.error("❌ Could not initialize WhatsAp
 
 const sendWhatsAppNotification = async (orderData) => {
     if (!isClientReady || !targetGroupId) {
-        console.log("⚠️ WhatsApp client is not ready or target group not found. Skipping notification.");
         return;
     }
 
@@ -67,7 +62,6 @@ const sendWhatsAppNotification = async (orderData) => {
         const message = `📦 *പുതിയ ഓർഡർ!* 🚀\n\nID: ${order.orderId || order._id}${orderTypeStr}${designTag}\nCustomer: ${customer.name}\nPhone: ${customer.phone}\nModel: ${items[0]?.name || 'N/A'}\n*Total:* ₹${totalAmount.toLocaleString('en-IN')}${gstInfo}\n\nAddress: ${customer.shippingAddress}`;
         
         await client.sendMessage(targetGroupId, message);
-        console.log(`✅ WhatsApp notification sent successfully for order ${order.orderId || order._id}`);
     } catch (error) {
         console.error("❌ Error sending WhatsApp notification:", error);
     }
@@ -75,7 +69,6 @@ const sendWhatsAppNotification = async (orderData) => {
 
 const sendBulkInquiryNotification = async (inquiryData) => {
     if (!isClientReady || !targetGroupId) {
-        console.log("⚠️ WhatsApp client is not ready. Skipping bulk inquiry notification.");
         return;
     }
 
@@ -83,7 +76,6 @@ const sendBulkInquiryNotification = async (inquiryData) => {
         const message = `🏢 *പുതിയ ബൾക്ക് എൻക്വയറി!* 🚀\n\nName: ${inquiryData.contactName}\nCompany: ${inquiryData.companyName || 'N/A'}\nPhone: ${inquiryData.phone}\nEmail: ${inquiryData.email}\nProduct: ${inquiryData.productOfInterest}\nEst. Qty: ${inquiryData.estimatedQuantity}\nMessage: ${inquiryData.message}`;
         
         await client.sendMessage(targetGroupId, message);
-        console.log(`✅ WhatsApp bulk notification sent for ${inquiryData.contactName}`);
     } catch (error) {
         console.error("❌ Error sending WhatsApp bulk notification:", error);
     }

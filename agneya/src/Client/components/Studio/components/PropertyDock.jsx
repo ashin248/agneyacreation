@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiMaximize2, FiMinimize2, FiArrowUp, FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox, FiCrop, FiRepeat } from 'react-icons/fi';
+import { FiArrowDown, FiType, FiImage, FiSmile, FiEdit3, FiLayers, FiMove, FiTrash2, FiBox, FiCrop } from 'react-icons/fi';
 
 export default function PropertyDock({ 
     fabricRef, brushColor, setBrushColor, updateTexture, fastSync, isDrawing, setIsDrawing,

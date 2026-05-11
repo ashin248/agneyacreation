@@ -12,7 +12,6 @@ import {
   Package,
   LogIn,
   ChevronDown,
-  Sparkles,
   ShoppingCart,
   MapPin,
   Moon,
@@ -51,10 +50,13 @@ const Navbar = () => {
 
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  // Close mobile menu on route change
+  // Close mobile menu on route change asynchronously to prevent render blocking
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setIsUserMenuOpen(false);
+    let timeout = setTimeout(() => {
+        setIsMobileMenuOpen(false);
+        setIsUserMenuOpen(false);
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [location.pathname]);
 
   // Scroll detection for glassmorphism effect

@@ -121,10 +121,6 @@ const productSchema = new mongoose.Schema(
       type: String, // ID referencing the front-end TwoDTemplateLibrary.js
       default: null
     },
-    model3d: {
-      type: String, // GLB URL (Legacy/Custom)
-      default: null
-    },
     blankFrontImage: {
       type: String, // URL for 2D front view
       default: null

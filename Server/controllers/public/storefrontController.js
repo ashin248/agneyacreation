@@ -164,9 +164,6 @@ const submitCustomDesignRequest = async (req, res) => {
     try {
         const user = await User.findOne({ phone: phone.trim() });
         if (user) userId = user._id;
-    } catch (e) {
-        console.log("Non-fatal: User lookup failed during design sub.");
-    }
 
     const newDesignRequest = new CustomDesign({
       user: userId,
@@ -186,7 +183,6 @@ const submitCustomDesignRequest = async (req, res) => {
 
     await newDesignRequest.save();
 
-    console.log(`[CUSTOM-DESIGN] Success: New request from ${name} (${phone})`);
     res.status(201).json({ success: true, message: 'Custom design request submitted successfully.' });
   } catch (err) {
     console.error('CRITICAL ERROR during Custom Design Submission:');
@@ -446,9 +442,6 @@ const createPublicOrder = async (req, res) => {
     let dbUser = null;
     try {
         dbUser = await User.findOne({ phone: customer.phone.trim() });
-    } catch (e) {
-        console.log("Non-fatal: User search failed during order.");
-    }
 
     // 1. Server-Side Price & Stock Validation
     let calculatedSubtotal = 0;
@@ -531,9 +524,6 @@ const createPublicOrder = async (req, res) => {
             if (!dbProduct.isBulkEnabled) {
                 console.error(`[ORDER-ERROR] Insufficient stock for ${dbProduct.name} (${dbVariation.size || targetSku}). Available: ${dbVariation.stock}, Requested: ${item.quantity}`);
                 return res.status(400).json({ success: false, message: `Insufficient stock for ${dbProduct.name} (${dbVariation.size || targetSku}).` });
-            } else {
-                console.log(`[ORDER-LOG] Allowing out-of-stock Bulk Order for ${dbProduct.name}`);
-            }
         }
         
         variationModifier = dbVariation.priceModifier || 0;
@@ -702,7 +692,6 @@ const createPublicOrder = async (req, res) => {
                 });
 
                 await designEntry.save();
-                console.log(`[PIPELINE-SYNC] Custom Design created for ${item.name}`);
             }
         }
     } catch (syncErr) {
@@ -973,7 +962,6 @@ const createRazorpayOrder = async (req, res) => {
 const verifyRazorpayPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    console.log(`[PAYMENT-VERIFY] Verifying signature for Order: ${razorpay_order_id}`);
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
@@ -982,7 +970,6 @@ const verifyRazorpayPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      console.log(`[PAYMENT-VERIFY] ✅ Success signature match for: ${razorpay_order_id}`);
       return res.status(200).json({ success: true, message: "Payment verified successfully" });
     } else {
       console.error(`[PAYMENT-VERIFY] ❌ Signature mismatch for order: ${razorpay_order_id}`);
@@ -1038,7 +1025,6 @@ const removeBackgroundImage = async (req, res) => {
 
     // Reverting to Local Python AI Server to save costs
     const targetUrl = 'http://127.0.0.1:7000/api/remove';
-    console.log(`[BG-REMOVAL] Proxying to local AI: ${targetUrl} (Free)`);
 
     const form = new FormData();
     // Most local rembg APIs expect 'file' or 'image'
@@ -1060,7 +1046,6 @@ const removeBackgroundImage = async (req, res) => {
     });
 
     if (response.data && response.data.byteLength > 0) {
-        console.log('[BG-REMOVAL] Success: Free local processing complete!');
         res.set('Content-Type', 'image/png');
         return res.status(200).send(response.data);
     } else {

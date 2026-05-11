@@ -5,10 +5,8 @@ import { useAuth } from '../../../context/AuthContext';
 import { useCart } from '../../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { 
-    FiPlus, FiTrash2, FiCornerUpLeft, FiCornerUpRight,
-    FiArrowUp, FiArrowDown, FiZap, FiX, FiBox,
-    FiSmile, FiGrid, FiInfo, FiShoppingBag, FiMaximize, FiMinimize, FiRepeat, FiMove,
-    FiShoppingCart, FiArrowRight, FiCreditCard, FiMaximize2, FiMinimize2
+    FiX,
+    FiShoppingCart, FiArrowRight, FiArrowUp
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { TWOD_TEMPLATES } from '../../TwoD/TwoDTemplateLibrary';

@@ -70,7 +70,6 @@ const AddressForm = ({ onSave, initialData = null }) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        console.log("Current coordinates:", latitude, longitude);
         // Saving coordinates silently in the state
         setFormData((prev) => ({ ...prev, coords: { latitude, longitude } }));
         setLoading(false);

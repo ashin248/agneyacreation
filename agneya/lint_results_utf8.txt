@@ -1,0 +1,259 @@
+﻿
+> agneya@0.0.0 lint
+> eslint .
+
+
+E:\AGNEYAw\agneya\src\Admin\page\DesignAssistance.jsx
+  10:10  error  'activeTab' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  10:21  error  'setActiveTab' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\BulkOrders\B2BOrdersTracker.jsx
+   11:12  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  151:30  error  'e' is defined but never used                                                          no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\CustomDesigns\DesignReviewPanel.jsx
+   13:34  error  'mesh' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   18:13  error  Error: This value cannot be modified
+
+Modifying a value returned from a hook is not allowed. Consider moving the modification into the hook where the value is constructed.
+
+  16 |     useEffect(() => {
+  17 |         if (texture) {
+> 18 |             texture.anisotropy = 16;
+     |             ^^^^^^^ `texture` cannot be modified
+  19 |             texture.needsUpdate = true;
+  20 |         }
+  21 |     }, [texture]);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/immutability
+   54:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  52 |         if (!mesh) mesh = modelGroupRef.current.getObjectByProperty('uuid', anchor.meshId);
+  53 |         
+> 54 |         setTargetMesh(mesh);
+     |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  55 |     }, [obj.uid, objectAnchors, defaultAnchor, modelGroupRef]);
+  56 |
+  57 |     if (!targetMesh) return null;  react-hooks/set-state-in-effect
+  187:12  error  'isSharing' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+  187:23  error  'setIsSharing' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  189:12  error  'statusFilter' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  189:26  error  'setStatusFilter' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  196:12  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  211:18  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  298:18  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\CustomDesigns\QualityControlActions.jsx
+  18:12  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Customers\CustomerOrderHistory.jsx
+  6:53  error  'userEmail' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Dashboard\DashboardStats.jsx
+  18:10  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  53:43  error  'Icon' is defined but never used                                                       no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Dashboard\RecentOrdersTable.jsx
+  9:10  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Dashboard\TopProducts.jsx
+  43:164  error  'idx' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Orders\DesignInquiryTable.jsx
+  8:10  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Orders\OrderFulfillmentTracker.jsx
+  35:19  error  'isPending' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Products\BasicProductInfoForm.jsx
+   14:58  error  'data' is assigned a value but never used                                                                  no-unused-vars
+   14:69  error  'runId' is assigned a value but never used                                                                 no-unused-vars
+   20:9   error  'select2DTemplate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u           no-unused-vars
+   43:9   error  'handleBasicInfoChange' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  143:9   error  'toggleLinkedTemplate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+  158:9   error  'handleOverrideImageChange' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  179:9   error  'selectAllTemplates' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Products\CreateProduct.jsx
+  241:86  error  'id' is defined but never used          no-unused-vars
+  241:90  error  'previewUrl' is defined but never used  no-unused-vars
+  247:93  error  'id' is defined but never used          no-unused-vars
+
+E:\AGNEYAw\agneya\src\Admin\router\Products\EditProduct.jsx
+   94:6   warning  React Hook useEffect has a missing dependency: 'fetchProductDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  265:49  error    'id' is defined but never used                                                                                          no-unused-vars
+  265:53  error    'previewUrl' is defined but never used                                                                                  no-unused-vars
+  271:63  error    'id' is defined but never used                                                                                          no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\AddressForm.jsx
+  54:14  error  'err' is defined but never used  no-unused-vars
+  78:8   error  'err' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Navbar.jsx
+   56:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  54 |   // Close mobile menu on route change
+  55 |   useEffect(() => {
+> 56 |     setIsMobileMenuOpen(false);
+     |     ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |     setIsUserMenuOpen(false);
+  58 |   }, [location.pathname]);
+  59 |  react-hooks/set-state-in-effect
+  128:50  error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  206:51  error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+  309:38  error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\ProductCard.jsx
+  23:29  error  'setSelectedVariation' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  27:9   error  'handleBuyNow' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u          no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\StarRating.jsx
+  4:9  error  'fullStars' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\PropertyDock.jsx
+   5:68  error  'isDrawing' is defined but never used     no-unused-vars
+  10:5   error  'premiumFonts' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\StudioOverlayInner.jsx
+   23:124  error  'initial2DModelIdx' is assigned a value but never used                                               no-unused-vars
+   31:9    error  'designMode' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u           no-unused-vars
+   31:21   error  'setDesignMode' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u        no-unused-vars
+   37:39   error  'setActive2DModelIdx' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   46:11   error  'activeTemplate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+  255:11   error  'switchVariation' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+  347:31   error  'isCircle' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+  422:18   error  'e' is defined but never used                                                                        no-unused-vars
+  473:18   error  'e' is defined but never used                                                                        no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\ToolSidebar.jsx
+   5:5   error  'addText' is defined but never used            no-unused-vars
+  10:17  error  'active2DModelIdx' is defined but never used   no-unused-vars
+  10:35  error  'activeSupportSide' is defined but never used  no-unused-vars
+  10:54  error  'handleSwitchSide' is defined but never used   no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\TopNavigation.jsx
+  5:47  error  'handleSwitchSide' is defined but never used      no-unused-vars
+  6:5   error  'twoDModels' is defined but never used            no-unused-vars
+  6:17  error  'active2DModelIdx' is defined but never used      no-unused-vars
+  7:5   error  'activeSupportSide' is defined but never used     no-unused-vars
+  7:24  error  'setActiveSupportSide' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\Workspace2D.jsx
+    3:10  error    'phoneBrands' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+   16:5   error    'initialMode' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+   18:22  error    'setActiveStudioTab' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+   20:40  error    'canvasObjects' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   23:17  error    'active2DModelIdx' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+   23:35  error    'activeSupportSide' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+   23:54  error    'setActiveSupportSide' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+   36:11  error    'effectiveShapeConfig' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   38:11  error    'syncPositionalOffsets' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   59:8   warning  React Hook useCallback has a missing dependency: 'fabricRef'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+   76:8   warning  React Hook useCallback has a missing dependency: 'fabricRef'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  111:8   warning  React Hook useCallback has a missing dependency: 'fabricRef'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  156:8   warning  React Hook useCallback has a missing dependency: 'fabricRef'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  288:8   warning  React Hook useEffect has missing dependencies: 'canvasRef', 'effectiveCanvasConfig?.height', 'effectiveCanvasConfig?.width', 'fabricRef', 'historyRef', 'isHistoryRecording', 'product?.phoneMask', 'resizeRef', and 'viewportRef'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+  365:8   warning  React Hook useEffect has a missing dependency: 'fabricRef'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  490:8   warning  React Hook useEffect has missing dependencies: 'fabricRef' and 'resizeRef'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  495:9   error    Error: This value cannot be modified
+
+Modifying component props or hook arguments is not allowed. Consider using a local variable instead.
+
+  493 |         if (historyStep === -1 || historyStep === lastSavedHistoryStep.current || isHistoryRecording.current || !fabricRef.current) return;
+  494 |         lastSavedHistoryStep.current = historyStep;
+> 495 |         isHistoryRecording.current = true;
+      |         ^^^^^^^^^^^^^^^^^^ `isHistoryRecording` cannot be modified
+  496 |         
+  497 |         // Preserve excluded objects (like model masks) that are not saved in history
+  498 |         const excludedObjects = fabricRef.current.getObjects().filter(o => o.excludeFromExport);
+
+Hint: If this value is a Ref (value returned by `useRef()`), rename the variable to end in "Ref"  react-hooks/immutability
+  507:8   warning  React Hook useEffect has missing dependencies: 'fabricRef', 'historyRef', and 'isHistoryRecording'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\components\Workspace3D.jsx
+    3:48  error  'useTexture' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   24:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  22 |             });
+  23 |             targetRef.current = found;
+> 24 |             setTargetMesh(found);
+     |             ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  25 |         }
+  26 |     }, [scene, anchor?.meshId]);
+  27 |                                                                                                                                                         react-hooks/set-state-in-effect
+  104:42  error  'product' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  264:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  262 |             const groupPosVec = modelGroupRef.current ? modelGroupRef.current.worldToLocal(worldPoint.clone()) : localPoint;
+  263 |
+> 264 |             setDefaultAnchor({
+      |             ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  265 |                 meshId: bestTarget.uuid,
+  266 |                 meshName: bestTarget.name,
+  267 |                 pos: defaultPos,  react-hooks/set-state-in-effect
+
+E:\AGNEYAw\agneya\src\Client\components\Studio\context\StudioContext.jsx
+   1:27  error    'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                     no-unused-vars
+   1:38  error    'useRef' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                        no-unused-vars
+  27:11  warning  The 'twoDModels' logical expression could make the dependencies of useMemo Hook (at line 71) change on every render. To fix this, wrap the initialization of 'twoDModels' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+E:\AGNEYAw\agneya\src\Client\components\Three\ProductLibrary.jsx
+  87:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\AGNEYAw\agneya\src\Client\context\AuthContext.jsx
+  76:20  error  'response' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\BulkInquiry.jsx
+  94:38  error  'Icon' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\Cart.jsx
+  66:11  error  'baseUnitPrice' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\Checkout.jsx
+  17:17  error  'cartTotal' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\CustomRequest.jsx
+  331:32  error  'Icon' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\ProductDetails.jsx
+  269:11  error  'variationImages' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\Shop.jsx
+  172:17  error  'e' is defined but never used  no-unused-vars
+  172:20  error  Empty block statement          no-empty
+
+E:\AGNEYAw\agneya\src\Client\pages\TrackOrder.jsx
+   95:51  error  'Icon' is defined but never used  no-unused-vars
+  118:47  error  'Icon' is defined but never used  no-unused-vars
+
+E:\AGNEYAw\agneya\src\Client\pages\UserDashboard.jsx
+   38:10  error  'isSidebarOpen' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  134:80  error  'Icon' is defined but never used                                                               no-unused-vars
+  155:67  error  'Icon' is defined but never used                                                               no-unused-vars
+  197:45  error  'Icon' is defined but never used                                                               no-unused-vars
+  299:30  error  'err' is defined but never used                                                                no-unused-vars
+
+Γ£û 106 problems (96 errors, 10 warnings)
+
