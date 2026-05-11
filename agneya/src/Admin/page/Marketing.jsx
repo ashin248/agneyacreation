@@ -13,7 +13,7 @@ function Marketing() {
         { to: '/admin/marketing/banners', label: 'Store Banners' },
         { to: '/admin/marketing/promo-codes', label: 'Coupons & Deals' },
         { to: '/admin/marketing/create-coupon', label: 'New Promotion' },
-        { to: '/admin/marketing/flash-sale', label: 'Flash Events' },
+        // { to: '/admin/marketing/flash-sale', label: 'Flash Events' },
     ];
 
     return (

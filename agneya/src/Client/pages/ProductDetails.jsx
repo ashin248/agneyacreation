@@ -163,6 +163,18 @@ const ProductDetails = () => {
         fetchProduct();
     }, [productId]);
 
+    // Handle Admin "Observe in Studio" auto-trigger
+    useEffect(() => {
+        if (product && window.location.pathname.startsWith('/customize/')) {
+            // Give a small delay for page stability
+            const timer = setTimeout(() => {
+                setInitialStudioMode(product.customizationType === '3D' ? '3d' : '2d');
+                setCustomizingProduct(product);
+            }, 800);
+            return () => clearTimeout(timer);
+        }
+    }, [product]);
+
     // IntersectionObserver for scroll animations
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {

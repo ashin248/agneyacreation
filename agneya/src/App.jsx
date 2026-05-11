@@ -58,6 +58,7 @@ function App() {
             <Route path="shop" element={<Shop />} />
             <Route path="custom-mobile-cases" element={<CustomMobileCases />} />
             <Route path="product/:productId" element={<ProductDetails />} />
+            <Route path="customize/:productId" element={<ProductDetails />} />
             <Route path="cart" element={<Cart />} />
             <Route path="checkout" element={<Checkout />} />
             <Route path="dashboard" element={<UserDashboard />} />

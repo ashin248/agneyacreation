@@ -8,7 +8,7 @@ import PageSubNav from '../components/PageSubNav.jsx';
 function CustomDesigns() {
   const links = [
     { to: '/admin/custom-designs/review', label: 'Design Review Hub' },
-    { to: '/admin/custom-designs/quality-control', label: 'QC Guidelines' },
+    // { to: '/admin/custom-designs/quality-control', label: 'QC Guidelines' },
   ];
 
   return (
