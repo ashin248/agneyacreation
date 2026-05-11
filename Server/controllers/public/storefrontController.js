@@ -1102,6 +1102,8 @@ const uploadManualDesignAssets = async (req, res) => {
     console.error('Manual Asset Upload Failed:', err);
     res.status(500).json({ success: false, message: 'Failed to upload assets.' });
   }
+};
+
 const getPhoneModels = async (req, res) => {
   try {
     const data = await PhoneModel.find({ isActive: true });
