@@ -170,6 +170,9 @@ const submitCustomDesignRequest = async (req, res) => {
     try {
         const user = await User.findOne({ phone: phone.trim() });
         if (user) userId = user._id;
+    } catch (e) {
+        console.error("User lookup failed", e);
+    }
 
     const newDesignRequest = new CustomDesign({
       user: userId,
@@ -448,6 +451,9 @@ const createPublicOrder = async (req, res) => {
     let dbUser = null;
     try {
         dbUser = await User.findOne({ phone: customer.phone.trim() });
+    } catch (e) {
+        console.error("User lookup failed", e);
+    }
 
     // 1. Server-Side Price & Stock Validation
     let calculatedSubtotal = 0;
@@ -530,6 +536,7 @@ const createPublicOrder = async (req, res) => {
             if (!dbProduct.isBulkEnabled) {
                 console.error(`[ORDER-ERROR] Insufficient stock for ${dbProduct.name} (${dbVariation.size || targetSku}). Available: ${dbVariation.stock}, Requested: ${item.quantity}`);
                 return res.status(400).json({ success: false, message: `Insufficient stock for ${dbProduct.name} (${dbVariation.size || targetSku}).` });
+            }
         }
         
         variationModifier = dbVariation.priceModifier || 0;
