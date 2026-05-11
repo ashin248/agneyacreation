@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { getActiveBanners, getStoreFrontPulse, getPublicProducts, getPublicProductById, getPublicCompanyProfile, submitCustomDesignRequest, createPublicOrder, trackPublicOrder, trackUnifiedOrder, syncUser, updateUser, deleteAddress, toggleWishlist, getWishlist, getUserOrders, createRazorpayOrder, verifyRazorpayPayment, handleBulkInquiry, removeBackgroundImage, uploadManualDesignAssets } = require('../../controllers/public/storefrontController');
+const { getActiveBanners, getStoreFrontPulse, getPublicProducts, getPublicProductById, getPublicCompanyProfile, submitCustomDesignRequest, createPublicOrder, trackPublicOrder, trackUnifiedOrder, syncUser, updateUser, deleteAddress, toggleWishlist, getWishlist, getUserOrders, createRazorpayOrder, verifyRazorpayPayment, handleBulkInquiry, removeBackgroundImage, uploadManualDesignAssets, getPhoneModels } = require('../../controllers/public/storefrontController');
 const { getCategories } = require('../../controllers/categoryController');
 const { protectUser } = require('../../middleware/userAuthMiddleware');
 // Multer Config for memory storage
@@ -25,6 +25,9 @@ router.get('/products/:id', getPublicProductById);
 
 // GET /api/public/categories
 router.get('/categories', getCategories);
+
+// GET /api/public/phone-models
+router.get('/phone-models', getPhoneModels);
 
 // POST /api/public/custom-designs
 router.post('/custom-designs', submitCustomDesignRequest);

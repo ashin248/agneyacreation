@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useImperativeHandle, forwardRef, useState } from 'react';
 import * as fabric from 'fabric';
-import { phoneBrands } from '../../../data/MobileCasesDB';
 import * as templateLib from '../../TwoD/TwoDTemplateLibrary';
 
 const Workspace2D = forwardRef(({

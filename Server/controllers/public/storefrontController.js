@@ -6,6 +6,7 @@ const Order = require('../../src/schema/OrderSchema');
 const User = require('../../src/schema/UserSchema');
 const { WholesaleInquiry } = require('../../src/schema/BulkOrderSchema');
 const Settings = require('../../src/schema/SettingsSchema');
+const PhoneModel = require('../../src/schema/PhoneModelSchema');
 const { sendWhatsAppNotification, sendBulkInquiryNotification } = require('../../services/whatsappService');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
@@ -1090,6 +1091,14 @@ const uploadManualDesignAssets = async (req, res) => {
     console.error('Manual Asset Upload Failed:', err);
     res.status(500).json({ success: false, message: 'Failed to upload assets.' });
   }
+const getPhoneModels = async (req, res) => {
+  try {
+    const data = await PhoneModel.find({ isActive: true });
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error('Error fetching phone models:', err);
+    res.status(500).json({ success: false, message: 'Server error while fetching phone models.' });
+  }
 };
 
 module.exports = {
@@ -1112,5 +1121,6 @@ module.exports = {
   verifyRazorpayPayment,
   handleBulkInquiry,
   removeBackgroundImage,
-  uploadManualDesignAssets
+  uploadManualDesignAssets,
+  getPhoneModels
 };

@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { phoneBrands, phoneModels } from '../data/MobileCasesDB';
-import { Smartphone, ArrowLeft, Grid3X3, Search } from 'lucide-react';
+import axios from 'axios';
+import { Smartphone, ArrowLeft, Grid3X3, Search, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO/SEO';
 import LoginModal from '../components/LoginModal';
 const StudioOverlay = React.lazy(() => import('../components/StudioOverlay'));
@@ -11,10 +9,42 @@ const CustomMobileCases = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
+  const [brands, setBrands] = useState([]);
+  const [allModels, setAllModels] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [customizingProduct, setCustomizingProduct] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get('/api/public/phone-models');
+        if (res.data && res.data.success) {
+          // Store brands
+          setBrands(res.data.data.map(b => ({
+            id: b.brand,
+            name: b.brandName,
+            logo: b.logo,
+            theme: b.theme
+          })));
+          
+          // Flatten models for easy searching
+          const flattened = res.data.data.reduce((acc, b) => {
+            return acc.concat(b.models.map(m => ({ ...m, brand: b.brand })));
+          }, []);
+          setAllModels(flattened);
+        }
+      } catch (err) {
+        console.error('Failed to fetch phone models:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchModels();
+  }, []);
 
   const requireLogin = (callback) => {
     if (!currentUser) {
@@ -24,7 +54,7 @@ const CustomMobileCases = () => {
     }
   };
 
-  const filteredModels = phoneModels.filter(model => {
+  const filteredModels = allModels.filter(model => {
     const matchBrand = selectedBrand ? model.brand === selectedBrand : true;
     const matchSearch = model.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchBrand && matchSearch;
@@ -93,7 +123,7 @@ const CustomMobileCases = () => {
                 >
                   All Devices
                 </button>
-                {phoneBrands.map(brand => (
+                {brands.map(brand => (
                   <button
                     key={brand.id}
                     onClick={() => setSelectedBrand(brand.id)}
@@ -124,7 +154,12 @@ const CustomMobileCases = () => {
               />
             </div>
 
-            {filteredModels.length === 0 ? (
+            {loading ? (
+              <div className="py-24 text-center">
+                <Loader2 size={48} className="animate-spin mx-auto mb-4 text-[var(--color-neu-accent)] opacity-40" />
+                <p className="text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: 'var(--color-neu-text)' }}>Syncing Catalog</p>
+              </div>
+            ) : filteredModels.length === 0 ? (
               <div className="py-24 text-center neu-pressed border-dashed border-[var(--color-neu-dark)]">
                 <Smartphone size={36} className="mx-auto mb-5 opacity-20" style={{ color: 'var(--color-neu-text)' }} strokeWidth={1} />
                 <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--color-neu-text)', opacity: 0.6 }}>No matching gear found</p>

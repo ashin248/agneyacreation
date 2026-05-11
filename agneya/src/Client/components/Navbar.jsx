@@ -12,6 +12,7 @@ import {
   Package,
   LogIn,
   ChevronDown,
+  Sparkles,
   ShoppingCart,
   MapPin,
   Moon,
