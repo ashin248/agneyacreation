@@ -1,0 +1,1628 @@
+# Report of Models with Default Layouts
+
+Many phone models in the database have been assigned a default camera layout or body shape. Below is the list grouped by brand:
+
+## Samsung
+### Default Camera (38 models)
+- Galaxy S26 Plus 5G
+- Galaxy S26 5G
+- Galaxy J4 Plus
+- Galaxy J6
+- Galaxy J7 Pro
+- Galaxy Note 20 Ultra
+- Galaxy Note 10 Lite
+- Galaxy Note 10 Plus
+- Galaxy Note 10
+- Galaxy Note 9
+- Galaxy Note 8
+- Galaxy S25 FE 5G
+- Galaxy S25 Edge 5G
+- Galaxy S25 Plus 5G
+- Galaxy S25 5G
+- Galaxy S24 Fe 5G
+- Galaxy S24 5G
+- Galaxy S24 Plus 5G
+- Galaxy S23 FE 5G
+- Galaxy S23 5G
+- Galaxy S23 Plus 5G
+- Galaxy S22 5G
+- Galaxy S22 Plus 5G
+- Galaxy S21 FE 5G
+- Galaxy S20 FE
+- Galaxy S20 FE 5G
+- Galaxy S21
+- Galaxy S21 Plus
+- Galaxy S21 Ultra
+- Galaxy S20 Plus
+- Galaxy S20
+- Galaxy S20 Ultra
+- Galaxy S10 Lite
+- Galaxy S10 Plus
+- Galaxy S10E
+- Galaxy S10
+- Galaxy S9
+- Galaxy S9 Plus
+
+### Default Shape (150 models)
+- Galaxy M17e 5G
+- Galaxy S26 Plus 5G
+- Galaxy S26 5G
+- Galaxy F70e 5G
+- Galaxy A17 5G
+- Galaxy A26 5G
+- Galaxy A56 5G
+- Galaxy A36 5G
+- Galaxy A16 5G
+- Galaxy A06
+- Galaxy A35 5G
+- Galaxy A55 5G
+- Galaxy A15 5G
+- Galaxy A25 5G
+- Galaxy A05
+- Galaxy A05s
+- Galaxy A34 5G
+- Galaxy A54 5G
+- Galaxy A14 4G
+- Galaxy A14 5G
+- Galaxy A04e
+- Galaxy A04s
+- Galaxy A04
+- Galaxy A73 5G
+- Galaxy A33 5G
+- Galaxy A23
+- Galaxy A53 5G
+- Galaxy A13
+- Galaxy A03
+- Galaxy A03 Core
+- Galaxy A03s
+- Galaxy A52s 5G
+- Galaxy A22 4G
+- Galaxy A22 5G
+- Galaxy A52 4G
+- Galaxy A72
+- Galaxy A71 4G
+- Galaxy A12
+- Galaxy A21
+- Galaxy A21s
+- Galaxy A31
+- Galaxy A51
+- Galaxy A70s
+- Galaxy A20s
+- Galaxy A30s
+- Galaxy A50s
+- Galaxy A10s
+- Galaxy A70
+- Galaxy A20
+- Galaxy A10
+- Galaxy A30
+- Galaxy A50
+- Galaxy F07
+- Galaxy F17 5G
+- Galaxy F36 5G
+- Galaxy F56 5G
+- Galaxy F06
+- Galaxy F16 5G
+- Galaxy F05
+- Galaxy F55 5G
+- Galaxy F15 5G
+- Galaxy F34 5G
+- Galaxy F54 5G
+- Galaxy F14 5G
+- Galaxy F04
+- Galaxy F13
+- Galaxy F23 5G
+- Galaxy F42 5G
+- Galaxy F22
+- Galaxy F12
+- Galaxy F02s
+- Galaxy F41
+- Galaxy J4 Plus
+- Galaxy J6
+- Galaxy J7 Pro
+- Galaxy M17 5G
+- Galaxy M07
+- Galaxy M36 5G
+- Galaxy M56 5G
+- Galaxy M06
+- Galaxy M16 5G
+- Galaxy M55s 5G
+- Galaxy M05
+- Galaxy M35 5G
+- Galaxy M15 5G
+- Galaxy M55 5G
+- Galaxy M34 5G
+- Galaxy M14 4G
+- Galaxy M14 5G
+- Galaxy M04
+- Galaxy M13 5G
+- Galaxy M13 4G
+- Galaxy M53 5G
+- Galaxy M33 5G
+- Galaxy M52 5G
+- Galaxy M32 5G
+- Galaxy M32 4G
+- Galaxy M10s
+- Galaxy M21 2021
+- Galaxy M32 4G Prime Edition
+- Galaxy M42 5G
+- Galaxy M12
+- Galaxy M02
+- Galaxy M02s
+- Galaxy M31 Prime Edition
+- Galaxy M51
+- Galaxy M31s
+- Galaxy M01 Core
+- Galaxy M01s
+- Galaxy M01
+- Galaxy M11
+- Galaxy M21
+- Galaxy M31
+- Galaxy M30s
+- Galaxy M40
+- Galaxy M20
+- Galaxy M30
+- Galaxy Note 20 Ultra
+- Galaxy Note 10 Lite
+- Galaxy Note 10 Plus
+- Galaxy Note 10
+- Galaxy Note 9
+- Galaxy Note 8
+- Galaxy S25 FE 5G
+- Galaxy S25 Edge 5G
+- Galaxy S25 Plus 5G
+- Galaxy S25 5G
+- Galaxy S24 Fe 5G
+- Galaxy S24 5G
+- Galaxy S24 Plus 5G
+- Galaxy S23 FE 5G
+- Galaxy S23 5G
+- Galaxy S23 Plus 5G
+- Galaxy S22 5G
+- Galaxy S22 Plus 5G
+- Galaxy S21 FE 5G
+- Galaxy S20 FE
+- Galaxy S20 FE 5G
+- Galaxy S21
+- Galaxy S21 Plus
+- Galaxy S21 Ultra
+- Galaxy S20 Plus
+- Galaxy S20
+- Galaxy S20 Ultra
+- Galaxy S10 Lite
+- Galaxy S10 Plus
+- Galaxy S10E
+- Galaxy S10
+- Galaxy S9
+- Galaxy S9 Plus
+
+## OnePlus
+### Default Shape (15 models)
+- OnePlus 12
+- OnePlus 15R 5G
+- OnePlus 15 5G
+- OnePlus 13s 5G
+- OnePlus 13 5G
+- OnePlus 13R 5G
+- OnePlus 12R 5G
+- OnePlus 11 5G
+- OnePlus 11R 5G
+- OnePlus Nord 6 5G
+- OnePlus Nord 5 5G
+- OnePlus Nord CE5 5G
+- OnePlus Nord 4 5G
+- OnePlus Nord CE 4 Lite 5G
+- OnePlus Nord CE 4
+
+## Xiaomi
+### Default Camera (103 models)
+- Redmi A7 Pro 5G
+- Redmi Note 15 Pro 5G
+- Redmi Note 15 Pro Plus 5G
+- Redmi Note 15 5G
+- Redmi Note 14 SE 5G
+- Redmi Note 14 5G
+- Redmi Note 14 Pro 5G
+- Redmi Note 14 Pro Plus 5G
+- Redmi Note 13 5G
+- Redmi Note 13 Pro 5G
+- Redmi Note 13 Pro Plus 5G
+- Redmi Note 12 4G
+- Redmi Note 12 5G
+- Redmi Note 12 Pro 5G
+- Redmi Note 12 Pro Plus 5G
+- Redmi Note 11 SE
+- Redmi Note 11 Pro Plus 5G
+- Redmi Note 11
+- Redmi Note 11 Pro 5G
+- Redmi Note 11T 5G
+- Redmi Note 10 Lite
+- Redmi Note 10T 5G
+- Redmi Note 10
+- Redmi Note 10 Pro
+- Redmi Note 10 Pro Max
+- Redmi Note 10s
+- Redmi Note 9
+- Redmi Note 9 Pro
+- Redmi Note 9 Pro Max
+- Redmi Note 8 Pro
+- Redmi Note 7S
+- Redmi Note 7 Pro
+- Redmi Note 7
+- Redmi Note 8
+- Redmi Note 5 Pro
+- Redmi 10A Sport
+- Redmi 10 Prime 2022
+- Redmi 10A
+- Redmi 10 Power
+- Redmi 10
+- Redmi 10 Prime
+- Redmi 11 Prime 4G
+- Redmi 11 Prime 5G
+- Redmi 12 4G
+- Redmi 12 5G
+- Redmi 12c
+- Redmi 5
+- Redmi 6 Pro
+- Redmi 6
+- Redmi 7A
+- Redmi 7
+- Redmi 8A
+- Redmi 8
+- Redmi 9A Sport
+- Redmi 9i Sport
+- Redmi 9 Activ
+- Redmi 9
+- Redmi 9 Power
+- Redmi 9i
+- Redmi 9 Prime
+- Redmi 9A
+- Redmi A5
+- Redmi A4 5G
+- Redmi A3X
+- Redmi A3
+- Redmi A2
+- Redmi A2 Plus
+- Redmi A1 Plus
+- Redmi A1
+- Redmi K50i 5G
+- Redmi K20 Pro
+- Redmi K20
+- Redmi S2
+- Redmi Y3
+- Redmi Y2
+- Redmi 15C 5G
+- Redmi 15 5G
+- Redmi 14C 5G
+- Redmi 13 5G
+- Redmi 13C 5G
+- Redmi 13C 4G
+- Xiaomi 17 5G
+- Xiaomi 17 Ultra 5G
+- Xiaomi 15 Ultra 5G
+- Xiaomi 15 5G
+- Xiaomi 14 Civi
+- Xiaomi 14 5G
+- Xiaomi 14 Ultra
+- Xiaomi 13 Pro 5G
+- Xiaomi 12 Pro 5G
+- Xiaomi 11i 5G
+- Xiaomi 11i Hypercharge 5G
+- Xiaomi 11T Pro 5G
+- Mi 11 Lite NE 5G
+- Mi 11X 5G
+- Mi 10 5G
+- Mi 11 Ultra 5G
+- Mi 11X Pro 5G
+- Mi 10T Pro 5G
+- Mi 10T 5G
+- Mi A2 Lite
+- Mi 10i 5G
+- Mi A3
+
+### Default Shape (103 models)
+- Redmi A7 Pro 5G
+- Redmi Note 15 Pro 5G
+- Redmi Note 15 Pro Plus 5G
+- Redmi Note 15 5G
+- Redmi Note 14 SE 5G
+- Redmi Note 14 5G
+- Redmi Note 14 Pro 5G
+- Redmi Note 14 Pro Plus 5G
+- Redmi Note 13 5G
+- Redmi Note 13 Pro 5G
+- Redmi Note 13 Pro Plus 5G
+- Redmi Note 12 4G
+- Redmi Note 12 5G
+- Redmi Note 12 Pro 5G
+- Redmi Note 12 Pro Plus 5G
+- Redmi Note 11 SE
+- Redmi Note 11 Pro Plus 5G
+- Redmi Note 11
+- Redmi Note 11 Pro 5G
+- Redmi Note 11T 5G
+- Redmi Note 10 Lite
+- Redmi Note 10T 5G
+- Redmi Note 10
+- Redmi Note 10 Pro
+- Redmi Note 10 Pro Max
+- Redmi Note 10s
+- Redmi Note 9
+- Redmi Note 9 Pro
+- Redmi Note 9 Pro Max
+- Redmi Note 8 Pro
+- Redmi Note 7S
+- Redmi Note 7 Pro
+- Redmi Note 7
+- Redmi Note 8
+- Redmi Note 5 Pro
+- Redmi 10A Sport
+- Redmi 10 Prime 2022
+- Redmi 10A
+- Redmi 10 Power
+- Redmi 10
+- Redmi 10 Prime
+- Redmi 11 Prime 4G
+- Redmi 11 Prime 5G
+- Redmi 12 4G
+- Redmi 12 5G
+- Redmi 12c
+- Redmi 5
+- Redmi 6 Pro
+- Redmi 6
+- Redmi 7A
+- Redmi 7
+- Redmi 8A
+- Redmi 8
+- Redmi 9A Sport
+- Redmi 9i Sport
+- Redmi 9 Activ
+- Redmi 9
+- Redmi 9 Power
+- Redmi 9i
+- Redmi 9 Prime
+- Redmi 9A
+- Redmi A5
+- Redmi A4 5G
+- Redmi A3X
+- Redmi A3
+- Redmi A2
+- Redmi A2 Plus
+- Redmi A1 Plus
+- Redmi A1
+- Redmi K50i 5G
+- Redmi K20 Pro
+- Redmi K20
+- Redmi S2
+- Redmi Y3
+- Redmi Y2
+- Redmi 15C 5G
+- Redmi 15 5G
+- Redmi 14C 5G
+- Redmi 13 5G
+- Redmi 13C 5G
+- Redmi 13C 4G
+- Xiaomi 17 5G
+- Xiaomi 17 Ultra 5G
+- Xiaomi 15 Ultra 5G
+- Xiaomi 15 5G
+- Xiaomi 14 Civi
+- Xiaomi 14 5G
+- Xiaomi 14 Ultra
+- Xiaomi 13 Pro 5G
+- Xiaomi 12 Pro 5G
+- Xiaomi 11i 5G
+- Xiaomi 11i Hypercharge 5G
+- Xiaomi 11T Pro 5G
+- Mi 11 Lite NE 5G
+- Mi 11X 5G
+- Mi 10 5G
+- Mi 11 Ultra 5G
+- Mi 11X Pro 5G
+- Mi 10T Pro 5G
+- Mi 10T 5G
+- Mi A2 Lite
+- Mi 10i 5G
+- Mi A3
+
+## Poco
+### Default Camera (45 models)
+- Poco X8 Pro 5G
+- Poco X8 Pro Max 5G
+- Poco C85X 5G
+- Poco M8 5G
+- Poco M7 Plus 5G
+- Poco F7 5G
+- Poco C71
+- Poco M7 5G
+- Poco X7 5G
+- Poco X7 Pro 5G
+- Poco M7 Pro 5G
+- Poco C75 5G
+- Poco M6 Plus 5G
+- Poco F6 5G
+- Poco C61
+- Poco X6 5G
+- Poco X6 Pro 5G
+- Poco X6 Neo 5G
+- Poco M6 5G
+- Poco C65
+- Poco M6 Pro 5G
+- Poco F5
+- Poco C51
+- Poco X5 5G
+- Poco C55
+- Poco X5 Pro 5G
+- Poco C50
+- Poco M5
+- Poco F4 5G
+- Poco X4 GT 5G
+- Poco M4 5G
+- Poco X4 Pro 5G
+- Poco M4 Pro 4G
+- Poco M4 Pro 5G
+- Poco C31
+- Poco F3 GT
+- Poco M3 Pro 5G
+- Poco M2 Reloaded
+- Poco X3 Pro
+- Poco M3
+- Poco X3
+- Poco M2
+- Poco M2 Pro
+- Poco X2
+- Poco F1
+
+### Default Shape (45 models)
+- Poco X8 Pro 5G
+- Poco X8 Pro Max 5G
+- Poco C85X 5G
+- Poco M8 5G
+- Poco M7 Plus 5G
+- Poco F7 5G
+- Poco C71
+- Poco M7 5G
+- Poco X7 5G
+- Poco X7 Pro 5G
+- Poco M7 Pro 5G
+- Poco C75 5G
+- Poco M6 Plus 5G
+- Poco F6 5G
+- Poco C61
+- Poco X6 5G
+- Poco X6 Pro 5G
+- Poco X6 Neo 5G
+- Poco M6 5G
+- Poco C65
+- Poco M6 Pro 5G
+- Poco F5
+- Poco C51
+- Poco X5 5G
+- Poco C55
+- Poco X5 Pro 5G
+- Poco C50
+- Poco M5
+- Poco F4 5G
+- Poco X4 GT 5G
+- Poco M4 5G
+- Poco X4 Pro 5G
+- Poco M4 Pro 4G
+- Poco M4 Pro 5G
+- Poco C31
+- Poco F3 GT
+- Poco M3 Pro 5G
+- Poco M2 Reloaded
+- Poco X3 Pro
+- Poco M3
+- Poco X3
+- Poco M2
+- Poco M2 Pro
+- Poco X2
+- Poco F1
+
+## Vivo
+### Default Camera (120 models)
+- Vivo V70 Fe 5G
+- Vivo V70 5G
+- Vivo V70 Elite 5G
+- Vivo S1
+- Vivo T4 Pro 5G
+- Vivo T4R 5G
+- Vivo T4 Lite
+- Vivo T4 Ultra 5G
+- Vivo T4 5G
+- Vivo T4x 5G
+- Vivo T3 Ultra
+- Vivo T3 Pro 5G
+- Vivo T3 Lite 5G
+- Vivo T3X 5G
+- Vivo T3 5G
+- Vivo T2 Pro 5G
+- Vivo T2x 5G
+- Vivo T1X
+- Vivo T1 44W 4G
+- Vivo T1 Pro 5G
+- Vivo T1 5G
+- Vivo U20
+- Vivo V60e 5G
+- Vivo V60 5G
+- Vivo V50 5G
+- Vivo V50e 5G
+- Vivo V40e 5G
+- Vivo V40 5G
+- Vivo V40 Pro 5G
+- Vivo V30E 5G
+- Vivo V30 Pro 5G
+- Vivo V30 5G
+- Vivo V29 5G
+- Vivo V29 Pro 5G
+- Vivo V29e 5G
+- Vivo V27 5G
+- Vivo V27 Pro 5G
+- Vivo V25 5G
+- Vivo V25 Pro 5G
+- Vivo V23e 5G
+- Vivo V23 5G
+- Vivo V23 Pro 5G
+- Vivo V21E 5G
+- Vivo V21 5G
+- Vivo V20
+- Vivo V20 2021
+- Vivo V20 Pro 5G
+- Vivo V20 SE
+- Vivo V17
+- Vivo V17 Pro
+- Vivo V15
+- Vivo V15 Pro
+- Vivo V11
+- Vivo V11 Pro
+- Vivo V9 Pro
+- Vivo V9 Youth
+- Vivo V9
+- Vivo V7 Plus
+- Vivo X50 Pro 5G
+- Vivo X50 5G
+- Vivo Y31 5G
+- Vivo Y31 Pro 5G
+- Vivo Y400 5G
+- Vivo Y400 Pro 5G
+- Vivo Y19 5G
+- Vivo Y39 5G
+- Vivo Y19e
+- Vivo Y29 5G
+- Vivo Y300 5G
+- Vivo Y19s 5G
+- Vivo Y18T
+- Vivo Y300 Plus 5G
+- Vivo Y18i
+- Vivo Y28e 5G
+- Vivo Y58 5G
+- Vivo Y200 Pro 5G
+- Vivo Y18
+- Vivo Y18e
+- Vivo Y200E 5G
+- Vivo Y28 5G
+- Vivo Y28s 5G
+- Vivo Y17s
+- Vivo Y200 5G
+- Vivo Y27
+- Vivo Y36
+- Vivo Y02t
+- Vivo Y56 5G
+- Vivo Y02
+- Vivo Y22
+- Vivo Y16
+- Vivo Y35
+- Vivo Y75 4G
+- Vivo Y01
+- Vivo Y15c
+- Vivo Y21G
+- Vivo Y75 5G
+- Vivo Y21A
+- Vivo Y21e
+- Vivo Y33T
+- Vivo Y21T
+- Vivo Y15s
+- Vivo Y33s
+- Vivo Y21
+- Vivo Y72 5G
+- Vivo Y15
+- Vivo Y85
+- Vivo Y30
+- Vivo Y50
+- Vivo Y19
+- Vivo Y11
+- Vivo Y12
+- Vivo Y17
+- Vivo Y91
+- Vivo Y93
+- Vivo Y95
+- Vivo Y83 Pro
+- Vivo Y71
+- Vivo Y55s
+- Vivo Z1X
+- Vivo Z1 Pro
+
+### Default Shape (135 models)
+- Vivo V70 Fe 5G
+- Vivo V70 5G
+- Vivo V70 Elite 5G
+- Vivo X200T 5G
+- Vivo S1
+- Vivo T4 Pro 5G
+- Vivo T4R 5G
+- Vivo T4 Lite
+- Vivo T4 Ultra 5G
+- Vivo T4 5G
+- Vivo T4x 5G
+- Vivo T3 Ultra
+- Vivo T3 Pro 5G
+- Vivo T3 Lite 5G
+- Vivo T3X 5G
+- Vivo T3 5G
+- Vivo T2 Pro 5G
+- Vivo T2x 5G
+- Vivo T1X
+- Vivo T1 44W 4G
+- Vivo T1 Pro 5G
+- Vivo T1 5G
+- Vivo U20
+- Vivo V60e 5G
+- Vivo V60 5G
+- Vivo V50 5G
+- Vivo V50e 5G
+- Vivo V40e 5G
+- Vivo V40 5G
+- Vivo V40 Pro 5G
+- Vivo V30E 5G
+- Vivo V30 Pro 5G
+- Vivo V30 5G
+- Vivo V29 5G
+- Vivo V29 Pro 5G
+- Vivo V29e 5G
+- Vivo V27 5G
+- Vivo V27 Pro 5G
+- Vivo V25 5G
+- Vivo V25 Pro 5G
+- Vivo V23e 5G
+- Vivo V23 5G
+- Vivo V23 Pro 5G
+- Vivo V21E 5G
+- Vivo V21 5G
+- Vivo V20
+- Vivo V20 2021
+- Vivo V20 Pro 5G
+- Vivo V20 SE
+- Vivo V17
+- Vivo V17 Pro
+- Vivo V15
+- Vivo V15 Pro
+- Vivo V11
+- Vivo V11 Pro
+- Vivo V9 Pro
+- Vivo V9 Youth
+- Vivo V9
+- Vivo V7 Plus
+- Vivo X300 5G
+- Vivo X300 Pro 5G
+- Vivo X200 FE 5G
+- Vivo X200 5G
+- Vivo X200 Pro 5G
+- Vivo X100 5G
+- Vivo X100 Pro 5G
+- Vivo X90 5G
+- Vivo X80 5G
+- Vivo X80 Pro 5G
+- Vivo X70 Pro Plus 5G
+- Vivo X70 Pro 5G
+- Vivo X60 Pro Plus 5G
+- Vivo X60 5G
+- Vivo X50 Pro 5G
+- Vivo X50 5G
+- Vivo Y31 5G
+- Vivo Y31 Pro 5G
+- Vivo Y400 5G
+- Vivo Y400 Pro 5G
+- Vivo Y19 5G
+- Vivo Y39 5G
+- Vivo Y19e
+- Vivo Y29 5G
+- Vivo Y300 5G
+- Vivo Y19s 5G
+- Vivo Y18T
+- Vivo Y300 Plus 5G
+- Vivo Y18i
+- Vivo Y28e 5G
+- Vivo Y58 5G
+- Vivo Y200 Pro 5G
+- Vivo Y18
+- Vivo Y18e
+- Vivo Y200E 5G
+- Vivo Y28 5G
+- Vivo Y28s 5G
+- Vivo Y17s
+- Vivo Y200 5G
+- Vivo Y27
+- Vivo Y36
+- Vivo Y02t
+- Vivo Y56 5G
+- Vivo Y02
+- Vivo Y22
+- Vivo Y16
+- Vivo Y35
+- Vivo Y75 4G
+- Vivo Y01
+- Vivo Y15c
+- Vivo Y21G
+- Vivo Y75 5G
+- Vivo Y21A
+- Vivo Y21e
+- Vivo Y33T
+- Vivo Y21T
+- Vivo Y15s
+- Vivo Y33s
+- Vivo Y21
+- Vivo Y72 5G
+- Vivo Y15
+- Vivo Y85
+- Vivo Y30
+- Vivo Y50
+- Vivo Y19
+- Vivo Y11
+- Vivo Y12
+- Vivo Y17
+- Vivo Y91
+- Vivo Y93
+- Vivo Y95
+- Vivo Y83 Pro
+- Vivo Y71
+- Vivo Y55s
+- Vivo Z1X
+- Vivo Z1 Pro
+
+## Realme
+### Default Camera (144 models)
+- Realme 16 5G
+- Realme 15X 5G
+- Realme 15T 5G
+- Realme 15 5G
+- Realme 15 Pro 5G
+- Realme 14T 5G
+- Realme 14 5G
+- Realme 14 Pro Lite 5G
+- Realme 14 Pro 5G
+- Realme 14 Pro Plus 5G
+- Realme 14x 5G
+- Realme 13 5G
+- Realme 13 Plus 5G
+- Realme 13 Pro 5G
+- Realme 13 Pro Plus 5G
+- Realme 2 Pro
+- Realme 3i
+- Realme 3 Pro
+- Realme 3
+- Realme 5i
+- Realme 5s
+- Realme 5
+- Realme 5 Pro
+- Realme 6i
+- Realme 6
+- Realme 6 Pro
+- Realme 7i
+- Realme 7 Pro
+- Realme 8i
+- Realme 8s 5G
+- Realme 8 5G
+- Realme 9i 5G
+- Realme 9 4G
+- Realme 9 5G
+- Realme 9 5G Speed Edition
+- Realme 9 Pro 5G
+- Realme 9 Pro Plus 5G
+- Realme 10
+- Realme 10 Pro 5G
+- Realme 10 Pro Plus 5G
+- Realme 11 5G
+- Realme 11x 5G
+- Realme 11 Pro Plus 5G
+- Realme 11 Pro 5G
+- Realme 12X 5G
+- Realme 12 5G
+- Realme 12 Plus 5G
+- Realme C83 5G
+- Realme C85 5G
+- Realme C71 4G
+- Realme C71 5G
+- Realme C73 5G
+- Realme C75 5G
+- Realme C63 5G
+- Realme C63
+- Realme C65 5G
+- Realme C67 5G
+- Realme C51
+- Realme C53
+- Realme C55
+- Realme C33 2023
+- Realme C30s
+- Realme C33
+- Realme C30
+- Realme C31
+- Realme C35
+- Realme C25Y
+- Realme C21Y
+- Realme C25s
+- Realme C11 2021
+- Realme C25
+- Realme C21
+- Realme C20
+- Realme C12
+- Realme C15
+- Realme C3
+- Realme C2
+- Realme C1
+- Realme GT 7 5G
+- Realme GT 7T 5G
+- Realme GT 6
+- Realme GT 6T 5G
+- Realme GT Neo 3T
+- Realme GT Neo 3 150W
+- Realme GT 2 Pro 5G
+- Realme GT Neo 3 5G
+- Realme GT 2
+- Realme GT Neo 2 5G
+- Realme GT Master Edition
+- Realme GT 5G
+- Realme U1
+- Realme X7 Max 5G
+- Realme X7
+- Realme X7 Pro 5G
+- Realme X3
+- Realme X3 SuperZoom
+- Realme X50 Pro 5G
+- Realme X2 Pro
+- Realme X2
+- Realme XT
+- Realme Narzo Power 5G
+- Realme Narzo 90 5G
+- Realme Narzo 90x 5G
+- Realme Narzo 80 Lite 4G
+- Realme Narzo 80 Lite 5G
+- Realme Narzo 80 Pro 5G
+- Realme Narzo 80x 5G
+- Realme Narzo N63
+- Realme Narzo N65 5G
+- Realme Narzo 70 5G
+- Realme Narzo 70X 5G
+- Realme Narzo 70 Pro 5G
+- Realme Narzo 60x 5G
+- Realme Narzo 60 5G
+- Realme Narzo 60 Pro 5G
+- Realme Narzo N53
+- Realme Narzo N55
+- Realme Narzo 50i Prime
+- Realme Narzo 50 5G
+- Realme Narzo 50 Pro 5G
+- Realme Narzo 50A Prime
+- Realme Narzo 50
+- Realme Narzo 50i
+- Realme Narzo 30 5G
+- Realme Narzo 30 Pro 5G
+- Realme Narzo 30A
+- Realme Narzo 20
+- Realme Narzo 20A
+- Realme Narzo 10
+- Realme Narzo 10A
+- Realme P4 Lite 4G
+- Realme P4 Power 5G
+- Realme P4X 5G
+- Realme P3 Lite 5G
+- Realme P4 5G
+- Realme P4 Pro 5G
+- Realme P3 5G
+- Realme P3 Ultra 5G
+- Realme P3 Pro 5G
+- Realme P3x 5G
+- Realme P1 Speed 5G
+- Realme P2 Pro 5G
+- Realme P1 5G
+- Realme P1 Pro 5G
+
+### Default Shape (150 models)
+- Realme 16 5G
+- Realme 16 Pro 5G
+- Realme 16 Pro Plus 5G
+- Realme 15X 5G
+- Realme 15T 5G
+- Realme 15 5G
+- Realme 15 Pro 5G
+- Realme 14T 5G
+- Realme 14 5G
+- Realme 14 Pro Lite 5G
+- Realme 14 Pro 5G
+- Realme 14 Pro Plus 5G
+- Realme 14x 5G
+- Realme 13 5G
+- Realme 13 Plus 5G
+- Realme 13 Pro 5G
+- Realme 13 Pro Plus 5G
+- Realme 2 Pro
+- Realme 3i
+- Realme 3 Pro
+- Realme 3
+- Realme 5i
+- Realme 5s
+- Realme 5
+- Realme 5 Pro
+- Realme 6i
+- Realme 6
+- Realme 6 Pro
+- Realme 7i
+- Realme 7 Pro
+- Realme 8i
+- Realme 8s 5G
+- Realme 8 5G
+- Realme 9i 5G
+- Realme 9 4G
+- Realme 9 5G
+- Realme 9 5G Speed Edition
+- Realme 9 Pro 5G
+- Realme 9 Pro Plus 5G
+- Realme 10
+- Realme 10 Pro 5G
+- Realme 10 Pro Plus 5G
+- Realme 11 5G
+- Realme 11x 5G
+- Realme 11 Pro Plus 5G
+- Realme 11 Pro 5G
+- Realme 12X 5G
+- Realme 12 5G
+- Realme 12 Plus 5G
+- Realme 12 Pro 5G
+- Realme 12 Pro Plus 5G
+- Realme C83 5G
+- Realme C85 5G
+- Realme C71 4G
+- Realme C71 5G
+- Realme C73 5G
+- Realme C75 5G
+- Realme C63 5G
+- Realme C63
+- Realme C65 5G
+- Realme C67 5G
+- Realme C51
+- Realme C53
+- Realme C55
+- Realme C33 2023
+- Realme C30s
+- Realme C33
+- Realme C30
+- Realme C31
+- Realme C35
+- Realme C25Y
+- Realme C21Y
+- Realme C25s
+- Realme C11 2021
+- Realme C25
+- Realme C21
+- Realme C20
+- Realme C12
+- Realme C15
+- Realme C3
+- Realme C2
+- Realme C1
+- Realme GT 8 Pro
+- Realme GT 7 5G
+- Realme GT 7T 5G
+- Realme GT 7 Pro
+- Realme GT 6
+- Realme GT 6T 5G
+- Realme GT Neo 3T
+- Realme GT Neo 3 150W
+- Realme GT 2 Pro 5G
+- Realme GT Neo 3 5G
+- Realme GT 2
+- Realme GT Neo 2 5G
+- Realme GT Master Edition
+- Realme GT 5G
+- Realme U1
+- Realme X7 Max 5G
+- Realme X7
+- Realme X7 Pro 5G
+- Realme X3
+- Realme X3 SuperZoom
+- Realme X50 Pro 5G
+- Realme X2 Pro
+- Realme X2
+- Realme XT
+- Realme Narzo Power 5G
+- Realme Narzo 90 5G
+- Realme Narzo 90x 5G
+- Realme Narzo 80 Lite 4G
+- Realme Narzo 80 Lite 5G
+- Realme Narzo 80 Pro 5G
+- Realme Narzo 80x 5G
+- Realme Narzo N63
+- Realme Narzo N65 5G
+- Realme Narzo 70 5G
+- Realme Narzo 70X 5G
+- Realme Narzo 70 Pro 5G
+- Realme Narzo 60x 5G
+- Realme Narzo 60 5G
+- Realme Narzo 60 Pro 5G
+- Realme Narzo N53
+- Realme Narzo N55
+- Realme Narzo 50i Prime
+- Realme Narzo 50 5G
+- Realme Narzo 50 Pro 5G
+- Realme Narzo 50A Prime
+- Realme Narzo 50
+- Realme Narzo 50i
+- Realme Narzo 30 5G
+- Realme Narzo 30 Pro 5G
+- Realme Narzo 30A
+- Realme Narzo 20
+- Realme Narzo 20A
+- Realme Narzo 10
+- Realme Narzo 10A
+- Realme P4 Lite 4G
+- Realme P4 Power 5G
+- Realme P4X 5G
+- Realme P3 Lite 5G
+- Realme P4 5G
+- Realme P4 Pro 5G
+- Realme P3 5G
+- Realme P3 Ultra 5G
+- Realme P3 Pro 5G
+- Realme P3x 5G
+- Realme P1 Speed 5G
+- Realme P2 Pro 5G
+- Realme P1 5G
+- Realme P1 Pro 5G
+
+## Oppo
+### Default Camera (113 models)
+- Oppo F33 5G
+- Oppo A6s 5G
+- Oppo A6 5G
+- Oppo K14 5G
+- Oppo K14x 5G
+- Oppo Reno 15C 5G
+- Oppo A6 Pro 5G
+- Oppo A6x 4G
+- Oppo A6x 5G
+- Oppo A5 5G
+- Oppo A5x 4G
+- Oppo A5x 5G
+- Oppo A5 Pro 5G
+- Oppo A3X 4G
+- Oppo A3 5G
+- Oppo A3X 5G
+- Oppo A3 Pro 5G
+- Oppo A59 5G
+- Oppo A79 5G
+- Oppo A18
+- Oppo A38
+- Oppo A58
+- Oppo A78 4G
+- Oppo A78 5G
+- Oppo A17k
+- Oppo A77s
+- Oppo A17
+- Oppo A77 4G
+- Oppo A57 2022
+- Oppo A16E
+- Oppo A96
+- Oppo A76
+- Oppo A16K
+- Oppo A55
+- Oppo A16
+- Oppo A53s 5G
+- Oppo A74 5G
+- Oppo A15s
+- Oppo A15
+- Oppo A33 2020
+- Oppo A12
+- Oppo A52
+- Oppo A53
+- Oppo A5 2020
+- Oppo A9 2020
+- Oppo A9 2019
+- Oppo A5s
+- Oppo A7
+- Oppo A83
+- Oppo A31
+- Oppo F31 5G
+- Oppo F31 Pro 5G
+- Oppo F31 Pro Plus 5G
+- Oppo F29 5G
+- Oppo F29 Pro 5G
+- Oppo F27 5G
+- Oppo F27 Pro Plus 5G
+- Oppo F25 Pro 5G
+- Oppo F23 5G
+- Oppo F21s Pro
+- Oppo F21s Pro 5G
+- Oppo F21 Pro
+- Oppo F21 Pro 5G
+- Oppo F19s
+- Oppo F19
+- Oppo F19 Pro Plus 5G
+- Oppo F17
+- Oppo F17 Pro
+- Oppo F15
+- Oppo F11
+- Oppo F11 Pro
+- Oppo F5
+- Oppo F9
+- Oppo F9 Pro
+- Oppo F5 Youth
+- Oppo Find X9 5G
+- Oppo Find X9 Pro 5G
+- Oppo Find X8 5G
+- Oppo Find X8 Pro 5G
+- Oppo Find X2
+- Oppo K13 Turbo Pro 5G
+- Oppo K13x 5G
+- Oppo K13 5G
+- Oppo K13 Turbo 5G
+- Oppo K12x 5G
+- Oppo K10 5G
+- Oppo K3
+- Oppo Reno 15 5G
+- Oppo Reno 15 Pro 5G
+- Oppo Reno 15 Pro Mini 5G
+- Oppo Reno 14 5G
+- Oppo Reno 14 Pro 5G
+- Oppo Reno 13 5G
+- Oppo Reno 13 Pro 5G
+- Oppo Reno 12 5G
+- Oppo Reno 12 Pro 5G
+- Oppo Reno 11 5G
+- Oppo Reno 11 Pro 5G
+- Oppo Reno 10 5G
+- Oppo Reno 10 Pro 5G
+- Oppo Reno 10 Pro Plus 5G
+- Oppo Reno 8T 5G
+- Oppo Reno 8 5G
+- Oppo Reno 8 Pro 5G
+- Oppo Reno 7 5G
+- Oppo Reno 6 5G
+- Oppo Reno 6 Pro 5G
+- Oppo Reno 5 Pro 5G
+- Oppo Reno 4 Pro
+- Oppo Reno 2
+- Oppo Reno 2F
+- Oppo Reno 2Z
+- Oppo Reno 10X Zoom
+
+### Default Shape (113 models)
+- Oppo F33 5G
+- Oppo A6s 5G
+- Oppo A6 5G
+- Oppo K14 5G
+- Oppo K14x 5G
+- Oppo Reno 15C 5G
+- Oppo A6 Pro 5G
+- Oppo A6x 4G
+- Oppo A6x 5G
+- Oppo A5 5G
+- Oppo A5x 4G
+- Oppo A5x 5G
+- Oppo A5 Pro 5G
+- Oppo A3X 4G
+- Oppo A3 5G
+- Oppo A3X 5G
+- Oppo A3 Pro 5G
+- Oppo A59 5G
+- Oppo A79 5G
+- Oppo A18
+- Oppo A38
+- Oppo A58
+- Oppo A78 4G
+- Oppo A78 5G
+- Oppo A17k
+- Oppo A77s
+- Oppo A17
+- Oppo A77 4G
+- Oppo A57 2022
+- Oppo A16E
+- Oppo A96
+- Oppo A76
+- Oppo A16K
+- Oppo A55
+- Oppo A16
+- Oppo A53s 5G
+- Oppo A74 5G
+- Oppo A15s
+- Oppo A15
+- Oppo A33 2020
+- Oppo A12
+- Oppo A52
+- Oppo A53
+- Oppo A5 2020
+- Oppo A9 2020
+- Oppo A9 2019
+- Oppo A5s
+- Oppo A7
+- Oppo A83
+- Oppo A31
+- Oppo F31 5G
+- Oppo F31 Pro 5G
+- Oppo F31 Pro Plus 5G
+- Oppo F29 5G
+- Oppo F29 Pro 5G
+- Oppo F27 5G
+- Oppo F27 Pro Plus 5G
+- Oppo F25 Pro 5G
+- Oppo F23 5G
+- Oppo F21s Pro
+- Oppo F21s Pro 5G
+- Oppo F21 Pro
+- Oppo F21 Pro 5G
+- Oppo F19s
+- Oppo F19
+- Oppo F19 Pro Plus 5G
+- Oppo F17
+- Oppo F17 Pro
+- Oppo F15
+- Oppo F11
+- Oppo F11 Pro
+- Oppo F5
+- Oppo F9
+- Oppo F9 Pro
+- Oppo F5 Youth
+- Oppo Find X9 5G
+- Oppo Find X9 Pro 5G
+- Oppo Find X8 5G
+- Oppo Find X8 Pro 5G
+- Oppo Find X2
+- Oppo K13 Turbo Pro 5G
+- Oppo K13x 5G
+- Oppo K13 5G
+- Oppo K13 Turbo 5G
+- Oppo K12x 5G
+- Oppo K10 5G
+- Oppo K3
+- Oppo Reno 15 5G
+- Oppo Reno 15 Pro 5G
+- Oppo Reno 15 Pro Mini 5G
+- Oppo Reno 14 5G
+- Oppo Reno 14 Pro 5G
+- Oppo Reno 13 5G
+- Oppo Reno 13 Pro 5G
+- Oppo Reno 12 5G
+- Oppo Reno 12 Pro 5G
+- Oppo Reno 11 5G
+- Oppo Reno 11 Pro 5G
+- Oppo Reno 10 5G
+- Oppo Reno 10 Pro 5G
+- Oppo Reno 10 Pro Plus 5G
+- Oppo Reno 8T 5G
+- Oppo Reno 8 5G
+- Oppo Reno 8 Pro 5G
+- Oppo Reno 7 5G
+- Oppo Reno 6 5G
+- Oppo Reno 6 Pro 5G
+- Oppo Reno 5 Pro 5G
+- Oppo Reno 4 Pro
+- Oppo Reno 2
+- Oppo Reno 2F
+- Oppo Reno 2Z
+- Oppo Reno 10X Zoom
+
+## iQOO
+### Default Camera (32 models)
+- iQOO 15 5G
+- iQOO Z10R
+- iQOO Z10 Lite
+- iQOO Neo 10 5G
+- iQOO Z10 5G
+- iQOO Z10x 5G
+- iQOO Neo 10R 5G
+- iQOO 13 5G
+- iQOO Z9s 5G
+- iQOO Z9s Pro 5G
+- iQOO Z9 Lite 5G
+- iQOO Z9X 5G
+- iQOO Z9 5G
+- iQOO Neo 9 Pro 5G
+- iQOO Z7 Pro 5G
+- iQOO Neo 7 Pro 5G
+- iQOO Neo 7 5G
+- iQOO 11 5G
+- iQOO Z6 Lite 5G
+- iQOO 9T 5G
+- iQOO Z6 Pro 5G
+- iQOO Z6 44W
+- iQOO Neo 6 5G
+- iQOO Z6 5G
+- iQOO 9 5G
+- iQOO 9 Pro 5G
+- iQOO 9 SE 5G
+- iQOO Z5 5G
+- iQOO 7 5G
+- iQOO Z3 5G
+- iQOO 7 Legend 5G
+- iQOO 3 5G
+
+### Default Shape (33 models)
+- iQOO 15 5G
+- iQOO Z10R
+- iQOO Z10 Lite
+- iQOO Neo 10 5G
+- iQOO Z10 5G
+- iQOO Z10x 5G
+- iQOO Neo 10R 5G
+- iQOO 13 5G
+- iQOO Z9s 5G
+- iQOO Z9s Pro 5G
+- iQOO Z9 Lite 5G
+- iQOO Z9X 5G
+- iQOO Z9 5G
+- iQOO Neo 9 Pro 5G
+- iQOO 12 5G
+- iQOO Z7 Pro 5G
+- iQOO Neo 7 Pro 5G
+- iQOO Neo 7 5G
+- iQOO 11 5G
+- iQOO Z6 Lite 5G
+- iQOO 9T 5G
+- iQOO Z6 Pro 5G
+- iQOO Z6 44W
+- iQOO Neo 6 5G
+- iQOO Z6 5G
+- iQOO 9 5G
+- iQOO 9 Pro 5G
+- iQOO 9 SE 5G
+- iQOO Z5 5G
+- iQOO 7 5G
+- iQOO Z3 5G
+- iQOO 7 Legend 5G
+- iQOO 3 5G
+
+## Infinix
+### Default Camera (47 models)
+- Infinix Note Edge 5G
+- Infinix GT 30 Pro 5G
+- Infinix Hot 60 5G
+- Infinix Hot 50 5G
+- Infinix Hot 40i
+- Infinix Hot 30i
+- Infinix Hot 20 Play
+- Infinix Hot 20 5G
+- Infinix Hot 12 Pro
+- Infinix Hot 12 Play
+- Infinix Hot 11 2022
+- Infinix Hot 11
+- Infinix Hot 11s
+- Infinix Hot 10s
+- Infinix Hot 10 Play
+- Infinix Hot 10
+- Infinix Hot 9 Pro
+- Infinix Hot 9
+- Infinix Hot 8
+- Infinix Hot 7 Pro
+- Infinix Note 50s 5G
+- Infinix Note 50x 5G
+- Infinix Note 40X 5G
+- Infinix Note 40 Pro 5G
+- Infinix Note 40 Pro Plus 5G
+- Infinix Note 30 5G
+- Infinix Note 12 Pro
+- Infinix Note 12 Turbo
+- Infinix Note 12
+- Infinix Note 11s
+- Infinix Note 11
+- Infinix Note 10
+- Infinix Note 10 Pro
+- Infinix Note 7
+- Infinix S5 Pro
+- Infinix S5 Lite
+- Infinix Smart 10
+- Infinix Smart 8 Plus
+- Infinix Smart 8
+- Infinix Smart 8 HD
+- Infinix Smart 7 HD
+- Infinix Smart 6 Plus
+- Infinix Smart 6
+- Infinix Smart 6 HD
+- Infinix Smart 5
+- Infinix Zero 40 5G
+- Infinix Zero 20
+
+### Default Shape (47 models)
+- Infinix Note Edge 5G
+- Infinix GT 30 Pro 5G
+- Infinix Hot 60 5G
+- Infinix Hot 50 5G
+- Infinix Hot 40i
+- Infinix Hot 30i
+- Infinix Hot 20 Play
+- Infinix Hot 20 5G
+- Infinix Hot 12 Pro
+- Infinix Hot 12 Play
+- Infinix Hot 11 2022
+- Infinix Hot 11
+- Infinix Hot 11s
+- Infinix Hot 10s
+- Infinix Hot 10 Play
+- Infinix Hot 10
+- Infinix Hot 9 Pro
+- Infinix Hot 9
+- Infinix Hot 8
+- Infinix Hot 7 Pro
+- Infinix Note 50s 5G
+- Infinix Note 50x 5G
+- Infinix Note 40X 5G
+- Infinix Note 40 Pro 5G
+- Infinix Note 40 Pro Plus 5G
+- Infinix Note 30 5G
+- Infinix Note 12 Pro
+- Infinix Note 12 Turbo
+- Infinix Note 12
+- Infinix Note 11s
+- Infinix Note 11
+- Infinix Note 10
+- Infinix Note 10 Pro
+- Infinix Note 7
+- Infinix S5 Pro
+- Infinix S5 Lite
+- Infinix Smart 10
+- Infinix Smart 8 Plus
+- Infinix Smart 8
+- Infinix Smart 8 HD
+- Infinix Smart 7 HD
+- Infinix Smart 6 Plus
+- Infinix Smart 6
+- Infinix Smart 6 HD
+- Infinix Smart 5
+- Infinix Zero 40 5G
+- Infinix Zero 20
+
+## Google
+### Default Shape (16 models)
+- Google Pixel 10A 5G
+- Google Pixel 10 Pro 5G
+- Google Pixel 10 5G
+- Google Pixel 10 Pro XL 5G
+- Google Pixel 9A 5G
+- Google Pixel 9 Pro Xl
+- Google Pixel 9 5G
+- Google Pixel 9 Pro 5G
+- Google Pixel 8A 5G
+- Google Pixel 8 5G
+- Google Pixel 8 Pro 5G
+- Google Pixel 7 5G
+- Google Pixel 7 Pro 5G
+- Google Pixel 6 5G
+- Google Pixel 6 Pro 5G
+- Google Pixel 5 5G
+
+## Tecno
+### Default Camera (27 models)
+- Tecno Spark Go 3
+- Tecno Pova Slim 5G
+- Tecno Pova 7 5G
+- Tecno Pova 7 Pro 5G
+- Tecno Spark Go 2
+- Tecno Pova Curve 5G
+- Tecno Spark Go 1
+- Tecno Spark 20 Pro 5G
+- Tecno Pova 6 Pro 5G
+- Tecno Camon 30 5G
+- Tecno Spark Go 2024
+- Tecno Spark 20C
+- Tecno Spark 20
+- Tecno Pova 5 Pro 5G
+- Tecno Camon 20 Pro
+- Tecno Spark 8C
+- Tecno Spark Go 2022
+- Tecno Spark 8T
+- Tecno Spark 8
+- Tecno Pova 2
+- Tecno Spark 6 Go
+- Tecno Spark 6 Air
+- Tecno Spark 5 Pro
+- Tecno Camon 15
+- Tecno Camon 15 Pro
+- Tecno Camon 12 Air
+- Tecno Spark 4
+
+### Default Shape (27 models)
+- Tecno Spark Go 3
+- Tecno Pova Slim 5G
+- Tecno Pova 7 5G
+- Tecno Pova 7 Pro 5G
+- Tecno Spark Go 2
+- Tecno Pova Curve 5G
+- Tecno Spark Go 1
+- Tecno Spark 20 Pro 5G
+- Tecno Pova 6 Pro 5G
+- Tecno Camon 30 5G
+- Tecno Spark Go 2024
+- Tecno Spark 20C
+- Tecno Spark 20
+- Tecno Pova 5 Pro 5G
+- Tecno Camon 20 Pro
+- Tecno Spark 8C
+- Tecno Spark Go 2022
+- Tecno Spark 8T
+- Tecno Spark 8
+- Tecno Pova 2
+- Tecno Spark 6 Go
+- Tecno Spark 6 Air
+- Tecno Spark 5 Pro
+- Tecno Camon 15
+- Tecno Camon 15 Pro
+- Tecno Camon 12 Air
+- Tecno Spark 4
+
+## Nothing
+### Default Shape (2 models)
+- Nothing CMF Phone 2 Pro 5G
+- Nothing CMF Phone 1
+
+## Motorola
+### Default Shape (59 models)
+- Edge 70 Fusion
+- Edge 70 5G
+- Signature 5G
+- Moto E13
+- Moto E22s
+- Moto E32s
+- Moto E30
+- Moto E40
+- Edge 60 Pro 5G
+- Edge 60 Stylus
+- Edge 60 Fusion
+- Edge 50 Neo
+- Edge 50
+- Edge 50 Ultra 5G
+- Edge 50 Fusion
+- Edge 50 Pro 5G
+- Edge 40 Neo
+- Edge 40
+- Edge 30 Pro
+- Edge 30 Fusion
+- Edge 30 Ultra
+- Edge 30
+- Edge 20 Pro
+- Edge 20 Fusion 5G
+- Moto G57 Power
+- Moto G67 Power
+- Moto G06
+- Moto G06 Power
+- Moto G45 5G
+- Moto G85 5G
+- Moto G64 5G
+- Moto G34 5G
+- Moto G54 5G
+- Moto G84 5G
+- Moto G14
+- Moto G73 5G
+- Moto G13
+- Moto G62
+- Moto G32
+- Moto G42
+- Moto G82
+- Moto G22
+- Moto G52
+- Moto G71 5G
+- Moto G51 5G
+- Moto G31
+- Moto G60s
+- Moto G60
+- Moto G40 Fusion
+- Moto G 5G
+- Moto G9 Power
+- Moto G9
+- G86 Power 5G
+- G96 5G
+- G05
+- G35 5G
+- G04s
+- G04
+- G24 Power
+
+
+**Total models with default camera layout:** 669
+**Total models with default shape:** 895
