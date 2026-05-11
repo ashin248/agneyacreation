@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -50,7 +51,7 @@ app.use("/api/public", require('./routes/public/storefrontRoutes'));
 
 
 // Serve static files from the React app's build directory correctly (Disabled for Vercel deployment)
-// app.use(express.static(path.join(__dirname, '../agneya/dist')));
+app.use(express.static(path.join(__dirname, '../agneya/dist')));
 
 // Healthy check route for Render
 app.get("/health", (req, res) => {
@@ -58,9 +59,9 @@ app.get("/health", (req, res) => {
 });
 
 // Wildcard route (Disabled for Vercel deployment)
-// app.get(/.*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, '../agneya/dist/index.html'));
-// });
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../agneya/dist/index.html'));
+});
 
 app.listen(PORT, '0.0.0.0', async () => {
   try {
