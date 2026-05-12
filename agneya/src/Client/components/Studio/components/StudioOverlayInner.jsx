@@ -154,7 +154,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     const saveTabState = useCallback(() => {
         if (!fabricRef.current || !lastActiveTab.current) return;
         const currentTab = lastActiveTab.current;
-        const data = fabricRef.current.toJSON(['uid', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId']);
+        const data = fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']);
         setTabStates(prev => ({
             ...prev,
             [currentTab]: {
@@ -213,7 +213,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         
         // 1. Save current state
         if (fabricRef.current) {
-            const data = fabricRef.current.toJSON(['uid', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId']);
+            const data = fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']);
             const currentTab = activeStudioTab;
             
             setTabStates(prev => {
@@ -317,7 +317,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
 
     const saveCurrentToVariation = useCallback(() => {
         if (!fabricRef.current) return;
-        const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
+        const currentData = fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']);
         const snapshot = fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 });
         setVariations(prev => prev.map(v => v.id === activeVariationId ? {
             ...v,
@@ -352,7 +352,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     const handleSwitchSide = (side) => {
         if (side === viewSide) return;
         if (fabricRef.current) {
-            const currentData = fabricRef.current.toJSON(['uid', 'excludeFromExport']);
+            const currentData = fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']);
             const snapshot = fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 });
             setVariations(prev => {
                 const updatedVars = prev.map(v => v.id === activeVariationId ? {
@@ -523,8 +523,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) 
                     : v.backSnapshot;
 
-                const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.frontCanvasData;
-                const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'excludeFromExport']) : v.backCanvasData;
+                const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.frontCanvasData;
+                const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.backCanvasData;
                 
                 const designPayload = !isCompanyMode ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData } : { mode: 'company', instructions: companyInstructions, references: companyReferences };
                 const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);

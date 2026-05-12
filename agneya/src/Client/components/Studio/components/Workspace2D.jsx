@@ -364,7 +364,7 @@ const Workspace2D = forwardRef(({
     }, [activeTemplateId, viewSide, enforceLayering, updateTexture]);
 
     useEffect(() => {
-        if (!fabricRef.current || !current2DImageUrl) return;
+        if (!fabricRef.current || !current2DImageUrl || activeStudioTab !== '2D_STUDIO') return;
         const canvas = fabricRef.current;
         
         if (product?.phoneMask) return; 
@@ -486,7 +486,7 @@ const Workspace2D = forwardRef(({
             if (worker) worker.terminate();
             if (workerUrl) URL.revokeObjectURL(workerUrl);
         };
-    }, [current2DImageUrl, product?.phoneMask, viewSide, enforceLayering]);
+    }, [current2DImageUrl, product?.phoneMask, viewSide, enforceLayering, activeStudioTab]);
 
     useEffect(() => {
         if (historyStep === -1 || historyStep === lastSavedHistoryStep.current || isHistoryRecording.current || !fabricRef.current) return;
