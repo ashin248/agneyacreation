@@ -164,7 +164,19 @@ export default function ToolModals({
                                         <span className="text-[9px] font-black uppercase tracking-widest">{obj.type}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.bringToFront(real); fabricRef.current.renderAll(); updateTexture(); } }} className="w-10 h-10 neu-button rounded-full flex items-center justify-center transition-all active:scale-90"><FiArrowUp size={14} /></button>
+                                        <button onClick={(e) => { 
+                                            e.stopPropagation(); 
+                                            const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); 
+                                            if (real) { 
+                                                if (fabricRef.current.bringObjectToFront) {
+                                                    fabricRef.current.bringObjectToFront(real);
+                                                } else if (fabricRef.current.bringToFront) {
+                                                    fabricRef.current.bringToFront(real);
+                                                }
+                                                fabricRef.current.renderAll(); 
+                                                updateTexture(); 
+                                            } 
+                                        }} className="w-10 h-10 neu-button rounded-full flex items-center justify-center transition-all active:scale-90"><FiArrowUp size={14} /></button>
                                         <button onClick={(e) => { e.stopPropagation(); const real = fabricRef.current.getObjects().find(o => o.uid === obj.uid); if (real) { fabricRef.current.remove(real); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); } }} className="w-10 h-10 neu-button rounded-full flex items-center justify-center text-rose-500 transition-all active:scale-90"><FiTrash2 size={14} /></button>
                                     </div>
                                 </div>

@@ -13,6 +13,7 @@ const crypto = require('crypto');
 const cloudinary = require('../../config/cloudinary');
 const streamifier = require('streamifier');
 const FormData = require('form-data');
+const axios = require('axios');
 
 // Helper function to upload an image buffer directly to Cloudinary
 const uploadToCloudinary = (buffer, folderName, resourceType = 'auto') => {

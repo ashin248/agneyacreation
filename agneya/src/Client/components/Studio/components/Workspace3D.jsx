@@ -43,11 +43,14 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
                 
                 createdTex = new THREE.Texture(img);
                 createdTex.colorSpace = THREE.SRGBColorSpace;
-                createdTex.anisotropy = 4; // Lowered from 16 to save memory
+                createdTex.anisotropy = 1; // Minimum to save GPU memory
                 createdTex.minFilter = THREE.LinearFilter;
                 createdTex.magFilter = THREE.LinearFilter;
                 createdTex.needsUpdate = true;
-                setTexture(createdTex);
+                setTexture(prev => {
+                    if (prev) prev.dispose();
+                    return createdTex;
+                });
             };
             img.src = obj.dataUrl;
         }, 100);
@@ -55,9 +58,10 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
         return () => {
             isMounted = false;
             if (timeoutId) clearTimeout(timeoutId);
-            if (createdTex) {
-                createdTex.dispose();
-            }
+            setTexture(prev => {
+                if (prev) prev.dispose();
+                return null;
+            });
         };
     }, [obj.dataUrl]);
 
