@@ -455,7 +455,12 @@ const createPublicOrder = async (req, res) => {
         console.error("User lookup failed", e);
     }
 
-    // 1. Server-Side Price & Stock Validation
+    // 1. Server-Side Price & Stock Validation - Fetch all products in parallel for speed
+    const dbProductsMap = new Map();
+    const uniqueProductIds = [...new Set(items.map(item => item.productId))];
+    const dbProducts = await Product.find({ _id: { $in: uniqueProductIds } });
+    dbProducts.forEach(p => dbProductsMap.set(p._id.toString(), p));
+
     let calculatedSubtotal = 0;
     let hasReady = false;
     let hasCustom = false;
@@ -469,7 +474,7 @@ const createPublicOrder = async (req, res) => {
 
     // Loop through items and verify against REAL DB values
     for (const item of items) {
-      const dbProduct = await Product.findById(item.productId);
+      const dbProduct = dbProductsMap.get(item.productId.toString());
       
       if (!dbProduct || !dbProduct.isActive) {
         return res.status(404).json({ success: false, message: `Product "${item.name}" is no longer available.` });

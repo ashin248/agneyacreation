@@ -18,14 +18,11 @@ exports.loginAdmin = async (req, res) => {
     // Lookup user explicitly requesting exact matches natively
     let user = await User.findOne({ email: normalizedEmail });
 
-    // SELF-HEALING: If admin is missing but credentials match .env, bootstrap on-the-fly
-    if (!user && normalizedEmail === (process.env.Email || '').toLowerCase().trim()) {
+    // Fallback: Check if this is the master admin defined in .env
+    const masterEmail = (process.env.Email || '').toLowerCase().trim();
+    if (!user && normalizedEmail === masterEmail) {
         await bootstrapAdmin();
         user = await User.findOne({ email: normalizedEmail });
-    }
-
-    if (!user) {
-        user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
     }
 
     if (!user) {

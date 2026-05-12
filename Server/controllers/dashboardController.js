@@ -133,14 +133,20 @@ exports.getCustomDesignStats = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [statusStats, todayCount, totalCount] = await Promise.all([
-      Promise.all(statuses.map(async (status) => {
-        const count = await CustomDesign.countDocuments({ status });
-        return { name: status, count };
-      })),
+    const [statusAggregation, todayCount, totalCount] = await Promise.all([
+      CustomDesign.aggregate([
+        { $match: { status: { $in: statuses } } },
+        { $group: { _id: "$status", count: { $sum: 1 } } }
+      ]),
       CustomDesign.countDocuments({ createdAt: { $gte: today } }),
       CustomDesign.countDocuments()
     ]);
+
+    // Map aggregation results back to the expected status format
+    const statusStats = statuses.map(status => {
+        const found = statusAggregation.find(s => s._id === status);
+        return { name: status, count: found ? found.count : 0 };
+    });
 
     return res.status(200).json({ 
         success: true, 

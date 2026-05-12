@@ -43,7 +43,9 @@ client.on('ready', async () => {
     }
 });
 
-client.initialize().catch(err => console.error("❌ Could not initialize WhatsApp client:", err));
+const initializeWhatsApp = () => {
+    client.initialize().catch(err => console.error("❌ Could not initialize WhatsApp client:", err));
+};
 
 const sendWhatsAppNotification = async (orderData) => {
     if (!isClientReady || !targetGroupId) {
@@ -83,6 +85,7 @@ const sendBulkInquiryNotification = async (inquiryData) => {
 
 module.exports = {
     client,
+    initializeWhatsApp,
     sendWhatsAppNotification,
     sendBulkInquiryNotification
 };

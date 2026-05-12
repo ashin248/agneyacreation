@@ -1,4 +1,5 @@
 const express = require("express");
+const compression = require('compression');
 const path = require('path');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -7,10 +8,12 @@ dotenv.config()
 
 const connectDB = require('./db');
 const bootstrapAdmin = require('./services/adminBootstrap');
-require('./services/whatsappService'); // Initialize WhatsApp Bot
+const { initializeWhatsApp } = require('./services/whatsappService'); // WhatsApp Bot Logic
 
 const app = express();
 const PORT = process.env.PORT || process.env.Server_port || 5000;
+
+app.use(compression()); // Compress all responses for faster transfer
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
@@ -50,8 +53,15 @@ app.use("/api/admin/auth", authRoutes);
 app.use("/api/public", require('./routes/public/storefrontRoutes'));
 
 
-// Serve static files from the React app's build directory correctly (Disabled for Vercel deployment)
-app.use(express.static(path.join(__dirname, '../agneya/dist')));
+// Serve static files with aggressive caching (1 year for immutable assets)
+app.use(express.static(path.join(__dirname, '../agneya/dist'), {
+  maxAge: '1y',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache'); // Don't cache HTML to ensure updates
+    }
+  }
+}));
 
 // Healthy check route for Render
 app.get("/health", (req, res) => {
@@ -67,6 +77,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   try {
     await connectDB();
     await bootstrapAdmin();
+    initializeWhatsApp(); // Start WhatsApp Bot in background after server is up
   } catch (err) {
     console.error('SERVER FATAL: Initialization failed:', err.message);
   }
