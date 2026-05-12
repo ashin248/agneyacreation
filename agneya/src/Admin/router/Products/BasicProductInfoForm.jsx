@@ -18,6 +18,7 @@ const BasicProductInfoForm = ({
   const [isAddingCollection, setIsAddingCollection] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
 
+  React.useEffect(() => {
     const fetchCollections = async () => {
       try {
         const res = await fetch('/api/public/collections');
