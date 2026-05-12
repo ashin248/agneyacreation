@@ -311,9 +311,6 @@ const Shop = () => {
         </div>
       </div>
 
-        </div>
-      </div>
-
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-8">
         {/* ── COLLECTIONS HORIZONTAL SCROLL ── */}
         {collectionsList.length > 0 && (
