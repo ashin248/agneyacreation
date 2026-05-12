@@ -71,10 +71,23 @@ const Shop = () => {
       if (pulseRes.data.success) setBanners(pulseRes.data.data.banners || []);
 
       if (categoriesRes.data.success && categoriesRes.data.data?.length > 0) {
-        const normalizeCat = (c) => c ? c.charAt(0).toUpperCase() + c.slice(1).toLowerCase() : '';
-        const apiCats = categoriesRes.data.data.map(c => typeof c === 'string' ? c : c.name).filter(Boolean);
-        const unique = [...new Set(apiCats.map(normalizeCat))];
-        setCategories([{ name: 'All', _id: 'all' }, ...unique.map(c => ({ name: c, _id: c }))]);
+        const normalize = (c) => c ? c.charAt(0).toUpperCase() + c.slice(1).toLowerCase() : '';
+        const processed = categoriesRes.data.data.map(c => {
+          if (typeof c === 'string') return { name: normalize(c), _id: c, imageUrl: null };
+          return { ...c, name: normalize(c.name) };
+        });
+        
+        // Ensure uniqueness by name
+        const unique = [];
+        const seen = new Set();
+        processed.forEach(c => {
+          if (!seen.has(c.name)) {
+            seen.add(c.name);
+            unique.push(c);
+          }
+        });
+
+        setCategories([{ name: 'All', _id: 'all', imageUrl: null }, ...unique]);
       }
     } catch (err) {
       console.error('Shop fetch error:', err);
@@ -273,21 +286,8 @@ const Shop = () => {
 
             <div className="w-px h-6 bg-slate-200 flex-shrink-0" />
 
-            {/* Category Pills */}
-            <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1 px-1">
-              {categories.map(cat => {
-                const name = typeof cat === 'string' ? cat : cat.name;
-                return (
-                  <button
-                    key={name}
-                    onClick={() => setActiveCategory(name)}
-                    className={activeCategory === name ? 'btn-pill-active' : 'btn-pill'}
-                  >
-                    {name}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Minimal Spacer */}
+            <div className="flex-1" />
 
             <div className="w-px h-6 bg-slate-200 flex-shrink-0" />
 
@@ -305,6 +305,64 @@ const Shop = () => {
 
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
         
+        {/* ── COLLECTION OF CATEGORY (White Board Style) ── */}
+        <section className="mb-10 reveal-on-scroll">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-6 rounded-full bg-[var(--color-neu-accent)]" />
+              <h2 className="text-lg font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>Explore Collections</h2>
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Select to Filter</p>
+          </div>
+
+          <div className="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar pb-6 px-1">
+            {categories.map((cat) => {
+              const name = typeof cat === 'string' ? cat : cat.name;
+              const isActive = activeCategory === name;
+              return (
+                <div 
+                  key={name}
+                  onClick={() => setActiveCategory(name)}
+                  className={`flex-shrink-0 group cursor-pointer transition-all duration-500 ${isActive ? 'scale-105' : 'hover:-translate-y-1'}`}
+                >
+                  <div className={`w-28 h-32 md:w-40 md:h-44 rounded-[2rem] flex flex-col items-center justify-center gap-4 p-4 transition-all duration-500 relative overflow-hidden ${
+                    isActive 
+                      ? 'neu-pressed border-2 border-[var(--color-neu-accent)]/20 bg-white/50' 
+                      : 'neu-flat hover:neu-pressed bg-white/80'
+                  }`}>
+                    
+                    {/* Visual Decor */}
+                    <div className={`absolute top-0 right-0 w-12 h-12 rounded-bl-[2rem] transition-all duration-500 ${isActive ? 'bg-[var(--color-neu-accent)]/10' : 'bg-transparent group-hover:bg-slate-100'}`} />
+
+                    <div className={`w-14 h-14 md:w-20 md:h-20 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                      isActive 
+                        ? 'bg-[var(--color-neu-accent)] text-white shadow-lg shadow-[var(--color-neu-accent)]/30 scale-110' 
+                        : 'bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-[var(--color-neu-accent)]'
+                    }`}>
+                       {cat.imageUrl ? (
+                         <img src={cat.imageUrl} alt={name} className="w-full h-full object-cover rounded-2xl" />
+                       ) : (
+                         <Grid3X3 size={isActive ? 32 : 28} strokeWidth={1.5} />
+                       )}
+                    </div>
+
+                    <div className="text-center">
+                      <span className={`text-[9px] md:text-[11px] font-black uppercase tracking-widest transition-colors duration-500 ${
+                        isActive ? 'text-[var(--color-neu-accent)]' : 'text-slate-500'
+                      }`}>
+                        {name}
+                      </span>
+                      {isActive && (
+                        <div className="w-1 h-1 rounded-full bg-[var(--color-neu-accent)] mx-auto mt-1 animate-pulse" />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* ── ALL PRODUCTS HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-5 gap-4">
           <div className="flex items-center gap-3">
