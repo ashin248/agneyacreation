@@ -13,9 +13,11 @@ const BasicProductInfoForm = ({
   collections = [], setCollections
 }) => {
   const [availableCollections, setAvailableCollections] = React.useState([]);
-  const [availableCategories, setAvailableCategories] = React.useState([]);
+  const [newCollectionName, setNewCollectionName] = React.useState('');
+  const [newCollectionFile, setNewCollectionFile] = React.useState(null);
+  const [isAddingCollection, setIsAddingCollection] = React.useState(false);
+  const [isUploading, setIsUploading] = React.useState(false);
 
-  React.useEffect(() => {
     const fetchCollections = async () => {
       try {
         const res = await fetch('/api/public/collections');
@@ -28,19 +30,6 @@ const BasicProductInfoForm = ({
       }
     };
     fetchCollections();
-
-    const fetchCategories = async () => {
-      try {
-        const res = await fetch('/api/public/categories');
-        const data = await res.json();
-        if (data.success) {
-          setAvailableCategories(data.data);
-        }
-      } catch (err) {
-        console.error('Error fetching categories:', err);
-      }
-    };
-    fetchCategories();
   }, []);
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
@@ -194,6 +183,43 @@ const BasicProductInfoForm = ({
     setCollections(next);
   };
 
+  const handleQuickAddCollection = async () => {
+    if (!newCollectionName || !newCollectionFile) {
+       alert("Provide both name and icon for the new collection.");
+       return;
+    }
+
+    try {
+      setIsUploading(true);
+      const data = new FormData();
+      data.append('name', newCollectionName);
+      data.append('logo', newCollectionFile);
+      data.append('description', 'Auto-created via product form');
+
+      const res = await fetch('/api/admin/collections', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` },
+        body: data
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        const created = result.data;
+        setAvailableCollections(prev => [...prev, created]);
+        setCollections(prev => [...(prev || []), created._id]);
+        setNewCollectionName('');
+        setNewCollectionFile(null);
+        setIsAddingCollection(false);
+      } else {
+        alert(result.message || "Failed to create collection");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleOverrideImageChange = (e, templateId) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -270,40 +296,20 @@ const BasicProductInfoForm = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Category selection */}
+          {/* Category selection (Restored to simple text) */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Product Category
+              Category
             </label>
-            <div className="flex flex-wrap gap-2">
-              {availableCategories.map((cat) => (
-                <button
-                  key={cat._id}
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, category: cat.name }))}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all ${
-                    formData.category === cat.name
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md shadow-indigo-100'
-                      : 'border-gray-100 bg-white text-gray-600 hover:border-gray-200'
-                  }`}
-                >
-                  {cat.imageUrl && <img src={cat.imageUrl} alt={cat.name} className="w-4 h-4 object-contain" />}
-                  <span className="text-xs font-bold">{cat.name}</span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Or type a new category</p>
-              <input
-                type="text"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
-                placeholder="e.g., Electronics, Clothing"
-                required
-              />
-            </div>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
+              placeholder="e.g., Electronics, Clothing"
+              required
+            />
             <p className="mt-1 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
           </div>
 
@@ -329,8 +335,59 @@ const BasicProductInfoForm = ({
                   {collections.includes(col._id) && <FiCheck className="ml-1" size={14} />}
                 </button>
               ))}
-              {availableCollections.length === 0 && (
-                <p className="text-xs text-gray-400 italic">No collections available. Create them in the Collections manager.</p>
+              
+              {!isAddingCollection ? (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCollection(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-indigo-300 hover:text-indigo-600 transition-all"
+                >
+                  <FiPlus size={14} />
+                  <span className="text-xs font-bold uppercase tracking-widest">Add New</span>
+                </button>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 w-full animate-in slide-in-from-top-2 duration-300">
+                  <input 
+                    type="text"
+                    placeholder="Collection Name"
+                    value={newCollectionName}
+                    onChange={(e) => setNewCollectionName(e.target.value)}
+                    className="flex-1 px-4 py-2 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xs"
+                  />
+                  <div className="relative">
+                    <label className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50 transition-all">
+                      {newCollectionFile ? <FiCheckCircle className="text-emerald-500" /> : <FiImage className="text-gray-400" />}
+                      <span className="text-[10px] font-black uppercase tracking-widest">Icon</span>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*" 
+                        onChange={(e) => setNewCollectionFile(e.target.files[0])} 
+                      />
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleQuickAddCollection}
+                      disabled={isUploading}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50"
+                    >
+                      {isUploading ? '...' : 'Save'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingCollection(false)}
+                      className="px-4 py-2 bg-white text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-gray-900"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {availableCollections.length === 0 && !isAddingCollection && (
+                <p className="text-xs text-gray-400 italic">No collections available. Create one using the button above.</p>
               )}
             </div>
             <p className="mt-2 text-[10px] text-gray-400 font-medium">Selected products will appear in these collections on the shop page.</p>
