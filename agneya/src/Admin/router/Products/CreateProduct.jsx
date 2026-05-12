@@ -30,6 +30,7 @@ const CreateProduct = () => {
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
   const [twoDModels, setTwoDModels] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
@@ -252,6 +253,7 @@ const CreateProduct = () => {
 
       formData.append('variations', JSON.stringify(finalVariations));
       formData.append('bulkRules', JSON.stringify(finalBulkRules));
+      formData.append('collections', JSON.stringify(collections));
 
       // Append Gallery Images
       if (Array.isArray(galleryImages) && galleryImages.length > 0) {
@@ -342,6 +344,8 @@ const CreateProduct = () => {
               setBase3DModelFile={setBase3DModelFile}
               twoDModels={twoDModels}
               setTwoDModels={setTwoDModels}
+              collections={collections}
+              setCollections={setCollections}
             />
           </section>
 

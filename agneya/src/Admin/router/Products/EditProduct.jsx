@@ -34,6 +34,7 @@ const EditProduct = () => {
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
   const [twoDModels, setTwoDModels] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   const [base3DModelFile, setBase3DModelFile] = useState(null);
   
@@ -122,6 +123,8 @@ const EditProduct = () => {
           blankFrontImageUrl: product.blankFrontImage || '',
           linkedTemplates: product.linkedTemplates || [],
         });
+        
+        setCollections(product.collections || []);
         
         setGalleryImagePreviews(product.galleryImages || []);
 
@@ -276,6 +279,7 @@ const EditProduct = () => {
 
       formData.append('variations', JSON.stringify(finalVariations));
       formData.append('bulkRules', JSON.stringify(finalBulkRules));
+      formData.append('collections', JSON.stringify(collections));
 
       const existingImages = galleryImagePreviews.filter(url => typeof url === 'string' && url.startsWith('http'));
       formData.append('existingGalleryImages', JSON.stringify(existingImages));
@@ -373,6 +377,8 @@ const EditProduct = () => {
               setBase3DModelFile={setBase3DModelFile}
               twoDModels={twoDModels}
               setTwoDModels={setTwoDModels}
+              collections={collections}
+              setCollections={setCollections}
             />
           </section>
 

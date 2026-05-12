@@ -1,3 +1,4 @@
+
 const Order = require('../src/schema/OrderSchema');
 const User = require('../src/schema/UserSchema');
 const Product = require('../src/schema/ProductSchema');
@@ -128,7 +129,7 @@ exports.getSystemAlerts = async (req, res) => {
 exports.getCustomDesignStats = async (req, res) => {
   try {
     const statuses = ['Pending', 'Approved', 'Rejected', 'In Production', 'Shipped', 'Delivered'];
-    
+
     // Calculate Today's Submissions and Total
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -144,17 +145,17 @@ exports.getCustomDesignStats = async (req, res) => {
 
     // Map aggregation results back to the expected status format
     const statusStats = statuses.map(status => {
-        const found = statusAggregation.find(s => s._id === status);
-        return { name: status, count: found ? found.count : 0 };
+      const found = statusAggregation.find(s => s._id === status);
+      return { name: status, count: found ? found.count : 0 };
     });
 
-    return res.status(200).json({ 
-        success: true, 
-        data: {
-            chartData: statusStats,
-            todayCount,
-            totalCount
-        }
+    return res.status(200).json({
+      success: true,
+      data: {
+        chartData: statusStats,
+        todayCount,
+        totalCount
+      }
     });
   } catch (error) {
     console.error("Custom Design Stats Error:", error);
@@ -164,22 +165,24 @@ exports.getCustomDesignStats = async (req, res) => {
 
 // Aggregate top selling products
 exports.getTopSellingProducts = async (req, res) => {
-    try {
-        const topProducts = await Order.aggregate([
-            { $unwind: "$items" },
-            { $group: {
-                _id: "$items.productId",
-                name: { $first: "$items.name" },
-                totalSold: { $sum: "$items.quantity" },
-                revenue: { $sum: { $multiply: ["$items.quantity", "$items.unitPrice"] } },
-                image: { $first: "$items.image" }
-            }},
-            { $sort: { totalSold: -1 } },
-            { $limit: 5 }
-        ]);
-        return res.status(200).json({ success: true, data: topProducts });
-    } catch(err) {
-        console.error("Top Products Error:", err);
-        return res.status(500).json({ success: false, message: 'Failed to fetch top products.' });
-    }
+  try {
+    const topProducts = await Order.aggregate([
+      { $unwind: "$items" },
+      {
+        $group: {
+          _id: "$items.productId",
+          name: { $first: "$items.name" },
+          totalSold: { $sum: "$items.quantity" },
+          revenue: { $sum: { $multiply: ["$items.quantity", "$items.unitPrice"] } },
+          image: { $first: "$items.image" }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 }
+    ]);
+    return res.status(200).json({ success: true, data: topProducts });
+  } catch (err) {
+    console.error("Top Products Error:", err);
+    return res.status(500).json({ success: false, message: 'Failed to fetch top products.' });
+  }
 };

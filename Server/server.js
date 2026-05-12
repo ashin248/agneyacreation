@@ -34,6 +34,7 @@ const productRoutes = require('./routes/admin/products');
 const settingRoutes = require('./routes/admin/settingsRoutes');
 const authRoutes = require('./routes/admin/authRoutes');
 const categoryRoutes = require('./routes/admin/categoryRoutes');
+const collectionRoutes = require('./routes/admin/collectionRoutes');
 
 // Load API Security Shield dynamically resolving internal nodes inherently natively explicitly natively
 const { protectAdmin } = require('./middleware/authMiddleware');
@@ -47,6 +48,7 @@ app.use("/api/admin/orders", protectAdmin, orderRoutes);
 app.use("/api/admin/products", protectAdmin, productRoutes);
 app.use("/api/admin/settings", protectAdmin, settingRoutes);
 app.use("/api/admin/categories", protectAdmin, categoryRoutes);
+app.use("/api/admin/collections", protectAdmin, collectionRoutes);
 app.use("/api/admin/auth", authRoutes);
 
 // Public Storefront API Routes

@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const { getActiveBanners, getStoreFrontPulse, getPublicProducts, getPublicProductById, getPublicCompanyProfile, submitCustomDesignRequest, createPublicOrder, trackPublicOrder, trackUnifiedOrder, syncUser, updateUser, deleteAddress, toggleWishlist, getWishlist, getUserOrders, createRazorpayOrder, verifyRazorpayPayment, handleBulkInquiry, removeBackgroundImage, uploadManualDesignAssets, getPhoneModels } = require('../../controllers/public/storefrontController');
 const { getCategories } = require('../../controllers/categoryController');
+const { getCollections } = require('../../controllers/collectionController');
 const { protectUser } = require('../../middleware/userAuthMiddleware');
 // Multer Config for memory storage
 const storage = multer.memoryStorage();
@@ -28,6 +29,9 @@ router.get('/categories', getCategories);
 
 // GET /api/public/phone-models
 router.get('/phone-models', getPhoneModels);
+
+// GET /api/public/collections
+router.get('/collections', getCollections);
 
 // POST /api/public/custom-designs
 router.post('/custom-designs', submitCustomDesignRequest);

@@ -21,6 +21,7 @@ const Customers = lazy(() => import('./Admin/page/Customers'));
 const Marketing = lazy(() => import('./Admin/page/Marketing'));
 const Settings = lazy(() => import('./Admin/page/Settings'));
 const DesignAssistance = lazy(() => import('./Admin/page/DesignAssistance'));
+const Collections = lazy(() => import('./Admin/page/Collections'));
 
 // Lazy Load Client Pages
 const Shop = lazy(() => import('./Client/pages/Shop'));
@@ -86,6 +87,7 @@ function App() {
               <Route path="gst-manager/*" element={<Customers />} />
               <Route path="marketing/*" element={<Marketing />} />
               <Route path="settings/*" element={<Settings />} />
+              <Route path="collections/*" element={<Collections />} />
 
               {/* Catch-all for undefined admin routes */}
               <Route path="*" element={<Navigate to="dashboard" replace />} />

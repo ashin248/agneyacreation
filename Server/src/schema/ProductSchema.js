@@ -90,6 +90,11 @@ const productSchema = new mongoose.Schema(
     galleryImages: [{ 
       type: String // Stores Cloudinary URLs for the product gallery
     }],
+    collections: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Collection',
+      index: true
+    }],
 
     // Embed the sub-schemas
     variations: [variationSchema], 

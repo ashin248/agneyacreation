@@ -126,6 +126,15 @@ exports.createProduct = async (req, res) => {
       }
     }
 
+    let collections = [];
+    if (req.body.collections) {
+      try {
+        collections = JSON.parse(req.body.collections);
+      } catch (e) {
+        console.warn('Malformed collections received:', req.body.collections);
+      }
+    }
+
     // Convert boolean string
     const bulkActive = isBulkEnabled === 'true' || isBulkEnabled === true;
 
@@ -172,6 +181,7 @@ exports.createProduct = async (req, res) => {
       canvasConfig: req.body.canvasConfig ? JSON.parse(req.body.canvasConfig) : null,
       linkedTemplates: linkedTemplates,
       twoDModels: twoDModels,
+      collections: collections,
       isActive: true, // Auto-active default
     };
 
@@ -290,6 +300,12 @@ exports.updateProduct = async (req, res) => {
               twoDModelsUpdate = JSON.parse(req.body.twoDModels);
               // For update, we might want to just replace or merge. Let's just replace the whole array
               updateData.twoDModels = twoDModelsUpdate;
+            } catch(e){}
+        }
+
+        if (req.body.collections) {
+           try {
+             updateData.collections = JSON.parse(req.body.collections);
            } catch(e){}
         }
         

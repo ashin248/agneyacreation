@@ -34,14 +34,17 @@ const Shop = () => {
   const [customizingProduct, setCustomizingProduct] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Newest');
+  const [activeCollection, setActiveCollection] = useState(null);
+  const [collectionsList, setCollectionsList] = useState([]);
 
   const fetchData = async (isSilent = false) => {
     try {
       if (!isSilent) setLoading(true);
-      const [productsRes, pulseRes, categoriesRes] = await Promise.all([
+      const [productsRes, pulseRes, categoriesRes, collectionsRes] = await Promise.all([
         axios.get('/api/public/products'),
         axios.get('/api/public/pulse'),
-        axios.get('/api/public/categories')
+        axios.get('/api/public/categories'),
+        axios.get('/api/public/collections')
       ]);
 
       if (productsRes.data.success) {
@@ -75,6 +78,10 @@ const Shop = () => {
         const apiCats = categoriesRes.data.data.map(c => typeof c === 'string' ? c : c.name).filter(Boolean);
         const unique = [...new Set(apiCats.map(normalizeCat))];
         setCategories([{ name: 'All', _id: 'all' }, ...unique.map(c => ({ name: c, _id: c }))]);
+      }
+
+      if (collectionsRes.data.success) {
+        setCollectionsList(collectionsRes.data.data || []);
       }
     } catch (err) {
       console.error('Shop fetch error:', err);
@@ -138,9 +145,10 @@ const Shop = () => {
       (p.colors && p.colors.some(c => c.toLowerCase().includes(q))) ||
       (p.tags && p.tags.some(t => t.toLowerCase().includes(q)));
     const matchCat = activeCategory === 'All' || p.category?.toLowerCase() === activeCategory.toLowerCase();
+    const matchCol = !activeCollection || (p.collections && p.collections.includes(activeCollection));
     const effectivePrice = p.discountPrice || p.basePrice || 0;
     const matchPrice = effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
-    return matchSearch && matchCat && matchPrice;
+    return matchSearch && matchCat && matchCol && matchPrice;
   }).sort((a, b) => {
     if (sortBy === 'Price: Low to High') return (a.discountPrice || a.basePrice) - (b.discountPrice || b.basePrice);
     if (sortBy === 'Price: High to Low') return (b.discountPrice || b.basePrice) - (a.discountPrice || a.basePrice);
@@ -303,7 +311,51 @@ const Shop = () => {
         </div>
       </div>
 
-      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4">
+        </div>
+      </div>
+
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-8">
+        {/* ── COLLECTIONS HORIZONTAL SCROLL ── */}
+        {collectionsList.length > 0 && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40" style={{ color: 'var(--color-neu-text)' }}>Curated Collections</h2>
+              {activeCollection && (
+                <button 
+                  onClick={() => setActiveCollection(null)} 
+                  className="text-[10px] font-black uppercase tracking-widest text-orange-500 hover:text-orange-600 transition-colors"
+                >
+                  Clear Selection
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-4 -mx-2 px-2">
+              {collectionsList.map((col) => (
+                <div 
+                  key={col._id}
+                  onClick={() => setActiveCollection(activeCollection === col._id ? null : col._id)}
+                  className={`flex-shrink-0 flex flex-col items-center gap-3 cursor-pointer group transition-all duration-500 ${
+                    activeCollection === col._id ? 'scale-105' : 'opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] flex items-center justify-center transition-all duration-500 overflow-hidden relative ${
+                    activeCollection === col._id ? 'neu-pressed border-2 border-orange-500/30' : 'neu-flat hover:neu-pressed'
+                  }`}>
+                    <img src={col.logoUrl} alt={col.name} className="w-10 h-10 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-500" />
+                    {activeCollection === col._id && (
+                      <div className="absolute inset-0 bg-orange-500/10 backdrop-blur-[2px]" />
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest text-center transition-colors ${
+                    activeCollection === col._id ? 'text-orange-500' : 'text-slate-500'
+                  }`}>
+                    {col.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* ── ALL PRODUCTS HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-5 gap-4">

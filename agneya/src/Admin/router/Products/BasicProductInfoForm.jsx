@@ -9,8 +9,25 @@ const BasicProductInfoForm = ({
   images, setImages, 
   imagePreviews, setImagePreviews, 
   base3DModelFile, setBase3DModelFile,
-  twoDModels, setTwoDModels
+  twoDModels, setTwoDModels,
+  collections = [], setCollections
 }) => {
+  const [availableCollections, setAvailableCollections] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const res = await fetch('/api/public/collections');
+        const data = await res.json();
+        if (data.success) {
+          setAvailableCollections(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching collections:', err);
+      }
+    };
+    fetchCollections();
+  }, []);
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
     // fetch('http://127.0.0.1:7742/ingest/f73f9efc-7d57-444d-946a-342d190e0162',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8362af'},body:JSON.stringify({sessionId:'8362af',runId,hypothesisId,location,message,data,timestamp:Date.now()})}).catch(()=>{});
@@ -155,6 +172,14 @@ const BasicProductInfoForm = ({
     });
   };
 
+  const toggleCollection = (collectionId) => {
+    const current = collections || [];
+    const next = current.includes(collectionId)
+      ? current.filter(id => id !== collectionId)
+      : [...current, collectionId];
+    setCollections(next);
+  };
+
   const handleOverrideImageChange = (e, templateId) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -261,6 +286,35 @@ const BasicProductInfoForm = ({
               )}
             </div>
             <p className="mt-1 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
+          </div>
+
+          {/* Collections (Multi-select) */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Collections (Multi-select)
+            </label>
+            <div className="flex flex-wrap gap-3">
+              {availableCollections.map((col) => (
+                <button
+                  key={col._id}
+                  type="button"
+                  onClick={() => toggleCollection(col._id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all ${
+                    collections.includes(col._id)
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md shadow-indigo-100'
+                      : 'border-gray-100 bg-white text-gray-600 hover:border-gray-200'
+                  }`}
+                >
+                  <img src={col.logoUrl} alt={col.name} className="w-5 h-5 object-contain" />
+                  <span className="text-xs font-bold">{col.name}</span>
+                  {collections.includes(col._id) && <FiCheck className="ml-1" size={14} />}
+                </button>
+              ))}
+              {availableCollections.length === 0 && (
+                <p className="text-xs text-gray-400 italic">No collections available. Create them in the Collections manager.</p>
+              )}
+            </div>
+            <p className="mt-2 text-[10px] text-gray-400 font-medium">Selected products will appear in these collections on the shop page.</p>
           </div>
 
           {/* Product Type (Deprecated/Replaced by Checkbox) */}
