@@ -13,6 +13,7 @@ const BasicProductInfoForm = ({
   collections = [], setCollections
 }) => {
   const [availableCollections, setAvailableCollections] = React.useState([]);
+  const [availableCategories, setAvailableCategories] = React.useState([]);
 
   React.useEffect(() => {
     const fetchCollections = async () => {
@@ -27,6 +28,19 @@ const BasicProductInfoForm = ({
       }
     };
     fetchCollections();
+
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/public/categories');
+        const data = await res.json();
+        if (data.success) {
+          setAvailableCategories(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+    fetchCategories();
   }, []);
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
@@ -256,34 +270,39 @@ const BasicProductInfoForm = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Category */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="category">
-              Category
+          {/* Category selection */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Product Category
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              {availableCategories.map((cat) => (
+                <button
+                  key={cat._id}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, category: cat.name }))}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all ${
+                    formData.category === cat.name
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-md shadow-indigo-100'
+                      : 'border-gray-100 bg-white text-gray-600 hover:border-gray-200'
+                  }`}
+                >
+                  {cat.imageUrl && <img src={cat.imageUrl} alt={cat.name} className="w-4 h-4 object-contain" />}
+                  <span className="text-xs font-bold">{cat.name}</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-4">
+              <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Or type a new category</p>
               <input
                 type="text"
-                id="category"
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
                 placeholder="e.g., Electronics, Clothing"
+                required
               />
-              {formData.category && (
-                <div className="w-10 h-10 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
-                  <img loading="lazy" 
-                    src={`https://image.pollinations.ai/prompt/${encodeURIComponent(formData.category)}%20product%20photography%20minimalist?width=100&height=100&nologo=true&seed=${formData.category.length}`} 
-                    alt="Category Preview" 
-                    className="w-full h-full object-cover"
-                    title="AI Generated Category Preview"
-                    onError={(e) => {
-                      e.target.src = `https://source.unsplash.com/100x100/?${encodeURIComponent(formData.category)}`;
-                    }}
-                  />
-                </div>
-              )}
             </div>
             <p className="mt-1 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
           </div>
