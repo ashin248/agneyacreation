@@ -183,7 +183,7 @@ const BasicProductInfoForm = ({
       : [...current, collectionId];
     setCollections(next);
   };
-
+  
   const handleQuickAddCollection = async () => {
     if (!newCollectionName || !newCollectionFile) {
        alert("Provide both name and icon for the new collection.");
@@ -297,20 +297,35 @@ const BasicProductInfoForm = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Category selection (Restored to simple text) */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          {/* Category */}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="category">
               Category
             </label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
-              placeholder="e.g., Electronics, Clothing"
-              required
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder="e.g., Electronics, Clothing"
+              />
+              {formData.category && (
+                <div className="w-10 h-10 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
+                  <img loading="lazy" 
+                    src={`https://image.pollinations.ai/prompt/${encodeURIComponent(formData.category)}%20product%20photography%20minimalist?width=100&height=100&nologo=true&seed=${formData.category.length}`} 
+                    alt="Category Preview" 
+                    className="w-full h-full object-cover"
+                    title="AI Generated Category Preview"
+                    onError={(e) => {
+                      e.target.src = `https://source.unsplash.com/100x100/?${encodeURIComponent(formData.category)}`;
+                    }}
+                  />
+                </div>
+              )}
+            </div>
             <p className="mt-1 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
           </div>
 
@@ -336,7 +351,7 @@ const BasicProductInfoForm = ({
                   {collections.includes(col._id) && <FiCheck className="ml-1" size={14} />}
                 </button>
               ))}
-              
+
               {!isAddingCollection ? (
                 <button
                   type="button"
