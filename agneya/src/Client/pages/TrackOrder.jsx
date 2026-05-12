@@ -17,10 +17,10 @@ const STATUSES = [
 
 const TABS = ['Active Orders', 'Delivered', 'Cancelled'];
 
-const statusToTab = (s = '') => {
-  const v = s.toLowerCase();
-  if (v === 'delivered') return 'Delivered';
-  if (v === 'cancelled' || v === 'rejected') return 'Cancelled';
+const statusToTab = (order) => {
+  const status = (order.orderStatus || order.status || order.displayStatus || '').toLowerCase();
+  if (status === 'delivered') return 'Delivered';
+  if (status === 'cancelled' || status === 'rejected') return 'Cancelled';
   return 'Active Orders';
 };
 
@@ -84,33 +84,45 @@ const TrackingModal = ({ order, onClose }) => {
         <div className="p-7">
           {/* Desktop stepper */}
           <div className="hidden md:block mb-8">
-            <div className="relative px-4">
-              <div className="absolute top-5 left-4 right-4 h-1 bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-orange-500 rounded-full transition-all duration-[1200ms] ease-out"
-                  style={{ width: animStep >= 0 ? `${(animStep / (STATUSES.length - 1)) * 100}%` : '0%' }}
-                />
+            {order.orderStatus === 'Cancelled' || order.status === 'Cancelled' ? (
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-6 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                  <X size={24} />
+                </div>
+                <div>
+                  <h3 className="text-red-800 font-bold">Order Cancelled</h3>
+                  <p className="text-red-600 text-sm">This order has been cancelled and will not be processed further.</p>
+                </div>
               </div>
-              <div className="relative flex justify-between">
-                {STATUSES.map(({ id, label, icon: Icon }) => {
-                  const done = id <= animStep;
-                  const active = id === animStep;
-                  return (
-                    <div key={id} className="flex flex-col items-center">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 relative z-10 transition-all duration-500 ${
-                        done ? 'bg-orange-600 border-white text-white shadow-md shadow-orange-200' : 'bg-white border-slate-200 text-slate-300'
-                      }`}>
-                        <Icon size={18} />
-                        {active && <span className="absolute -inset-2 bg-orange-400/20 rounded-full animate-ping" />}
+            ) : (
+              <div className="relative px-4">
+                <div className="absolute top-5 left-4 right-4 h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-orange-500 rounded-full transition-all duration-[1200ms] ease-out"
+                    style={{ width: animStep >= 0 ? `${(animStep / (STATUSES.length - 1)) * 100}%` : '0%' }}
+                  />
+                </div>
+                <div className="relative flex justify-between">
+                  {STATUSES.map(({ id, label, icon: Icon }) => {
+                    const done = id <= animStep;
+                    const active = id === animStep;
+                    return (
+                      <div key={id} className="flex flex-col items-center">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 relative z-10 transition-all duration-500 ${
+                          done ? 'bg-orange-600 border-white text-white shadow-md shadow-orange-200' : 'bg-white border-slate-200 text-slate-300'
+                        }`}>
+                          <Icon size={18} />
+                          {active && <span className="absolute -inset-2 bg-orange-400/20 rounded-full animate-ping" />}
+                        </div>
+                        <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-orange-600' : 'text-slate-400'}`}>
+                          {label}
+                        </p>
                       </div>
-                      <p className={`mt-2.5 text-[10px] font-semibold text-center max-w-[64px] leading-tight ${done ? 'text-orange-600' : 'text-slate-400'}`}>
-                        {label}
-                      </p>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Mobile stepper (vertical) */}
@@ -235,6 +247,19 @@ const TrackOrder = () => {
       const storedOrders = JSON.parse(localStorage.getItem('myGuestOrders') || '[]');
       const storedCustom = JSON.parse(localStorage.getItem('myCustomDesigns') || '[]');
 
+      const statusMap = { 
+        Pending: 0, 
+        Approved: 1, 
+        Processing: 1,
+        Printing: 2,
+        'In Production': 2, 
+        Shipped: 3, 
+        'Out for Delivery': 4,
+        Delivered: 5,
+        Cancelled: -1,
+        Rejected: -1
+      };
+
       const orderPromises = storedOrders.map(o =>
         axios.post('/api/public/orders/track', { orderId: o.orderId, phone: o.phone })
           .then(r => r.data.success ? { ...o, ...r.data.data, type: 'standard' } : o)
@@ -246,8 +271,7 @@ const TrackOrder = () => {
           .then(r => {
             if (r.data.success) {
               const d = r.data.data;
-              const sm = { Pending: 0, Approved: 1, 'In Production': 2, Shipped: 3, Delivered: 5 };
-              return { ...c, ...d, type: 'custom', currentStep: sm[d.status] ?? 0 };
+              return { ...c, ...d, type: 'custom', currentStep: statusMap[d.status || d.orderStatus] ?? 0 };
             }
             return c;
           })
@@ -262,10 +286,9 @@ const TrackOrder = () => {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (res.data.success) {
-            const sm = { Pending: 0, Processing: 1, Printing: 2, Shipped: 3, 'Out for Delivery': 4, Delivered: 5, Cancelled: -1 };
             userOrders = [
-              ...(res.data.data.orders || []).map(o => ({ ...o, type: 'standard', currentStep: sm[o.orderStatus] ?? 0 })),
-              ...(res.data.data.customDesigns || []).map(c => ({ ...c, type: 'custom', orderId: c._id, currentStep: sm[c.status] ?? 0 }))
+              ...(res.data.data.orders || []).map(o => ({ ...o, type: 'standard', currentStep: statusMap[o.orderStatus] ?? 0 })),
+              ...(res.data.data.customDesigns || []).map(c => ({ ...c, type: 'custom', orderId: c._id, currentStep: statusMap[c.status] ?? 0 }))
             ];
           }
         } catch (e) { console.error(e); }
@@ -296,8 +319,19 @@ const TrackOrder = () => {
       const res = await axios.post('/api/public/orders/track', searchForm);
       if (res.data.success) {
         const order = res.data.data;
-        const sm = { Pending: 0, Approved: 1, 'In Production': 2, Shipped: 3, Delivered: 5 };
-        setSelectedOrder({ ...order, type: order.items ? 'standard' : 'custom', currentStep: sm[order.status] ?? 0 });
+        const statusMap = { 
+          Pending: 0, 
+          Approved: 1, 
+          Processing: 1,
+          Printing: 2,
+          'In Production': 2, 
+          Shipped: 3, 
+          'Out for Delivery': 4,
+          Delivered: 5,
+          Cancelled: -1,
+          Rejected: -1
+        };
+        setSelectedOrder({ ...order, type: order.items ? 'standard' : 'custom', currentStep: statusMap[order.status || order.orderStatus] ?? 0 });
         const history = JSON.parse(localStorage.getItem('myGuestOrders') || '[]');
         if (!history.find(h => h.orderId === order.orderId)) {
           history.push({ orderId: order.orderId, phone: searchForm.phone });
@@ -312,7 +346,7 @@ const TrackOrder = () => {
     }
   };
 
-  const filtered = orders.filter(o => statusToTab(o.orderStatus || o.displayStatus || o.status || '') === activeTab);
+  const filtered = orders.filter(o => statusToTab(o) === activeTab);
 
   return (
     <div className="min-h-screen pb-16" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
