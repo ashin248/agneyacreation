@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   ClipboardList, CheckCircle, Package, Truck, MapPin, Home,
-  X, ShoppingBag, Search, ChevronRight
+  X, ShoppingBag, Search, ChevronRight, Inbox
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
