@@ -213,8 +213,8 @@ const Shop = () => {
 
       {/* ── HERO BANNER ── */}
       {banners.length > 0 && (
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
-          <section className="relative w-full h-[120px] md:h-[180px] overflow-hidden rounded-2xl neu-pressed group">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4">
+          <section className="relative w-full h-[140px] sm:h-[240px] md:h-[320px] lg:h-[380px] xl:h-[440px] overflow-hidden rounded-[24px] sm:rounded-[32px] neu-pressed group">
             <div
               className="flex h-full w-full transition-transform duration-700 ease-in-out"
               style={{ transform: `translateX(-${currentBanner * 100}%)` }}
@@ -254,7 +254,7 @@ const Shop = () => {
       )}
 
       {/* ── FILTER / SEARCH BAR ── */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4">
         <div className="sticky top-16 md:top-[70px] z-50 pt-2 pb-3" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
           <div className="flex items-center gap-2 neu-flat px-3 py-2">
 
@@ -303,7 +303,7 @@ const Shop = () => {
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 pt-4">
+      <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-4">
         
         {/* ── ALL PRODUCTS HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mt-4 mb-5 gap-4">
