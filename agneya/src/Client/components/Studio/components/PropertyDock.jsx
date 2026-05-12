@@ -125,7 +125,7 @@ export default function PropertyDock({
                                             <FiCrop size={16} /> Crop
                                         </button>
                                     )}
-                                    {activeStudioTab === '2D_STUDIO' && (activeObject.type === 'image' || activeObject.type === 'FabricImage' || activeObject.uid?.startsWith('upload_')) && (
+                                    {(activeObject.type === 'image' || activeObject.type === 'FabricImage' || activeObject.uid?.startsWith('upload_')) && (
                                         <button onClick={() => {
                                             const active = fabricRef.current.getActiveObject();
                                             if (active) { active.bringToFront = !active.bringToFront; updateTexture(true); setActiveObject(prev => ({ ...prev, bringToFront: active.bringToFront })); }

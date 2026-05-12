@@ -141,7 +141,29 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
     }, []);
 
 
+    const [tabStates, setTabStates] = useState({
+        '3D_STUDIO': { canvasData: null, canvasObjects: [], anchors: {} },
+        '2D_STUDIO': { canvasData: null, canvasObjects: [], anchors: {} },
+        'DESIGN_ASSISTANCE': { canvasData: null, canvasObjects: [], anchors: {} }
+    });
+
     const lastOpenedProductId = useRef(null);
+    const lastActiveTab = useRef(null);
+
+    // Save current state before switching
+    const saveTabState = useCallback(() => {
+        if (!fabricRef.current || !lastActiveTab.current) return;
+        const currentTab = lastActiveTab.current;
+        const data = fabricRef.current.toJSON(['uid', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId']);
+        setTabStates(prev => ({
+            ...prev,
+            [currentTab]: {
+                canvasData: data,
+                canvasObjects: [...canvasObjects],
+                anchors: { ...objectAnchors }
+            }
+        }));
+    }, [canvasObjects, objectAnchors]);
 
     useEffect(() => {
         const resetStudio = () => {
@@ -152,6 +174,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             historyRef.current = [];
             setHistoryStep(-1);
             setActiveObject(null);
+            setTabStates({
+                '3D_STUDIO': { canvasData: null, canvasObjects: [], anchors: {} },
+                '2D_STUDIO': { canvasData: null, canvasObjects: [], anchors: {} },
+                'DESIGN_ASSISTANCE': { canvasData: null, canvasObjects: [], anchors: {} }
+            });
             if (fabricRef.current) {
                 fabricRef.current.clear();
                 fabricRef.current.backgroundColor = 'transparent';
@@ -162,22 +189,71 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         if (isOpen && lastOpenedProductId.current !== product?._id) {
             lastOpenedProductId.current = product?._id;
             resetStudio();
+            let initialTab = '2D_STUDIO';
             if (initialMode === '2d' || activeTemplateId) {
-                setActiveStudioTab('2D_STUDIO');
+                initialTab = '2D_STUDIO';
             } else if (initialMode === 'company') {
-                setActiveStudioTab('DESIGN_ASSISTANCE');
+                initialTab = 'DESIGN_ASSISTANCE';
             } else if (initialMode === '3d') {
-                setActiveStudioTab('3D_STUDIO');
+                initialTab = '3D_STUDIO';
             } else if (product?.customizationType === '3D' || product?.baseModelId || product?.base3DModelUrl || product?.model3d || product?.customizationType === 'Both') {
-                setActiveStudioTab('3D_STUDIO');
-            } else {
-                setActiveStudioTab('2D_STUDIO');
+                initialTab = '3D_STUDIO';
             }
+            setActiveStudioTab(initialTab);
+            lastActiveTab.current = initialTab;
         } else if (!isOpen) {
             lastOpenedProductId.current = null;
             resetStudio(); 
         }
     }, [product?._id, isOpen, activeTemplateId, initialMode, setActiveStudioTab, setCanvasObjects, setActiveObject, setHistoryStep, product?.customizationType, product?.baseModelId, product?.base3DModelUrl, product?.model3d]);
+
+    // Handle Tab Switching with State Isolation
+    const handleTabSwitch = (newTab) => {
+        if (newTab === activeStudioTab) return;
+        
+        // 1. Save current state
+        if (fabricRef.current) {
+            const data = fabricRef.current.toJSON(['uid', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId']);
+            const currentTab = activeStudioTab;
+            
+            setTabStates(prev => {
+                const newState = {
+                    ...prev,
+                    [currentTab]: {
+                        canvasData: data,
+                        canvasObjects: [...canvasObjects],
+                        anchors: { ...objectAnchors }
+                    }
+                };
+
+                // 2. Load target state
+                const targetState = newState[newTab];
+                if (targetState && targetState.canvasData) {
+                    fabricRef.current.loadFromJSON(targetState.canvasData).then(() => {
+                        fabricRef.current.renderAll();
+                        setCanvasObjects(targetState.canvasObjects || []);
+                        setObjectAnchors(targetState.anchors || {});
+                        updateTexture(true);
+                        historyRef.current = [];
+                        setHistoryStep(-1);
+                    });
+                } else {
+                    fabricRef.current.clear();
+                    setCanvasObjects([]);
+                    setObjectAnchors({});
+                    updateTexture(true);
+                    historyRef.current = [];
+                    setHistoryStep(-1);
+                }
+                
+                return newState;
+            });
+        }
+        
+        setActiveStudioTab(newTab);
+        lastActiveTab.current = newTab;
+        setActiveObject(null);
+    };
 
     useEffect(() => {
         const handleOpenCropper = (e) => {
@@ -493,11 +569,11 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     <h1 className="text-sm sm:text-xl font-bold tracking-tight truncate max-w-[150px] sm:max-w-none" style={{ color: 'var(--color-neu-text)' }}>{product?.name || 'Agneya Design'}</h1>
                     <div className="flex neu-pressed p-1 rounded-full mt-2">
                         {(product?.customizationType === 'Both' || product?.customizationType === '3D') && (
-                            <button onClick={() => setActiveStudioTab('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '3D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>3D STUDIO</button>
+                            <button onClick={() => handleTabSwitch('3D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '3D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '3D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>3D STUDIO</button>
                         )}
-                        <button onClick={() => setActiveStudioTab('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== 'DESIGN_ASSISTANCE' && product?.customizationType !== 'None' ? { color: 'var(--color-neu-text)' } : {}}>DESIGN ASSISTANCE</button>
+                        <button onClick={() => handleTabSwitch('DESIGN_ASSISTANCE')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === 'DESIGN_ASSISTANCE' || product?.customizationType === 'None' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== 'DESIGN_ASSISTANCE' && product?.customizationType !== 'None' ? { color: 'var(--color-neu-text)' } : {}}>DESIGN ASSISTANCE</button>
                         {(product?.customizationType === 'Both' || product?.customizationType === '2D') && (
-                            <button onClick={() => setActiveStudioTab('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '2D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>2D STUDIO</button>
+                            <button onClick={() => handleTabSwitch('2D_STUDIO')} className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter transition-all ${activeStudioTab === '2D_STUDIO' ? 'neu-button-accent' : 'neu-button'}`} style={activeStudioTab !== '2D_STUDIO' ? { color: 'var(--color-neu-text)' } : {}}>2D STUDIO</button>
                         )}
                     </div>
                 </div>
@@ -506,6 +582,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     <div className="w-[40px]"></div> 
                 </div>
             </header>
+
 
             <main className="flex-1 relative flex flex-col xl:flex-row px-0 sm:px-10 pb-[100px] xl:pb-10 gap-0 sm:gap-8 min-h-0 min-w-0 overflow-hidden">
                 {activeStudioTab !== 'DESIGN_ASSISTANCE' ? (
@@ -647,7 +724,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                         ))}
                                     </div>
                                 </div>
-                                <button onClick={() => setActiveStudioTab((product?.customizationType === 'Both' || product?.customizationType === '3D') ? '3D_STUDIO' : '2D_STUDIO')} className="w-full py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to Creator Mode</button>
+                                <button onClick={() => handleTabSwitch((product?.customizationType === 'Both' || product?.customizationType === '3D') ? '3D_STUDIO' : '2D_STUDIO')} className="w-full py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors italic">Switch to Creator Mode</button>
                             </div>
                         </div>
                         

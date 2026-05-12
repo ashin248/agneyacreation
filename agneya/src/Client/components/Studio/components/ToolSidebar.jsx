@@ -152,6 +152,14 @@ function ToolSidebar({
                                 <FiLayers size={16} /> Manage Layers ({canvasObjects.length})
                             </button>
                             <div className="grid grid-cols-2 gap-4">
+                                {(activeObject.type === 'image' || activeObject.type === 'FabricImage' || activeObject.uid?.startsWith('upload_')) && (
+                                    <button onClick={() => {
+                                        const imgData = fabricRef.current.getActiveObject().toDataURL();
+                                        window.dispatchEvent(new CustomEvent('OPEN_CROPPER', { detail: { image: imgData, uid: activeObject.uid } }));
+                                    }} className="h-14 neu-button flex items-center justify-center gap-3 font-black text-[9px] uppercase tracking-widest transition-all active:scale-95" style={{ color: 'var(--color-neu-accent)' }}>
+                                        Crop
+                                    </button>
+                                )}
                                 <button onClick={() => { fabricRef.current.centerObject(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); }} className="h-14 neu-button flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest transition-all active:scale-95" style={{ color: 'var(--color-neu-text)' }}><FiMove size={14} /> Center</button>
                                 <button onClick={() => {
                                     const active = fabricRef.current.getActiveObject();
@@ -160,8 +168,8 @@ function ToolSidebar({
                                         fabricRef.current.add(cloned); fabricRef.current.setActiveObject(cloned); fabricRef.current.renderAll(); updateTexture();
                                     });
                                 }} className="h-14 neu-button flex items-center justify-center gap-2 font-black text-[9px] uppercase tracking-widest transition-all active:scale-95" style={{ color: 'var(--color-neu-text)' }}><FiRepeat size={14} /> Clone</button>
+                                <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="h-14 neu-pressed text-rose-500 flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest transition-all active:scale-95"><FiTrash2 size={16} /> Delete</button>
                             </div>
-                            <button onClick={() => { fabricRef.current.remove(fabricRef.current.getActiveObject()); fabricRef.current.renderAll(); updateTexture(); setActiveObject(null); }} className="w-full h-14 neu-pressed text-rose-500 flex items-center justify-center gap-3 font-black text-[10px] uppercase tracking-widest transition-all active:scale-95"><FiTrash2 size={16} /> Delete Layer</button>
                         </div>
                     </div>
                 ) : (
