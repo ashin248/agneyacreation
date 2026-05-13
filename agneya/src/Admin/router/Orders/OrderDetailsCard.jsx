@@ -169,30 +169,32 @@ const OrderDetailsCard = () => {
 
                   {/* Custom Print Details Box */}
                   {item.itemType === 'Custom' && item.customData && (() => {
-                    const isManualItem = (item.customData.mode === 'manual' || item.name?.includes('[MANUAL DESIGN REQUEST]') || item.name?.includes('[Manual Custom]'));
+                    const hasInstructions = !!item.customData.instructions;
+                    const hasAttachments = item.customData.manualAttachments && item.customData.manualAttachments.length > 0;
+                    const isManualItem = (item.customData.mode === 'manual' || item.customData.mode === 'company' || item.customData.mode === 'unified' || item.name?.includes('[MANUAL DESIGN REQUEST]') || item.name?.includes('[Manual Custom]'));
                     
                     return (
                       <div className={`mt-4 rounded-[40px] p-8 transition-all ${
-                        isManualItem 
+                        (hasInstructions || hasAttachments) 
                         ? 'bg-indigo-50/70 border-2 border-indigo-200 shadow-2xl shadow-indigo-200/40' 
                         : 'bg-gray-50 border border-dashed border-gray-300'
                       }`}>
                          <h4 className="flex items-center justify-between text-[11px] font-black text-gray-900 mb-8 uppercase tracking-[0.3em] border-b border-gray-200/60 pb-5">
                             <div className="flex items-center gap-3">
-                               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isManualItem ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                                  {isManualItem ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
+                               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${(hasInstructions || hasAttachments) ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                                  {(hasInstructions || hasAttachments) ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
                                </div>
-                               {isManualItem ? 'Manual Design Request' : 'Client Custom Design'}
+                               {(hasInstructions || hasAttachments) ? 'Design Assistance Request' : 'Client Custom Design'}
                             </div>
-                            {isManualItem && (
-                               <span className="px-4 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-full shadow-lg shadow-indigo-200 uppercase tracking-widest">Manual Pipeline</span>
+                            {(hasInstructions || hasAttachments) && (
+                               <span className="px-4 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-full shadow-lg shadow-indigo-200 uppercase tracking-widest">Manual Review Required</span>
                             )}
                          </h4>
 
                         <div className="flex flex-col gap-10">
                           
                           {/* 1. PRIMARY: TEXT REQUIREMENTS (Top priority for Manual) */}
-                          {isManualItem && item.customData.instructions && (
+                          {item.customData.instructions && (
                              <div className="p-8 bg-white/80 backdrop-blur-md rounded-[32px] border-2 border-indigo-100 shadow-sm">
                                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
@@ -205,7 +207,7 @@ const OrderDetailsCard = () => {
                           )}
 
                           {/* 2. SECONDARY: ASSET BROWSER */}
-                          {isManualItem && item.customData.manualAttachments && item.customData.manualAttachments.length > 0 && (
+                          {item.customData.manualAttachments && item.customData.manualAttachments.length > 0 && (
                             <div className="space-y-6">
                                <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                  Provided Resource Files ({item.customData.manualAttachments.length})
@@ -229,8 +231,8 @@ const OrderDetailsCard = () => {
                             </div>
                           )}
 
-                          {/* 3. TERTIARY: STANDARD SPECS (Only for Studio context) */}
-                          {!isManualItem && (
+                          {/* 3. TERTIARY: STUDIO SPECS */}
+                          {(item.customData.appliedFrontDesign || item.customData.appliedBackDesign || item.customData.customText || item.customData.font || item.customData.textColor) && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                               <div className="space-y-4">
                                 {item.customData.customText && (
@@ -292,7 +294,7 @@ const OrderDetailsCard = () => {
                           )}
 
                           {/* Fallback Artwork (Legacy) */}
-                          {!isManualItem && item.customData.uploadedImageUrl && (
+                          {item.customData.uploadedImageUrl && (
                             <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Artwork Asset</span>
                                <a href={item.customData.uploadedImageUrl} target="_blank" rel="noreferrer" className="group rounded-xl overflow-hidden border-2 border-white w-14 h-14 hover:border-indigo-500 transition-colors shadow-lg">

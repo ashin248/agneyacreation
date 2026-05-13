@@ -526,7 +526,14 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.backCanvasData;
                 
-                const designPayload = !isCompanyMode ? { mode: 'self', frontCanvasData: frontData, backCanvasData: backData } : { mode: 'company', instructions: companyInstructions, references: companyReferences };
+                const designPayload = { 
+                    mode: 'unified', 
+                    frontCanvasData: frontData, 
+                    backCanvasData: backData,
+                    instructions: companyInstructions,
+                    manualAttachments: (companyReferences || []).map(r => typeof r === 'string' ? r : r.url)
+                };
+
                 const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
 
@@ -542,7 +549,12 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     isBulkEnabled: product?.isBulkEnabled,
                     bulkRules: product?.bulkRules,
                     gstRate: product?.gstRate || 0,
-                    customData: { design: designPayload, variationName: v.name, appliedFrontDesign: frontSnap, appliedBackDesign: backSnap }
+                    customData: { 
+                        ...designPayload,
+                        variationName: v.name, 
+                        appliedFrontDesign: frontSnap, 
+                        appliedBackDesign: backSnap 
+                    }
                 };
             });
             if (isBuyNow) { navigate('/checkout', { state: { buyNowItems: allItems } }); } else { for (const item of allItems) { await addToCart(item); } toast.success(`${allItems.length} Designs Synced.`); onClose(); navigate('/cart'); }
