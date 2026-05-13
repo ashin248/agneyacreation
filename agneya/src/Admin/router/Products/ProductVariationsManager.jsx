@@ -4,6 +4,8 @@ import { FiPlus, FiTrash2, FiImage, FiGrid, FiLayers, FiType, FiCheckSquare } fr
 const ProductVariationsManager = ({ variations, setVariations, baseProductName }) => {
   const [batchColor, setBatchColor] = useState('');
   const [batchSizes, setBatchSizes] = useState([]);
+  const [batchImageFile, setBatchImageFile] = useState(null);
+  const [batchPreviewUrl, setBatchPreviewUrl] = useState('');
   const [customSizeInput, setCustomSizeInput] = useState('');
   const presetSizes = ['S', 'M', 'L', 'XL', 'XXL', '8x12', '12x18', 'A4', 'A3'];
 
@@ -60,15 +62,18 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
         color: batchColor,
         stock: 10,
         priceModifier: 0,
-        imageFile: null,
-        previewUrl: '',
+        imageFile: batchImageFile,
+        previewUrl: batchImageFile ? URL.createObjectURL(batchImageFile) : '',
       };
     });
 
     setVariations(prev => [...(Array.isArray(prev) ? prev : []), ...newVars]);
-    // Reset batch state but keep color for convenience? No, clear it.
+    // Reset batch state
     setBatchSizes([]);
     setBatchColor('');
+    setBatchImageFile(null);
+    if (batchPreviewUrl) URL.revokeObjectURL(batchPreviewUrl);
+    setBatchPreviewUrl('');
   };
 
   const handleBatchImageUpload = (colorKey, e) => {
@@ -231,24 +236,69 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
            </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Image Upload for Batch */}
           <div className="space-y-4">
              <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 px-1 flex items-center gap-2">
-               <FiType size={14} /> 1. Input Primary Color
+               <FiImage size={14} /> 1. Variation Image
              </label>
-             <input 
-               type="text" 
-               placeholder="e.g. Royal Blue, Crimson Red..."
-               value={batchColor}
-               onChange={e => setBatchColor(e.target.value)}
-               className="w-full px-6 py-4 bg-gray-50 border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 transition-all"
-             />
+             <div className="relative aspect-square w-full max-w-[200px] rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center gap-3 overflow-hidden group hover:border-indigo-400 transition-all cursor-pointer">
+                {batchPreviewUrl ? (
+                  <>
+                    <img src={batchPreviewUrl} className="w-full h-full object-cover" alt="Batch" />
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        URL.revokeObjectURL(batchPreviewUrl);
+                        setBatchPreviewUrl('');
+                        setBatchImageFile(null);
+                      }}
+                      className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <FiTrash2 size={14} />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <FiImage size={32} className="text-gray-300" />
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-4">Click to Upload Batch Image</span>
+                  </>
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      if (batchPreviewUrl) URL.revokeObjectURL(batchPreviewUrl);
+                      setBatchImageFile(file);
+                      setBatchPreviewUrl(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+             </div>
           </div>
 
-          <div className="space-y-4">
-             <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 px-1 flex items-center gap-2">
-                <FiCheckSquare size={14} /> 2. Select Component Sizes
-             </label>
+          <div className="lg:col-span-2 space-y-8">
+            <div className="space-y-4">
+               <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 px-1 flex items-center gap-2">
+                 <FiType size={14} /> 2. Input Primary Color
+               </label>
+               <input 
+                 type="text" 
+                 placeholder="e.g. Royal Blue, Crimson Red..."
+                 value={batchColor}
+                 onChange={e => setBatchColor(e.target.value)}
+                 className="w-full px-6 py-4 bg-gray-50 border-gray-100 rounded-2xl text-sm font-bold focus:ring-4 focus:ring-indigo-500/10 transition-all"
+               />
+            </div>
+
+            <div className="space-y-4">
+               <label className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 px-1 flex items-center gap-2">
+                  <FiCheckSquare size={14} /> 3. Select Component Sizes
+               </label>
              <div className="flex flex-wrap gap-2">
                {presetSizes.map(size => (
                  <button
