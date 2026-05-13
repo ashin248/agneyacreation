@@ -100,7 +100,7 @@ exports.getAllOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const order = await Order.findById(orderId);
+    const order = await Order.findByIdAndUpdate(orderId, { isAdminRead: true }, { new: true });
     
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order not found.' });

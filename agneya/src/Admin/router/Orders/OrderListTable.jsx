@@ -1,58 +1,99 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FiChevronRight } from 'react-icons/fi';
+import { FiChevronRight, FiBell } from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
 
 const OrderListTable = ({ forcedType = 'All' }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [prevOrderCount, setPrevOrderCount] = useState(null);
 
   const [filterSearch, setFilterSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterType, setFilterType] = useState(forcedType);
 
+  const audioRef = useRef(new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'));
+
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(true);
+    
+    // Polling for new orders every 30 seconds
+    const interval = setInterval(() => {
+      fetchOrders(false);
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (initial = false) => {
     try {
-      setLoading(true);
+      if (initial) setLoading(true);
       setError(null);
       
-      // Ensure we use the token from localStorage consistently with the rest of the auth system
       const token = localStorage.getItem('adminToken');
       const response = await axios.get('/api/admin/orders', {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
 
       if (response.data.success) {
-        setOrders(response.data.data);
+        const newOrders = response.data.data;
+        
+        // Check for new orders to trigger alert
+        if (!initial && prevOrderCount !== null && newOrders.length > prevOrderCount) {
+          toast.success('New Order Received!', {
+            icon: <FiBell className="text-indigo-600" />,
+            duration: 5000,
+            style: {
+              borderRadius: '16px',
+              background: '#fff',
+              color: '#0f172a',
+              fontWeight: 'bold',
+              border: '2px solid #6366f1'
+            },
+          });
+          audioRef.current.play().catch(e => console.log('Audio play failed:', e));
+        }
+        
+        setOrders(newOrders);
+        setPrevOrderCount(newOrders.length);
       } else {
         setError(response.data.message || 'Failed to load orders.');
       }
     } catch (err) {
       console.error('Error fetching orders:', err);
       const errorMessage = err.response?.data?.message || err.message || 'Connection error rendering orders table.';
-      setError(errorMessage);
+      if (initial) setError(errorMessage);
     } finally {
-      setLoading(false);
+      if (initial) setLoading(false);
     }
   };
 
-  // Advanced Filtering Logic with defensive checks for missing data
+  // Status Counts Calculation
+  const statusCounts = orders.reduce((acc, order) => {
+    const status = order.orderStatus;
+    acc[status] = (acc[status] || 0) + 1;
+    acc['Total'] = (acc['Total'] || 0) + 1;
+    return acc;
+  }, {
+    Pending: 0,
+    Processing: 0,
+    Printing: 0,
+    Shipped: 0,
+    Delivered: 0,
+    Total: 0
+  });
+
+  // Advanced Filtering Logic
   const filteredOrders = orders.filter(order => {
-      // 1. Search Filter (ID or Name or Email)
       const matchesSearch = 
         (order.orderId || "").toLowerCase().includes(filterSearch.toLowerCase()) ||
         (order.customer?.name || "").toLowerCase().includes(filterSearch.toLowerCase()) ||
         (order.customer?.email || "").toLowerCase().includes(filterSearch.toLowerCase());
       
-      // 2. Status Filter
       const matchesStatus = filterStatus === 'All' || order.orderStatus === filterStatus;
 
-      // 3. Type Filter with Sub-type Detection
       const matchesType = filterType === 'All' || (() => {
           if (filterType === 'Manual') {
               return order.items?.some(item => item.customData?.mode === 'manual');
@@ -79,7 +120,7 @@ const OrderListTable = ({ forcedType = 'All' }) => {
       <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm text-red-700 m-8">
         <p className="font-semibold">Error</p>
         <p>{error}</p>
-        <button onClick={fetchOrders} className="mt-2 text-sm text-red-800 underline hover:text-red-900">Try Again</button>
+        <button onClick={() => fetchOrders(true)} className="mt-2 text-sm text-red-800 underline hover:text-red-900">Try Again</button>
       </div>
     );
   }
@@ -109,9 +150,26 @@ const OrderListTable = ({ forcedType = 'All' }) => {
           <div className="flex items-center gap-4 bg-white/70 backdrop-blur-xl p-2 rounded-[24px] border border-white shadow-xl">
              <div className="px-6 py-4 rounded-2xl bg-slate-900 text-white space-y-1">
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Global Order Volume</p>
-                <p className="text-xl font-black">{filteredOrders.length}</p>
+                <p className="text-xl font-black">{statusCounts.Total}</p>
              </div>
           </div>
+        </div>
+
+        {/* STATUS COUNTS MINI DASHBOARD */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+           {[
+             { label: 'Pending', count: statusCounts.Pending, color: 'text-amber-600', bg: 'bg-amber-50' },
+             { label: 'Processing', count: statusCounts.Processing, color: 'text-blue-600', bg: 'bg-blue-50' },
+             { label: 'Printing', count: statusCounts.Printing, color: 'text-fuchsia-600', bg: 'bg-fuchsia-50' },
+             { label: 'Shipped', count: statusCounts.Shipped, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+             { label: 'Delivered', count: statusCounts.Delivered, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+             { label: 'Total', count: statusCounts.Total, color: 'text-slate-900', bg: 'bg-slate-100' },
+           ].map((item) => (
+             <div key={item.label} className={`${item.bg} p-4 rounded-[24px] border border-white shadow-sm flex flex-col items-center justify-center text-center`}>
+                <p className={`text-[10px] font-black uppercase tracking-widest ${item.color} opacity-70 mb-1`}>{item.label}</p>
+                <p className={`text-2xl font-black ${item.color}`}>{item.count}</p>
+             </div>
+           ))}
         </div>
 
         {/* PREMIUM FILTER BAR */}
@@ -208,7 +266,16 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-transparent">
                     {filteredOrders.map((order) => {
-                      const statusColors = {
+                      const statusStyles = {
+                        Pending: 'bg-amber-50/50 hover:bg-amber-100/50 text-amber-600 border-amber-200',
+                        Processing: 'bg-blue-50/50 hover:bg-blue-100/50 text-blue-600 border-blue-200',
+                        Printing: 'bg-fuchsia-50/50 hover:bg-fuchsia-100/50 text-fuchsia-600 border-fuchsia-200',
+                        Shipped: 'bg-indigo-50/50 hover:bg-indigo-100/50 text-indigo-600 border-indigo-200',
+                        Delivered: 'bg-emerald-50/50 hover:bg-emerald-100/50 text-emerald-600 border-emerald-200',
+                        Cancelled: 'bg-red-50/50 hover:bg-red-100/50 text-red-600 border-red-200'
+                      };
+
+                      const badgeColors = {
                         Pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20 shadow-amber-500/5',
                         Processing: 'bg-blue-500/10 text-blue-600 border-blue-500/20 shadow-blue-500/5',
                         Printing: 'bg-fuchsia-500/10 text-fuchsia-600 border-fuchsia-500/20 shadow-fuchsia-500/5',
@@ -219,12 +286,21 @@ const OrderListTable = ({ forcedType = 'All' }) => {
 
                       const isManual = order.items?.some(i => i.customData?.mode === 'manual' || i.name?.includes('[MANUAL DESIGN REQUEST]') || i.name?.includes('[Manual Custom]'));
                       const isStudio = order.items?.some(i => i.customData?.mode === 'self');
+                      const isUnread = order.isAdminRead === false;
 
                       return (
-                        <tr key={order._id} className="hover:bg-indigo-50/40 transition-all duration-500 group/row">
+                        <tr key={order._id} className={`${statusStyles[order.orderStatus] || 'bg-white'} transition-all duration-300 group/row border-b border-white/40 ${isUnread ? 'animate-pulse-subtle' : ''}`}>
                           <td className="whitespace-nowrap py-8 pl-10 pr-4 text-sm">
-                            <div className="flex flex-col">
-                              <span className="font-black text-slate-900 tracking-tighter text-[15px] group-hover/row:text-indigo-600 transition-colors uppercase">{order.orderId}</span>
+                            <div className="flex flex-col relative">
+                              {isUnread && (
+                                <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex items-center">
+                                   <div className="w-2 h-2 rounded-full bg-red-500 animate-ping"></div>
+                                </div>
+                              )}
+                              <span className="font-black text-slate-900 tracking-tighter text-[15px] group-hover/row:text-indigo-600 transition-colors uppercase flex items-center gap-2">
+                                {order.orderId}
+                                {isUnread && <span className="text-[8px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-black animate-bounce">NEW</span>}
+                              </span>
                               <div className="flex items-center gap-2 mt-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
@@ -242,7 +318,7 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                               isManual ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100' :
                               isStudio ? 'bg-fuchsia-600 text-white border-fuchsia-600 shadow-lg shadow-fuchsia-100' :
                               order.orderType === 'Bulk' ? 'bg-slate-900 text-white border-slate-900' :
-                              'bg-slate-50 text-slate-500 border-slate-200'
+                              'bg-white/80 text-slate-500 border-slate-200'
                             }`}>
                               {isManual ? 'Manual Brief' : isStudio ? 'Studio Asset' : order.orderType.toUpperCase()}
                             </span>
@@ -260,7 +336,7 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{order.items.length} Units</div>
                           </td>
                           <td className="whitespace-nowrap px-6 py-8 text-center text-sm">
-                             <span className={`inline-block px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border shadow-sm ${statusColors[order.orderStatus] || statusColors.Pending}`}>
+                             <span className={`inline-block px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border shadow-sm ${badgeColors[order.orderStatus] || badgeColors.Pending}`}>
                                {order.orderStatus}
                              </span>
                           </td>
@@ -282,6 +358,17 @@ const OrderListTable = ({ forcedType = 'All' }) => {
           )}
         </div>
       </div>
+      
+      {/* CUSTOM ANIMATION STYLES */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 1; background-color: rgba(255, 255, 255, 0.5); }
+          50% { opacity: 0.85; background-color: rgba(99, 102, 241, 0.05); }
+        }
+        .animate-pulse-subtle {
+          animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}} />
     </div>
   );
 };

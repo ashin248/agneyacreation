@@ -93,6 +93,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['Pending', 'Processing', 'Printing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'],
     default: 'Pending'
+  },
+  isAdminRead: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true });
 
