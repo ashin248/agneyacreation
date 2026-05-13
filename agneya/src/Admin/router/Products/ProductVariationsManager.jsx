@@ -333,6 +333,7 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                </div>
              </div>
           </div>
+          </div>
         </div>
 
         <button

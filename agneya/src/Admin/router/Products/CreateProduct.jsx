@@ -200,17 +200,28 @@ const CreateProduct = () => {
       formData.append('twoDModels', JSON.stringify(twoDModelsMetadata));
 
       // Arrays formatting and appending
-      const finalVariations = (Array.isArray(currentVars) ? currentVars : []).map(({ id, previewUrl, ...rest }) => ({
-        ...rest,
-        stock: Number(rest.stock),
-        priceModifier: Number(rest.priceModifier),
-      }));
+      const finalVariations = (Array.isArray(currentVars) ? currentVars : []).map((v) => {
+        const rest = { ...v };
+        delete rest.id;
+        delete rest.previewUrl;
+        delete rest.imageFile; // Also not needed in JSON
+        return {
+          ...rest,
+          stock: Number(rest.stock),
+          priceModifier: Number(rest.priceModifier),
+        };
+      });
 
-      const finalBulkRules = (isBulkEnabled && Array.isArray(bulkRules)) ? bulkRules.map(({ id, ...rest }) => ({
-        minQty: Number(rest.minQty),
-        maxQty: rest.maxQty === '' ? null : Number(rest.maxQty),
-        pricePerUnit: Number(rest.pricePerUnit),
-      })) : [];
+      const finalBulkRules = (isBulkEnabled && Array.isArray(bulkRules)) ? bulkRules.map((r) => {
+        const rest = { ...r };
+        delete rest.id;
+        return {
+          ...rest,
+          minQty: Number(rest.minQty),
+          maxQty: rest.maxQty === '' ? null : Number(rest.maxQty),
+          pricePerUnit: Number(rest.pricePerUnit),
+        };
+      }) : [];
 
       formData.append('variations', JSON.stringify(finalVariations));
       formData.append('bulkRules', JSON.stringify(finalBulkRules));

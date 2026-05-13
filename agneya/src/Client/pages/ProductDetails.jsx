@@ -274,14 +274,6 @@ const ProductDetails = () => {
     const cartItemTotal = getIncrementalTotal(quantity);
     const potentialSavings = (quantity * baseFinalPrice) - cartItemTotal;
 
-    const variationImages = product.variations
-        ?.filter(v => v.imageUrl)
-        ?.reduce((acc, current) => {
-            const x = acc.find(item => item.imageUrl === current.imageUrl);
-            if (!x) return acc.concat([current]);
-            return acc;
-        }, []) || [];
-    
     const displayMainImage = overrideImage || images[activeImage];
 
     return (
