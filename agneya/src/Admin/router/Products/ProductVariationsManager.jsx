@@ -4,6 +4,7 @@ import { FiPlus, FiTrash2, FiImage, FiGrid, FiLayers, FiType, FiCheckSquare } fr
 const ProductVariationsManager = ({ variations, setVariations, baseProductName }) => {
   const [batchColor, setBatchColor] = useState('');
   const [batchSizes, setBatchSizes] = useState([]);
+  const [customSizeInput, setCustomSizeInput] = useState('');
   const presetSizes = ['S', 'M', 'L', 'XL', 'XXL', '8x12', '12x18', 'A4', 'A3'];
 
   // ── GROUPING LOGIC ──
@@ -70,19 +71,17 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
     setBatchColor('');
   };
 
-  // Set image for entire color group
   const handleBatchImageUpload = (colorKey, e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    
     setVariations(prev => (Array.isArray(prev) ? prev : []).map(v => {
       const vColor = v?.color?.trim() || 'Neutral / Default';
       if (vColor === colorKey) {
         // Revoke old URL if exists
         if (v?.previewUrl) URL.revokeObjectURL(v.previewUrl);
-        return { ...v, imageFile: file, previewUrl };
+        // Create a unique URL for each variation to avoid revocation bugs
+        return { ...v, imageFile: file, previewUrl: URL.createObjectURL(file) };
       }
       return v;
     }));
@@ -261,6 +260,27 @@ const ProductVariationsManager = ({ variations, setVariations, baseProductName }
                    {size}
                  </button>
                ))}
+               <div className="flex items-center gap-2 ml-2">
+                 <input 
+                   type="text" 
+                   placeholder="Custom..."
+                   value={customSizeInput}
+                   onChange={e => setCustomSizeInput(e.target.value)}
+                   className="w-24 px-3 py-2 bg-white border-2 border-gray-50 rounded-xl text-[10px] font-black uppercase focus:ring-2 focus:ring-indigo-500 outline-none"
+                 />
+                 <button
+                   type="button"
+                   onClick={() => {
+                     if (customSizeInput.trim()) {
+                       setBatchSizes(prev => [...new Set([...prev, customSizeInput.trim()])]);
+                       setCustomSizeInput('');
+                     }
+                   }}
+                   className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-all"
+                 >
+                   <FiPlus size={16} />
+                 </button>
+               </div>
              </div>
           </div>
         </div>

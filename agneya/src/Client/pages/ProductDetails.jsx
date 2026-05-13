@@ -195,8 +195,16 @@ const ProductDetails = () => {
 
     // Update selected variation when color/size changes
     useEffect(() => {
-      setOverrideImage(null);
-    }, [selectedColor, selectedSize]);
+        if (product?.variations && selectedColor) {
+            // Find a variation that matches the selected color and has an image
+            const matchingVariation = product.variations.find(v => v.color === selectedColor && v.imageUrl);
+            if (matchingVariation) {
+                setOverrideImage(matchingVariation.imageUrl);
+                return;
+            }
+        }
+        setOverrideImage(null);
+    }, [selectedColor, selectedSize, product]);
 
     if (loading) {
         return (

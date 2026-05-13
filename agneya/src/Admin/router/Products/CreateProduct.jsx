@@ -38,26 +38,7 @@ const CreateProduct = () => {
   const handleBasicInfoChange = (updateAction) => {
     const nextInfo = typeof updateAction === 'function' ? updateAction(basicInfo) : updateAction;
     
-    // Auto-generate/Update SKU for the first variation if product name changes
-    if (Array.isArray(variations) && variations.length > 0 && nextInfo.name !== basicInfo.name) {
-      const generatedSku = nextInfo.name
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '')
-        .substring(0, 8) + "-BASE";
-        
-      setVariations(prevVars => {
-        if (!Array.isArray(prevVars) || prevVars.length === 0) return prevVars;
-        // Only update if it's currently empty OR looks like a generated SKU
-        const currentSku = prevVars[0].sku;
-        if (!currentSku || currentSku.endsWith('-BASE')) {
-          const newVars = [...prevVars];
-          newVars[0] = { ...newVars[0], sku: generatedSku };
-          return newVars;
-        }
-        return prevVars;
-      });
-    }
-    
+    // Removed forced SKU auto-generation to allow admin full freedom
     setBasicInfo(nextInfo);
   };
 
@@ -137,31 +118,11 @@ const CreateProduct = () => {
     setGlobalError(null);
     setBulkError(null);
 
-    // Auto-fix variations before validation
+    // Respect admin's manual input: No forced SKU auto-generation or auto-fills
     let currentVars = [...variations];
     if (currentVars.length === 0) {
-      currentVars = [{
-        id: 'base-variation-' + Date.now(),
-        sku: basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) + "-BASE" : 'BASE-SKU',
-        size: 'Standard',
-        color: 'White',
-        stock: 10,
-        priceModifier: 0,
-        imageFile: null,
-        previewUrl: '',
-      }];
-      setVariations(currentVars);
-    } else {
-      // Auto-fill missing SKUs
-      let modified = false;
-      currentVars = currentVars.map((v, i) => {
-        if (!String(v.sku || '').trim()) {
-          modified = true;
-          return { ...v, sku: (basicInfo.name ? basicInfo.name.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 8) : 'PROD') + `-VAR-${i+1}` };
-        }
-        return v;
-      });
-      if (modified) setVariations(currentVars);
+      setGlobalError("At least one variation must be defined.");
+      return;
     }
 
     const errorMessage = validatePayload(currentVars);
