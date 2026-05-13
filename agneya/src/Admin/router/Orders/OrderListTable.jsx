@@ -70,8 +70,15 @@ const OrderListTable = ({ forcedType = 'All' }) => {
     }
   };
 
-  // Status Counts Calculation
-  const statusCounts = orders.reduce((acc, order) => {
+  // Status Counts Calculation (Respected by forcedType filter)
+  const filteredForCounts = orders.filter(order => {
+    if (forcedType === 'All') return true;
+    if (forcedType === 'Manual') return order.items?.some(item => item.customData?.mode === 'manual');
+    if (forcedType === 'Studio') return order.items?.some(item => item.customData?.mode === 'self');
+    return order.orderType === forcedType;
+  });
+
+  const statusCounts = filteredForCounts.reduce((acc, order) => {
     const status = order.orderStatus;
     acc[status] = (acc[status] || 0) + 1;
     acc['Total'] = (acc['Total'] || 0) + 1;
