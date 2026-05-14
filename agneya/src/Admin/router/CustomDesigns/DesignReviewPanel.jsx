@@ -219,13 +219,18 @@ const DesignReviewPanel = () => {
         fetchAllDesigns();
     }, []);
 
-    // Status Filtering & Categorization Logic (STRICTLY STUDIO/SELF DESIGN ONLY, MUST BE PAID)
+    // Status Filtering & Categorization Logic
     const filteredDesigns = allDesigns.filter(d => {
         const matchesSearch = (d.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                             (d.email || '').toLowerCase().includes(searchTerm.toLowerCase());
-        const isStudio = !!d.frontCanvasData;
-        const isPaidOrder = d.isPaid === true; // Enforce payment prerequisite
-        return matchesSearch && isStudio && isPaidOrder;
+                             (d.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             (d.productType || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             (d._id || '').toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesStatus = statusFilter === 'all' || d.status === statusFilter;
+        
+        // Relaxed requirements: Allow both Studio and Manual, and don't strictly require isPaid
+        // to ensure administrators can review all incoming requests.
+        return matchesSearch && matchesStatus;
     });
 
     // Reconstruction Engine
@@ -403,16 +408,31 @@ const DesignReviewPanel = () => {
                         <span className="bg-slate-900 text-white px-3 py-1 rounded-full text-[10px] font-bold">{filteredDesigns.length} Objects</span>
                     </div>
 
-                    {/* Search Field */}
-                    <div className="relative mb-6 px-6">
-                        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <input 
-                            type="text" 
-                            placeholder="SEARCH SIGNATURES..." 
-                            className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl text-[9px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-100 transition-all outline-none"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                    {/* Search & Filter Bar */}
+                    <div className="px-6 space-y-4 mb-6">
+                        <div className="relative">
+                            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input 
+                                type="text" 
+                                placeholder="SEARCH SIGNATURES..." 
+                                className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl text-[9px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-100 transition-all outline-none"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        
+                        <select 
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-[9px] font-black uppercase tracking-widest focus:ring-2 focus:ring-indigo-100 transition-all outline-none appearance-none cursor-pointer"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2.5\' d=\'M19 9l-7 7-7-7\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1em' }}
+                        >
+                            <option value="all">ALL STATUSES</option>
+                            <option value="Pending">PENDING</option>
+                            <option value="Approved">APPROVED</option>
+                            <option value="Rejected">REJECTED</option>
+                            <option value="In Production">IN PRODUCTION</option>
+                        </select>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-1 space-y-3 custom-scrollbar">
