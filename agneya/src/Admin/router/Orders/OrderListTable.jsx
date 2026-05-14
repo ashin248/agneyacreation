@@ -73,8 +73,8 @@ const OrderListTable = ({ forcedType = 'All' }) => {
   // Status Counts Calculation (Respected by forcedType filter)
   const filteredForCounts = orders.filter(order => {
     if (forcedType === 'All') return true;
-    if (forcedType === 'Manual') return order.items?.some(item => item.customData?.mode === 'manual');
-    if (forcedType === 'Studio') return order.items?.some(item => item.customData?.mode === 'self');
+    if (forcedType === 'Manual') return order.items?.some(item => item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]'));
+    if (forcedType === 'Studio') return order.items?.some(item => item.customData?.mode === 'unified' || item.customData?.mode === 'self');
     return order.orderType === forcedType;
   });
 
@@ -106,7 +106,8 @@ const OrderListTable = ({ forcedType = 'All' }) => {
               return order.items?.some(item => item.customData?.mode === 'manual');
           }
           if (filterType === 'Studio') {
-              return order.items?.some(item => item.customData?.mode === 'self');
+              // Updated to match the 'unified' mode used by the Studio
+              return order.items?.some(item => item.customData?.mode === 'unified' || item.customData?.mode === 'self');
           }
           return order.orderType === filterType;
       })();
@@ -292,7 +293,7 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                       };
 
                       const isManual = order.items?.some(i => i.customData?.mode === 'manual' || i.name?.includes('[MANUAL DESIGN REQUEST]') || i.name?.includes('[Manual Custom]'));
-                      const isStudio = order.items?.some(i => i.customData?.mode === 'self');
+                      const isStudio = order.items?.some(i => i.customData?.mode === 'unified' || i.customData?.mode === 'self');
                       const isUnread = order.isAdminRead === false;
 
                       return (
@@ -349,8 +350,13 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                           </td>
                           <td className="whitespace-nowrap py-8 pl-6 pr-10 text-right text-sm">
                             <Link 
-                              to={forcedType === 'Manual' ? `/admin/design-assistance/details/${order._id}` : `/admin/orders/details/${order._id}`}
-                              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest border-2 border-slate-100 rounded-2xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm hover:shadow-xl active:scale-95"
+                               to={
+                                 forcedType === 'Manual' ? `/admin/design-assistance/details/${order._id}` : 
+                                 forcedType === 'Studio' ? `/admin/custom-designs/details/${order._id}` :
+                                 forcedType === 'Bulk' ? `/admin/bulk-orders/details/${order._id}` :
+                                 `/admin/orders/details/${order._id}`
+                               }
+                               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-900 text-[10px] font-black uppercase tracking-widest border-2 border-slate-100 rounded-2xl hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-sm hover:shadow-xl active:scale-95"
                             >
                               Details <FiChevronRight className="text-current" />
                             </Link>

@@ -22,6 +22,7 @@ function DesignAssistance() {
           <Routes>
             <Route path="inquiries" element={<DesignInquiryTable />} />
             <Route path="orders" element={<OrderListTable forcedType="Manual" />} />
+            <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route index element={<DesignInquiryTable />} />
           </Routes>
         </div>

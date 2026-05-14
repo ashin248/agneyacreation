@@ -8,6 +8,7 @@ import B2BOrdersTracker from "../router/BulkOrders/B2BOrdersTracker.jsx";
 import PageSubNav from '../components/PageSubNav.jsx';
 
 import OrderListTable from "../router/Orders/OrderListTable.jsx";
+import OrderDetailsCard from "../router/Orders/OrderDetailsCard.jsx";
 
 function BulkOrders() {
   const links = [
@@ -26,6 +27,7 @@ function BulkOrders() {
           <Routes>
             <Route path="inquiries" element={<WholesaleInquiriesTable />} />
             <Route path="orders" element={<OrderListTable forcedType="Bulk" />} />
+            <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route path="approvals" element={<B2BUserApprovals />} />
             <Route path="quote-gen" element={<CustomQuoteGenerator />} />
             <Route path="tracker" element={<B2BOrdersTracker />} />

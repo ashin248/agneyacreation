@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import DesignReviewPanel from "../router/CustomDesigns/DesignReviewPanel.jsx";
 import QualityControlActions from "../router/CustomDesigns/QualityControlActions.jsx";
 import OrderListTable from "../router/Orders/OrderListTable.jsx";
+import OrderDetailsCard from "../router/Orders/OrderDetailsCard.jsx";
 import PageSubNav from '../components/PageSubNav.jsx';
 
 function CustomDesigns() {
@@ -20,6 +21,7 @@ function CustomDesigns() {
             <Route index element={<DesignReviewPanel />} />
             <Route path="review" element={<Navigate to="/admin/custom-designs" replace />} />
             <Route path="orders" element={<OrderListTable forcedType="Studio" />} />
+            <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route path="quality-control" element={<QualityControlActions />} />
           </Routes>
         </div>
