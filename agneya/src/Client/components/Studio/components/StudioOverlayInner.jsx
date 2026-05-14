@@ -179,6 +179,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 '2D_STUDIO': { canvasData: null, canvasObjects: [], anchors: {} },
                 'DESIGN_ASSISTANCE': { canvasData: null, canvasObjects: [], anchors: {} }
             });
+            setCompanyInstructions('');
+            setCompanyReferences([]);
             if (fabricRef.current) {
                 fabricRef.current.clear();
                 fabricRef.current.backgroundColor = 'transparent';
@@ -526,12 +528,18 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 const frontData = isCurrent && viewSide === 'front' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.frontCanvasData;
                 const backData = isCurrent && viewSide === 'back' ? fabricRef.current.toJSON(['uid', 'id', 'excludeFromExport', 'isPhoto', 'isSlot', 'slotId', 'selectable', 'evented']) : v.backCanvasData;
                 
+                // Merge explicit references from Design Assistance with images uploaded to the Studio
+                const combinedRefs = [
+                    ...(companyReferences || []),
+                    ...(uploadedAssets || [])
+                ];
+
                 const designPayload = { 
                     mode: 'unified', 
                     frontCanvasData: frontData, 
                     backCanvasData: backData,
                     instructions: companyInstructions,
-                    manualAttachments: (companyReferences || []).map(r => typeof r === 'string' ? r : r.url)
+                    manualAttachments: combinedRefs.map(r => typeof r === 'string' ? r : r.url)
                 };
 
                 const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);
