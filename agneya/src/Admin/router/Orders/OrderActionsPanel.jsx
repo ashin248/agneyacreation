@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const OrderActionsPanel = ({ orderId, currentStatus, onStatusUpdate }) => {
+const OrderActionsPanel = ({ orderId, currentStatus, onStatusUpdate, isDesignAssistance }) => {
   const [loading, setLoading] = useState(false);
   const [statusInput, setStatusInput] = useState(currentStatus);
 
@@ -60,6 +60,18 @@ const OrderActionsPanel = ({ orderId, currentStatus, onStatusUpdate }) => {
            </div>
         )}
       </div>
+
+      {/* Quick Action: Accept Design Assistance */}
+      {isDesignAssistance && currentStatus === 'Pending' && (
+        <button 
+          disabled={loading}
+          onClick={() => handleStatusChange({ target: { value: 'Processing' } })}
+          className={`inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-md shadow-lg shadow-indigo-500/20 transition-all text-sm whitespace-nowrap w-full sm:w-auto active:scale-95 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+          Accept Design Request
+        </button>
+      )}
 
       {/* Quick Action: Mark Delivered */}
       {currentStatus !== 'Delivered' && currentStatus !== 'Cancelled' && (

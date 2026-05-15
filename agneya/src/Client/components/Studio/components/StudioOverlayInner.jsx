@@ -536,6 +536,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
 
                 const designPayload = { 
                     mode: 'unified', 
+                    designSource: activeStudioTab,
                     frontCanvasData: frontData, 
                     backCanvasData: backData,
                     instructions: companyInstructions,

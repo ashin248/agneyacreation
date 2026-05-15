@@ -73,8 +73,11 @@ const OrderListTable = ({ forcedType = 'All' }) => {
   // Status Counts Calculation (Respected by forcedType filter)
   const filteredForCounts = orders.filter(order => {
     if (forcedType === 'All') return true;
-    if (forcedType === 'Manual') return order.items?.some(item => item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]'));
-    if (forcedType === 'Studio') return order.items?.some(item => item.customData?.mode === 'unified' || item.customData?.mode === 'self');
+    if (forcedType === 'CustomAndNormal') return order.items?.some(item => item.customData?.designSource === '3D_STUDIO' || item.customData?.designSource === '2D_STUDIO' || (!item.customData?.mode && !item.customData?.designSource));
+    if (forcedType === 'DESIGN_ASSISTANCE') return order.items?.some(item => item.customData?.designSource === 'DESIGN_ASSISTANCE' || item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]'));
+    if (forcedType === '3D_STUDIO') return order.items?.some(item => item.customData?.designSource === '3D_STUDIO' || (item.customData?.mode === 'unified' && !item.customData?.designSource));
+    if (forcedType === '2D_STUDIO') return order.items?.some(item => item.customData?.designSource === '2D_STUDIO');
+    if (forcedType === 'NORMAL') return order.items?.every(item => !item.customData || (!item.customData.mode && !item.customData.designSource));
     return order.orderType === forcedType;
   });
 
@@ -102,12 +105,17 @@ const OrderListTable = ({ forcedType = 'All' }) => {
       const matchesStatus = filterStatus === 'All' || order.orderStatus === filterStatus;
 
       const matchesType = filterType === 'All' || (() => {
-          if (filterType === 'Manual') {
-              return order.items?.some(item => item.customData?.mode === 'manual');
+          if (filterType === 'DESIGN_ASSISTANCE') {
+              return order.items?.some(item => item.customData?.designSource === 'DESIGN_ASSISTANCE' || item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]'));
           }
-          if (filterType === 'Studio') {
-              // Updated to match the 'unified' mode used by the Studio
-              return order.items?.some(item => item.customData?.mode === 'unified' || item.customData?.mode === 'self');
+          if (filterType === '3D_STUDIO') {
+              return order.items?.some(item => item.customData?.designSource === '3D_STUDIO' || (item.customData?.mode === 'unified' && !item.customData?.designSource));
+          }
+          if (filterType === '2D_STUDIO') {
+              return order.items?.some(item => item.customData?.designSource === '2D_STUDIO');
+          }
+          if (filterType === 'NORMAL') {
+              return order.items?.every(item => !item.customData || (!item.customData.mode && !item.customData.designSource));
           }
           return order.orderType === filterType;
       })();
@@ -234,9 +242,10 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                       style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%236b7280\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2.5\' d=\'M19 9l-7 7-7-7\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1.5rem center', backgroundSize: '1em' }}
                     >
                       <option value="All">ALL DOMAINS</option>
-                      <option value="Standard">READY STOCK</option>
-                      <option value="Manual">🛠️ MANUAL BRIEF</option>
-                      <option value="Studio">🎨 STUDIO DESIGN</option>
+                      <option value="NORMAL">READY STOCK / NORMAL</option>
+                      <option value="DESIGN_ASSISTANCE">🛠️ DESIGN ASSISTANCE</option>
+                      <option value="3D_STUDIO">🧊 3D STUDIO</option>
+                      <option value="2D_STUDIO">🎨 2D STUDIO</option>
                       <option value="Bulk">WHOLESALE</option>
                     </select>
                   </div>
@@ -292,8 +301,10 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                         Cancelled: 'bg-red-500/10 text-red-600 border-red-500/20 shadow-red-500/5'
                       };
 
-                      const isManual = order.items?.some(i => i.customData?.mode === 'manual' || i.name?.includes('[MANUAL DESIGN REQUEST]') || i.name?.includes('[Manual Custom]'));
-                      const isStudio = order.items?.some(i => i.customData?.mode === 'unified' || i.customData?.mode === 'self');
+                      const isDesignAssistance = order.items?.some(i => i.customData?.designSource === 'DESIGN_ASSISTANCE' || i.customData?.mode === 'manual' || i.name?.includes('[MANUAL DESIGN REQUEST]') || i.name?.includes('[Manual Custom]'));
+                      const is3DStudio = order.items?.some(i => i.customData?.designSource === '3D_STUDIO' || (i.customData?.mode === 'unified' && !i.customData?.designSource));
+                      const is2DStudio = order.items?.some(i => i.customData?.designSource === '2D_STUDIO');
+                      const isNormal = order.items?.every(i => !i.customData || (!i.customData.mode && !i.customData.designSource));
                       const isUnread = order.isAdminRead === false;
 
                       return (
@@ -323,12 +334,13 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                           </td>
                           <td className="whitespace-nowrap px-6 py-8 text-sm">
                             <span className={`inline-flex px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border ${
-                              isManual ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100' :
-                              isStudio ? 'bg-fuchsia-600 text-white border-fuchsia-600 shadow-lg shadow-fuchsia-100' :
+                              isDesignAssistance ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100' :
+                              is3DStudio ? 'bg-fuchsia-600 text-white border-fuchsia-600 shadow-lg shadow-fuchsia-100' :
+                              is2DStudio ? 'bg-pink-600 text-white border-pink-600 shadow-lg shadow-pink-100' :
                               order.orderType === 'Bulk' ? 'bg-slate-900 text-white border-slate-900' :
                               'bg-white/80 text-slate-500 border-slate-200'
                             }`}>
-                              {isManual ? 'Manual Brief' : isStudio ? 'Studio Asset' : order.orderType.toUpperCase()}
+                              {isDesignAssistance ? 'Design Assistance' : is3DStudio ? '3D Studio' : is2DStudio ? '2D Studio' : order.orderType.toUpperCase()}
                             </span>
                           </td>
                           <td className="whitespace-nowrap px-6 py-8 text-sm">
@@ -351,8 +363,8 @@ const OrderListTable = ({ forcedType = 'All' }) => {
                           <td className="whitespace-nowrap py-8 pl-6 pr-10 text-right text-sm">
                             <Link 
                                to={
-                                 forcedType === 'Manual' ? `/admin/design-assistance/details/${order._id}` : 
-                                 forcedType === 'Studio' ? `/admin/custom-designs/details/${order._id}` :
+                                 forcedType === 'DESIGN_ASSISTANCE' ? `/admin/design-assistance/details/${order._id}` : 
+                                 forcedType === 'CustomAndNormal' || forcedType === '3D_STUDIO' || forcedType === '2D_STUDIO' || forcedType === 'NORMAL' ? `/admin/custom-designs/details/${order._id}` :
                                  forcedType === 'Bulk' ? `/admin/bulk-orders/details/${order._id}` :
                                  `/admin/orders/details/${order._id}`
                                }

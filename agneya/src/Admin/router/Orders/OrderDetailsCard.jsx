@@ -97,6 +97,7 @@ const OrderDetailsCard = () => {
            orderId={order._id} 
            currentStatus={order.orderStatus} 
            onStatusUpdate={(updatedOrderData) => setOrder(updatedOrderData)} 
+           isDesignAssistance={order.items.some(i => i.customData?.designSource === 'DESIGN_ASSISTANCE' || i.customData?.mode === 'manual' || i.name?.includes('[Manual Custom]'))}
         />
       </div>
 
@@ -140,11 +141,19 @@ const OrderDetailsCard = () => {
                         <div className="flex flex-col gap-1">
                             <h3 className="text-base font-bold text-gray-900 leading-tight">{item.name}</h3>
                             <div className="flex items-center gap-2">
-                                {item.itemType === 'Custom' && (
-                                <span className="text-[10px] uppercase tracking-widest bg-pink-100 text-pink-700 border border-pink-200 px-1.5 py-0.5 rounded font-bold">
-                                    Custom Run
-                                </span>
-                                )}
+                                {(() => {
+                                   if (item.customData?.designSource === 'DESIGN_ASSISTANCE' || item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]')) {
+                                       return <span className="text-[10px] uppercase tracking-widest bg-indigo-100 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded font-bold">Design Assistance</span>;
+                                   } else if (item.customData?.designSource === '3D_STUDIO') {
+                                       return <span className="text-[10px] uppercase tracking-widest bg-fuchsia-100 text-fuchsia-700 border border-fuchsia-200 px-1.5 py-0.5 rounded font-bold">3D Studio Custom</span>;
+                                   } else if (item.customData?.designSource === '2D_STUDIO') {
+                                       return <span className="text-[10px] uppercase tracking-widest bg-pink-100 text-pink-700 border border-pink-200 px-1.5 py-0.5 rounded font-bold">2D Studio Custom</span>;
+                                   } else if (item.itemType === 'Custom') {
+                                       return <span className="text-[10px] uppercase tracking-widest bg-purple-100 text-purple-700 border border-purple-200 px-1.5 py-0.5 rounded font-bold">Legacy Custom</span>;
+                                   } else {
+                                       return <span className="text-[10px] uppercase tracking-widest bg-gray-100 text-gray-700 border border-gray-200 px-1.5 py-0.5 rounded font-bold">Normal Order</span>;
+                                   }
+                                })()}
                                 {item.selectedVariation?.size && (
                                 <span className="text-[10px] uppercase font-semibold text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded">
                                     Size: {item.selectedVariation.size}
@@ -168,25 +177,30 @@ const OrderDetailsCard = () => {
                   </div>
 
                   {/* Custom Print Details Box */}
-                  {item.itemType === 'Custom' && item.customData && (() => {
+                  {item.customData && (item.customData.designSource || item.customData.mode || item.customData.instructions || item.itemType === 'Custom') && (() => {
                     const hasInstructions = !!item.customData.instructions;
                     const hasAttachments = item.customData.manualAttachments && item.customData.manualAttachments.length > 0;
-                    const isManualItem = (item.customData.mode === 'manual' || item.customData.mode === 'company' || item.customData.mode === 'unified' || item.name?.includes('[MANUAL DESIGN REQUEST]') || item.name?.includes('[Manual Custom]'));
+                    const isDesignAssistance = item.customData.designSource === 'DESIGN_ASSISTANCE' || item.customData.mode === 'manual' || item.name?.includes('[Manual Custom]') || (!item.customData.designSource && hasInstructions);
+                    const is3DStudio = item.customData.designSource === '3D_STUDIO' || (item.customData.mode === 'unified' && !item.customData.designSource && !hasInstructions);
+                    const is2DStudio = item.customData.designSource === '2D_STUDIO';
+                    const title = isDesignAssistance ? 'Design Assistance Request' : is3DStudio ? '3D Studio Custom Design' : is2DStudio ? '2D Studio Custom Design' : 'Client Custom Design';
                     
                     return (
                       <div className={`mt-4 rounded-[40px] p-8 transition-all ${
-                        (hasInstructions || hasAttachments) 
+                        isDesignAssistance 
                         ? 'bg-indigo-50/70 border-2 border-indigo-200 shadow-2xl shadow-indigo-200/40' 
+                        : is3DStudio ? 'bg-fuchsia-50/70 border-2 border-fuchsia-200 shadow-2xl shadow-fuchsia-200/40'
+                        : is2DStudio ? 'bg-pink-50/70 border-2 border-pink-200 shadow-2xl shadow-pink-200/40'
                         : 'bg-gray-50 border border-dashed border-gray-300'
                       }`}>
                          <h4 className="flex items-center justify-between text-[11px] font-black text-gray-900 mb-8 uppercase tracking-[0.3em] border-b border-gray-200/60 pb-5">
                             <div className="flex items-center gap-3">
-                               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${(hasInstructions || hasAttachments) ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                                  {(hasInstructions || hasAttachments) ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
+                               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDesignAssistance ? 'bg-indigo-600 text-white' : is3DStudio ? 'bg-fuchsia-600 text-white' : is2DStudio ? 'bg-pink-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                                  {isDesignAssistance ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
                                </div>
-                               {(hasInstructions || hasAttachments) ? 'Design Assistance Request' : 'Client Custom Design'}
+                               {title}
                             </div>
-                            {(hasInstructions || hasAttachments) && (
+                            {isDesignAssistance && (
                                <span className="px-4 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-full shadow-lg shadow-indigo-200 uppercase tracking-widest">Manual Review Required</span>
                             )}
                          </h4>

@@ -20,7 +20,7 @@ function CustomDesigns() {
           <Routes>
             <Route index element={<DesignReviewPanel />} />
             <Route path="review" element={<Navigate to="/admin/custom-designs" replace />} />
-            <Route path="orders" element={<OrderListTable forcedType="Studio" />} />
+            <Route path="orders" element={<OrderListTable forcedType="CustomAndNormal" />} />
             <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route path="quality-control" element={<QualityControlActions />} />
           </Routes>
