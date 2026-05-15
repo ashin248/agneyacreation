@@ -99,7 +99,10 @@ const getPublicCompanyProfile = async (req, res) => {
 // @access  Public
 const getPublicProducts = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit, 10);
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const skip = (page - 1) * limit;
+
     const sort = req.query.sort;
     const category = req.query.category;
     let sortObj = { createdAt: -1 }; // default newest
@@ -107,24 +110,34 @@ const getPublicProducts = async (req, res) => {
     if (sort === 'popular') {
       sortObj = { salesCount: -1, viewCount: -1, createdAt: -1 };
     } else if (sort === 'trending') {
-      sortObj = { isTrending: -1, createdAt: -1 }; // Trending first, then newest
+      sortObj = { isTrending: -1, createdAt: -1 };
     } else if (sort === 'most_searched') {
       sortObj = { viewCount: -1, createdAt: -1 };
     }
 
     const filter = { isActive: true };
     if (category && category.toLowerCase() !== 'all') {
-      filter.category = new RegExp(`^${category}$`, 'i'); // Case-insensitive exact match
+      filter.category = new RegExp(`^${category}$`, 'i');
     }
 
-    let query = Product.find(filter).sort(sortObj);
+    // Get total count for metadata
+    const totalProducts = await Product.countDocuments(filter);
+    
+    const products = await Product.find(filter)
+      .sort(sortObj)
+      .skip(skip)
+      .limit(limit);
 
-    if (limit && limit > 0) {
-      query = query.limit(limit);
-    }
-      
-    const products = await query;
-    res.status(200).json({ success: true, data: products });
+    res.status(200).json({ 
+      success: true, 
+      data: products,
+      pagination: {
+        totalProducts,
+        currentPage: page,
+        totalPages: Math.ceil(totalProducts / limit),
+        hasMore: skip + products.length < totalProducts
+      }
+    });
   } catch (err) {
     console.error('Error fetching public products:', err);
     res.status(500).json({ success: false, message: 'Server error while fetching products.' });

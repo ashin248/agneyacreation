@@ -36,22 +36,37 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState('Newest');
   const [activeCollection, setActiveCollection] = useState(null);
   const [collectionsList, setCollectionsList] = useState([]);
+  
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchData = async (isSilent = false) => {
+  const fetchData = async (isSilent = false, pageNum = 1) => {
     try {
-      if (!isSilent) setLoading(true);
+      if (!isSilent && pageNum === 1) setLoading(true);
+      if (pageNum > 1) setLoadingMore(true);
+
       const [productsRes, pulseRes, categoriesRes, collectionsRes] = await Promise.all([
-        axios.get('/api/public/products'),
+        axios.get(`/api/public/products?page=${pageNum}&limit=12`),
         axios.get('/api/public/pulse'),
         axios.get('/api/public/categories'),
         axios.get('/api/public/collections')
       ]);
 
       if (productsRes.data.success) {
-        const fetched = productsRes.data.products || productsRes.data.data || [];
-        setProducts(fetched);
+        const fetched = productsRes.data.data || [];
+        const pagination = productsRes.data.pagination || {};
+        
+        if (pageNum === 1) {
+          setProducts(fetched);
+        } else {
+          setProducts(prev => [...prev, ...fetched]);
+        }
+        
+        setHasMore(pagination.hasMore);
 
-        if (fetched.length > 0) {
+        if (fetched.length > 0 && pageNum === 1) {
           const validPrices = fetched.map(p => p.discountPrice || p.basePrice || 0).filter(p => p > 0);
           const highest = validPrices.length ? Math.max(...validPrices) : 10000;
           const lowest = validPrices.length ? Math.min(...validPrices) : 0;
@@ -87,6 +102,7 @@ const Shop = () => {
       console.error('Shop fetch error:', err);
     } finally {
       if (!isSilent) setLoading(false);
+      setLoadingMore(false);
     }
   };
 
@@ -96,11 +112,18 @@ const Shop = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(() => fetchData(true), 60000);
+    setPage(1);
+    fetchData(false, 1);
+    const interval = setInterval(() => fetchData(true, 1), 60000);
     setWishlist(JSON.parse(localStorage.getItem('wishlist') || '[]'));
     return () => clearInterval(interval);
-  }, []);
+  }, [activeCategory, searchQuery, activeCollection, sortBy, priceRange]);
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchData(false, nextPage);
+  };
 
   useEffect(() => {
     if (banners.length <= 1) return;
@@ -446,6 +469,29 @@ const Shop = () => {
                 />
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {hasMore && filteredProducts.length > 0 && (
+          <div className="flex justify-center mt-12 mb-20">
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="px-10 py-4 neu-flat rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:neu-pressed transition-all duration-300 flex items-center gap-3 disabled:opacity-50"
+              style={{ color: 'var(--color-neu-text)' }}
+            >
+              {loadingMore ? (
+                <>
+                  <div className="w-3 h-3 border-2 border-[var(--color-neu-dark)] border-t-[var(--color-neu-accent)] rounded-full animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Load More Gear <ArrowRight size={14} />
+                </>
+              )}
+            </button>
           </div>
         )}
 
