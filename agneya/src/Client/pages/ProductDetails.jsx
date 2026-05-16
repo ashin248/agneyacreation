@@ -206,6 +206,23 @@ const ProductDetails = () => {
         setOverrideImage(null);
     }, [selectedColor, selectedSize, product]);
 
+    // Auto-play Image Carousel
+    useEffect(() => {
+        if (overrideImage || !product || loading) return;
+        const imagesList = product.galleryImages?.length > 0 ? product.galleryImages : (product.images || []);
+        if (imagesList.length <= 1) return;
+        
+        const interval = setInterval(() => {
+            setIsImageTransitioning(true);
+            setTimeout(() => {
+                setActiveImage((prev) => (prev + 1) % imagesList.length);
+                setIsImageTransitioning(false);
+            }, 300); // 300ms transition
+        }, 4000); // Change image every 4 seconds
+        
+        return () => clearInterval(interval);
+    }, [product, overrideImage, loading]);
+
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center gap-6" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
@@ -317,54 +334,81 @@ const ProductDetails = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 reveal-on-scroll">
                     
                     {/* Left: Dynamic Image Gallery */}
-                    <div className="lg:col-span-7 flex flex-col md:flex-row gap-6">
-                        
-                        {/* Vertical Thumbnail Bar */}
-                        <div className="flex md:flex-col gap-4 w-full md:w-24 overflow-x-auto md:overflow-y-auto no-scrollbar flex-shrink-0 animate-in slide-in-from-left duration-500 order-2 md:order-1">
-                            {images.slice(0, 6).map((img, idx) => (
-                                <button 
-                                    key={idx}
-                                    onClick={() => {
-                                        if (activeImage !== idx || overrideImage) {
+                    <div className="lg:col-span-7 flex flex-col gap-6">
+                        {/* Main Product Showcase with Carousel Arrows */}
+                        <div className="relative w-full aspect-square md:aspect-auto md:h-[500px] lg:h-[600px] neu-flat rounded-[40px] overflow-hidden group flex items-center justify-center animate-in fade-in zoom-in duration-700">
+                            
+                            <div key={displayMainImage} className={`absolute inset-0 w-full h-full p-6 md:p-8 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
+                                <img loading="lazy" 
+                                    src={displayMainImage} 
+                                    alt={product.name} 
+                                    className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+                                />
+                            </div>
+
+                            {/* Carousel Navigation Arrows */}
+                            {!overrideImage && images.length > 1 && (
+                                <>
+                                    <button 
+                                        onClick={() => {
                                             setIsImageTransitioning(true);
                                             setTimeout(() => {
-                                                setActiveImage(idx);
-                                                setOverrideImage(null);
+                                                setActiveImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
                                                 setIsImageTransitioning(false);
-                                            }, 200);
-                                        }
-                                    }}
-                                    className={`relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 neu-pressed rounded-[20px] overflow-hidden transition-all duration-300 ${activeImage === idx && !overrideImage ? 'ring-2 ring-[var(--color-neu-accent)] ring-offset-2 scale-95 shadow-md' : 'opacity-60 hover:opacity-100 hover:scale-105'}`}
-                                >
-                                    <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${idx + 1}`} loading="lazy" />
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Main Product Showcase */}
-                        <div className="flex-1 relative order-1 md:order-2">
-                            <div className="relative aspect-square md:aspect-auto md:h-[450px] lg:h-[550px] w-full neu-flat rounded-[40px] overflow-hidden group flex items-center justify-center">
-                                <div key={displayMainImage} className={`w-full h-full p-6 md:p-8 transition-all duration-500 ease-out ${isImageTransitioning ? 'opacity-0 scale-95 blur-sm' : 'opacity-100 scale-100 blur-0'}`}>
-                                  <img loading="lazy" 
-                                      src={displayMainImage} 
-                                      alt={product.name} 
-                                      className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-110"
-                                  />
+                                            }, 300);
+                                        }}
+                                        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 neu-button rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 active:scale-95 z-10"
+                                        style={{ color: 'var(--color-neu-text)' }}
+                                    >
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            setIsImageTransitioning(true);
+                                            setTimeout(() => {
+                                                setActiveImage((prev) => (prev + 1) % images.length);
+                                                setIsImageTransitioning(false);
+                                            }, 300);
+                                        }}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 neu-button rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 active:scale-95 z-10"
+                                        style={{ color: 'var(--color-neu-text)' }}
+                                    >
+                                        <ChevronRight size={24} />
+                                    </button>
+                                </>
+                            )}
+                            
+                            {/* Carousel Indicators */}
+                            {!overrideImage && images.length > 1 && (
+                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    {images.map((_, idx) => (
+                                        <button 
+                                            key={idx}
+                                            onClick={() => {
+                                                setIsImageTransitioning(true);
+                                                setTimeout(() => {
+                                                    setActiveImage(idx);
+                                                    setIsImageTransitioning(false);
+                                                }, 300);
+                                            }}
+                                            className={`h-2 rounded-full transition-all duration-300 ${activeImage === idx ? 'w-6 bg-[var(--color-neu-accent)]' : 'w-2 bg-slate-300 hover:bg-slate-400'}`}
+                                        />
+                                    ))}
                                 </div>
-                                
-                                {discount > 0 && (
-                                    <div className="absolute top-6 left-6 bg-rose-500/90 backdrop-blur-md text-white text-[11px] font-black px-4 py-2 rounded-full shadow-lg border border-rose-400/30 animate-in fade-in zoom-in">
-                                        -{discount}% OFF
-                                    </div>
-                                )}
-                                
-                                <button 
-                                    onClick={() => setIsWishlisted(!isWishlisted)}
-                                    className="absolute top-6 right-6 w-12 h-12 neu-button rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-                                >
-                                    <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-slate-400'}`} />
-                                </button>
-                            </div>
+                            )}
+
+                            {discount > 0 && (
+                                <div className="absolute top-6 left-6 bg-rose-500/90 backdrop-blur-md text-white text-[11px] font-black px-4 py-2 rounded-full shadow-lg border border-rose-400/30 animate-in fade-in zoom-in z-20">
+                                    -{discount}% OFF
+                                </div>
+                            )}
+                            
+                            <button 
+                                onClick={() => setIsWishlisted(!isWishlisted)}
+                                className="absolute top-6 right-6 w-12 h-12 neu-button rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 z-20"
+                            >
+                                <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-slate-400'}`} />
+                            </button>
                         </div>
                     </div>
 
@@ -426,16 +470,36 @@ const ProductDetails = () => {
                             {[...new Set(product.variations?.map(v => v.color))].filter(Boolean).length > 0 && (
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Select Color</label>
-                                    <div className="flex flex-wrap gap-3">
-                                        {[...new Set(product.variations.map(v => v.color))].map((color, i) => (
-                                            <button 
-                                                key={i}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={selectedColor === color ? 'btn-pill-active' : 'btn-pill'}
-                                            >
-                                                {color === '-' ? 'Standard' : color}
-                                            </button>
-                                        ))}
+                                    <div className="flex flex-wrap gap-4">
+                                        {[...new Set(product.variations.map(v => v.color))].map((color, i) => {
+                                            const varWithImage = product.variations.find(v => v.color === color && v.imageUrl);
+                                            const bgImage = varWithImage ? `url(${varWithImage.imageUrl})` : 'none';
+                                            const bgColor = color !== '-' ? color.toLowerCase() : '#e2e8f0';
+                                            return (
+                                                <div key={i} className="relative flex flex-col items-center gap-1 group">
+                                                    <button 
+                                                        onClick={() => setSelectedColor(color)}
+                                                        className={`w-10 h-10 rounded-full transition-all duration-300 flex items-center justify-center ${selectedColor === color ? 'ring-2 ring-offset-2 ring-[var(--color-neu-accent)] scale-110 shadow-[0_0_15px_var(--color-neu-accent)]' : 'ring-1 ring-slate-200 hover:scale-105 shadow-md'}`}
+                                                        style={{ 
+                                                            backgroundColor: bgColor,
+                                                            backgroundImage: bgImage,
+                                                            backgroundSize: 'cover',
+                                                            backgroundPosition: 'center',
+                                                        }}
+                                                        title={color === '-' ? 'Standard' : color}
+                                                    >
+                                                        {selectedColor === color && !varWithImage && (
+                                                            <div className="w-full h-full rounded-full flex items-center justify-center bg-black/10 backdrop-blur-[1px]">
+                                                                <Check size={16} className="text-white drop-shadow-md" />
+                                                            </div>
+                                                        )}
+                                                    </button>
+                                                    <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${selectedColor === color ? 'text-[var(--color-neu-accent)]' : 'text-slate-400 opacity-0 group-hover:opacity-100 absolute -bottom-4'}`}>
+                                                        {color === '-' ? 'Standard' : color}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}

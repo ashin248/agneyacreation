@@ -34,7 +34,7 @@ const Shop = () => {
   const [customizingProduct, setCustomizingProduct] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Newest');
-  const [activeCollection, setActiveCollection] = useState(null);
+  const [activeCollections, setActiveCollections] = useState([]);
   const [collectionsList, setCollectionsList] = useState([]);
   
   // Pagination State
@@ -117,7 +117,7 @@ const Shop = () => {
     const interval = setInterval(() => fetchData(true, 1), 60000);
     setWishlist(JSON.parse(localStorage.getItem('wishlist') || '[]'));
     return () => clearInterval(interval);
-  }, [activeCategory, searchQuery, activeCollection, sortBy, priceRange]);
+  }, [activeCategory, searchQuery, activeCollections, sortBy, priceRange]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -168,7 +168,7 @@ const Shop = () => {
       (p.colors && p.colors.some(c => c.toLowerCase().includes(q))) ||
       (p.tags && p.tags.some(t => t.toLowerCase().includes(q)));
     const matchCat = activeCategory === 'All' || p.category?.toLowerCase() === activeCategory.toLowerCase();
-    const matchCol = !activeCollection || (p.collections && p.collections.includes(activeCollection));
+    const matchCol = activeCollections.length === 0 || (p.collections && activeCollections.some(c => p.collections.includes(c)));
     const effectivePrice = p.discountPrice || p.basePrice || 0;
     const matchPrice = effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
     return matchSearch && matchCat && matchCol && matchPrice;
@@ -337,37 +337,37 @@ const Shop = () => {
       <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-8">
         {/* ── COLLECTIONS HORIZONTAL SCROLL ── */}
         {collectionsList.length > 0 && (
-          <div className="mb-10">
+          <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40" style={{ color: 'var(--color-neu-text)' }}>Curated Collections</h2>
-              {activeCollection && (
+              {activeCollections.length > 0 && (
                 <button 
-                  onClick={() => setActiveCollection(null)} 
-                  className="text-[10px] font-black uppercase tracking-widest text-orange-500 hover:text-orange-600 transition-colors"
+                  onClick={() => setActiveCollections([])} 
+                  className="text-[10px] font-black uppercase tracking-widest text-orange-500 hover:text-orange-600 transition-colors bg-orange-500/10 px-3 py-1.5 rounded-full"
                 >
                   Clear Selection
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-4 -mx-2 px-2">
+            <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-6 -mx-2 px-2 pt-2">
               {collectionsList.map((col) => (
                 <div 
                   key={col._id}
-                  onClick={() => setActiveCollection(activeCollection === col._id ? null : col._id)}
+                  onClick={() => setActiveCollections(prev => prev.includes(col._id) ? prev.filter(id => id !== col._id) : [...prev, col._id])}
                   className={`flex-shrink-0 flex flex-col items-center gap-3 cursor-pointer group transition-all duration-500 ${
-                    activeCollection === col._id ? 'scale-105' : 'opacity-70 hover:opacity-100'
+                    activeCollections.includes(col._id) ? 'scale-110 -translate-y-2' : 'opacity-70 hover:opacity-100 hover:-translate-y-1'
                   }`}
                 >
-                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] flex items-center justify-center transition-all duration-500 overflow-hidden relative ${
-                    activeCollection === col._id ? 'neu-pressed border-2 border-orange-500/30' : 'neu-flat hover:neu-pressed'
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-[24px] flex items-center justify-center transition-all duration-500 overflow-hidden relative shadow-lg ${
+                    activeCollections.includes(col._id) ? 'neu-pressed border-2 border-orange-500/50 shadow-orange-500/20' : 'neu-flat hover:neu-pressed group-hover:shadow-xl'
                   }`}>
-                    <img src={col.logoUrl} alt={col.name} className="w-10 h-10 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-500" />
-                    {activeCollection === col._id && (
-                      <div className="absolute inset-0 bg-orange-500/10 backdrop-blur-[2px]" />
+                    <img src={col.logoUrl} alt={col.name} className={`w-10 h-10 sm:w-12 sm:h-12 object-contain transition-transform duration-500 ${activeCollections.includes(col._id) ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`} />
+                    {activeCollections.includes(col._id) && (
+                      <div className="absolute inset-0 bg-orange-500/10 backdrop-blur-[1px]" />
                     )}
                   </div>
                   <span className={`text-[10px] font-black uppercase tracking-widest text-center transition-colors ${
-                    activeCollection === col._id ? 'text-orange-500' : 'text-slate-500'
+                    activeCollections.includes(col._id) ? 'text-orange-500 drop-shadow-sm' : 'text-slate-500 group-hover:text-slate-800'
                   }`}>
                     {col.name}
                   </span>
