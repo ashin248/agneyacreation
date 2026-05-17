@@ -30,6 +30,7 @@ const Workspace2D = forwardRef(({
 
     const [canvasScale, setCanvasScale] = useState(1);
     const [userZoom, setUserZoom] = useState(1);
+    const finalScale = canvasScale * userZoom;
     const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
 
     const effectiveMockupProfile = product?.mockupProfile;
@@ -183,18 +184,6 @@ const Workspace2D = forwardRef(({
             const newScale = Math.min(scaleX, scaleY, 1.2) * 0.95;
 
             setCanvasScale(newScale);
-
-            if (product?.phoneMask) {
-                fabricRef.current.setDimensions({
-                    width: '100%',
-                    height: '100%'
-                }, { cssOnly: true });
-            } else {
-                fabricRef.current.setDimensions({
-                    width: currentWidth * newScale,
-                    height: currentHeight * newScale
-                }, { cssOnly: true });
-            }
         };
 
         const resizeObserver = new ResizeObserver(() => {
@@ -296,6 +285,22 @@ const Workspace2D = forwardRef(({
         setIsMobileUiMinimized,
         setHistoryStep
     ]);
+
+    // Apply scaling to FabricJS Canvas element independently
+    useEffect(() => {
+        if (!fabricRef.current || fabricRef.current.disposed) return;
+        const currentWidth = canvasIntrinsicDimensions?.width || fabricRef.current.width || effectiveCanvasConfig?.width || 500;
+        const currentHeight = canvasIntrinsicDimensions?.height || fabricRef.current.height || effectiveCanvasConfig?.height || 600;
+
+        if (product?.phoneMask) {
+            fabricRef.current.setDimensions({ width: '100%', height: '100%' }, { cssOnly: true });
+        } else {
+            fabricRef.current.setDimensions({
+                width: currentWidth * finalScale,
+                height: currentHeight * finalScale
+            }, { cssOnly: true });
+        }
+    }, [finalScale, product?.phoneMask, canvasIntrinsicDimensions, effectiveCanvasConfig]);
 
     // Handle Template Loading
     useEffect(() => {
@@ -557,11 +562,11 @@ const Workspace2D = forwardRef(({
 
             <div className="w-full h-full flex relative overflow-auto custom-scrollbar" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
                 {/* Scrollable Container Content */}
-                <div className="min-w-full min-h-full flex items-center justify-center p-4 sm:p-12" style={{
-                    width: `${userZoom > 1 ? userZoom * 100 : 100}%`,
-                    height: `${userZoom > 1 ? userZoom * 100 : 100}%`
-                }}>
-                    <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-300`} style={{ transform: `scale(${userZoom})`, transformOrigin: 'center' }}>
+                <div className="min-w-full min-h-full flex items-center justify-center p-4 sm:p-12 relative">
+                    <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : '')} flex items-center justify-center group transition-all duration-300`} style={{ 
+                        width: product?.phoneMask ? undefined : `${(canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500) * finalScale}px`,
+                        height: product?.phoneMask ? undefined : `${(canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600) * finalScale}px`
+                    }}>
                         
                         {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
@@ -583,10 +588,10 @@ const Workspace2D = forwardRef(({
                         {/* Layer 10: Fabric.js Canvas Overlay */}
                         <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
                             <div className="pointer-events-auto relative" style={{ 
-                                width: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500) * canvasScale}px`, 
-                                height: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600) * canvasScale}px`,
-                                marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
-                                marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
+                                width: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500) * finalScale}px`, 
+                                height: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600) * finalScale}px`,
+                                marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * finalScale}px`,
+                                marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * finalScale}px`,
                                 transformOrigin: 'center',
                             }}>
                                 {/* Border indicators for Canvas Area (The Purple Lines the User referred to) */}
@@ -680,17 +685,17 @@ const Workspace2D = forwardRef(({
                         {product?.shapeConfig && !product?.phoneMask && (!current2DImageUrl || product?.mockupProfile === 'mug-wrap') && (
                             <div className={`absolute inset-0 z-20 pointer-events-none flex items-center justify-center ${product?.mockupProfile === 'mug-wrap' ? 'visible' : 'overflow-hidden'}`}>
                                 <div className="relative" style={{ 
-                                    width: `${(product?.canvasConfig?.width || 500) * canvasScale}px`, 
-                                    height: `${(product?.canvasConfig?.height || 600) * canvasScale}px`,
-                                    marginLeft: `${(product?.canvasConfig?.offsetX || 0) * canvasScale}px`, 
-                                    marginTop: `${(product?.canvasConfig?.offsetY || 0) * canvasScale}px`
+                                    width: `${(product?.canvasConfig?.width || 500) * finalScale}px`, 
+                                    height: `${(product?.canvasConfig?.height || 600) * finalScale}px`,
+                                    marginLeft: `${(product?.canvasConfig?.offsetX || 0) * finalScale}px`, 
+                                    marginTop: `${(product?.canvasConfig?.offsetY || 0) * finalScale}px`
                                 }}>
                                     {/* Optional CSS Mug Handle (Protruding Left) */}
                                     {product?.mockupProfile === 'mug-wrap' && (
                                         <div className="absolute top-1/2 -translate-y-1/2 h-[65%] border-r-0 rounded-l-[120px] shadow-[-15px_15px_30px_rgba(0,0,0,0.06),inset_8px_8px_20px_rgba(0,0,0,0.03)] pointer-events-none" style={{
-                                            left: `-${Math.max(40, 80 * canvasScale)}px`,
-                                            width: `${Math.max(40, 80 * canvasScale)}px`,
-                                            borderWidth: `${Math.max(12, 24 * canvasScale)}px`,
+                                            left: `-${Math.max(40, 80 * finalScale)}px`,
+                                            width: `${Math.max(40, 80 * finalScale)}px`,
+                                            borderWidth: `${Math.max(12, 24 * finalScale)}px`,
                                             borderColor: '#fcfdfd',
                                             background: 'linear-gradient(to right, #ffffff, #f1f5f9)',
                                             zIndex: -1
