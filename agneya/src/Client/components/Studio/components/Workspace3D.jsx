@@ -386,6 +386,18 @@ export default function Workspace3D({
     contextKey, setContextKey, fabricRef, updateTexture,
     activeStudioTab, activeObject, canvasObjects
 }) {
+    const glRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            // Force WebGL context disposal to prevent hitting browser 8-context limit
+            if (glRef.current) {
+                const ext = glRef.current.getExtension('WEBGL_lose_context');
+                if (ext) ext.loseContext();
+            }
+        };
+    }, []);
+
     return (
         <div className="absolute inset-0 transition-opacity duration-300" style={{
             opacity: activeStudioTab === '3D_STUDIO' ? 1 : 0, 
@@ -406,6 +418,7 @@ export default function Workspace3D({
                     gl={{ preserveDrawingBuffer: true, powerPreference: 'high-performance', alpha: true, antialias: false }}
                     dpr={[1, 1.5]}
                     onCreated={({ gl }) => {
+                        glRef.current = gl;
                         gl.domElement.addEventListener('webglcontextlost', (e) => {
                             console.warn("3D Canvas WebGL Context Lost. Recovering...");
                             e.preventDefault();

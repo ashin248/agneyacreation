@@ -13,6 +13,12 @@ console.warn = (...args) => {
   originalWarn(...args);
 };
 
+// Automatically reload page if a lazy-loaded chunk fails (e.g. after a new deployment on Vercel)
+window.addEventListener('vite:preloadError', (event) => {
+  console.warn('Vite preload error (missing chunk). Reloading page...');
+  window.location.reload();
+});
+
 
 import { HelmetProvider } from 'react-helmet-async';
 

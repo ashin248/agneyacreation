@@ -399,6 +399,13 @@ const Workspace2D = forwardRef(({
                 originY: 'top',
             });
             
+            if (!img.width || !img.height) {
+                console.warn("Image loaded with 0 dimensions", current2DImageUrl);
+                worker?.terminate();
+                if (workerUrl) URL.revokeObjectURL(workerUrl);
+                return;
+            }
+
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
             tempCanvas.width = img.width;
