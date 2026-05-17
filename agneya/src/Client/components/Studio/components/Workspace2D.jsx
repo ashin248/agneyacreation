@@ -19,7 +19,8 @@ const Workspace2D = forwardRef(({
     setActiveObject, setCanvasObjects, canvasObjects,
     historyStep, setHistoryStep, 
     setIsMobileUiMinimized,
-    twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide
+    twoDModels, active2DModelIdx, activeSupportSide, setActiveSupportSide,
+    handleAddPage, variations, activeVariationId, switchVariation
 }, ref) => {
     const historyStepRef = React.useRef(historyStep);
     useEffect(() => {
@@ -28,6 +29,7 @@ const Workspace2D = forwardRef(({
     const lastSavedHistoryStep = React.useRef(-1);
 
     const [canvasScale, setCanvasScale] = useState(1);
+    const [userZoom, setUserZoom] = useState(1);
     const [canvasIntrinsicDimensions, setCanvasIntrinsicDimensions] = useState(null);
 
     const effectiveMockupProfile = product?.mockupProfile;
@@ -518,9 +520,48 @@ const Workspace2D = forwardRef(({
             zIndex: activeStudioTab === '2D_STUDIO' ? 10 : -10,
             visibility: activeStudioTab === '2D_STUDIO' ? 'visible' : 'hidden'
         }}>
-            <div className="w-full h-full flex items-center justify-center relative" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
-                <div className="relative w-full h-full flex items-center justify-center p-4 sm:p-12">
-                    <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-700`}>
+            {/* Zoom Controls & Page Addition Overlay */}
+            {activeStudioTab === '2D_STUDIO' && (
+                <div className="absolute top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-auto items-end">
+                    {/* Zoom Controls */}
+                    <div className="flex flex-col neu-pressed rounded-full p-1 border border-[var(--color-neu-dark)]" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                        <button onClick={() => setUserZoom(prev => Math.min(prev + 0.2, 3))} className="w-10 h-10 flex items-center justify-center text-xl font-black text-slate-600 hover:text-[var(--color-neu-accent)] transition-colors active:scale-95">+</button>
+                        <div className="h-px bg-slate-300 mx-2 opacity-50"></div>
+                        <button onClick={() => setUserZoom(prev => Math.max(prev - 0.2, 0.5))} className="w-10 h-10 flex items-center justify-center text-2xl font-black text-slate-600 hover:text-[var(--color-neu-accent)] transition-colors active:scale-95">-</button>
+                    </div>
+
+                    {/* Add Page Button */}
+                    {handleAddPage && (
+                        <div className="mt-4 flex flex-col items-end gap-2">
+                            <button onClick={handleAddPage} className="neu-button-accent px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 active:scale-95 transition-all shadow-lg border border-transparent hover:border-[var(--color-neu-accent)]">
+                                <span>Add Page</span>
+                                <span className="text-sm font-bold leading-none">+</span>
+                            </button>
+                            {variations?.length > 1 && (
+                                <div className="flex flex-col gap-1 items-end max-h-[200px] overflow-y-auto custom-scrollbar p-1">
+                                    {variations.map((v, i) => (
+                                        <button 
+                                            key={v.id} 
+                                            onClick={() => switchVariation(v.id)}
+                                            className={`px-3 py-1.5 text-[9px] font-bold rounded-lg transition-all border ${activeVariationId === v.id ? 'neu-pressed border-[var(--color-neu-accent)] text-[var(--color-neu-accent)]' : 'neu-flat border-transparent text-slate-500 hover:text-slate-800'}`}
+                                        >
+                                            {v.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div className="w-full h-full flex relative overflow-auto custom-scrollbar" style={{ backgroundColor: 'var(--color-neu-bg)' }}>
+                {/* Scrollable Container Content */}
+                <div className="min-w-full min-h-full flex items-center justify-center p-4 sm:p-12" style={{
+                    width: `${userZoom > 1 ? userZoom * 100 : 100}%`,
+                    height: `${userZoom > 1 ? userZoom * 100 : 100}%`
+                }}>
+                    <div className={`relative ${product?.phoneMask ? 'h-full max-h-[800px] aspect-[1/2]' : (effectiveMockupProfile === 'mug-wrap' ? 'w-[98%] max-w-[1000px] aspect-[2.22]' : 'w-full h-full')} flex items-center justify-center group transition-all duration-300`} style={{ transform: `scale(${userZoom})`, transformOrigin: 'center' }}>
                         
                         {/* Layer -1: Phone Base Mockup Image (Behind the canvas) */}
                         {product?.phoneMask && (
@@ -541,14 +582,17 @@ const Workspace2D = forwardRef(({
 
                         {/* Layer 10: Fabric.js Canvas Overlay */}
                         <div className={`absolute inset-0 z-10 flex items-center justify-center pointer-events-none`}>
-                            <div className="pointer-events-auto" style={{ 
+                            <div className="pointer-events-auto relative" style={{ 
                                 width: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.width || fabricRef.current?.width || effectiveCanvasConfig?.width || 500) * canvasScale}px`, 
                                 height: product?.phoneMask ? '100%' : `${(canvasIntrinsicDimensions?.height || fabricRef.current?.height || effectiveCanvasConfig?.height || 600) * canvasScale}px`,
                                 marginLeft: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetX || 0)) * canvasScale}px`,
                                 marginTop: `${(canvasIntrinsicDimensions ? 0 : (effectiveCanvasConfig?.offsetY || 0)) * canvasScale}px`,
-                                transform: product?.phoneMask ? 'none' : `scale(1)`, 
-                                transformOrigin: 'center' 
+                                transformOrigin: 'center',
                             }}>
+                                {/* Border indicators for Canvas Area (The Purple Lines the User referred to) */}
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-600 rounded-full opacity-60 shadow-sm pointer-events-none z-50"></div>
+                                <div className="absolute left-2 top-0 bottom-0 w-[2px] bg-purple-500 rounded-full opacity-40 shadow-sm pointer-events-none z-50"></div>
+
                                 <canvas ref={canvasRef} />
                             </div>
                         </div>

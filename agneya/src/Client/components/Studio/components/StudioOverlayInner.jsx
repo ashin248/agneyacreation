@@ -351,6 +351,25 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
         }
     };
 
+    const handleAddPage = () => {
+        saveCurrentToVariation();
+        const newId = Date.now();
+        const newVariation = {
+            id: newId, name: `Page ${variations.length + 1}`,
+            frontCanvasData: null, frontCanvasObjects: [], frontAnchors: {},
+            backCanvasData: null, backCanvasObjects: [], backAnchors: {}
+        };
+        setVariations(prev => [...prev, newVariation]);
+        setActiveVariationId(newId);
+        if (fabricRef.current) {
+            fabricRef.current.clear();
+            setCanvasObjects([]);
+            setObjectAnchors({});
+            updateTexture(true);
+        }
+        toast.success(`Page ${variations.length + 1} Added`, { style: { borderRadius: '15px', background: 'var(--color-neu-bg)', color: 'var(--color-neu-text)' } });
+    };
+
     const handleSwitchSide = (side) => {
         if (side === viewSide) return;
         if (fabricRef.current) {
@@ -667,6 +686,10 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                             active2DModelIdx={active2DModelIdx}
                                             activeSupportSide={activeSupportSide}
                                             setActiveSupportSide={setActiveSupportSide}
+                                            handleAddPage={handleAddPage}
+                                            variations={variations}
+                                            activeVariationId={activeVariationId}
+                                            switchVariation={switchVariation}
                                         />
                                         <Workspace3D 
                                             product={product} 
