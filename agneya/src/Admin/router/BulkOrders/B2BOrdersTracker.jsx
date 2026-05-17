@@ -43,7 +43,7 @@ const B2BOrdersTracker = () => {
         try {
             const token = localStorage.getItem('adminToken');
             // Standard order status update endpoint
-            await axios.put(`/api/admin/orders/${id}/status`, { status: newStatus }, {
+            await axios.put(`/api/admin/bulk-orders/orders/${id}/status`, { status: newStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setSuccessMessage(`Order updated to ${newStatus}`);

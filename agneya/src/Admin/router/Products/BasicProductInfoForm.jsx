@@ -320,7 +320,7 @@ const BasicProductInfoForm = ({
                     className="w-full h-full object-cover"
                     title="AI Generated Category Preview"
                     onError={(e) => {
-                      e.target.src = `https://source.unsplash.com/100x100/?${encodeURIComponent(formData.category)}`;
+                      e.target.src = `https://placehold.co/100x100?text=${encodeURIComponent(formData.category)}`;
                     }}
                   />
                 </div>
