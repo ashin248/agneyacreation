@@ -387,13 +387,23 @@ export default function Workspace3D({
     activeStudioTab, activeObject, canvasObjects
 }) {
     const glRef = useRef(null);
+    const isMounted = useRef(true);
 
     useEffect(() => {
+        isMounted.current = true;
         return () => {
+            isMounted.current = false;
             // Force WebGL context disposal to prevent hitting browser 8-context limit
             if (glRef.current) {
-                const ext = glRef.current.getExtension('WEBGL_lose_context');
-                if (ext) ext.loseContext();
+                try {
+                    const ctx = glRef.current.getContext();
+                    if (ctx) {
+                        const ext = ctx.getExtension('WEBGL_lose_context');
+                        if (ext) ext.loseContext();
+                    }
+                } catch (e) {
+                    console.warn("Failed to dispose WebGL context", e);
+                }
             }
         };
     }, []);
@@ -420,12 +430,14 @@ export default function Workspace3D({
                     onCreated={({ gl }) => {
                         glRef.current = gl;
                         gl.domElement.addEventListener('webglcontextlost', (e) => {
+                            if (!isMounted.current) return;
                             console.warn("3D Canvas WebGL Context Lost. Recovering...");
                             e.preventDefault();
-                            setTimeout(() => setContextKey(prev => prev + 1), 500);
-                            setTimeout(() => { if (fabricRef.current) updateTexture(true); }, 1000);
+                            setTimeout(() => { if (isMounted.current) setContextKey(prev => prev + 1); }, 500);
+                            setTimeout(() => { if (isMounted.current && fabricRef.current) updateTexture(true); }, 1000);
                         }, false);
                         gl.domElement.addEventListener('webglcontextrestored', () => {
+                            if (!isMounted.current) return;
                             console.log("3D Canvas WebGL Context Restored.");
                             if (fabricRef.current) updateTexture(true);
                         }, false);
