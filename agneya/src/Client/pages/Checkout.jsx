@@ -14,7 +14,7 @@ import { calculateDetailedFinancials } from '../utils/pricingUtils';
 import { loadRazorpay } from '../utils/razorpayLoader';
 
 const Checkout = () => {
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, clearCart, removeFromCart } = useCart();
   const { currentUser, userData, setUserData } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -420,28 +420,90 @@ const Checkout = () => {
               <h2 className="text-base font-bold text-slate-900 mb-5">Order Summary</h2>
 
               <div className="space-y-3 max-h-64 overflow-y-auto mb-6 pr-1">
-                {checkoutItems.map((item, idx) => (
-                  <div key={idx} className="flex gap-3 p-3 neu-pressed rounded-xl">
-                    <div className="w-14 h-16 neu-button rounded-lg overflow-hidden flex-shrink-0">
-                      <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-contain" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
-                      <div className="flex gap-2 mt-2 flex-wrap">
-                        {item.selectedVariation?.size && (
-                          <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{item.selectedVariation.size}</span>
-                        )}
-                        <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</span>
-                        {item.itemType === 'Custom' && (
-                          <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] neu-pressed px-1.5 py-0.5 rounded-md">Custom</span>
-                        )}
+                {checkoutItems.map((item, idx) => {
+                  const displayImage = item.image || item.designImage || item.customData?.appliedFrontDesign || item.customData?.uploadedImageUrl || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Design';
+                  const isCustom = item.itemType === 'Custom' && item.customData;
+                  return (
+                    <div key={idx} className="flex flex-col gap-2 p-3 neu-pressed rounded-xl">
+                      <div className="flex gap-3">
+                        <div className="w-14 h-16 neu-button rounded-lg overflow-hidden flex-shrink-0">
+                          <img loading="lazy" src={displayImage} alt={item.name} className="w-full h-full object-contain" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
+                          <div className="flex gap-2 mt-2 flex-wrap">
+                            {item.selectedVariation?.size && (
+                              <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{item.selectedVariation.size}</span>
+                            )}
+                            <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</span>
+                            {item.itemType === 'Custom' && (
+                              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] neu-pressed px-1.5 py-0.5 rounded-md">Custom</span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-sm font-black flex-shrink-0" style={{ color: 'var(--color-neu-text)' }}>
+                          ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
+                        </p>
                       </div>
+
+                      {/* Custom Details Section */}
+                      {isCustom && (
+                        <div className="mt-1 pt-2 border-t border-[var(--color-neu-dark)]">
+                          {item.customData.designSource === 'DESIGN_ASSISTANCE' || item.customData.mode === 'manual' ? (
+                             <div className="text-[9px] font-black uppercase tracking-widest text-indigo-500 mb-1">Design Assistance</div>
+                          ) : item.customData.designSource === '3D_STUDIO' ? (
+                             <div className="text-[9px] font-black uppercase tracking-widest text-fuchsia-500 mb-1">3D Studio</div>
+                          ) : item.customData.designSource === '2D_STUDIO' ? (
+                             <div className="text-[9px] font-black uppercase tracking-widest text-pink-500 mb-1">2D Studio</div>
+                          ) : (
+                             <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">Custom Design</div>
+                          )}
+
+                          {item.customData.instructions && (
+                            <p className="text-[10px] font-bold opacity-60 mb-1 leading-tight italic truncate" style={{ color: 'var(--color-neu-text)' }}>"{item.customData.instructions}"</p>
+                          )}
+                          {item.customData.customText && (
+                            <p className="text-[10px] font-bold opacity-60 mb-1 leading-tight italic truncate" style={{ color: 'var(--color-neu-text)' }}>Text: "{item.customData.customText}"</p>
+                          )}
+
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {item.customData.manualAttachments?.map((url, i) => (
+                              <a key={`att-${i}`} href={url} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
+                                 <img src={url} alt={`attachment-${i}`} className="w-full h-full object-cover" />
+                              </a>
+                            ))}
+                            {item.customData.appliedFrontDesign && (
+                              <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
+                                 <img src={item.customData.appliedFrontDesign} alt="front" className="w-full h-full object-cover bg-white" />
+                              </a>
+                            )}
+                            {item.customData.appliedBackDesign && (
+                              <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
+                                 <img src={item.customData.appliedBackDesign} alt="back" className="w-full h-full object-cover bg-white" />
+                              </a>
+                            )}
+                          </div>
+
+                          <div className="flex gap-3 mt-2 pt-2 border-t border-[var(--color-neu-dark)] justify-end">
+                            <button onClick={(e) => { e.preventDefault(); navigate(-1); }} className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest opacity-50 hover:opacity-100 hover:text-[var(--color-neu-accent)] transition-all" style={{ color: 'var(--color-neu-text)' }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Edit
+                            </button>
+                            {!isBuyNow && (
+                              <button onClick={(e) => { 
+                                e.preventDefault(); 
+                                if(window.confirm('Remove item?')) {
+                                  removeFromCart(item.productId, item.selectedVariation?.sku || 'standard');
+                                }
+                              }} className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest opacity-50 hover:opacity-100 hover:text-rose-500 transition-all" style={{ color: 'var(--color-neu-text)' }}>
+                                <Trash2 size={10} /> Delete
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm font-black flex-shrink-0" style={{ color: 'var(--color-neu-text)' }}>
-                      ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Totals */}
