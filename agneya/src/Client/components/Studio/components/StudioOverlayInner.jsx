@@ -597,6 +597,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                 const wMin = (product?.isBulkEnabled && product?.bulkRules?.length > 0) ? Math.min(...product.bulkRules.map(r => r.minQty)) : (product?.minOrder || 1);
                 const itemQty = isBuyNow ? 1 : wMin;
 
+                const prodImg = product?.galleryImages?.[0] || product?.images?.[0] || product?.image || product?.thumbnail;
+
                 return {
                     productId: product?._id,
                     name: `[Custom] ${product?.name} - ${v.name}`,
@@ -604,22 +606,29 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     quantity: itemQty,
                     itemType: 'Custom',
                     selectedVariation: { sku: `custom_${v.id}`, size: selectedSize || 'Custom', color: selectedColor || 'Custom' },
-                    image: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
-                    designImage: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
+                    image: frontSnap || backSnap || prodImg,
+                    designImage: frontSnap || backSnap || prodImg,
                     isBulkEnabled: product?.isBulkEnabled,
                     bulkRules: product?.bulkRules,
                     gstRate: product?.gstRate || 0,
                     customData: { 
                         ...designPayload,
                         productName: product?.name,
-                        productImage: product?.thumbnail || product?.images?.[0],
+                        productImage: prodImg,
                         variationName: v.name,
                         selectedColor: selectedColor || 'Standard',
                         selectedSize: selectedSize || 'Standard',
                         customizedDesigns,
                         usedImages: combinedRefs.map(r => typeof r === 'string' ? { url: r } : r),
                         appliedFrontDesign: frontSnap, 
-                        appliedBackDesign: backSnap 
+                        appliedBackDesign: backSnap,
+                        baseModelId: product?.baseModelId,
+                        model3d: product?.model3d || product?.base3DModelUrl,
+                        category: product?.category,
+                        printableMeshes: product?.printableMeshes,
+                        projectionType: product?.projectionType,
+                        canvasObjects: v.frontCanvasObjects?.length > 0 ? v.frontCanvasObjects : canvasObjects,
+                        objectAnchors: Object.keys(v.frontAnchors || {}).length > 0 ? v.frontAnchors : objectAnchors
                     }
                 };
             });

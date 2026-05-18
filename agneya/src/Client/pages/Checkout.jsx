@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { calculateDetailedFinancials } from '../utils/pricingUtils';
 import { loadRazorpay } from '../utils/razorpayLoader';
+const Workspace3D = React.lazy(() => import('../components/Studio/components/Workspace3D'));
+
 
 const Checkout = () => {
   const { cart, cartTotal, clearCart, removeFromCart } = useCart();
@@ -460,7 +462,26 @@ const Checkout = () => {
                               </span>
                             </div>
                             
-                            {item.customData?.customizedDesigns?.length > 0 ? (
+                            {item.customData.designSource === '3D_STUDIO' && item.customData.model3d ? (
+                              <div className="w-full aspect-square max-h-64 rounded-2xl overflow-hidden relative neu-pressed border border-[var(--color-neu-dark)] flex items-center justify-center group/3d">
+                                <React.Suspense fallback={<div className="text-[10px] font-bold text-slate-400 animate-pulse">Loading 3D Engine...</div>}>
+                                  <Workspace3D 
+                                    product={{ 
+                                      baseModelId: item.customData.baseModelId, 
+                                      model3d: item.customData.model3d, 
+                                      base3DModelUrl: item.customData.model3d, 
+                                      category: item.customData.category, 
+                                      printableMeshes: item.customData.printableMeshes, 
+                                      projectionType: item.customData.projectionType 
+                                    }} 
+                                    objectAnchors={item.customData.objectAnchors || {}} 
+                                    canvasObjects={item.customData.canvasObjects || []} 
+                                    activeStudioTab="3D_STUDIO" 
+                                  />
+                                </React.Suspense>
+                                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[8px] font-black px-2 py-1 rounded-lg pointer-events-none uppercase tracking-widest backdrop-blur-sm border border-white/10 shadow-lg z-20">360° Interactive Preview</div>
+                              </div>
+                            ) : item.customData?.customizedDesigns?.length > 0 ? (
                               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                 {item.customData.customizedDesigns.map((cd, cdIdx) => (
                                   <div key={cdIdx} className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 group/design">
