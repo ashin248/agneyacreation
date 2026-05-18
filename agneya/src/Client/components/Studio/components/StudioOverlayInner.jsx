@@ -778,13 +778,23 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                                 <div className="hidden sm:block w-[1px] h-8" style={{ backgroundColor: 'var(--color-neu-dark)' }} />
                                 <span className="hidden sm:block text-[9px] font-bold uppercase tracking-widest opacity-70">Final pricing via design verification</span>
                             </div>
-                            <button 
-                                onClick={() => handleFinalSubmit(false)} 
-                                disabled={isSubmitting} 
-                                className="h-12 sm:h-14 px-6 sm:px-8 neu-button-accent font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0"
-                            >
-                                {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Request Design</>}
-                            </button>
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <button 
+                                    onClick={() => handleFinalSubmit(true)} 
+                                    disabled={isSubmitting} 
+                                    className="h-12 sm:h-14 px-5 sm:px-8 neu-button font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0 active:scale-95"
+                                    style={{ color: 'var(--color-neu-text)' }}
+                                >
+                                    <FiArrowRight size={16} /> Buy Now
+                                </button>
+                                <button 
+                                    onClick={() => handleFinalSubmit(false)} 
+                                    disabled={isSubmitting} 
+                                    className="h-12 sm:h-14 px-5 sm:px-8 neu-button-accent font-black text-[9px] sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2 sm:gap-3 shrink-0 active:scale-95"
+                                >
+                                    {isSubmitting ? 'Syncing...' : <><FiShoppingCart size={16} /> Add to Cart</>}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
