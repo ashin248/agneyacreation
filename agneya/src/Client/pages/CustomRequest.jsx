@@ -100,10 +100,6 @@ const CustomRequest = () => {
         if (mode === 'checkout') {
           toast.success('Designs uploaded. Proceeding to checkout…', { id: tid });
           navigate('/checkout', { state: { buyNowItem: cartItem } });
-        } else {
-          addToCart(cartItem);
-          toast.success('Added to cart!', { id: tid });
-          navigate('/cart');
         }
       } else {
         await axios.post('/api/public/custom-designs', {
@@ -294,13 +290,6 @@ const CustomRequest = () => {
 
                 <div className="space-y-3">
                   <button
-                    onClick={() => handleSubmission('cart')}
-                    disabled={isUploading || files.length === 0}
-                    className="w-full py-3 bg-white text-slate-900 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-all disabled:opacity-50 active:scale-[0.98]"
-                  >
-                    <Plus size={16} /> Add to Cart
-                  </button>
-                  <button
                     onClick={() => handleSubmission('checkout')}
                     disabled={isUploading || files.length === 0}
                     className="w-full py-3 text-white rounded-xl font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all disabled:opacity-50 active:scale-[0.98]"
@@ -309,7 +298,7 @@ const CustomRequest = () => {
                     {isUploading ? (
                       <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Uploading…</>
                     ) : (
-                      <><CreditCard size={16} /> Buy Now</>
+                      <><CreditCard size={16} /> Proceed to Checkout</>
                     )}
                   </button>
                   <button

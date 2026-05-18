@@ -421,13 +421,17 @@ const Checkout = () => {
 
               <div className="space-y-3 max-h-64 overflow-y-auto mb-6 pr-1">
                 {checkoutItems.map((item, idx) => {
-                  const displayImage = item.image || item.designImage || item.customData?.appliedFrontDesign || item.customData?.uploadedImageUrl || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Design';
                   const isCustom = item.itemType === 'Custom' && item.customData;
+                  let displayImage = item.image;
+                  if (isCustom && (item.customData.designSource === '2D_STUDIO' || item.customData.designSource === '3D_STUDIO')) {
+                    displayImage = item.customData.appliedFrontDesign || item.designImage || item.customData.uploadedImageUrl || item.image;
+                  }
+                  
                   return (
                     <div key={idx} className="flex flex-col gap-2 p-3 neu-pressed rounded-xl">
                       <div className="flex gap-3">
                         <div className="w-14 h-16 neu-button rounded-lg overflow-hidden flex-shrink-0">
-                          <img loading="lazy" src={displayImage} alt={item.name} className="w-full h-full object-contain" />
+                          <img loading="lazy" src={displayImage || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Image'} alt={item.name} className="w-full h-full object-contain" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
