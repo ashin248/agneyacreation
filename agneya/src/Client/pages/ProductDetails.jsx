@@ -744,6 +744,8 @@ const ProductDetails = () => {
                     initialMode={initialStudioMode}
                     activeTemplateId={activeTemplateId}
                     initial2DModelIdx={initial2DModelIdx}
+                    selectedColor={selectedColor}
+                    selectedSize={selectedSize}
                 />
             </React.Suspense>
         </div>

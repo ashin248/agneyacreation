@@ -419,76 +419,129 @@ const Checkout = () => {
             <aside className="neu-flat p-6 sticky top-24 md:top-[130px]">
               <h2 className="text-base font-bold text-slate-900 mb-5">Order Summary</h2>
 
-              <div className="space-y-3 max-h-64 overflow-y-auto mb-6 pr-1">
+              <div className="space-y-4 max-h-[500px] overflow-y-auto mb-6 pr-2 custom-scrollbar">
                 {checkoutItems.map((item, idx) => {
                   const isCustom = item.itemType === 'Custom' && item.customData;
-                  let displayImage = item.image;
-                  if (isCustom && (item.customData.designSource === '2D_STUDIO' || item.customData.designSource === '3D_STUDIO')) {
-                    displayImage = item.customData.appliedFrontDesign || item.designImage || item.customData.uploadedImageUrl || item.image;
-                  }
+                  const displayImage = item.customData?.productImage || item.image || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Image';
+                  const cleanName = item.customData?.productName || item.name.replace(/^\[Custom\]\s*/, '');
                   
                   return (
-                    <div key={idx} className="flex flex-col gap-2 p-3 neu-pressed rounded-xl">
-                      <div className="flex gap-3">
-                        <div className="w-14 h-16 neu-button rounded-lg overflow-hidden flex-shrink-0">
-                          <img loading="lazy" src={displayImage || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Image'} alt={item.name} className="w-full h-full object-contain" />
+                    <div key={idx} className="flex flex-col gap-3 p-4 neu-pressed rounded-2xl border border-[var(--color-neu-dark)]">
+                      {/* 1. Product (Image & Name) */}
+                      <div className="flex gap-3 items-center">
+                        <div className="w-16 h-16 neu-button rounded-xl overflow-hidden flex-shrink-0 p-1">
+                          <img loading="lazy" src={displayImage} alt={cleanName} className="w-full h-full object-contain rounded-lg" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{item.name}</p>
-                          <div className="flex gap-2 mt-2 flex-wrap">
-                            {item.selectedVariation?.size && (
-                              <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{item.selectedVariation.size}</span>
-                            )}
-                            <span className="text-[9px] font-black uppercase tracking-widest opacity-40 neu-pressed px-1.5 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</span>
-                            {item.itemType === 'Custom' && (
-                              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] neu-pressed px-1.5 py-0.5 rounded-md">Custom</span>
-                            )}
-                          </div>
+                          <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-0.5">1. Product</div>
+                          <p className="text-xs font-black uppercase tracking-tight leading-tight truncate" style={{ color: 'var(--color-neu-text)' }}>{cleanName}</p>
+                          {item.customData?.variationName && (
+                            <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-widest neu-pressed px-2 py-0.5 rounded-md" style={{ color: 'var(--color-neu-text)' }}>{item.customData.variationName}</span>
+                          )}
                         </div>
-                        <p className="text-sm font-black flex-shrink-0" style={{ color: 'var(--color-neu-text)' }}>
-                          ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
-                        </p>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-black" style={{ color: 'var(--color-neu-text)' }}>
+                            ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
+                          </p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest opacity-40 mt-0.5" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</p>
+                        </div>
                       </div>
 
                       {/* Custom Details Section */}
                       {isCustom && (
-                        <div className="mt-1 pt-2 border-t border-[var(--color-neu-dark)]">
-                          {item.customData.designSource === 'DESIGN_ASSISTANCE' || item.customData.mode === 'manual' ? (
-                             <div className="text-[9px] font-black uppercase tracking-widest text-indigo-500 mb-1">Design Assistance</div>
-                          ) : item.customData.designSource === '3D_STUDIO' ? (
-                             <div className="text-[9px] font-black uppercase tracking-widest text-fuchsia-500 mb-1">3D Studio</div>
-                          ) : item.customData.designSource === '2D_STUDIO' ? (
-                             <div className="text-[9px] font-black uppercase tracking-widest text-pink-500 mb-1">2D Studio</div>
-                          ) : (
-                             <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">Custom Design</div>
-                          )}
-
-                          {item.customData.instructions && (
-                            <p className="text-[10px] font-bold opacity-60 mb-1 leading-tight italic truncate" style={{ color: 'var(--color-neu-text)' }}>"{item.customData.instructions}"</p>
-                          )}
-                          {item.customData.customText && (
-                            <p className="text-[10px] font-bold opacity-60 mb-1 leading-tight italic truncate" style={{ color: 'var(--color-neu-text)' }}>Text: "{item.customData.customText}"</p>
-                          )}
-
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {item.customData.manualAttachments?.map((url, i) => (
-                              <a key={`att-${i}`} href={url} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
-                                 <img src={url} alt={`attachment-${i}`} className="w-full h-full object-cover" />
-                              </a>
-                            ))}
-                            {item.customData.appliedFrontDesign && (
-                              <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
-                                 <img src={item.customData.appliedFrontDesign} alt="front" className="w-full h-full object-cover bg-white" />
-                              </a>
+                        <div className="mt-2 pt-3 border-t border-[var(--color-neu-dark)] space-y-4">
+                          
+                          {/* 2. Customise Design [Main Model and Support Model] */}
+                          <div className="space-y-2">
+                            <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] flex items-center justify-between">
+                              <span>2. Customise Design</span>
+                              <span className="text-[8px] opacity-50 uppercase tracking-tighter">
+                                {item.customData.designSource === 'DESIGN_ASSISTANCE' ? 'Design Assistance' : item.customData.designSource === '3D_STUDIO' ? '3D Studio' : '2D Studio'}
+                              </span>
+                            </div>
+                            
+                            {item.customData?.customizedDesigns?.length > 0 ? (
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {item.customData.customizedDesigns.map((cd, cdIdx) => (
+                                  <div key={cdIdx} className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 group/design">
+                                    <a href={cd.url} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
+                                      <img src={cd.url} alt={cd.label} className="w-full h-full object-contain group-hover/design:scale-110 transition-transform" />
+                                    </a>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">{cd.label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex gap-2">
+                                {item.customData.appliedFrontDesign && (
+                                  <div className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 w-24">
+                                    <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
+                                      <img src={item.customData.appliedFrontDesign} alt="Front Design" className="w-full h-full object-contain" />
+                                    </a>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">Front Design</span>
+                                  </div>
+                                )}
+                                {item.customData.appliedBackDesign && (
+                                  <div className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 w-24">
+                                    <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
+                                      <img src={item.customData.appliedBackDesign} alt="Back Design" className="w-full h-full object-contain" />
+                                    </a>
+                                    <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">Back Design</span>
+                                  </div>
+                                )}
+                              </div>
                             )}
-                            {item.customData.appliedBackDesign && (
-                              <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="w-7 h-7 rounded-md overflow-hidden border border-[var(--color-neu-dark)] hover:opacity-80 transition-opacity">
-                                 <img src={item.customData.appliedBackDesign} alt="back" className="w-full h-full object-cover bg-white" />
-                              </a>
+
+                            {item.customData?.instructions && (
+                              <div className="neu-pressed rounded-xl p-3 mt-2">
+                                <span className="text-[8px] font-black uppercase tracking-widest text-slate-400 block mb-1">Instructions / Brief:</span>
+                                <p className="text-[11px] font-bold italic leading-snug" style={{ color: 'var(--color-neu-text)' }}>"{item.customData.instructions}"</p>
+                              </div>
                             )}
                           </div>
 
-                          <div className="flex gap-3 mt-2 pt-2 border-t border-[var(--color-neu-dark)] justify-end">
+                          {/* 3. Sizes & 4. Color in a neat grid */}
+                          <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--color-neu-dark)]">
+                            <div className="neu-pressed rounded-xl p-3 flex flex-col justify-center">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">3. Sizes</span>
+                              <span className="text-xs font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>
+                                {item.customData?.selectedSize || item.selectedVariation?.size || 'Standard'}
+                              </span>
+                            </div>
+                            <div className="neu-pressed rounded-xl p-3 flex flex-col justify-center">
+                              <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">4. Color</span>
+                              <div className="flex items-center gap-2">
+                                {item.customData?.selectedColor && item.customData.selectedColor !== '-' && item.customData.selectedColor !== 'Standard' && (
+                                  <span className="w-3.5 h-3.5 rounded-full border border-[var(--color-neu-dark)] shadow-sm inline-block flex-shrink-0" style={{ backgroundColor: item.customData.selectedColor.toLowerCase() }} />
+                                )}
+                                <span className="text-xs font-black uppercase tracking-tight truncate" style={{ color: 'var(--color-neu-text)' }}>
+                                  {item.customData?.selectedColor || item.selectedVariation?.color || 'Standard'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 5. Used Images */}
+                          <div className="pt-2 border-t border-[var(--color-neu-dark)] space-y-2">
+                            <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)]">5. Used Images / Assets</div>
+                            {item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {(item.customData?.usedImages || item.customData?.manualAttachments || []).map((img, imgIdx) => {
+                                  const url = typeof img === 'string' ? img : img.url;
+                                  return (
+                                    <a key={imgIdx} href={url} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl overflow-hidden neu-button p-1 group/asset">
+                                      <img src={url} alt={`used-asset-${imgIdx}`} className="w-full h-full object-cover rounded-lg group-hover/asset:scale-110 transition-transform" />
+                                    </a>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <p className="text-[10px] font-bold italic opacity-40" style={{ color: 'var(--color-neu-text)' }}>No external images uploaded.</p>
+                            )}
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className="flex gap-3 pt-3 border-t border-[var(--color-neu-dark)] justify-end">
                             <button onClick={(e) => { e.preventDefault(); navigate(-1); }} className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest opacity-50 hover:opacity-100 hover:text-[var(--color-neu-accent)] transition-all" style={{ color: 'var(--color-neu-text)' }}>
                               <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Edit
                             </button>

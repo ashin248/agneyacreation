@@ -20,7 +20,7 @@ const Workspace3D = React.lazy(() => import('./Workspace3D'));
 const Workspace2D = React.lazy(() => import('./Workspace2D'));
 import CropModal from './CropModal';
 
-export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0 }) {
+export default function StudioOverlayInner({ isOpen, onClose, requireLogin, initialMode = 'self', activeTemplateId = null, initial2DModelIdx = 0, selectedColor, selectedSize }) {
     const { userData } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -348,6 +348,9 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             setCanvasObjects([]);
             setObjectAnchors({});
             updateTexture(true);
+            setTimeout(() => {
+                workspace2DRef.current?.loadInitialTemplate();
+            }, 50);
         }
     };
 
@@ -366,6 +369,9 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
             setCanvasObjects([]);
             setObjectAnchors({});
             updateTexture(true);
+            setTimeout(() => {
+                workspace2DRef.current?.loadInitialTemplate();
+            }, 50);
         }
         toast.success(`Page ${variations.length + 1} Added`, { style: { borderRadius: '15px', background: 'var(--color-neu-bg)', color: 'var(--color-neu-text)' } });
     };
@@ -553,6 +559,32 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     ...(uploadedAssets || [])
                 ];
 
+                const customizedDesigns = [];
+                if (twoDModels?.length > 0) {
+                    twoDModels.forEach((m, midx) => {
+                        const mainSnap = (isCurrent && viewSide === `model_${midx}_main`) ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) : v[`model_${midx}_mainSnapshot`];
+                        if (mainSnap) {
+                            customizedDesigns.push({ label: `${m.modelName || `Model ${midx + 1}`} (Main)`, url: mainSnap });
+                        }
+                        m.supportModels?.forEach(sm => {
+                            const suppSide = `model_${midx}_support_${sm.side}`;
+                            const suppSnap = (isCurrent && viewSide === suppSide) ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) : v[`${suppSide}Snapshot`];
+                            if (suppSnap) {
+                                customizedDesigns.push({ label: `${m.modelName || `Model ${midx + 1}`} (${sm.side})`, url: suppSnap });
+                            }
+                        });
+                    });
+                } else {
+                    const frontSnap = (isCurrent && viewSide === 'front') ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) : v.frontSnapshot;
+                    if (frontSnap) {
+                        customizedDesigns.push({ label: 'Front Design', url: frontSnap });
+                    }
+                    const backSnap = (isCurrent && viewSide === 'back') ? fabricRef.current.toDataURL({ format: 'png', quality: 0.5, multiplier: 0.5 }) : v.backSnapshot;
+                    if (backSnap) {
+                        customizedDesigns.push({ label: 'Back Design', url: backSnap });
+                    }
+                }
+
                 const designPayload = { 
                     mode: 'unified', 
                     designSource: activeStudioTab,
@@ -571,7 +603,7 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     unitPrice: product?.discountPrice || product?.basePrice,
                     quantity: itemQty,
                     itemType: 'Custom',
-                    selectedVariation: { sku: `custom_${v.id}`, size: 'Custom' },
+                    selectedVariation: { sku: `custom_${v.id}`, size: selectedSize || 'Custom', color: selectedColor || 'Custom' },
                     image: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
                     designImage: frontSnap || backSnap || product?.thumbnail || product?.images?.[0],
                     isBulkEnabled: product?.isBulkEnabled,
@@ -579,7 +611,13 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                     gstRate: product?.gstRate || 0,
                     customData: { 
                         ...designPayload,
-                        variationName: v.name, 
+                        productName: product?.name,
+                        productImage: product?.thumbnail || product?.images?.[0],
+                        variationName: v.name,
+                        selectedColor: selectedColor || 'Standard',
+                        selectedSize: selectedSize || 'Standard',
+                        customizedDesigns,
+                        usedImages: combinedRefs.map(r => typeof r === 'string' ? { url: r } : r),
                         appliedFrontDesign: frontSnap, 
                         appliedBackDesign: backSnap 
                     }

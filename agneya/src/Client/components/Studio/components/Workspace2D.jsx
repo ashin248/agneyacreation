@@ -303,7 +303,7 @@ const Workspace2D = forwardRef(({
     }, [finalScale, product?.phoneMask, canvasIntrinsicDimensions, effectiveCanvasConfig]);
 
     // Handle Template Loading
-    useEffect(() => {
+    const loadInitialTemplate = useCallback(() => {
         if (!fabricRef.current || !activeTemplateId) return;
         const canvas = fabricRef.current;
 
@@ -368,7 +368,12 @@ const Workspace2D = forwardRef(({
 
         enforceLayering();
         updateTexture(true);
-    }, [activeTemplateId, viewSide, enforceLayering, updateTexture]);
+    }, [activeTemplateId, enforceLayering, updateTexture]);
+
+    useEffect(() => {
+        loadInitialTemplate();
+    }, [loadInitialTemplate, viewSide]);
+
 
     useEffect(() => {
         if (!fabricRef.current || !current2DImageUrl || activeStudioTab !== '2D_STUDIO') return;
@@ -522,7 +527,8 @@ const Workspace2D = forwardRef(({
     useImperativeHandle(ref, () => ({
         updateTexture,
         fastSync,
-        enforceLayering
+        enforceLayering,
+        loadInitialTemplate
     }));
 
     return (
