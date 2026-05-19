@@ -173,7 +173,7 @@ const CustomMobileCases = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredModels.map(model => (
                     <button
-                      key={model.id}
+                      key={model._id || model.id}
                       onClick={() => handleCustomize(model)}
                       className="neu-button p-6 group text-center cursor-pointer transition-all hover:neu-pressed"
                     >
