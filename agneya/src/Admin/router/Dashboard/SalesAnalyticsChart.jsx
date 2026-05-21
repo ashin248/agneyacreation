@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const SalesAnalyticsChart = () => {
+const SalesAnalyticsChart = ({ refreshTrigger }) => {
   const [data, setData] = useState({ chartData: [], todayRevenue: 0, allTimeRevenue: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = async (isBackground = false) => {
       try {
-        setLoading(true);
+        if (!isBackground) {
+          setLoading(true);
+        }
         const response = await axios.get('/api/admin/orders/analytics');
         if (response.data.success) {
           setData(response.data.data);
@@ -20,11 +22,13 @@ const SalesAnalyticsChart = () => {
         console.error('Analytics Fetch Error:', err);
         setError('Connection error generating graph');
       } finally {
-        setLoading(false);
+        if (!isBackground) {
+          setLoading(false);
+        }
       }
     };
-    fetchAnalytics();
-  }, []);
+    fetchAnalytics(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (

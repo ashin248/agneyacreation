@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiTrendingUp, FiShoppingBag, FiAward } from 'react-icons/fi';
 
-const TopProducts = ({ refreshKey }) => {
+const TopProducts = ({ refreshTrigger }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTopProducts = async () => {
+    const fetchTopProducts = async (isBackground = false) => {
       try {
-        setLoading(true);
+        if (!isBackground) {
+          setLoading(true);
+        }
         const token = localStorage.getItem('adminToken');
         const res = await axios.get('/api/admin/dashboard/stats/top-products', {
             headers: token ? { Authorization: `Bearer ${token}` } : {}
@@ -20,11 +22,13 @@ const TopProducts = ({ refreshKey }) => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        if (!isBackground) {
+          setLoading(false);
+        }
       }
     };
-    fetchTopProducts();
-  }, [refreshKey]);
+    fetchTopProducts(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
   if (loading) return (
     <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white shadow-2xl p-8 flex justify-center items-center h-full">
@@ -40,7 +44,7 @@ const TopProducts = ({ refreshKey }) => {
            </h2>
        </div>
        <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar">
-           {products.length === 0 ? <p className="text-xs text-gray-400 font-bold tracking-widest text-center mt-10">NO SALES REGISTERED</p> : products.map((prod, idx) => (
+           {products.length === 0 ? <p className="text-xs text-gray-400 font-bold tracking-widest text-center mt-10">NO SALES REGISTERED</p> : products.map((prod) => (
                <div key={prod._id} className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-gray-50 hover:border-pink-200 transition-colors group">
                    <div className="flex items-center gap-4">
                        <div className="w-10 h-10 bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center">

@@ -3,15 +3,17 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { FiChevronRight, FiClock, FiCheckCircle, FiPackage, FiTruck, FiXCircle, FiTrendingUp } from 'react-icons/fi';
 
-const RecentOrdersTable = () => {
+const RecentOrdersTable = ({ refreshTrigger }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRecent = async () => {
+    const fetchRecent = async (isBackground = false) => {
       try {
-        setLoading(true);
+        if (!isBackground) {
+          setLoading(true);
+        }
         const token = localStorage.getItem('adminToken');
         
         const response = await axios.get('/api/admin/orders/recent', {
@@ -26,11 +28,13 @@ const RecentOrdersTable = () => {
         console.error('Recent Fetch Error:', err);
         setError('Network Error');
       } finally {
-        setLoading(false);
+        if (!isBackground) {
+          setLoading(false);
+        }
       }
     };
-    fetchRecent();
-  }, []);
+    fetchRecent(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
   const FiActivity = (props) => (
     <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
@@ -48,6 +52,14 @@ const RecentOrdersTable = () => {
     Delivered: { color: 'text-green-600 bg-green-50 border-green-100', icon: FiCheckCircle },
     Cancelled: { color: 'text-red-600 bg-red-50 border-red-100', icon: FiXCircle }
   };
+
+  if (error) {
+    return (
+      <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-red-100 shadow-2xl p-20 flex flex-col items-center justify-center gap-4">
+        <p className="text-[12px] font-black text-red-500 uppercase tracking-widest">{error}</p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

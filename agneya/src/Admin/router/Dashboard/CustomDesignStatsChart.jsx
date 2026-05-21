@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const CustomDesignStatsChart = () => {
+const CustomDesignStatsChart = ({ refreshTrigger }) => {
   const [data, setData] = useState({ chartData: [], todayCount: 0, totalCount: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchStats = async (isBackground = false) => {
       try {
-        setLoading(true);
+        if (!isBackground) {
+          setLoading(true);
+        }
         const response = await axios.get('/api/admin/dashboard/stats/custom-designs');
         if (response.data.success) {
           setData(response.data.data);
@@ -20,11 +22,13 @@ const CustomDesignStatsChart = () => {
         console.error('Design Stats Fetch Error:', err);
         setError('Connection error generating graph');
       } finally {
-        setLoading(false);
+        if (!isBackground) {
+          setLoading(false);
+        }
       }
     };
-    fetchStats();
-  }, []);
+    fetchStats(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (

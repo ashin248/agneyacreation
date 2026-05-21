@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { createCategory, updateCategory, deleteCategory, getCategories } = require('../../controllers/categoryController');
+const multer = require('multer');
+const { createCategory, updateCategory, deleteCategory, getAdminCategories } = require('../../controllers/categoryController');
 const { protectAdmin } = require('../../middleware/authMiddleware');
 
-router.get('/', protectAdmin, getCategories);
-router.post('/', protectAdmin, createCategory);
-router.put('/:id', protectAdmin, updateCategory);
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.get('/', protectAdmin, getAdminCategories);
+router.post('/', protectAdmin, upload.single('image'), createCategory);
+router.put('/:id', protectAdmin, upload.single('image'), updateCategory);
 router.delete('/:id', protectAdmin, deleteCategory);
 
 module.exports = router;

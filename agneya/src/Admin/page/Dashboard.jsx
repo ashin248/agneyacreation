@@ -52,12 +52,12 @@ function Dashboard() {
 
       {/* Top Level: KPI Stats Grid */}
       <div className="mb-10">
-         <DashboardStats key={`stats-${refreshKey}`} />
+         <DashboardStats refreshTrigger={refreshKey} />
       </div>
 
       {/* High Priority: System Alerts */}
       <div className="mb-8">
-         <AdminAlerts key={`alerts-${refreshKey}`} />
+         <AdminAlerts refreshTrigger={refreshKey} />
       </div>
 
       {/* Mid Level: Analytics & Logs Grid */}
@@ -65,43 +65,15 @@ function Dashboard() {
 
         {/* Sales Analytic Graph (Takes 2 columns on large screens) */}
         <div className="lg:col-span-2 space-y-8">
-          <SalesAnalyticsChart key={`sales-${refreshKey}`} />
-          <CustomDesignStatsChart key={`custom-${refreshKey}`} />
+          <SalesAnalyticsChart refreshTrigger={refreshKey} />
+          <CustomDesignStatsChart refreshTrigger={refreshKey} />
         </div>
 
         {/* Details & Expiry Tracker (Takes 1 column on large screens) */}
         <div className="lg:col-span-1 space-y-8">
           
-          {/* Infrastructure Expiry Widget (Hidden - Dummy Data) */}
-          {/* <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-             <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                Infrastructure & Billing Expiry
-             </h3>
-             <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-red-50/50 rounded-xl border border-red-100">
-                   <div>
-                     <p className="text-[10px] uppercase font-bold text-red-600 tracking-wider">Domain Expiry</p>
-                     <p className="text-sm font-medium text-gray-800 mt-0.5">agneya.in</p>
-                   </div>
-                   <div className="text-right">
-                     <p className="text-sm font-bold text-gray-900">Nov 15, 2026</p>
-                   </div>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-amber-50/50 rounded-xl border border-amber-100">
-                   <div>
-                     <p className="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Hosting Expiry</p>
-                     <p className="text-sm font-medium text-gray-800 mt-0.5">Cloud Server</p>
-                   </div>
-                   <div className="text-right">
-                     <p className="text-sm font-bold text-gray-900">Aug 05, 2026</p>
-                   </div>
-                </div>
-             </div>
-          </div> */}
-
-          <TopProducts refreshKey={refreshKey} />
-          <RecentOrdersTable key={`recent-${refreshKey}`} />
+          <TopProducts refreshTrigger={refreshKey} />
+          <RecentOrdersTable refreshTrigger={refreshKey} />
         </div>
 
       </div>

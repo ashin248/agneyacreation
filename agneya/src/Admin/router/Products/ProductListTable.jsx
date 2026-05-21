@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiBox, FiSearch, FiAlertTriangle, FiPlus, FiEdit3, FiTrash2, FiExternalLink, FiEye, FiCheckCircle } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 const ProductListTable = () => {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ const ProductListTable = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [deleteConfirmProduct, setDeleteConfirmProduct] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchProducts();
@@ -44,18 +48,17 @@ const ProductListTable = () => {
     }
   };
 
-  const handleDelete = async (id, name) => {
-    if (window.confirm(`Terminate "${name}" from the active archives? This action is irreversible.`)) {
-      try {
-        const token = localStorage.getItem('adminToken');
-        await axios.delete(`/api/admin/products/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setProducts(prev => prev.filter(p => p._id !== id));
-      } catch (err) {
-        console.error('Delete error:', err);
-        alert('Failed to decommission product.');
-      }
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      await axios.delete(`/api/admin/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProducts(prev => prev.filter(p => p._id !== id));
+      toast.success('Product decommissioned successfully.');
+    } catch (err) {
+      console.error('Delete error:', err);
+      toast.error('Failed to decommission product.');
     }
   };
 
@@ -74,6 +77,16 @@ const ProductListTable = () => {
     const matchesStock = showLowStockOnly ? getTotalStock(p) < 10 : true;
     return matchesSearch && matchesStock;
   });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, showLowStockOnly]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   if (loading) {
     return (
@@ -145,8 +158,8 @@ const ProductListTable = () => {
 
       {/* CATALOG DATA GRID */}
       <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white/40 shadow-2xl overflow-hidden border-gray-100">
-        <div className="overflow-x-auto min-h-[400px]">
-            {filteredProducts.length === 0 ? (
+        <div className="overflow-x-auto">
+            {paginatedProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-24 text-center">
                     <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                         <FiBox size={40} className="text-gray-200" />
@@ -167,7 +180,7 @@ const ProductListTable = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                        {Array.isArray(filteredProducts) && filteredProducts.map((p) => {
+                        {paginatedProducts.map((p) => {
                             const stock = getTotalStock(p);
                             const img = p.galleryImages?.[0];
                             return (
@@ -211,7 +224,7 @@ const ProductListTable = () => {
                                             <button onClick={() => handleEdit(p._id)} className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-slate-900 hover:text-white transition-all duration-300 border border-gray-100 flex items-center justify-center" title="Edit Asset">
                                                 <FiEdit3 size={14} />
                                             </button>
-                                            <button onClick={() => handleDelete(p._id, p.name)} className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-500 hover:text-white transition-all duration-300 border border-gray-100 flex items-center justify-center" title="Decommission Asset">
+                                            <button onClick={() => setDeleteConfirmProduct({ id: p._id, name: p.name })} className="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-500 hover:text-white transition-all duration-300 border border-gray-100 flex items-center justify-center" title="Decommission Asset">
                                                 <FiTrash2 size={14} />
                                             </button>
                                         </div>
@@ -223,7 +236,87 @@ const ProductListTable = () => {
                 </table>
             )}
         </div>
+
+        {/* PAGINATION PANEL */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-white/70 backdrop-blur-xl border-t border-gray-100">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Showing {Math.min(filteredProducts.length, (currentPage - 1) * itemsPerPage + 1)} to{' '}
+              {Math.min(filteredProducts.length, currentPage * itemsPerPage)} of {filteredProducts.length} assets
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl border transition-all ${
+                  currentPage === 1
+                    ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-500 hover:text-indigo-600'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 rounded-xl text-[10px] font-black transition-all ${
+                    currentPage === page
+                      ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                      : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-500 hover:text-indigo-600'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl border transition-all ${
+                  currentPage === totalPages
+                    ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-500 hover:text-indigo-600'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* CUSTOM DELETE CONFIRMATION OVERLAY */}
+      {deleteConfirmProduct && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-md" onClick={() => setDeleteConfirmProduct(null)}></div>
+          <div className="bg-white rounded-[40px] w-full max-w-sm relative z-10 overflow-hidden shadow-2xl p-8 text-center animate-in zoom-in duration-300">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiTrash2 size={24} />
+            </div>
+            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tighter mb-2">Delete Product</h3>
+            <p className="text-xs text-gray-400 font-bold mb-6">Are you sure you want to delete "{deleteConfirmProduct.name}"? This action cannot be undone and will remove it from all storefront categories.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  handleDelete(deleteConfirmProduct.id);
+                  setDeleteConfirmProduct(null);
+                }}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteConfirmProduct(null)}
+                className="flex-1 bg-gray-50 text-gray-400 hover:text-gray-900 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FiDollarSign, FiShoppingBag, FiPackage, FiUsers, FiAlertCircle, FiArrowUpRight, FiClock, FiFileText, FiTrendingUp, FiActivity, FiBox } from 'react-icons/fi';
 
-const DashboardStats = () => {
+const DashboardStats = ({ refreshTrigger }) => {
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalStock: 0,
@@ -18,12 +18,14 @@ const DashboardStats = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    fetchStats(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
-  const fetchStats = async () => {
+  const fetchStats = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) {
+        setLoading(true);
+      }
       const token = localStorage.getItem('adminToken');
       
       const response = await axios.get('/api/admin/dashboard/stats/global', {
@@ -38,7 +40,9 @@ const DashboardStats = () => {
       console.error('Error fetching dashboard stats:', err);
       setError('Connection error rendering dashboard statistics.');
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 
@@ -76,10 +80,18 @@ const DashboardStats = () => {
     </div>
   );
 
+  if (error) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center p-24 bg-red-50/70 backdrop-blur-xl rounded-[40px] border border-red-100 shadow-2xl">
+        <p className="text-[12px] font-black text-red-500 uppercase tracking-widest">{error}</p>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="w-full flex flex-col items-center justify-center p-24 bg-white/70 backdrop-blur-xl rounded-[40px] border border-gray-100 shadow-2xl">
-        <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-500 rounded-full animate-spin"></div>
         <p className="mt-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Synchronizing Global Metrics...</p>
       </div>
     );
@@ -120,7 +132,7 @@ const DashboardStats = () => {
             />
             <StatCard 
                 title="Asset Efficiency" 
-                value={formatCurrency(stats.totalOrders > 0 ? stats.totalRevenue / stats.totalOrders : 0)} 
+                value={formatCurrency((stats.totalOrders > 0 && stats.totalRevenue) ? (stats.totalRevenue / stats.totalOrders) : 0)} 
                 icon={FiActivity} 
                 color={{bg: 'bg-indigo-500/10', text: 'text-indigo-600'}}
                 subtitle="Avg order value score"

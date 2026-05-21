@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-const AdminAlerts = () => {
+const AdminAlerts = ({ refreshTrigger }) => {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAlerts = async () => {
+    const fetchAlerts = async (isBackground = false) => {
       try {
-        setLoading(true);
+        if (!isBackground) {
+          setLoading(true);
+        }
         const response = await axios.get('/api/admin/dashboard/alerts');
         if (response.data.success) {
           setAlerts(response.data.data);
@@ -17,11 +19,13 @@ const AdminAlerts = () => {
       } catch (err) {
         console.error('Error fetching alerts:', err);
       } finally {
-        setLoading(false);
+        if (!isBackground) {
+          setLoading(false);
+        }
       }
     };
-    fetchAlerts();
-  }, []);
+    fetchAlerts(refreshTrigger > 0);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (

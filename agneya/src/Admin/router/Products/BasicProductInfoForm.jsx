@@ -18,6 +18,9 @@ const BasicProductInfoForm = ({
   const [isAddingCollection, setIsAddingCollection] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
 
+  const [categoriesList, setCategoriesList] = React.useState([]);
+  const [categoriesLoading, setCategoriesLoading] = React.useState(true);
+
   React.useEffect(() => {
     const fetchCollections = async () => {
       try {
@@ -31,6 +34,41 @@ const BasicProductInfoForm = ({
       }
     };
     fetchCollections();
+  }, []);
+
+  React.useEffect(() => {
+    const getCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const token = localStorage.getItem('adminToken');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        let res = await fetch('/api/admin/categories', { headers });
+        let data = await res.json();
+        if (data.success) {
+          setCategoriesList(data.data);
+        } else {
+          res = await fetch('/api/public/categories');
+          data = await res.json();
+          if (data.success) {
+            setCategoriesList(data.data);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        try {
+          const res = await fetch('/api/public/categories');
+          const data = await res.json();
+          if (data.success) {
+            setCategoriesList(data.data);
+          }
+        } catch (fallbackErr) {
+          console.error('Fallback fetching categories failed:', fallbackErr);
+        }
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    getCategories();
   }, []);
   const sendDebugLog = (hypothesisId, location, message, data = {}, runId = 'initial') => {
     // #region agent log
@@ -300,18 +338,33 @@ const BasicProductInfoForm = ({
           {/* Category */}
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="category">
-              Category
+              Category *
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                placeholder="e.g., Electronics, Clothing"
-              />
+            <div className="flex gap-2 animate-in fade-in duration-300">
+              {categoriesLoading ? (
+                <div className="flex-1 h-10 bg-gray-50 animate-pulse rounded-md border border-gray-200"></div>
+              ) : categoriesList.length === 0 ? (
+                <div className="flex-1 flex items-center justify-between px-4 py-2 border border-amber-200 bg-amber-50 rounded-md text-amber-800 text-xs font-bold">
+                  <span className="flex items-center gap-1"><FiAlertCircle /> No categories available!</span>
+                  <a href="/admin/categories" className="underline hover:text-amber-900">Manage Categories</a>
+                </div>
+              ) : (
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium text-sm"
+                  required
+                >
+                  <option value="">Select a Category</option>
+                  {categoriesList.map((cat) => (
+                    <option key={cat._id} value={cat.name}>
+                      {cat.name} {!cat.isActive && '(Inactive)'}
+                    </option>
+                  ))}
+                </select>
+              )}
               {formData.category && (
                 <div className="w-10 h-10 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
                   <img loading="lazy" 

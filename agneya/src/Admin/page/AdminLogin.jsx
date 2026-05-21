@@ -33,7 +33,7 @@ const AdminLogin = () => {
                 localStorage.setItem('adminProfile', JSON.stringify(user));
 
                 // Legacy fallback for components utilizing sessionStorage + JSON.parse logic
-                sessionStorage.setItem('adminToken', JSON.stringify(token));
+                sessionStorage.setItem('adminToken', token);
                 sessionStorage.setItem('adminProfile', JSON.stringify(user));
                 
                 // Navigate gracefully securely to the admin dashboard
