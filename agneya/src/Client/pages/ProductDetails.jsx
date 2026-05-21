@@ -539,7 +539,31 @@ const ProductDetails = () => {
                                         const commonItemData = {
                                             productId: product._id,
                                             name: product.name,
-                                            unitPrice: baseFinalPrice,
+                                            unitPrice: currentPrice,
+                                            selectedVariation: currentVariation,
+                                            image: images[0],
+                                            itemType: 'Ready',
+                                            quantity: quantity,
+                                            originalPrice: originalPrice,
+                                            category: product.category,
+                                            isBulkEnabled: product.isBulkEnabled,
+                                            bulkRules: product.bulkRules,
+                                            gstRate: product.gstRate
+                                        };
+                                        addToCart(commonItemData);
+                                    }}
+                                    className="btn-secondary flex-1 py-3.5 flex items-center justify-center gap-2"
+                                >
+                                    <ShoppingCart size={16} /> Add To Cart
+                                </button>
+
+                                {/* Buy Now Button */}
+                                <button 
+                                    onClick={() => {
+                                        const commonItemData = {
+                                            productId: product._id,
+                                            name: product.name,
+                                            unitPrice: currentPrice,
                                             selectedVariation: currentVariation,
                                             image: images[0],
                                             itemType: 'Ready',
@@ -552,9 +576,9 @@ const ProductDetails = () => {
                                         };
                                         requireLogin(() => navigate('/checkout', { state: { buyNowItem: commonItemData } }));
                                     }}
-                                    className="btn-primary flex-1 py-3.5"
+                                    className="btn-primary flex-1 py-3.5 flex items-center justify-center gap-2"
                                 >
-                                    <ShoppingCart size={16} /> Add To Cart &nbsp;·&nbsp; ₹{cartItemTotal.toLocaleString('en-IN')}
+                                    Buy Now &nbsp;·&nbsp; ₹{cartItemTotal.toLocaleString('en-IN')}
                                 </button>
                             </div>
                             

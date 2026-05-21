@@ -27,9 +27,11 @@ const Checkout = () => {
   const isBuyNow = !!(buyNowItem || buyNowItems);
 
   const checkoutFinancials = checkoutItems.map(item => {
+    const variantModifier = item.selectedVariation?.priceModifier || 0;
+    const effectiveUnitPrice = item.unitPrice + variantModifier;
     return calculateDetailedFinancials(
       item.quantity || 1,
-      item.unitPrice,
+      effectiveUnitPrice,
       item.bulkRules,
       item.isBulkEnabled,
       item.gstRate || 0
@@ -54,14 +56,32 @@ const Checkout = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   useEffect(() => {
+    const stateCompany = location.state?.companyName;
+    const stateGst = location.state?.gstNumber;
+    const stateIsIndividual = location.state?.isIndividual;
+
+    const tempIsIndividualStr = localStorage.getItem('temp_is_individual');
     const tempCompany = localStorage.getItem('temp_company_name');
     const tempGst = localStorage.getItem('temp_gst_number');
-    if (tempCompany || tempGst) {
+
+    if (stateIsIndividual === false && stateCompany && stateGst) {
+      setNeedsGst(true);
+      setGstDetails({ companyName: stateCompany, gstNumber: stateGst });
+    } else if (tempIsIndividualStr !== null) {
+      const isIndiv = JSON.parse(tempIsIndividualStr);
+      if (!isIndiv && (tempCompany || tempGst)) {
+        setNeedsGst(true);
+        setGstDetails({ companyName: tempCompany || '', gstNumber: tempGst || '' });
+      }
+      localStorage.removeItem('temp_is_individual');
+    } else if (tempCompany || tempGst) {
       setNeedsGst(true);
       setGstDetails({ companyName: tempCompany || '', gstNumber: tempGst || '' });
-      localStorage.removeItem('temp_company_name');
-      localStorage.removeItem('temp_gst_number');
     }
+
+    if (tempCompany) localStorage.removeItem('temp_company_name');
+    if (tempGst) localStorage.removeItem('temp_gst_number');
+
     if (!currentUser) {
       setIsLoginModalOpen(true);
     } else if (userData) {
@@ -74,7 +94,7 @@ const Checkout = () => {
         setShowAddressForm(true);
       }
     }
-  }, [currentUser, userData]);
+  }, [currentUser, userData, location.state]);
 
   const handleAddressSave = async (addressData) => {
     try {
@@ -89,6 +109,7 @@ const Checkout = () => {
       setShowAddressForm(false);
     } catch (err) {
       console.error('Address save error:', err);
+      toast.error('Failed to update address on your profile. Order will still proceed with the temporary address.');
       setSelectedAddress(addressData);
       setShowAddressForm(false);
     }
@@ -443,9 +464,14 @@ const Checkout = () => {
                         </div>
                         <div className="text-right flex-shrink-0">
                           <p className="text-sm font-black" style={{ color: 'var(--color-neu-text)' }}>
-                            ₹{(item.unitPrice * (item.quantity || 1)).toLocaleString('en-IN')}
+                            ₹{checkoutFinancials[idx].finalTotal.toLocaleString('en-IN')}
                           </p>
                           <p className="text-[9px] font-bold uppercase tracking-widest opacity-40 mt-0.5" style={{ color: 'var(--color-neu-text)' }}>Qty {item.quantity}</p>
+                          {checkoutFinancials[idx].savings > 0 && (
+                            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mt-0.5">
+                              Saved ₹{checkoutFinancials[idx].savings.toLocaleString('en-IN')}
+                            </p>
+                          )}
                         </div>
                       </div>
 

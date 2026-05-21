@@ -21,10 +21,8 @@ const Wishlist = () => {
     const fetchWishlist = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL || ''}/api/public/products?limit=100`);
-        const allProducts = res.data.data || [];
-
         let listIds = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        let productsToSet = [];
 
         if (currentUser && userData?.phone) {
           const token = await currentUser.getIdToken(true);
@@ -33,16 +31,31 @@ const Wishlist = () => {
               `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/user/wishlist/${userData.phone}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
-            const dbIds = dbRes.data.data.map(item => item._id || item);
+            const dbProducts = dbRes.data.data || [];
+            productsToSet = dbProducts;
+            const dbIds = dbProducts.map(item => item._id);
             listIds = [...new Set([...listIds, ...dbIds])];
             localStorage.setItem('wishlist', JSON.stringify(listIds));
           } catch (err) {
             console.error('DB wishlist fetch failed:', err);
+            if (listIds.length > 0) {
+              const res = await axios.get(
+                `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/products?ids=${listIds.join(',')}&limit=100`
+              );
+              productsToSet = res.data.data || [];
+            }
+          }
+        } else {
+          if (listIds.length > 0) {
+            const res = await axios.get(
+              `${import.meta.env.VITE_API_BASE_URL || ''}/api/public/products?ids=${listIds.join(',')}&limit=100`
+            );
+            productsToSet = res.data.data || [];
           }
         }
 
         setWishlistIds(listIds);
-        setWishlistProducts(allProducts.filter(p => listIds.includes(p._id)));
+        setWishlistProducts(productsToSet);
       } catch (err) {
         console.error('Error loading wishlist:', err);
         toast.error('Failed to load wishlist.');
@@ -55,14 +68,15 @@ const Wishlist = () => {
   }, [currentUser, userData]);
 
   const toggleWishlist = async (id) => {
-    const next = wishlistIds.includes(id)
+    const isRemoving = wishlistIds.includes(id);
+    const next = isRemoving
       ? wishlistIds.filter(i => i !== id)
       : [...wishlistIds, id];
 
     setWishlistIds(next);
     localStorage.setItem('wishlist', JSON.stringify(next));
 
-    if (wishlistIds.includes(id)) {
+    if (isRemoving) {
       setWishlistProducts(prev => prev.filter(p => p._id !== id));
     }
 

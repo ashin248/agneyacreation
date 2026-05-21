@@ -113,11 +113,55 @@ const getPublicProducts = async (req, res) => {
       sortObj = { isTrending: -1, createdAt: -1 };
     } else if (sort === 'most_searched') {
       sortObj = { viewCount: -1, createdAt: -1 };
+    } else if (sort === 'price_asc') {
+      sortObj = { basePrice: 1, createdAt: -1 };
+    } else if (sort === 'price_desc') {
+      sortObj = { basePrice: -1, createdAt: -1 };
+    } else if (sort === 'newest') {
+      sortObj = { createdAt: -1 };
     }
 
     const filter = { isActive: true };
     if (category && category.toLowerCase() !== 'all') {
       filter.category = new RegExp(`^${category}$`, 'i');
+    }
+
+    // Server-side Collections filter
+    if (req.query.collections) {
+      const collectionsArray = req.query.collections.split(',').map(id => id.trim()).filter(Boolean);
+      if (collectionsArray.length > 0) {
+        filter.collections = { $in: collectionsArray };
+      }
+    }
+
+    // Server-side Price range filter
+    if (req.query.minPrice !== undefined || req.query.maxPrice !== undefined) {
+      filter.basePrice = {};
+      if (req.query.minPrice !== undefined) {
+        filter.basePrice.$gte = parseFloat(req.query.minPrice);
+      }
+      if (req.query.maxPrice !== undefined) {
+        filter.basePrice.$lte = parseFloat(req.query.maxPrice);
+      }
+    }
+
+    // Server-side Search filter (matches name, description, category, variations.color)
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filter.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+        { 'variations.color': searchRegex }
+      ];
+    }
+
+    // Server-side specific IDs list filter (for Guest Wishlist etc.)
+    if (req.query.ids) {
+      const idsArray = req.query.ids.split(',').map(id => id.trim()).filter(Boolean);
+      if (idsArray.length > 0) {
+        filter._id = { $in: idsArray };
+      }
     }
 
     // Get total count for metadata

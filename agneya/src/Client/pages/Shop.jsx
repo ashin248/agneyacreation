@@ -42,13 +42,51 @@ const Shop = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  // Debounced filter states
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState([0, 10000]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedPriceRange(priceRange);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [priceRange]);
+
   const fetchData = async (isSilent = false, pageNum = 1) => {
     try {
       if (!isSilent && pageNum === 1) setLoading(true);
       if (pageNum > 1) setLoadingMore(true);
 
+      let apiSort = 'newest';
+      if (sortBy === 'Price: Low to High') apiSort = 'price_asc';
+      if (sortBy === 'Price: High to Low') apiSort = 'price_desc';
+
+      const queryParams = new URLSearchParams({
+        page: pageNum,
+        limit: 12,
+        sort: apiSort,
+        category: activeCategory
+      });
+
+      if (debouncedSearchQuery) {
+        queryParams.append('search', debouncedSearchQuery);
+      }
+      if (activeCollections.length > 0) {
+        queryParams.append('collections', activeCollections.join(','));
+      }
+      queryParams.append('minPrice', debouncedPriceRange[0]);
+      queryParams.append('maxPrice', debouncedPriceRange[1]);
+
       const [productsRes, pulseRes, categoriesRes, collectionsRes] = await Promise.all([
-        axios.get(`/api/public/products?page=${pageNum}&limit=12`),
+        axios.get(`/api/public/products?${queryParams.toString()}`),
         axios.get('/api/public/pulse'),
         axios.get('/api/public/categories'),
         axios.get('/api/public/collections')
@@ -66,17 +104,14 @@ const Shop = () => {
         
         setHasMore(pagination.hasMore);
 
-        if (fetched.length > 0 && pageNum === 1) {
+        if (fetched.length > 0 && pageNum === 1 && minPriceLimit === 0 && maxPriceLimit === 10000) {
           const validPrices = fetched.map(p => p.discountPrice || p.basePrice || 0).filter(p => p > 0);
           const highest = validPrices.length ? Math.max(...validPrices) : 10000;
           const lowest = validPrices.length ? Math.min(...validPrices) : 0;
           
           setMaxPriceLimit(highest);
           setMinPriceLimit(lowest);
-          setPriceRange(prev => {
-             if (prev[0] === 0 && prev[1] === 10000 && !isSilent) return [lowest, highest];
-             return prev;
-          });
+          setPriceRange([lowest, highest]);
         }
 
         if (!categoriesRes.data.success || !categoriesRes.data.data?.length) {
@@ -117,7 +152,7 @@ const Shop = () => {
     const interval = setInterval(() => fetchData(true, 1), 60000);
     setWishlist(JSON.parse(localStorage.getItem('wishlist') || '[]'));
     return () => clearInterval(interval);
-  }, [activeCategory, searchQuery, activeCollections, sortBy, priceRange]);
+  }, [activeCategory, debouncedSearchQuery, activeCollections, sortBy, debouncedPriceRange]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -159,24 +194,7 @@ const Shop = () => {
     }
   };
 
-  const filteredProducts = products.filter(p => {
-    const q = searchQuery.toLowerCase();
-    const matchSearch = 
-      p.name?.toLowerCase().includes(q) || 
-      p.description?.toLowerCase().includes(q) ||
-      p.category?.toLowerCase().includes(q) ||
-      (p.colors && p.colors.some(c => c.toLowerCase().includes(q))) ||
-      (p.tags && p.tags.some(t => t.toLowerCase().includes(q)));
-    const matchCat = activeCategory === 'All' || p.category?.toLowerCase() === activeCategory.toLowerCase();
-    const matchCol = activeCollections.length === 0 || (p.collections && activeCollections.some(c => p.collections.includes(c)));
-    const effectivePrice = p.discountPrice || p.basePrice || 0;
-    const matchPrice = effectivePrice >= priceRange[0] && effectivePrice <= priceRange[1];
-    return matchSearch && matchCat && matchCol && matchPrice;
-  }).sort((a, b) => {
-    if (sortBy === 'Price: Low to High') return (a.discountPrice || a.basePrice) - (b.discountPrice || b.basePrice);
-    if (sortBy === 'Price: High to Low') return (b.discountPrice || b.basePrice) - (a.discountPrice || a.basePrice);
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
+  const filteredProducts = products;
 
   const recommendedProducts = React.useMemo(() => {
     if (!products.length) return [];

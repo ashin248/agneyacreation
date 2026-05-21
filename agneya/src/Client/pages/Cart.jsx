@@ -25,6 +25,11 @@ const Cart = () => {
   const readyMadeItems = cart.filter(i => i.itemType === 'Ready');
 
   const handleCheckout = () => {
+    // Save state temporarily in localStorage so it's not lost on redirect or login
+    localStorage.setItem('temp_is_individual', JSON.stringify(isIndividual));
+    localStorage.setItem('temp_company_name', companyName);
+    localStorage.setItem('temp_gst_number', gstNumber);
+
     if (!currentUser) return setIsLoginModalOpen(true);
     if (!isIndividual) {
       if (!companyName.trim()) return toast.error('Company name is required for business orders.');

@@ -36,7 +36,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       const buyNowItem = {
         productId: product._id,
         name: product.name,
-        unitPrice: finalPrice,
+        unitPrice: currentPrice,
         selectedVariation: selectedVariation,
         image: img1,
         itemType: 'Ready',
@@ -63,7 +63,7 @@ const ProductCard = ({ product, onCustomize, onQuickView, wishlist, toggleWishli
       addToCart({
         productId: product._id,
         name: product.name,
-        unitPrice: finalPrice,
+        unitPrice: currentPrice,
         selectedVariation: selectedVariation,
         image: img1,
         itemType: 'Ready',
