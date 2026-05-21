@@ -148,6 +148,8 @@ const CustomMobileCases = () => {
               <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-neu-text)', opacity: 0.4 }} />
               <input
                 type="text"
+                id="searchModel"
+                name="searchModel"
                 placeholder="Search for your model…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
