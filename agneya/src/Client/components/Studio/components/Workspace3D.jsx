@@ -13,17 +13,26 @@ const CanvasObjectProjector = React.memo(({ obj, anchor, isActive, scene }) => {
     const targetRef = useRef(null);
 
     useEffect(() => {
-        if (scene && anchor?.meshId) {
+        if (scene && (anchor?.meshName || anchor?.meshId)) {
             let found = null;
-            scene.traverse((node) => {
-                if (node.uuid === anchor.meshId) {
-                    found = node;
-                }
-            });
+            if (anchor.meshName) {
+                scene.traverse((node) => {
+                    if (node.name === anchor.meshName) {
+                        found = node;
+                    }
+                });
+            }
+            if (!found && anchor.meshId) {
+                scene.traverse((node) => {
+                    if (node.uuid === anchor.meshId) {
+                        found = node;
+                    }
+                });
+            }
             targetRef.current = found;
             setTargetMesh(found);
         }
-    }, [scene, anchor?.meshId]);
+    }, [scene, anchor?.meshId, anchor?.meshName]);
 
     useEffect(() => {
         if (!obj.dataUrl) return;
@@ -388,6 +397,10 @@ export default function Workspace3D({
 }) {
     const glRef = useRef(null);
     const isMounted = useRef(true);
+    const [localContextKey, setLocalContextKey] = useState(0);
+
+    const activeContextKey = contextKey !== undefined ? contextKey : localContextKey;
+    const activeSetContextKey = setContextKey || setLocalContextKey;
 
     useEffect(() => {
         isMounted.current = true;
@@ -433,17 +446,17 @@ export default function Workspace3D({
                             if (!isMounted.current) return;
                             console.warn("3D Canvas WebGL Context Lost. Recovering...");
                             e.preventDefault();
-                            setTimeout(() => { if (isMounted.current) setContextKey(prev => prev + 1); }, 500);
-                            setTimeout(() => { if (isMounted.current && fabricRef.current) updateTexture(true); }, 1000);
+                            setTimeout(() => { if (isMounted.current && activeSetContextKey) activeSetContextKey(prev => prev + 1); }, 500);
+                            setTimeout(() => { if (isMounted.current && fabricRef?.current && updateTexture) updateTexture(true); }, 1000);
                         }, false);
                         gl.domElement.addEventListener('webglcontextrestored', () => {
                             if (!isMounted.current) return;
                             console.log("3D Canvas WebGL Context Restored.");
-                            if (fabricRef.current) updateTexture(true);
+                            if (fabricRef?.current && updateTexture) updateTexture(true);
                         }, false);
                     }}
                     onPointerMissed={() => {}}
-                    key={contextKey}
+                    key={activeContextKey}
                 >
                     <React.Suspense fallback={null}>
                         <ambientLight intensity={1.8} />
