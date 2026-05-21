@@ -462,7 +462,7 @@ const Checkout = () => {
                               </span>
                             </div>
                             
-                            {item.customData.designSource === '3D_STUDIO' && item.customData.model3d ? (
+                            {item.customData.designSource === '3D_STUDIO' ? (
                               <div className="w-full aspect-square max-h-64 rounded-2xl overflow-hidden relative neu-pressed border border-[var(--color-neu-dark)] flex items-center justify-center group/3d">
                                 <React.Suspense fallback={<div className="text-[10px] font-bold text-slate-400 animate-pulse">Loading 3D Engine...</div>}>
                                   <Workspace3D 
