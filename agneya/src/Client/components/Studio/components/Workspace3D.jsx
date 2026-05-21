@@ -406,6 +406,22 @@ export default function Workspace3D({
         isMounted.current = true;
         return () => {
             isMounted.current = false;
+
+            // Temporarily suppress Three.js warnings during unmount context loss
+            const originalWarn = console.warn;
+            console.warn = (...args) => {
+                if (args[0] && (
+                    typeof args[0] === 'string' && (
+                        args[0].includes('THREE.WebGLRenderer: Context Lost') ||
+                        args[0].includes('WEBGL_lose_context') ||
+                        args[0].includes('Context Lost')
+                    )
+                )) {
+                    return;
+                }
+                originalWarn(...args);
+            };
+
             // Force WebGL context disposal to prevent hitting browser 8-context limit
             if (glRef.current) {
                 try {
@@ -415,9 +431,14 @@ export default function Workspace3D({
                         if (ext) ext.loseContext();
                     }
                 } catch (e) {
-                    console.warn("Failed to dispose WebGL context", e);
+                    // Do nothing
                 }
             }
+
+            // Restore console.warn after the unmount cycle
+            setTimeout(() => {
+                console.warn = originalWarn;
+            }, 100);
         };
     }, []);
 

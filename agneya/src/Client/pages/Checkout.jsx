@@ -181,6 +181,7 @@ const Checkout = () => {
           key: rzpKey,
           amount: rzpRes.data.order.amount, currency: 'INR',
           name: 'Agneya', description: 'Order Checkout', order_id: rzpRes.data.order.id,
+          image: "https://agneyacreations.com/logo.png", // Explicitly override the dashboard brand logo URL (resolves stale localhost references)
           handler: async (response) => {
             try {
               const verify = await axios.post('/api/public/payment/verify', {

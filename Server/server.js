@@ -15,8 +15,48 @@ const PORT = process.env.PORT || process.env.Server_port || 5000;
 
 app.use(compression()); // Compress all responses for faster transfer
 
+// Set Permissions-Policy headers to allow accelerometer/gyro/magnetometer
+app.use((req, res, next) => {
+  res.setHeader("Permissions-Policy", "accelerometer=*, gyroscope=*, magnetometer=*");
+  next();
+});
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Sanitization middleware to replace stale localhost/127.0.0.1 image URLs with placeholder
+app.use((req, res, next) => {
+  const originalJson = res.json;
+  res.json = function (obj) {
+    const sanitize = (val) => {
+      if (typeof val === 'string') {
+        if (val.startsWith('http://localhost:') || val.startsWith('http://127.0.0.1:')) {
+          if (val.match(/\.(png|jpg|jpeg|gif|svg|webp|glb|gltf)/i) || val.includes('/uploads/')) {
+            return 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Image';
+          }
+        }
+      } else if (Array.isArray(val)) {
+        return val.map(sanitize);
+      } else if (val !== null && typeof val === 'object') {
+        const copy = {};
+        for (const key in val) {
+          if (Object.prototype.hasOwnProperty.call(val, key)) {
+            copy[key] = sanitize(val[key]);
+          }
+        }
+        return copy;
+      }
+      return val;
+    };
+    
+    if (obj && typeof obj === 'object') {
+      arguments[0] = sanitize(obj);
+    }
+    return originalJson.apply(this, arguments);
+  };
+  next();
+});
+
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
