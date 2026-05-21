@@ -146,13 +146,17 @@ const Shop = () => {
     if (cat) setActiveCategory(cat);
   }, [searchParams]);
 
+  const activeCollectionsStr = activeCollections.join(',');
+  const minPriceDep = debouncedPriceRange[0];
+  const maxPriceDep = debouncedPriceRange[1];
+
   useEffect(() => {
     setPage(1);
     fetchData(false, 1);
     const interval = setInterval(() => fetchData(true, 1), 60000);
     setWishlist(JSON.parse(localStorage.getItem('wishlist') || '[]'));
     return () => clearInterval(interval);
-  }, [activeCategory, debouncedSearchQuery, activeCollections, sortBy, debouncedPriceRange]);
+  }, [activeCategory, debouncedSearchQuery, activeCollectionsStr, sortBy, minPriceDep, maxPriceDep]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
