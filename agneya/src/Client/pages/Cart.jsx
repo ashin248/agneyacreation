@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import LoginModal from '../components/LoginModal';
+import PhoneCoverPreview from '../components/PhoneCoverPreview';
 import toast from 'react-hot-toast';
 import { Trash2, Edit3, Box, ArrowRight, CheckCircle, ShoppingBag } from 'lucide-react';
 
@@ -79,7 +80,11 @@ const Cart = () => {
         <div className="flex gap-4">
           {/* Image */}
           <div className="w-20 h-24 md:w-24 md:h-28 flex-shrink-0 neu-pressed rounded-xl overflow-hidden flex items-center justify-center">
-            <img loading="lazy" src={item.image} alt={item.name} className="w-full h-full object-cover" />
+            <PhoneCoverPreview 
+              phoneMask={item.customData?.phoneMask} 
+              designImage={item.image} 
+              className="w-full h-full object-contain"
+            />
           </div>
 
           {/* Info */}
@@ -180,7 +185,11 @@ const Cart = () => {
                     <div className="grid grid-cols-2 gap-2">
                       {item.customData.customizedDesigns.map((design, dIdx) => (
                         <div key={dIdx} className="neu-pressed rounded-xl p-2 relative group/design">
-                          <img src={design.url} alt={design.label} className="w-full aspect-square object-contain rounded-lg" />
+                          <PhoneCoverPreview 
+                            phoneMask={item.customData?.phoneMask} 
+                            designImage={design.url} 
+                            className="w-full aspect-square object-contain rounded-lg"
+                          />
                           <div className="absolute inset-x-0 bottom-0 bg-black/80 backdrop-blur-md p-1.5 opacity-0 group-hover/design:opacity-100 transition-opacity rounded-b-lg">
                             <p className="text-[8px] font-black uppercase tracking-widest text-white text-center truncate">{design.label}</p>
                           </div>

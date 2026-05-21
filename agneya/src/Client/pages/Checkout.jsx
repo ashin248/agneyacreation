@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import AddressForm from '../components/AddressForm';
 import LoginModal from '../components/LoginModal';
+import PhoneCoverPreview from '../components/PhoneCoverPreview';
 import {
   MapPin, CheckCircle2, ShoppingBag, CreditCard,
   ShieldCheck, Plus, Trash2, Truck, ArrowRight, Lock, ChevronLeft
@@ -454,7 +455,12 @@ const Checkout = () => {
                       {/* 1. Product (Image & Name) */}
                       <div className="flex gap-3 items-center">
                         <div className="w-16 h-16 neu-button rounded-xl overflow-hidden flex-shrink-0 p-1">
-                          <img loading="lazy" src={displayImage} alt={cleanName} className="w-full h-full object-contain rounded-lg" />
+                          <PhoneCoverPreview
+                             phoneMask={item.customData?.phoneMask}
+                             designImage={item.image}
+                             productImage={displayImage}
+                             className="w-full h-full object-contain"
+                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-0.5">1. Product</div>
@@ -513,7 +519,11 @@ const Checkout = () => {
                                 {item.customData.customizedDesigns.map((cd, cdIdx) => (
                                   <div key={cdIdx} className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 group/design">
                                     <a href={cd.url} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
-                                      <img src={cd.url} alt={cd.label} className="w-full h-full object-contain group-hover/design:scale-110 transition-transform" />
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={cd.url}
+                                        className="w-full h-full object-contain group-hover/design:scale-110 transition-transform"
+                                      />
                                     </a>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">{cd.label}</span>
                                   </div>
@@ -524,7 +534,11 @@ const Checkout = () => {
                                 {item.customData.appliedFrontDesign && (
                                   <div className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 w-24">
                                     <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
-                                      <img src={item.customData.appliedFrontDesign} alt="Front Design" className="w-full h-full object-contain" />
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={item.customData.appliedFrontDesign}
+                                        className="w-full h-full object-contain"
+                                      />
                                     </a>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">Front Design</span>
                                   </div>
@@ -532,7 +546,11 @@ const Checkout = () => {
                                 {item.customData.appliedBackDesign && (
                                   <div className="neu-pressed rounded-xl p-2 flex flex-col items-center gap-1.5 w-24">
                                     <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white/50 border border-[var(--color-neu-dark)]">
-                                      <img src={item.customData.appliedBackDesign} alt="Back Design" className="w-full h-full object-contain" />
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={item.customData.appliedBackDesign}
+                                        className="w-full h-full object-contain"
+                                      />
                                     </a>
                                     <span className="text-[8px] font-black uppercase tracking-widest text-slate-500 text-center truncate w-full">Back Design</span>
                                   </div>

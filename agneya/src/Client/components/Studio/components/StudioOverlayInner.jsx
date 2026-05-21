@@ -628,7 +628,8 @@ export default function StudioOverlayInner({ isOpen, onClose, requireLogin, init
                         printableMeshes: product?.printableMeshes,
                         projectionType: product?.projectionType,
                         canvasObjects: v.frontCanvasObjects?.length > 0 ? v.frontCanvasObjects : canvasObjects,
-                        objectAnchors: Object.keys(v.frontAnchors || {}).length > 0 ? v.frontAnchors : objectAnchors
+                        objectAnchors: Object.keys(v.frontAnchors || {}).length > 0 ? v.frontAnchors : objectAnchors,
+                        phoneMask: product?.phoneMask
                     }
                 };
             });
