@@ -6,6 +6,8 @@ import LoginModal from '../components/LoginModal';
 import toast from 'react-hot-toast';
 import { Trash2, Edit3, Box, ArrowRight, CheckCircle, ShoppingBag } from 'lucide-react';
 
+const Workspace3D = React.lazy(() => import('../components/Studio/components/Workspace3D'));
+
 const Cart = () => {
   const {
     cart, removeFromCart, updateQuantity,
@@ -65,6 +67,7 @@ const Cart = () => {
     const variantModifier = item.selectedVariation?.priceModifier || 0;
     const baseUnitPrice = item.unitPrice + variantModifier;
     const financials = calculateItemFinancials(item);
+    const isCustom = item.itemType === 'Custom' && item.customData;
 
     return (
       <div className="neu-button p-4 md:p-5 group hover:neu-pressed transition-all">
@@ -136,6 +139,98 @@ const Cart = () => {
                 )}
               </div>
             </div>
+
+            {isCustom && (
+              <div className="mt-4 pt-4 border-t border-[var(--color-neu-dark)] space-y-4">
+                
+                {/* Customise Design Preview */}
+                <div className="space-y-2">
+                  <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] flex items-center justify-between">
+                    <span>Customised Design Preview</span>
+                    <span className="text-[8px] opacity-50 uppercase tracking-tighter">
+                      {item.customData.designSource === 'DESIGN_ASSISTANCE' ? 'Design Assistance' : item.customData.designSource === '3D_STUDIO' ? '3D Studio' : '2D Studio'}
+                    </span>
+                  </div>
+                  
+                  {item.customData.designSource === '3D_STUDIO' ? (
+                    <div className="w-full aspect-square max-h-64 rounded-2xl overflow-hidden relative neu-pressed border border-[var(--color-neu-dark)] flex items-center justify-center group/3d">
+                      <React.Suspense fallback={<div className="text-[10px] font-bold text-slate-400 animate-pulse">Loading 3D Engine...</div>}>
+                        <Workspace3D 
+                          product={{ 
+                            baseModelId: item.customData.baseModelId, 
+                            model3d: item.customData.model3d, 
+                            base3DModelUrl: item.customData.model3d, 
+                            category: item.customData.category, 
+                            printableMeshes: item.customData.printableMeshes, 
+                            projectionType: item.customData.projectionType 
+                          }} 
+                          objectAnchors={item.customData.objectAnchors || {}} 
+                          canvasObjects={item.customData.canvasObjects || []} 
+                          activeStudioTab="3D_STUDIO" 
+                        />
+                      </React.Suspense>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[8px] font-black px-2 py-1 rounded-lg pointer-events-none uppercase tracking-widest backdrop-blur-sm border border-white/10 shadow-lg z-20">360° Interactive Preview</div>
+                    </div>
+                  ) : item.customData?.customizedDesigns?.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {item.customData.customizedDesigns.map((design, dIdx) => (
+                        <div key={dIdx} className="neu-pressed rounded-xl p-2 relative group/design">
+                          <img src={design.url} alt={design.label} className="w-full aspect-square object-contain rounded-lg" />
+                          <div className="absolute inset-x-0 bottom-0 bg-black/80 backdrop-blur-md p-1.5 opacity-0 group-hover/design:opacity-100 transition-opacity rounded-b-lg">
+                            <p className="text-[8px] font-black uppercase tracking-widest text-white text-center truncate">{design.label}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="w-full aspect-square max-h-40 rounded-xl neu-pressed flex items-center justify-center">
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-20" style={{ color: 'var(--color-neu-text)' }}>No preview available</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Attributes: Size & Color */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="neu-pressed rounded-xl p-3 flex flex-col justify-center">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">Size</span>
+                    <span className="text-xs font-black uppercase tracking-tight" style={{ color: 'var(--color-neu-text)' }}>
+                      {item.customData?.selectedSize || item.selectedVariation?.size || 'Standard'}
+                    </span>
+                  </div>
+                  <div className="neu-pressed rounded-xl p-3 flex flex-col justify-center">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)] mb-1">Color</span>
+                    <div className="flex items-center gap-2">
+                      {item.customData?.selectedColor && item.customData.selectedColor !== '-' && item.customData.selectedColor !== 'Standard' && (
+                        <span className="w-3.5 h-3.5 rounded-full border border-[var(--color-neu-dark)] shadow-sm inline-block flex-shrink-0" style={{ backgroundColor: item.customData.selectedColor.toLowerCase() }} />
+                      )}
+                      <span className="text-xs font-black uppercase tracking-tight truncate" style={{ color: 'var(--color-neu-text)' }}>
+                        {item.customData?.selectedColor || item.selectedVariation?.color || 'Standard'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Used Images */}
+                <div className="pt-2 border-t border-[var(--color-neu-dark)] space-y-2">
+                  <div className="text-[9px] font-black uppercase tracking-widest text-[var(--color-neu-accent)]">Used Images / Assets</div>
+                  {item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {(item.customData?.usedImages || item.customData?.manualAttachments || []).map((img, imgIdx) => {
+                        const url = typeof img === 'string' ? img : img.url;
+                        return (
+                          <a key={imgIdx} href={url} target="_blank" rel="noreferrer" className="w-12 h-12 rounded-xl overflow-hidden neu-button p-1 group/asset">
+                            <img src={url} alt={`used-asset-${imgIdx}`} className="w-full h-full object-cover rounded-lg group-hover/asset:scale-110 transition-transform" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-[10px] font-bold italic opacity-40" style={{ color: 'var(--color-neu-text)' }}>No external images uploaded.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>
