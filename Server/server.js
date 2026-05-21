@@ -48,11 +48,16 @@ app.use((req, res, next) => {
       }
       return val;
     };
-    
+    let sanitized = obj;
     if (obj && typeof obj === 'object') {
-      arguments[0] = sanitize(obj);
+      try {
+        const plainObj = JSON.parse(JSON.stringify(obj));
+        sanitized = sanitize(plainObj);
+      } catch (err) {
+        console.error('Sanitization failed, passing original object:', err);
+      }
     }
-    return originalJson.apply(this, arguments);
+    return originalJson.call(this, sanitized);
   };
   next();
 });
