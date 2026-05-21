@@ -138,6 +138,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
                 </span>
                 <input
                   type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   placeholder="Mobile Number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(String(e.target.value || '').replace(/\D/g, "").slice(0, 10))}
@@ -179,6 +181,8 @@ const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <input
                 type="text"
+                id="otpInput"
+                name="otp"
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(String(e.target.value || '').replace(/\D/g, "").slice(0, 6))}

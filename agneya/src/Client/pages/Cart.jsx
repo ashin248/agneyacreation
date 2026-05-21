@@ -366,6 +366,8 @@ const Cart = () => {
                   <div className="space-y-3 pt-2">
                     <input
                       type="text"
+                      id="companyName"
+                      name="companyName"
                       value={companyName}
                       onChange={e => setCompanyName(e.target.value)}
                       placeholder="Company Name *"
@@ -374,6 +376,8 @@ const Cart = () => {
                     />
                     <input
                       type="text"
+                      id="gstNumber"
+                      name="gstNumber"
                       value={gstNumber}
                       onChange={e => setGstNumber(e.target.value)}
                       placeholder="GST Number *"

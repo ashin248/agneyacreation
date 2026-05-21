@@ -385,6 +385,8 @@ const TrackOrder = () => {
           <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input
               type="text"
+              id="searchOrderId"
+              name="orderId"
               placeholder="Order ID (e.g. ORD-XXX)"
               value={searchForm.orderId}
               onChange={e => setSearchForm(p => ({ ...p, orderId: e.target.value }))}
@@ -393,6 +395,8 @@ const TrackOrder = () => {
             />
             <input
               type="tel"
+              id="searchPhone"
+              name="phone"
               placeholder="Linked phone number"
               value={searchForm.phone}
               onChange={e => setSearchForm(p => ({ ...p, phone: e.target.value }))}

@@ -144,6 +144,8 @@ const BulkOrderMaster = () => {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
+                id="searchProducts"
+                name="searchProducts"
                 placeholder="Search products…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -192,6 +194,8 @@ const BulkOrderMaster = () => {
               <label className="text-xs font-semibold text-slate-500 mb-1.5 block">Company Name</label>
               <input
                 type="text"
+                id="companyName"
+                name="companyName"
                 placeholder="Your organisation name"
                 value={companyName}
                 onChange={e => { setCompanyName(e.target.value); localStorage.setItem('temp_company_name', e.target.value); }}
@@ -202,6 +206,8 @@ const BulkOrderMaster = () => {
               <label className="text-xs font-semibold text-slate-500 mb-1.5 block">GST Number <span className="text-slate-300">(Optional)</span></label>
               <input
                 type="text"
+                id="gstNumber"
+                name="gstNumber"
                 placeholder="Enter GSTIN"
                 value={gstNumber}
                 onChange={e => { setGstNumber(e.target.value); localStorage.setItem('temp_gst_number', e.target.value); }}
@@ -318,6 +324,8 @@ const BulkOrderMaster = () => {
                                     <span className={`text-[9px] font-semibold mb-1 ${qty > 0 ? 'text-orange-600' : 'text-slate-400'}`}>{v.size || sku}</span>
                                     <input
                                       type="number"
+                                      id={`qty-${product._id}-${sku}`}
+                                      name={`qty-${product._id}-${sku}`}
                                       value={qty || ''}
                                       onChange={e => handleQtyChange(product, v, e.target.value)}
                                       placeholder="0"
