@@ -9,6 +9,7 @@ const AdminLayout = () => {
     { name: 'Dashboard', href: '/admin/dashboard', icon: 'bi-grid-1x2-fill' },
     { name: 'Products', href: '/admin/products', icon: 'bi-box-seam-fill' },
     { name: 'Collections', href: '/admin/collections', icon: 'bi-collection-fill' },
+    { name: 'Categories', href: '/admin/categories', icon: 'bi-grid-fill' },
 
     { name: 'Orders', href: '/admin/orders', icon: 'bi-cart-fill' },
     { name: 'Design Assistance', href: '/admin/design-assistance/orders', icon: 'bi-pencil-square' },

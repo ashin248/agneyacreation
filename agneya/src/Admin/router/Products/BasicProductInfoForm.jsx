@@ -21,6 +21,12 @@ const BasicProductInfoForm = ({
   const [categoriesList, setCategoriesList] = React.useState([]);
   const [categoriesLoading, setCategoriesLoading] = React.useState(true);
 
+  const [newCategoryName, setNewCategoryName] = React.useState('');
+  const [newCategoryFile, setNewCategoryFile] = React.useState(null);
+  const [newCategoryDescription, setNewCategoryDescription] = React.useState('');
+  const [isAddingCategory, setIsAddingCategory] = React.useState(false);
+  const [isCategoryUploading, setIsCategoryUploading] = React.useState(false);
+
   React.useEffect(() => {
     const fetchCollections = async () => {
       try {
@@ -259,6 +265,48 @@ const BasicProductInfoForm = ({
     }
   };
 
+  const handleQuickAddCategory = async () => {
+    if (!newCategoryName) {
+       alert("Category name is required.");
+       return;
+    }
+
+    try {
+      setIsCategoryUploading(true);
+      const data = new FormData();
+      data.append('name', newCategoryName);
+      data.append('description', newCategoryDescription || 'Created via product form');
+      data.append('isActive', true);
+      if (newCategoryFile) {
+        data.append('image', newCategoryFile);
+      }
+
+      const res = await fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('adminToken')}` },
+        body: data
+      });
+      const result = await res.json();
+      
+      if (result.success) {
+        const created = result.data;
+        setCategoriesList(prev => [...prev, created]);
+        setFormData(prev => ({ ...prev, category: created.name }));
+        setNewCategoryName('');
+        setNewCategoryFile(null);
+        setNewCategoryDescription('');
+        setIsAddingCategory(false);
+      } else {
+        alert(result.message || "Failed to create category");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create category");
+    } finally {
+      setIsCategoryUploading(false);
+    }
+  };
+
   const handleOverrideImageChange = (e, templateId) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -336,50 +384,161 @@ const BasicProductInfoForm = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Category */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="category">
+          <div className="relative md:col-span-2 bg-slate-50/50 p-6 rounded-2xl border border-gray-100 mb-2">
+            <label className="block text-sm font-bold text-gray-800 mb-2" htmlFor="category">
               Category *
             </label>
-            <div className="flex gap-2 animate-in fade-in duration-300">
-              {categoriesLoading ? (
-                <div className="flex-1 h-10 bg-gray-50 animate-pulse rounded-md border border-gray-200"></div>
-              ) : categoriesList.length === 0 ? (
-                <div className="flex-1 flex items-center justify-between px-4 py-2 border border-amber-200 bg-amber-50 rounded-md text-amber-800 text-xs font-bold">
-                  <span className="flex items-center gap-1"><FiAlertCircle /> No categories available!</span>
-                  <a href="/admin/categories" className="underline hover:text-amber-900">Manage Categories</a>
+            
+            {isAddingCategory ? (
+              <div className="flex flex-col gap-4 p-4 bg-white rounded-2xl border border-indigo-100 shadow-md shadow-indigo-100/30 animate-in slide-in-from-top-3 duration-300">
+                <div className="flex items-center justify-between border-b pb-2 border-slate-100">
+                  <span className="text-xs font-black uppercase tracking-widest text-indigo-600 flex items-center gap-1">
+                    <FiGrid size={14} /> Create Quick Category
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsAddingCategory(false)}
+                    className="text-gray-400 hover:text-gray-600 text-xs font-bold"
+                  >
+                    Use Existing
+                  </button>
                 </div>
-              ) : (
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium text-sm"
-                  required
-                >
-                  <option value="">Select a Category</option>
-                  {categoriesList.map((cat) => (
-                    <option key={cat._id} value={cat.name}>
-                      {cat.name} {!cat.isActive && '(Inactive)'}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {formData.category && (
-                <div className="w-10 h-10 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
-                  <img loading="lazy" 
-                    src={`https://image.pollinations.ai/prompt/${encodeURIComponent(formData.category)}%20product%20photography%20minimalist?width=100&height=100&nologo=true&seed=${formData.category.length}`} 
-                    alt="Category Preview" 
-                    className="w-full h-full object-cover"
-                    title="AI Generated Category Preview"
-                    onError={(e) => {
-                      e.target.src = `https://placehold.co/100x100?text=${encodeURIComponent(formData.category)}`;
-                    }}
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1.5">Category Name *</label>
+                    <input 
+                      type="text"
+                      placeholder="e.g., T-Shirts"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xs"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1.5">Image / Icon</label>
+                    <div className="relative">
+                      <label className="flex items-center justify-between px-4 py-2 bg-gray-50 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-100 transition-all">
+                        <span className="text-[10px] font-bold text-gray-600 truncate max-w-[150px]">
+                          {newCategoryFile ? newCategoryFile.name : 'Select File'}
+                        </span>
+                        <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest bg-white px-2.5 py-1.5 rounded-lg border shadow-sm">
+                          {newCategoryFile ? <FiCheckCircle className="text-emerald-500" /> : <FiImage className="text-gray-400" />}
+                          Browse
+                        </span>
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={(e) => setNewCategoryFile(e.target.files[0])} 
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1.5">Description (Optional)</label>
+                  <input 
+                    type="text"
+                    placeholder="Short description for this category"
+                    value={newCategoryDescription}
+                    onChange={(e) => setNewCategoryDescription(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-xs"
                   />
                 </div>
-              )}
-            </div>
-            <p className="mt-1 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={handleQuickAddCategory}
+                    disabled={isCategoryUploading}
+                    className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-md shadow-indigo-500/20"
+                  >
+                    {isCategoryUploading ? 'Creating...' : 'Save & Select'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingCategory(false);
+                      setNewCategoryName('');
+                      setNewCategoryFile(null);
+                      setNewCategoryDescription('');
+                    }}
+                    className="px-5 py-2.5 bg-white border border-gray-200 text-gray-400 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-gray-900 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center animate-in fade-in duration-300">
+                <div className="flex-1 flex gap-2">
+                  {categoriesLoading ? (
+                    <div className="flex-1 h-10 bg-gray-50 animate-pulse rounded-md border border-gray-200"></div>
+                  ) : categoriesList.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-between px-4 py-2 border border-amber-200 bg-amber-50 rounded-md text-amber-800 text-xs font-bold">
+                      <span className="flex items-center gap-1"><FiAlertCircle /> No categories available!</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingCategory(true)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded font-black uppercase text-[10px] tracking-wider transition-all"
+                      >
+                        Create New
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium text-sm"
+                      required
+                    >
+                      <option value="">Select a Category</option>
+                      {categoriesList.map((cat) => (
+                        <option key={cat._id} value={cat.name}>
+                          {cat.name} {!cat.isActive && '(Inactive)'}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                  
+                  {categoriesList.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingCategory(true)}
+                      className="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-all flex items-center gap-1.5 font-black uppercase text-[10px] tracking-wider"
+                      title="Quick Add Category"
+                    >
+                      <FiPlus /> New
+                    </button>
+                  )}
+                </div>
+
+                {formData.category && (
+                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl self-start sm:self-center">
+                    <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0 animate-in fade-in zoom-in duration-300">
+                      <img loading="lazy" 
+                        src={`https://image.pollinations.ai/prompt/${encodeURIComponent(formData.category)}%20product%20photography%20minimalist?width=100&height=100&nologo=true&seed=${formData.category.length}`} 
+                        alt="Category Preview" 
+                        className="w-full h-full object-cover"
+                        title="AI Generated Category Preview"
+                        onError={(e) => {
+                          e.target.src = `https://placehold.co/100x100?text=${encodeURIComponent(formData.category)}`;
+                        }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-500 leading-none">
+                      Preview
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+            <p className="mt-2 text-[10px] text-gray-400 font-medium italic">AI will generate a visual representing this category on the shop page.</p>
           </div>
 
           {/* Collections (Multi-select) */}

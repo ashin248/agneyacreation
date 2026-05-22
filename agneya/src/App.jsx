@@ -22,6 +22,7 @@ const Marketing = lazy(() => import('./Admin/page/Marketing'));
 const Settings = lazy(() => import('./Admin/page/Settings'));
 const DesignAssistance = lazy(() => import('./Admin/page/DesignAssistance'));
 const Collections = lazy(() => import('./Admin/page/Collections'));
+const Categories = lazy(() => import('./Admin/page/Categories'));
 
 
 // Lazy Load Client Pages
@@ -89,6 +90,7 @@ function App() {
               <Route path="marketing/*" element={<Marketing />} />
               <Route path="settings/*" element={<Settings />} />
               <Route path="collections/*" element={<Collections />} />
+              <Route path="categories/*" element={<Categories />} />
 
 
               {/* Catch-all for undefined admin routes */}
