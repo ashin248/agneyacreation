@@ -110,13 +110,16 @@ function CanvasObjectProjector({ obj, objectAnchors, defaultAnchor, modelGroupRe
     }
 
     return createPortal(
-        <ProjectedDecalWrapper
-            key={obj.uid}
-            dataUrl={obj.dataUrl}
-            position={finalPos}
-            rotation={finalRotation}
-            scale={[decalWidth, decalHeight, decalDepth]}
-        />,
+        <React.Fragment key={obj.uid}>
+            {obj.dataUrl && (
+                <ProjectedDecalWrapper
+                    dataUrl={obj.dataUrl}
+                    position={finalPos}
+                    rotation={finalRotation}
+                    scale={[decalWidth, decalHeight, decalDepth]}
+                />
+            )}
+        </React.Fragment>,
         targetMesh
     );
 }
