@@ -12,7 +12,7 @@ const AdminLayout = () => {
     { name: 'Categories', href: '/admin/categories', icon: 'bi-grid-fill' },
 
     { name: 'Orders', href: '/admin/orders', icon: 'bi-cart-fill' },
-    { name: 'Design Assistance', href: '/admin/design-assistance/orders', icon: 'bi-pencil-square' },
+    { name: 'Design Assistance', href: '/admin/design-assistance', icon: 'bi-pencil-square' },
     { name: 'Customer Designs', href: '/admin/custom-designs', icon: 'bi-palette-fill' },
     { name: 'Wholesale Orders', href: '/admin/bulk-orders', icon: 'bi-stack' },
     { name: 'Business Invoices', href: '/admin/gst-manager', icon: 'bi-building-fill-check' },

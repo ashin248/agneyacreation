@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import B2BUserApprovals from "../router/BulkOrders/B2BUserApprovals.jsx";
 import WholesaleInquiriesTable from "../router/BulkOrders/WholesaleInquiriesTable.jsx";
 import CustomQuoteGenerator from "../router/BulkOrders/CustomQuoteGenerator.jsx";
@@ -31,7 +31,7 @@ function BulkOrders() {
             <Route path="approvals" element={<B2BUserApprovals />} />
             <Route path="quote-gen" element={<CustomQuoteGenerator />} />
             <Route path="tracker" element={<B2BOrdersTracker />} />
-            <Route index element={<WholesaleInquiriesTable />} />
+            <Route index element={<Navigate to="inquiries" replace />} />
           </Routes>
         </div>
       </div>

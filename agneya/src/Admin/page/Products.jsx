@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import CreateProduct from '../router/Products/CreateProduct.jsx';
 import EditProduct from '../router/Products/EditProduct.jsx';
@@ -22,7 +22,7 @@ function Products() {
             <Route path="list" element={<ProductListTable />} />
             <Route path="create" element={<CreateProduct />} />
             <Route path="edit/:id" element={<EditProduct />} />
-            <Route index element={<ProductListTable />} />  
+            <Route index element={<Navigate to="list" replace />} />  
           </Routes>
         </div>
       </div>

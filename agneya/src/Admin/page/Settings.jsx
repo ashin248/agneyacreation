@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import CompanyProfileForm from "../router/Settings/CompanyProfileForm.jsx";
 import LegalAndTaxSettings from "../router/Settings/LegalAndTaxSettings.jsx";
@@ -26,7 +26,7 @@ function Settings() {
             <Route path="legal" element={<LegalAndTaxSettings />} />
             <Route path="shipping" element={<ShippingRulesManager />} />
             <Route path="payments" element={<PaymentGatewayToggles />} />
-            <Route index element={<CompanyProfileForm />} />
+            <Route index element={<Navigate to="profile" replace />} />
           </Routes>
         </div>
       </div>

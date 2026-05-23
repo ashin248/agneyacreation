@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import HomepageBannersGrid from '../router/Marketing/HomepageBannersGrid.jsx';
 import PromoCodesTable from '../router/Marketing/PromoCodesTable.jsx';
@@ -26,7 +26,7 @@ function Marketing() {
                         <Route path="promo-codes" element={<PromoCodesTable />} />
                         <Route path="create-coupon" element={<CreateCouponForm />} />
                         <Route path="flash-sale" element={<FlashSaleScheduler />} />
-                        <Route index element={<HomepageBannersGrid />} />
+                        <Route index element={<Navigate to="banners" replace />} />
                     </Routes>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import OrderListTable from '../router/Orders/OrderListTable.jsx';
 import OrderDetailsCard from '../router/Orders/OrderDetailsCard.jsx';
@@ -23,7 +23,7 @@ function Orders() {
             <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route path="actions" element={<OrderActionsPanel />} />
             <Route path="tracker" element={<OrderFulfillmentTracker />} />
-            <Route index element={<OrderListTable />} />
+            <Route index element={<Navigate to="list" replace />} />
           </Routes>
         </div>
       </div>

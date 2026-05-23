@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import OrderActionsPanel from './OrderActionsPanel';
 import OrderFulfillmentTracker from './OrderFulfillmentTracker';
+import PhoneCoverPreview from '../../Client/components/PhoneCoverPreview';
+
+const Workspace3D = React.lazy(() => import('../../Client/components/Studio/components/Workspace3D'));
 
 const OrderDetailsCard = () => {
   const { id } = useParams();
@@ -121,26 +124,29 @@ const OrderDetailsCard = () => {
             </div>
             
             <ul className="divide-y divide-gray-200">
-              {order.items.map((item, index) => (
-                <li key={index} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                            {item.image && (
-                                <div className="w-12 h-12 bg-white rounded-md border border-gray-200 overflow-hidden flex-shrink-0 p-0.5">
-                                    <img loading="lazy" src={item.image} alt="Product" className="w-full h-full object-contain" />
-                                </div>
-                            )}
-                            {item.itemType === 'Custom' && item.designImage && (
-                                <div className="w-10 h-10 bg-gray-50 rounded-md border border-pink-200 overflow-hidden flex-shrink-0 relative -ml-3 z-10 shadow-sm">
-                                    <img loading="lazy" src={item.designImage} alt="Custom Details" className="w-full h-full object-cover mix-blend-multiply" />
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <h3 className="text-base font-bold text-gray-900 leading-tight">{item.name}</h3>
-                            <div className="flex items-center gap-2">
+              {order.items.map((item, index) => {
+                const isCustom = item.itemType === 'Custom' && item.customData;
+                const displayImage = item.customData?.productImage || item.image || 'https://placehold.co/150x150/f1f5f9/a2a9b1?text=Image';
+                const cleanName = item.customData?.productName || item.name.replace(/^\[Custom\]\s*/, '');
+                
+                return (
+                  <li key={index} className="p-6">
+                    <div className="flex flex-col gap-4 p-5 bg-white border border-gray-200 shadow-sm rounded-2xl">
+                      {/* 1. Product (Image & Name) */}
+                      <div className="flex gap-4 items-start justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 p-1 border border-gray-200">
+                            <PhoneCoverPreview
+                               phoneMask={item.customData?.phoneMask}
+                               designImage={item.image}
+                               productImage={displayImage}
+                               className="w-full h-full object-contain"
+                             />
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1">1. Product</div>
+                            <h3 className="text-base font-bold text-gray-900 leading-tight">{cleanName}</h3>
+                            <div className="flex items-center gap-2 mt-2">
                                 {(() => {
                                    if (item.customData?.designSource === 'DESIGN_ASSISTANCE' || item.customData?.mode === 'manual' || item.name?.includes('[Manual Custom]')) {
                                        return <span className="text-[10px] uppercase tracking-widest bg-indigo-100 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded font-bold">Design Assistance</span>;
@@ -154,175 +160,159 @@ const OrderDetailsCard = () => {
                                        return <span className="text-[10px] uppercase tracking-widest bg-gray-100 text-gray-700 border border-gray-200 px-1.5 py-0.5 rounded font-bold">Normal Order</span>;
                                    }
                                 })()}
-                                {item.selectedVariation?.size && (
-                                <span className="text-[10px] uppercase font-semibold text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded">
-                                    Size: {item.selectedVariation.size}
-                                </span>
+                                {item.customData?.variationName && (
+                                  <span className="text-[10px] uppercase font-semibold text-gray-500 border border-gray-200 px-1.5 py-0.5 rounded">
+                                      {item.customData.variationName}
+                                  </span>
                                 )}
                             </div>
+                          </div>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-base font-bold text-gray-900">₹ {(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-1">Qty {item.quantity}</p>
+                          {item.discountApplied > 0 && (
+                            <p className="text-xs text-green-600 font-medium mt-1">
+                              - ₹ {item.discountApplied.toLocaleString('en-IN')} saved
+                            </p>
+                          )}
                         </div>
                       </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        ₹ {item.unitPrice.toLocaleString('en-IN')} × {item.quantity} qty
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-base font-bold text-gray-900">₹ {(item.unitPrice * item.quantity).toLocaleString('en-IN')}</p>
-                      {item.discountApplied > 0 && (
-                        <p className="text-xs text-green-600 font-medium line-through">
-                          - ₹ {item.discountApplied.toLocaleString('en-IN')} discount
-                        </p>
+
+                      {/* Custom Details Section */}
+                      {isCustom && (
+                        <div className="mt-2 pt-4 border-t border-gray-200 space-y-6">
+                          
+                          {/* 2. Customise Design [Main Model and Support Model] */}
+                          <div className="space-y-3">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600 flex items-center justify-between">
+                              <span>2. Customise Design</span>
+                              <span className="text-[9px] text-gray-500 uppercase tracking-tighter">
+                                {item.customData.designSource === 'DESIGN_ASSISTANCE' ? 'Design Assistance' : item.customData.designSource === '3D_STUDIO' ? '3D Studio' : '2D Studio'}
+                              </span>
+                            </div>
+                            
+                            {item.customData.designSource === '3D_STUDIO' ? (
+                              <div className="w-full aspect-square max-h-[400px] rounded-2xl overflow-hidden relative bg-gray-50 border border-gray-200 flex items-center justify-center group/3d shadow-inner">
+                                <React.Suspense fallback={<div className="text-xs font-bold text-gray-400 animate-pulse">Loading 3D Engine...</div>}>
+                                  <Workspace3D 
+                                    product={{ 
+                                      baseModelId: item.customData.baseModelId, 
+                                      model3d: item.customData.model3d, 
+                                      base3DModelUrl: item.customData.model3d, 
+                                      category: item.customData.category, 
+                                      printableMeshes: item.customData.printableMeshes, 
+                                      projectionType: item.customData.projectionType 
+                                    }} 
+                                    objectAnchors={item.customData.objectAnchors || {}} 
+                                    canvasObjects={item.customData.canvasObjects || []} 
+                                    activeStudioTab="3D_STUDIO" 
+                                  />
+                                </React.Suspense>
+                                <div className="absolute bottom-3 right-3 bg-gray-900/80 text-white text-[9px] font-black px-3 py-1.5 rounded-lg pointer-events-none uppercase tracking-widest backdrop-blur-md shadow-lg z-20">360° Interactive Preview</div>
+                              </div>
+                            ) : item.customData?.customizedDesigns?.length > 0 ? (
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                {item.customData.customizedDesigns.map((cd, cdIdx) => (
+                                  <div key={cdIdx} className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-2 border border-gray-200 hover:shadow-md transition-all">
+                                    <a href={cd.url} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white border border-gray-200">
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={cd.url}
+                                        className="w-full h-full object-contain hover:scale-110 transition-transform"
+                                      />
+                                    </a>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 text-center truncate w-full">{cd.label}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="flex gap-4">
+                                {item.customData.appliedFrontDesign && (
+                                  <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-2 w-32 border border-gray-200 hover:shadow-md transition-all">
+                                    <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white border border-gray-200">
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={item.customData.appliedFrontDesign}
+                                        className="w-full h-full object-contain"
+                                      />
+                                    </a>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 text-center truncate w-full">Front Design</span>
+                                  </div>
+                                )}
+                                {item.customData.appliedBackDesign && (
+                                  <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center gap-2 w-32 border border-gray-200 hover:shadow-md transition-all">
+                                    <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="w-full aspect-square rounded-lg overflow-hidden block bg-white border border-gray-200">
+                                      <PhoneCoverPreview
+                                        phoneMask={item.customData?.phoneMask}
+                                        designImage={item.customData.appliedBackDesign}
+                                        className="w-full h-full object-contain"
+                                      />
+                                    </a>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 text-center truncate w-full">Back Design</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {item.customData?.instructions && (
+                              <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mt-4">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400 block mb-2">Instructions / Brief:</span>
+                                <p className="text-sm font-bold italic leading-snug text-indigo-900">"{item.customData.instructions}"</p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 3. Sizes & 4. Color in a neat grid */}
+                          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1.5">3. Sizes</span>
+                              <span className="text-sm font-black uppercase tracking-tight text-gray-900">
+                                {item.customData?.selectedSize || item.selectedVariation?.size || 'Standard'}
+                              </span>
+                            </div>
+                            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col justify-center">
+                              <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1.5">4. Color</span>
+                              <div className="flex items-center gap-2">
+                                {item.customData?.selectedColor && item.customData.selectedColor !== '-' && item.customData.selectedColor !== 'Standard' && (
+                                  <span className="w-4 h-4 rounded-full border border-gray-300 shadow-sm inline-block flex-shrink-0" style={{ backgroundColor: item.customData.selectedColor.toLowerCase() }} />
+                                )}
+                                <span className="text-sm font-black uppercase tracking-tight truncate text-gray-900">
+                                  {item.customData?.selectedColor || item.selectedVariation?.color || 'Standard'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 5. Used Images */}
+                          <div className="pt-4 border-t border-gray-200 space-y-3">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">5. Used Images / Assets</div>
+                            {item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0 ? (
+                              <div className="flex flex-wrap gap-3">
+                                {(item.customData?.usedImages || item.customData?.manualAttachments || []).map((img, imgIdx) => {
+                                  const url = typeof img === 'string' ? img : img.url;
+                                  return (
+                                    <div key={imgIdx} className="group relative">
+                                        <a href={url} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 p-1 group/asset block hover:border-indigo-400 transition-colors">
+                                          <img src={url} alt={`used-asset-${imgIdx}`} className="w-full h-full object-cover rounded-lg group-hover/asset:scale-110 transition-transform" />
+                                        </a>
+                                        <a href={url} download target="_blank" rel="noreferrer" className="absolute -bottom-2 -right-2 w-6 h-6 bg-white text-indigo-600 rounded-full flex items-center justify-center shadow-md border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100">
+                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                        </a>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <p className="text-xs font-bold italic text-gray-400">No external images uploaded.</p>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
-                  </div>
-
-                  {/* Custom Print Details Box */}
-                  {item.customData && (item.customData.designSource || item.customData.mode || item.customData.instructions || item.itemType === 'Custom') && (() => {
-                    const hasInstructions = !!item.customData.instructions;
-                    const hasAttachments = item.customData.manualAttachments && item.customData.manualAttachments.length > 0;
-                    const isDesignAssistance = item.customData.designSource === 'DESIGN_ASSISTANCE' || item.customData.mode === 'manual' || item.name?.includes('[Manual Custom]') || (!item.customData.designSource && hasInstructions);
-                    const is3DStudio = item.customData.designSource === '3D_STUDIO' || (item.customData.mode === 'unified' && !item.customData.designSource && !hasInstructions);
-                    const is2DStudio = item.customData.designSource === '2D_STUDIO';
-                    const title = isDesignAssistance ? 'Design Assistance Request' : is3DStudio ? '3D Studio Custom Design' : is2DStudio ? '2D Studio Custom Design' : 'Client Custom Design';
-                    
-                    return (
-                      <div className={`mt-4 rounded-[40px] p-8 transition-all ${
-                        isDesignAssistance 
-                        ? 'bg-indigo-50/70 border-2 border-indigo-200 shadow-2xl shadow-indigo-200/40' 
-                        : is3DStudio ? 'bg-fuchsia-50/70 border-2 border-fuchsia-200 shadow-2xl shadow-fuchsia-200/40'
-                        : is2DStudio ? 'bg-pink-50/70 border-2 border-pink-200 shadow-2xl shadow-pink-200/40'
-                        : 'bg-gray-50 border border-dashed border-gray-300'
-                      }`}>
-                         <h4 className="flex items-center justify-between text-[11px] font-black text-gray-900 mb-8 uppercase tracking-[0.3em] border-b border-gray-200/60 pb-5">
-                            <div className="flex items-center gap-3">
-                               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${isDesignAssistance ? 'bg-indigo-600 text-white' : is3DStudio ? 'bg-fuchsia-600 text-white' : is2DStudio ? 'bg-pink-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                                  {isDesignAssistance ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>}
-                               </div>
-                               {title}
-                            </div>
-                            {isDesignAssistance && (
-                               <span className="px-4 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-full shadow-lg shadow-indigo-200 uppercase tracking-widest">Manual Review Required</span>
-                            )}
-                         </h4>
-
-                        <div className="flex flex-col gap-10">
-                          
-                          {/* 1. PRIMARY: TEXT REQUIREMENTS (Top priority for Manual) */}
-                          {item.customData.instructions && (
-                             <div className="p-8 bg-white/80 backdrop-blur-md rounded-[32px] border-2 border-indigo-100 shadow-sm">
-                                <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
-                                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                                   Client Instructions
-                                </p>
-                                <p className="text-lg font-black text-indigo-950 leading-tight uppercase tracking-tight italic">
-                                  {item.customData.instructions}
-                                </p>
-                             </div>
-                          )}
-
-                          {/* 2. SECONDARY: ASSET BROWSER */}
-                          {item.customData.manualAttachments && item.customData.manualAttachments.length > 0 && (
-                            <div className="space-y-6">
-                               <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                                 Provided Resource Files ({item.customData.manualAttachments.length})
-                               </h5>
-                               <div className="flex flex-wrap gap-5">
-                                  {item.customData.manualAttachments.map((url, imgIdx) => (
-                                   <div key={imgIdx} className="group relative">
-                                       <a href={url} target="_blank" rel="noreferrer" className="block rounded-[32px] overflow-hidden border-4 border-white shadow-xl w-36 h-40 hover:scale-105 transition-all hover:-rotate-1">
-                                         <img loading="lazy" src={url} alt={`Attachment ${imgIdx + 1}`} className="object-cover w-full h-full" />
-                                         <div className="absolute inset-0 bg-indigo-600/90 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all text-white p-2">
-                                            <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Full View</span>
-                                         </div>
-                                       </a>
-                                       <a href={url} download target="_blank" rel="noreferrer" className="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-indigo-600 rounded-2xl flex items-center justify-center shadow-lg border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all scale-90 group-hover:scale-100">
-                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                       </a>
-                                   </div>
-                                  ))}
-                               </div>
-                            </div>
-                          )}
-
-                          {/* 3. TERTIARY: STUDIO SPECS */}
-                          {(item.customData.appliedFrontDesign || item.customData.appliedBackDesign || item.customData.customText || item.customData.font || item.customData.textColor) && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                              <div className="space-y-4">
-                                {item.customData.customText && (
-                                  <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Text Graphic</span>
-                                    <span className="text-base font-black text-gray-900 leading-none">"{item.customData.customText}"</span>
-                                  </div>
-                                )}
-                                {(item.customData.font || item.customData.textColor) && (
-                                  <div className="flex gap-6">
-                                    {item.customData.font && (
-                                      <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Font Family</span>
-                                        <span className="text-sm font-bold text-gray-800">{item.customData.font}</span>
-                                      </div>
-                                    )}
-                                    {item.customData.textColor && (
-                                      <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Ink Color</span>
-                                        <div className="flex items-center gap-2">
-                                          <div className="w-5 h-5 rounded-lg border border-gray-200 shadow-inner" style={{ backgroundColor: item.customData.textColor }}></div>
-                                          <span className="text-sm font-bold text-gray-800 uppercase">{item.customData.textColor}</span>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                                {item.customData.variantColor && (
-                                  <div className="flex flex-col">
-                                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Base Medium</span>
-                                   <span className="text-sm font-bold text-gray-800">{item.customData.variantColor}</span>
-                                 </div>
-                                )}
-                              </div>
-
-                              {/* Studio Mockups (Hidden for Manual) */}
-                              <div className="flex flex-col sm:items-end w-full gap-4">
-                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest sm:text-right w-full">3D Design Preview</span>
-                                 <div className="flex gap-4">
-                                   {item.customData.appliedFrontDesign && (
-                                     <div className="flex flex-col items-center">
-                                       <a href={item.customData.appliedFrontDesign} target="_blank" rel="noreferrer" className="group relative block rounded-2xl overflow-hidden border-4 border-white shadow-md w-24 h-28 hover:scale-105 transition-all">
-                                         <img loading="lazy" src={item.customData.appliedFrontDesign} alt="Front" className="object-cover w-full h-full" />
-                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-bold">FRONT</div>
-                                       </a>
-                                     </div>
-                                   )}
-                                   {item.customData.appliedBackDesign && (
-                                     <div className="flex flex-col items-center">
-                                       <a href={item.customData.appliedBackDesign} target="_blank" rel="noreferrer" className="group relative block rounded-2xl overflow-hidden border-4 border-white shadow-md w-24 h-28 hover:scale-105 transition-all">
-                                         <img loading="lazy" src={item.customData.appliedBackDesign} alt="Back" className="object-cover w-full h-full" />
-                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-[10px] font-bold">REAR</div>
-                                       </a>
-                                     </div>
-                                   )}
-                                 </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Fallback Artwork (Legacy) */}
-                          {item.customData.uploadedImageUrl && (
-                            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-                               <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Artwork Asset</span>
-                               <a href={item.customData.uploadedImageUrl} target="_blank" rel="noreferrer" className="group rounded-xl overflow-hidden border-2 border-white w-14 h-14 hover:border-indigo-500 transition-colors shadow-lg">
-                                 <img loading="lazy" src={item.customData.uploadedImageUrl} alt="Artwork" className="object-cover w-full h-full" />
-                               </a>
-                            </div>
-                          )}
-
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import UserListTable from "../router/Customers/UserListTable.jsx";
 import UserProfileDetails from "../router/Customers/UserProfileDetails.jsx";
 import BusinessGSTManager from "../router/Customers/BusinessGSTManager.jsx";
@@ -23,7 +23,7 @@ export default function Customers() {
             <Route path="profile/:id" element={<UserProfileDetails />} />
             <Route path="history/:id" element={<CustomerOrderHistory />} />
             <Route path="gst-manager" element={<BusinessGSTManager />} />
-            <Route index element={<UserListTable />} />
+            <Route index element={<Navigate to="list" replace />} />
           </Routes>
         </div>
       </div>
