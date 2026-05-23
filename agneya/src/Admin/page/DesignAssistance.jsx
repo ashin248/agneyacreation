@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import OrderListTable from '../router/Orders/OrderListTable.jsx';
 import OrderDetailsCard from '../router/Orders/OrderDetailsCard.jsx';
 import DesignInquiryTable from '../router/Orders/DesignInquiryTable.jsx';
@@ -23,7 +23,7 @@ function DesignAssistance() {
             <Route path="inquiries" element={<DesignInquiryTable />} />
             <Route path="orders" element={<OrderListTable forcedType="DESIGN_ASSISTANCE" />} />
             <Route path="details/:id" element={<OrderDetailsCard />} />
-            <Route index element={<DesignInquiryTable />} />
+            <Route index element={<Navigate to="inquiries" replace />} />
           </Routes>
         </div>
       </div>

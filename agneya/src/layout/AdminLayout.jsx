@@ -15,7 +15,8 @@ const AdminLayout = () => {
     { name: 'Design Assistance', href: '/admin/design-assistance', icon: 'bi-pencil-square' },
     { name: 'Customer Designs', href: '/admin/custom-designs', icon: 'bi-palette-fill' },
     { name: 'Wholesale Orders', href: '/admin/bulk-orders', icon: 'bi-stack' },
-    { name: 'Business Invoices', href: '/admin/gst-manager', icon: 'bi-building-fill-check' },
+    { name: 'Customers', href: '/admin/customers/list', icon: 'bi-people-fill' },
+    { name: 'Business Invoices', href: '/admin/customers/gst-manager', icon: 'bi-building-fill-check' },
     { name: 'Ads & Discounts', href: '/admin/marketing', icon: 'bi-megaphone-fill' },
     { name: 'Store Settings', href: '/admin/settings', icon: 'bi-gear-fill' },
   ];

@@ -302,7 +302,17 @@ const TrackOrder = () => {
         if (!merged.find(m => m.orderId === go.orderId)) merged.push(go);
       });
 
-      setOrders(merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+      const sortedOrders = merged.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setOrders(sortedOrders);
+
+      // Auto-open tracking modal if ID in URL
+      const urlId = new URLSearchParams(window.location.search).get('id');
+      if (urlId) {
+        const orderToTrack = sortedOrders.find(o => String(o._id) === urlId || String(o.orderId) === urlId);
+        if (orderToTrack) {
+          setSelectedOrder(orderToTrack);
+        }
+      }
     } finally {
       setLoading(false);
     }

@@ -9,8 +9,8 @@ import PageSubNav from '../components/PageSubNav.jsx';
 
 export default function Customers() {
   const links = [
-    { to: '/admin/gst-manager/list', label: 'User Directory' },
-    { to: '/admin/gst-manager/gst-manager', label: 'GST Compliance' },
+    { to: '/admin/customers/list', label: 'User Directory' },
+    { to: '/admin/customers/gst-manager', label: 'GST Compliance' },
   ];
 
   return (

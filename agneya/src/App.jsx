@@ -86,7 +86,7 @@ function App() {
               <Route path="design-assistance/*" element={<DesignAssistance />} />
               <Route path="custom-designs/*" element={<CustomDesigns />} />
               <Route path="bulk-orders/*" element={<BulkOrders />} />
-              <Route path="gst-manager/*" element={<Customers />} />
+              <Route path="customers/*" element={<Customers />} />
               <Route path="marketing/*" element={<Marketing />} />
               <Route path="settings/*" element={<Settings />} />
               <Route path="collections/*" element={<Collections />} />
