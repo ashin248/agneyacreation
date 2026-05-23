@@ -3,9 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import OrderActionsPanel from './OrderActionsPanel';
 import OrderFulfillmentTracker from './OrderFulfillmentTracker';
-import PhoneCoverPreview from '../../Client/components/PhoneCoverPreview';
+import PhoneCoverPreview from '../../../Client/components/PhoneCoverPreview';
 
-const Workspace3D = React.lazy(() => import('../../Client/components/Studio/components/Workspace3D'));
+const Workspace3D = React.lazy(() => import('../../../Client/components/Studio/components/Workspace3D'));
 
 const OrderDetailsCard = () => {
   const { id } = useParams();
