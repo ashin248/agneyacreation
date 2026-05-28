@@ -284,29 +284,84 @@ const OrderDetailsCard = () => {
                             </div>
                           </div>
 
-                          {/* 5. Used Images */}
-                          <div className="pt-4 border-t border-gray-200 space-y-3">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">5. Used Images / Assets</div>
-                            {item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0 ? (
-                              <div className="flex flex-wrap gap-3">
-                                {(item.customData?.usedImages || item.customData?.manualAttachments || []).map((img, imgIdx) => {
-                                  const url = typeof img === 'string' ? img : img.url;
-                                  return (
-                                    <div key={imgIdx} className="group relative">
-                                        <a href={url} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 p-1 group/asset block hover:border-indigo-400 transition-colors">
-                                          <img src={url} alt={`used-asset-${imgIdx}`} className="w-full h-full object-cover rounded-lg group-hover/asset:scale-110 transition-transform" />
-                                        </a>
-                                        <a href={url} download target="_blank" rel="noreferrer" className="absolute -bottom-2 -right-2 w-6 h-6 bg-white text-indigo-600 rounded-full flex items-center justify-center shadow-md border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100">
-                                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                                        </a>
-                                    </div>
-                                  );
-                                })}
+                          {/* 5. Assets & Elements */}
+                          {(() => {
+                            let canvasObjects = item.customData?.canvasObjects || [];
+                            // For 2D/Legacy, objects might be in design.frontCanvasData.objects
+                            if (canvasObjects.length === 0 && item.customData?.design?.frontCanvasData?.objects) {
+                              canvasObjects = item.customData.design.frontCanvasData.objects;
+                            }
+                            if (canvasObjects.length === 0 && item.customData?.design?.backCanvasData?.objects) {
+                              canvasObjects = [...canvasObjects, ...item.customData.design.backCanvasData.objects];
+                            }
+
+                            const texts = canvasObjects.filter(obj => obj.type === 'text' || obj.type === 'i-text' || obj.type === 'textbox');
+                            const stickers = canvasObjects.filter(obj => obj.type === 'image' && obj.src && !obj.src.includes('blob:'));
+                            const hasAssets = item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0 || texts.length > 0 || stickers.length > 0;
+                            
+                            return (
+                              <div className="pt-4 border-t border-gray-200 space-y-3">
+                                <div className="text-[10px] font-black uppercase tracking-widest text-indigo-600">5. Assets & Elements (Images, Texts, Stickers)</div>
+                                {hasAssets ? (
+                                  <div className="space-y-4">
+                                    {/* Used Images */}
+                                    {(item.customData?.usedImages?.length > 0 || item.customData?.manualAttachments?.length > 0) && (
+                                      <div className="flex flex-wrap gap-3">
+                                        <span className="w-full text-[9px] font-bold text-gray-500 uppercase tracking-widest">Customer Uploaded Images:</span>
+                                        {(item.customData?.usedImages || item.customData?.manualAttachments || []).map((img, imgIdx) => {
+                                          const url = typeof img === 'string' ? img : img.url;
+                                          return (
+                                            <div key={imgIdx} className="group relative">
+                                                <a href={url} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 p-1 group/asset block hover:border-indigo-400 transition-colors">
+                                                  <img src={url} alt={`used-asset-${imgIdx}`} className="w-full h-full object-cover rounded-lg group-hover/asset:scale-110 transition-transform" />
+                                                </a>
+                                                <a href={url} download target="_blank" rel="noreferrer" className="absolute -bottom-2 -right-2 w-6 h-6 bg-white text-indigo-600 rounded-full flex items-center justify-center shadow-md border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100">
+                                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                                </a>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                    
+                                    {/* Stickers */}
+                                    {stickers.length > 0 && (
+                                      <div className="flex flex-wrap gap-3">
+                                        <span className="w-full text-[9px] font-bold text-gray-500 uppercase tracking-widest">Applied Stickers/Cliparts:</span>
+                                        {stickers.map((stk, sIdx) => (
+                                          <div key={sIdx} className="group relative">
+                                              <a href={stk.src} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 p-1 group/asset block hover:border-indigo-400 transition-colors">
+                                                <img src={stk.src} alt={`sticker-${sIdx}`} className="w-full h-full object-contain rounded-lg group-hover/asset:scale-110 transition-transform" />
+                                              </a>
+                                              <a href={stk.src} download target="_blank" rel="noreferrer" className="absolute -bottom-2 -right-2 w-6 h-6 bg-white text-indigo-600 rounded-full flex items-center justify-center shadow-md border border-indigo-100 hover:bg-indigo-600 hover:text-white transition-all scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100">
+                                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                              </a>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Texts */}
+                                    {texts.length > 0 && (
+                                      <div className="flex flex-col gap-2">
+                                        <span className="w-full text-[9px] font-bold text-gray-500 uppercase tracking-widest">Applied Texts:</span>
+                                        <div className="flex flex-wrap gap-2">
+                                          {texts.map((txt, tIdx) => (
+                                            <div key={tIdx} className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-2">
+                                              <span className="font-bold text-gray-900" style={{ fontFamily: txt.fontFamily || 'inherit', color: txt.fill || '#000' }}>{txt.text}</span>
+                                              <span className="text-[8px] text-gray-400 uppercase tracking-widest">({txt.fontFamily || 'Default Font'} | {txt.fill || '#000'})</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs font-bold italic text-gray-400">No external images, texts, or stickers applied.</p>
+                                )}
                               </div>
-                            ) : (
-                              <p className="text-xs font-bold italic text-gray-400">No external images uploaded.</p>
-                            )}
-                          </div>
+                            );
+                          })()}
                         </div>
                       )}
                     </div>
@@ -337,9 +392,41 @@ const OrderDetailsCard = () => {
               
               <div className="pt-4 border-t border-gray-100 flex items-start gap-3">
                  <div className="bg-green-100 text-green-600 rounded-full p-2 mt-0.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg></div>
-                 <div>
-                   <p className="text-sm font-medium text-gray-900">Shipping Address</p>
-                   <p className="text-sm text-gray-600 mt-1 pb-1 leading-relaxed whitespace-pre-line">{order.customer.shippingAddress}</p>
+                 <div className="w-full">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                       <p className="text-sm font-medium text-gray-900">Shipping Address</p>
+                       <p className="text-sm text-gray-600 mt-1 pb-1 leading-relaxed whitespace-pre-line">{order.customer.shippingAddress}</p>
+                     </div>
+                     <div>
+                       <p className="text-sm font-medium text-gray-900">Billing Address</p>
+                       <p className="text-sm text-gray-600 mt-1 pb-1 leading-relaxed whitespace-pre-line">
+                         {order.customer.shippingAddress}
+                       </p>
+                     </div>
+                   </div>
+                   
+                   {/* Explicit GST Details Section */}
+                   {order.gstDetails && (order.gstDetails.companyName || order.gstDetails.gstNumber) && (
+                     <div className="mt-4 pt-4 border-t border-gray-100">
+                       <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                         <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                         GST & Business Details (Optional)
+                       </p>
+                       <div className="mt-2 bg-indigo-50 border border-indigo-100 rounded-lg p-3">
+                         <div className="grid grid-cols-2 gap-4">
+                           <div>
+                             <p className="text-xs text-indigo-500 uppercase font-bold tracking-wider">Company Name</p>
+                             <p className="text-sm font-semibold text-indigo-900 mt-0.5">{order.gstDetails.companyName || 'N/A'}</p>
+                           </div>
+                           <div>
+                             <p className="text-xs text-indigo-500 uppercase font-bold tracking-wider">GST Number</p>
+                             <p className="text-sm font-semibold text-indigo-900 mt-0.5">{order.gstDetails.gstNumber || 'N/A'}</p>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                  </div>
               </div>
             </div>
@@ -373,6 +460,20 @@ const OrderDetailsCard = () => {
                 <div className="flex justify-between text-lg font-bold text-gray-900 pt-3 border-t border-gray-200 mt-4">
                   <span>Total Amount</span>
                   <span>₹ {order.totalAmount.toLocaleString('en-IN')}</span>
+                </div>
+                
+                {/* Payment Method & Transaction ID details */}
+                <div className="bg-gray-50 p-4 rounded-lg mt-4 border border-gray-200">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-medium">Payment Method:</span>
+                    <span className="font-semibold text-gray-900">{order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}</span>
+                  </div>
+                  {order.paymentDetails?.razorpay_payment_id && (
+                    <div className="flex justify-between items-center text-sm mt-2 pt-2 border-t border-gray-200">
+                      <span className="text-gray-500 font-medium">Transaction ID:</span>
+                      <span className="font-mono text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 tracking-tight">{order.paymentDetails.razorpay_payment_id}</span>
+                    </div>
+                  )}
                 </div>
              </div>
           </div>

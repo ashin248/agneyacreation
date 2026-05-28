@@ -46,6 +46,7 @@ const OrderActionsPanel = ({ orderId, currentStatus, onStatusUpdate, isDesignAss
           className={`block w-full sm:w-auto rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2 px-3 border bg-white font-medium text-gray-800 transition-opacity ${loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
         >
           <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
           <option value="Processing">Processing</option>
           <option value="Printing">Printing</option>
           <option value="Shipped">Shipped</option>

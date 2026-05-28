@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import B2BUserApprovals from "../router/BulkOrders/B2BUserApprovals.jsx";
 import WholesaleInquiriesTable from "../router/BulkOrders/WholesaleInquiriesTable.jsx";
 import CustomQuoteGenerator from "../router/BulkOrders/CustomQuoteGenerator.jsx";
-import B2BOrdersTracker from "../router/BulkOrders/B2BOrdersTracker.jsx";
 
 import PageSubNav from '../components/PageSubNav.jsx';
 
@@ -16,7 +15,6 @@ function BulkOrders() {
     { to: '/admin/bulk-orders/orders', label: 'Bulk Orders' },
     { to: '/admin/bulk-orders/approvals', label: 'B2B Approvals' },
     { to: '/admin/bulk-orders/quote-gen', label: 'Quote Generator' },
-    { to: '/admin/bulk-orders/tracker', label: 'B2B Tracker' },
   ];
 
   return (
@@ -30,7 +28,6 @@ function BulkOrders() {
             <Route path="details/:id" element={<OrderDetailsCard />} />
             <Route path="approvals" element={<B2BUserApprovals />} />
             <Route path="quote-gen" element={<CustomQuoteGenerator />} />
-            <Route path="tracker" element={<B2BOrdersTracker />} />
             <Route index element={<Navigate to="inquiries" replace />} />
           </Routes>
         </div>

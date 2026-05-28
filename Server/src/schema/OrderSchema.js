@@ -91,7 +91,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ['Pending', 'Processing', 'Printing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'],
+    enum: ['Pending', 'Approved', 'Processing', 'Printing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'],
     default: 'Pending'
   },
   isAdminRead: {
